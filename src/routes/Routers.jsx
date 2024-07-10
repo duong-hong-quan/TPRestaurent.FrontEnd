@@ -1,5 +1,5 @@
 import { Navigate, useRoutes } from "react-router-dom";
-import { HomePage } from "../pages/Common/HomePage/HomePage";
+import { HomePage } from "../pages/common/home-page/HomePage";
 import { CommonLayout } from "../layouts/common/CommonLayout";
 
 function Routers() {

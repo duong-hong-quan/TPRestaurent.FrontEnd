@@ -1,3 +1,6 @@
+import IntroHome from "../../../components/intro-home/IntroHome";
+import TopVoucher from "../../../components/top-voucher/TopVoucher";
+
 export const HomePage = () => {
   return (
     <div className="container mx-auto">
@@ -6,7 +9,8 @@ export const HomePage = () => {
         alt=""
         className="w-full my-10"
       />
-      <p className="text-xl text-center mt-5">This is a simple HomePage</p>
+      <TopVoucher />
+      <IntroHome />
     </div>
   );
 };
