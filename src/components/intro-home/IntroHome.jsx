@@ -1,7 +1,7 @@
 const IntroHome = () => {
   return (
     <div className="container mx-auto my-10 border-y-red-600 border-4 bg-[#FFECDE] text-mainColor p-6">
-      <h1 className="text-center font-semibold text-3xl mb-8 text-red-600">
+      <h1 className="font-pt-serif text-center text-2xl mb-8 text-red-600">
         MUỐN ĂN NGON - ĐẾN NHÀ HÀNG THIÊN PHÚ ĐÀ LẠT
       </h1>
 

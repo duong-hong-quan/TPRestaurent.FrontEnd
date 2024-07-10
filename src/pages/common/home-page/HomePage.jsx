@@ -1,4 +1,6 @@
+import BestSeller from "../../../components/best-seller/BestSeller";
 import IntroHome from "../../../components/intro-home/IntroHome";
+import MenuDish from "../../../components/menu-dish/MenuDish";
 import TopVoucher from "../../../components/top-voucher/TopVoucher";
 
 export const HomePage = () => {
@@ -11,6 +13,8 @@ export const HomePage = () => {
       />
       <TopVoucher />
       <IntroHome />
+      <BestSeller />
+      <MenuDish />
     </div>
   );
 };

@@ -5,6 +5,7 @@ export default {
     extend: {
       fontFamily: {
         montserrat: ["Montserrat", "sans-serif"],
+        "pt-serif": ["PT Serif", "serif"],
       },
       colors: {
         mainColor: "#C01D2E",
