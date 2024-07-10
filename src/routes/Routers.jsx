@@ -1,10 +1,18 @@
 import { Navigate, useRoutes } from "react-router-dom";
+import { HomePage } from "../pages/Common/HomePage/HomePage";
+import { CommonLayout } from "../layouts/common/CommonLayout";
 
 function Routers() {
   const routing = useRoutes([
     {
       path: "/",
-      element: <p className="text-primary font-bold">a</p>,
+      element: <CommonLayout />,
+      children: [
+        {
+          index: true,
+          element: <HomePage />,
+        },
+      ],
     },
   ]);
   return routing;
