@@ -5,16 +5,13 @@ export default {
     extend: {
       fontFamily: {
         montserrat: ["Montserrat", "sans-serif"],
+        "pt-serif": ["PT Serif", "serif"],
       },
       colors: {
-        mainColor: "#0284c7",
-        primary: "#0c4a6e",
-        secondary: "#075985",
+        mainColor: "#C01D2E",
         "light-grey": "#F2F2F2",
-        "text-color": "#333333",
-        "button-color": "#006633",
-        "error-color": "#FF6666",
-        "warning-color": "#FFCC33",
+        "text-color": "#191919",
+        "button-hover": "#FF8787",
       },
       fontSize: {
         14: "14px",

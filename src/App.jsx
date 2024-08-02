@@ -6,7 +6,8 @@ import { StateProvider } from "./context/StateProvider";
 import { ToastContainer } from "react-toastify";
 import "aos/dist/aos.css";
 import "react-toastify/dist/ReactToastify.css";
-
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import AOS from "aos";
 import { AuthProvider } from "./context/AuthContext";
 AOS.init({
