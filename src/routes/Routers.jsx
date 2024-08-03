@@ -5,6 +5,7 @@ import LoginPage from "../pages/login/Login";
 import CartPage from "../pages/common/cart/CartPage";
 import MenuPage from "../pages/common/menu-page/MenuPage";
 import ProductDetail from "../pages/common/product-detail/ProductDetail";
+import Reservation from "../components/reservation/Reservation";
 
 function Routers() {
   const routing = useRoutes([
@@ -31,6 +32,10 @@ function Routers() {
         {
           path: "product/:id",
           element: <ProductDetail />,
+        },
+        {
+          path: "booking",
+          element: <Reservation />,
         },
       ],
     },
