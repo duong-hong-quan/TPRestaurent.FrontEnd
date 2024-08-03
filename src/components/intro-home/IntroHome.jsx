@@ -23,7 +23,7 @@ const IntroHome = () => {
   ];
 
   return (
-    <div className="bg-[#FFECDE] py-16">
+    <div className="bg-[#FFECDE] py-16 mt-16">
       <div className="container mx-auto px-4">
         <h1 className=" text-center text-3xl md:text-4xl font-bold mb-12 text-red-600 ">
           Muốn ăn ngon - Đến ngay nhà hàng của chúng tôi

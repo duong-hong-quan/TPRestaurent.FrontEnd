@@ -78,6 +78,7 @@ const CartPage = () => {
             value={record.quantity}
             onChange={(value) => handleQuantityChange(record.id, value)}
             className="mx-2 w-14 text-center"
+            disabled
           />
           <Button
             icon={<PlusOutlined />}
@@ -114,15 +115,16 @@ const CartPage = () => {
   ];
 
   // ... (keep the existing handleQuantityChange, handleRemoveItem, and handleApplyCoupon functions)
-
   const handleQuantityChange = (id, value) => {
-    console.log(`Changed quantity of item ${id} to ${value}`);
-    // Implement logic to update quantity
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, quantity: value } : item
+      )
+    );
   };
 
   const handleRemoveItem = (id) => {
-    console.log(`Removed item ${id} from cart`);
-    // Implement logic to remove item
+    setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
   const handleApplyCoupon = () => {

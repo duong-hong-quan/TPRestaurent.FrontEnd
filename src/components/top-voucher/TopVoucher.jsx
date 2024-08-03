@@ -15,11 +15,21 @@ const TopVoucher = () => {
         <h1 className="text-2xl font-bold my-5">Khuyến mãi hot</h1>
         <h3 className="text-lg font-bold my-5 text-mainColor">Xem thêm</h3>
       </div>
-      <Slider {...settings}>
+      <div className="md:block hidden">
+        <Slider {...settings}>
+          <TopVoucherDetail />
+          <TopVoucherDetail />
+          <TopVoucherDetail />
+        </Slider>
+      </div>
+      <div className="md:hidden grid grid-cols-1  gap-4">
         <TopVoucherDetail />
         <TopVoucherDetail />
         <TopVoucherDetail />
-      </Slider>
+        <TopVoucherDetail />
+        <TopVoucherDetail />
+        <TopVoucherDetail />
+      </div>
     </>
   );
 };
