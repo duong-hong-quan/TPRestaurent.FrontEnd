@@ -21,7 +21,7 @@ const BestSeller = () => {
           <div className="relative flex z-10">
             <img
               className="rounded-full h-48 w-48 object-cover"
-              src="https://s3-alpha-sig.figma.com/img/046a/fd40/5bd1cbd0cff53310483846bc935d1cca?Expires=1721606400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=jkSZ88QyfzkWEAsRVFtwugkAkObSJ9XmsOEX5P6SbqiT3Dijx2noNXs9G8Uutlos8l6a5jxeKE5wMITF4WoqNCfSbqCZIbbSbRfEtEVRnM-ihezpYGwGJcQhdECmgg67a~MZH7OpM5fuFlFdsSYY9zMWKY5r-QuxnZ0cLBmKaCjmSDt3IWZMiArBLMJ3O-kcX3rd9Eu-ZI1H6slKTBaJS8ejnOQ3YGEaRueUehtAuPUD6Xg7qq5C8-ekXlSlaK8Kz9RzfAYbb029MjHKWASK8qVbBP0PibIp3WCEW9~31ApHaRo3DpCslJJNoQ3~fqQypzdXbSX4K70ZMMBUJ9JtOQ__"
+              src="https://s3-alpha-sig.figma.com/img/62f9/82bc/377a67314fcee620f0c8791bf2c0b7f2?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=DfbUwQo1s9YMArTXLgR9LxPMiEAHWlOLc5KWg2Ktoqtvg8Q8LGJECW6lj~GSwNKHKRhDBjRfyTxcHeaBjKLIkomAY17MXuGlzH4nB1QO6YBlFTuNQDvEiqe1qtjBDY6HSkcmP2KkxiSYrGRq-LQoMIBt5T5i1IxyCQCgjeKGJHT~-MzNdB25H-LHwbxW4JcMRDzes4EGou0LeSN~fgz1oufcDXduzZg4dzbYDqyVH1ABCDdnDmucPgYrZCrXPun~ff7zfI3RtHtPG23VZXhMwXm~pZsJCgve1gqbMV3p5ZlIcWkS9c9P1JX0R~RMLt4FsVj0D66VEtQv3LFZoJ7~yg__"
               alt="Phật nhảy tường"
             />
             <div className="mx-4">
@@ -53,7 +53,7 @@ const BestSeller = () => {
           <div className="relative flex z-10">
             <img
               className="rounded-full h-48 w-48 object-cover"
-              src="https://s3-alpha-sig.figma.com/img/046a/fd40/5bd1cbd0cff53310483846bc935d1cca?Expires=1721606400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=jkSZ88QyfzkWEAsRVFtwugkAkObSJ9XmsOEX5P6SbqiT3Dijx2noNXs9G8Uutlos8l6a5jxeKE5wMITF4WoqNCfSbqCZIbbSbRfEtEVRnM-ihezpYGwGJcQhdECmgg67a~MZH7OpM5fuFlFdsSYY9zMWKY5r-QuxnZ0cLBmKaCjmSDt3IWZMiArBLMJ3O-kcX3rd9Eu-ZI1H6slKTBaJS8ejnOQ3YGEaRueUehtAuPUD6Xg7qq5C8-ekXlSlaK8Kz9RzfAYbb029MjHKWASK8qVbBP0PibIp3WCEW9~31ApHaRo3DpCslJJNoQ3~fqQypzdXbSX4K70ZMMBUJ9JtOQ__"
+              src="https://s3-alpha-sig.figma.com/img/62f9/82bc/377a67314fcee620f0c8791bf2c0b7f2?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=DfbUwQo1s9YMArTXLgR9LxPMiEAHWlOLc5KWg2Ktoqtvg8Q8LGJECW6lj~GSwNKHKRhDBjRfyTxcHeaBjKLIkomAY17MXuGlzH4nB1QO6YBlFTuNQDvEiqe1qtjBDY6HSkcmP2KkxiSYrGRq-LQoMIBt5T5i1IxyCQCgjeKGJHT~-MzNdB25H-LHwbxW4JcMRDzes4EGou0LeSN~fgz1oufcDXduzZg4dzbYDqyVH1ABCDdnDmucPgYrZCrXPun~ff7zfI3RtHtPG23VZXhMwXm~pZsJCgve1gqbMV3p5ZlIcWkS9c9P1JX0R~RMLt4FsVj0D66VEtQv3LFZoJ7~yg__"
               alt="Phật nhảy tường"
             />
             <div className="mx-4">
