@@ -1,6 +1,6 @@
 const BestSeller = () => {
   return (
-    <div className="border-y-4 border-red-600 my-10 container">
+    <div className="border-y-4 border-red-600 my-10 container p-4">
       <h1 className="font-pt-serif text-center text-2xl text-red-600 ">
         BEST SELLER
       </h1>
