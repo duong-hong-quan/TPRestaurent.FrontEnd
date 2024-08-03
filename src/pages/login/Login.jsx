@@ -29,7 +29,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="flex max-w-4xl bg-white rounded-lg shadow-lg w-full">
+      <div className="flex max-w-6xl bg-white rounded-lg shadow-lg w-full">
         {/* Image section */}
         <div className="w-1/2 p-6">
           <img

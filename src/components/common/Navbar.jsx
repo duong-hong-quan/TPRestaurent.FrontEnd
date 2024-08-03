@@ -1,52 +1,55 @@
+import { NavLink } from "react-router-dom";
+
 export const Navbar = () => {
   return (
-    <nav className="hidden  bg-mainColor text-white p-4 h-24 md:flex items-center">
-      <div className="container mx-auto  grid grid-cols-9 space-x-4">
-        <h1 className="text-2xl font-bold col-span-1">Thiên Phú</h1>
-        <ul className="col-span-4 flex items-center text-lg space-x-6 h-full ">
-          <li>
-            <a href="/" className="hover:text-button-hover">
-              Thực đơn
-            </a>
-          </li>
-          <li>
-            <a href="/" className="hover:text-button-hover">
-              Đặt bàn
-            </a>
-          </li>
-          <li>
-            <a href="/" className="hover:text-button-hover">
-              Giới thiệu
-            </a>
-          </li>
-          <li>
-            <a href="/" className="hover:text-button-hover">
-              Khuyến mãi
-            </a>
-          </li>
-          <li>
-            <a href="/" className="hover:text-button-hover">
-              Liên hệ
-            </a>
-          </li>
-        </ul>
-        <div className="col-span-2">
-          <ul className=" flex justify-end items-center text-lg space-x-6 h-full ">
-            <li>
-              <i className="fa-solid fa-magnifying-glass text-white "></i>
-            </li>
-            <li>
-              <i className="fa-solid fa-cart-shopping text-white"></i>
-            </li>
-            <li>
-              <i className="fa-regular fa-bell text-white"></i>
-            </li>
+    <nav className="hidden md:block  bg-red-800 text-white shadow-lg">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-24">
+          <h1 className="text-3xl font-extrabold tracking-tight">
+            <NavLink
+              to={`/`}
+              className="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300"
+            >
+              Thiên Phú
+            </NavLink>
+          </h1>
+
+          <ul className="flex space-x-8">
+            {["Thực đơn", "Đặt bàn", "Giới thiệu", "Khuyến mãi", "Liên hệ"].map(
+              (item) => (
+                <li key={item}>
+                  <a
+                    href="/"
+                    className="text-lg font-medium hover:text-yellow-300 transition duration-300 ease-in-out relative group"
+                  >
+                    {item}
+                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-yellow-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
+                  </a>
+                </li>
+              )
+            )}
           </ul>
-        </div>
-        <div className="col-span-2 flex justify-end">
-          <button className="bg-white bg-opacity-50 text-white px-4 py-2 rounded-md">
-            Đăng nhập
-          </button>
+
+          <div className="flex items-center space-x-6">
+            <div className="flex space-x-4">
+              {["fa-magnifying-glass", "fa-cart-shopping", "fa-bell"].map(
+                (icon) => (
+                  <button
+                    key={icon}
+                    className="hover:text-yellow-300 transition duration-300 ease-in-out"
+                  >
+                    <i className={`fa-solid ${icon} text-xl`}></i>
+                  </button>
+                )
+              )}
+            </div>
+            <NavLink
+              to={`login`}
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+            >
+              Đăng nhập
+            </NavLink>
+          </div>
         </div>
       </div>
     </nav>
