@@ -1,9 +1,9 @@
 import React from "react";
-import { StarFilled } from "@ant-design/icons";
+import { StarFilled, ShoppingCartOutlined } from "@ant-design/icons";
 
 export const DishCard = () => {
   return (
-    <div className=" mt-16">
+    <div className="mt-16">
       <div className="relative pt-20 pb-4 px-4 bg-white rounded-lg shadow-2xl my-4 mx-2 text-center">
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <img
@@ -20,7 +20,11 @@ export const DishCard = () => {
             <StarFilled className="text-yellow-400 mr-1" />
             <span className="text-gray-700">4.8 (1.2k)</span>
           </div>
-          <p className="text-red-600 font-bold text-xl">78.000đ</p>
+          <p className="text-red-600 font-bold text-xl mb-4">78.000đ</p>
+          <button className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors duration-300 flex items-center justify-center w-full">
+            <ShoppingCartOutlined className="mr-2" />
+            Thêm vào giỏ hàng
+          </button>
         </div>
       </div>
     </div>

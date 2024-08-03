@@ -3,6 +3,8 @@ import { HomePage } from "../pages/common/home-page/HomePage";
 import { CommonLayout } from "../layouts/common/CommonLayout";
 import LoginPage from "../pages/login/Login";
 import CartPage from "../pages/common/cart/CartPage";
+import MenuPage from "../pages/common/menu-page/MenuPage";
+import ProductDetail from "../pages/common/product-detail/ProductDetail";
 
 function Routers() {
   const routing = useRoutes([
@@ -21,6 +23,14 @@ function Routers() {
         {
           path: "cart",
           element: <CartPage />,
+        },
+        {
+          path: "menu",
+          element: <MenuPage />,
+        },
+        {
+          path: "product/:id",
+          element: <ProductDetail />,
         },
       ],
     },
