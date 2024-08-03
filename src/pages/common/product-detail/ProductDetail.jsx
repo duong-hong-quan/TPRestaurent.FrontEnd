@@ -12,6 +12,7 @@ import {
   MessageOutlined,
 } from "@ant-design/icons";
 import MenuDish from "../../../components/menu-dish/MenuDish";
+import TopVoucher from "../../../components/top-voucher/TopVoucher";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -53,9 +54,9 @@ const ProductDetail = () => {
   ];
   const images = [
     "https://s3-alpha-sig.figma.com/img/beb6/d683/c1a869a235b3addb03a569b4dc9d5b9e?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=O8VKNHYR4dOCPwcDFFKAM0qXmnqD9u3b~y1JQW94sjwfY3Ap~2J3zk~OMi6bmnJXzFjyhXPKwIV5yT~zz~G7INj8gC1DxgZLRWbRiIGcIX6u2abfU96LORsptOeZy0kFtH77yEZPaM9cL7RUP89LW8aqejbsR6RYthhHFc061WEodXjxb5z1f16mGCSJ17DAt7dtudvNnmhGFcyHwot4PqYp~-XKUYhmQuNpzZF1~LDzc0YJpmX3a0WVYocXsXpD25DSoSZjStIEIUq3jxt~tdFqqYaHibLZmeiBozNtVKExZ7o1kKL2Giw-~8-EKT94ySN3PRy8oVWJ~ANx7s-3mw__",
-    "https://example.com/image2.jpg",
-    "https://example.com/image3.jpg",
-    "https://example.com/image4.jpg",
+    "https://s3-alpha-sig.figma.com/img/beb6/d683/c1a869a235b3addb03a569b4dc9d5b9e?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=O8VKNHYR4dOCPwcDFFKAM0qXmnqD9u3b~y1JQW94sjwfY3Ap~2J3zk~OMi6bmnJXzFjyhXPKwIV5yT~zz~G7INj8gC1DxgZLRWbRiIGcIX6u2abfU96LORsptOeZy0kFtH77yEZPaM9cL7RUP89LW8aqejbsR6RYthhHFc061WEodXjxb5z1f16mGCSJ17DAt7dtudvNnmhGFcyHwot4PqYp~-XKUYhmQuNpzZF1~LDzc0YJpmX3a0WVYocXsXpD25DSoSZjStIEIUq3jxt~tdFqqYaHibLZmeiBozNtVKExZ7o1kKL2Giw-~8-EKT94ySN3PRy8oVWJ~ANx7s-3mw__",
+    "https://s3-alpha-sig.figma.com/img/beb6/d683/c1a869a235b3addb03a569b4dc9d5b9e?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=O8VKNHYR4dOCPwcDFFKAM0qXmnqD9u3b~y1JQW94sjwfY3Ap~2J3zk~OMi6bmnJXzFjyhXPKwIV5yT~zz~G7INj8gC1DxgZLRWbRiIGcIX6u2abfU96LORsptOeZy0kFtH77yEZPaM9cL7RUP89LW8aqejbsR6RYthhHFc061WEodXjxb5z1f16mGCSJ17DAt7dtudvNnmhGFcyHwot4PqYp~-XKUYhmQuNpzZF1~LDzc0YJpmX3a0WVYocXsXpD25DSoSZjStIEIUq3jxt~tdFqqYaHibLZmeiBozNtVKExZ7o1kKL2Giw-~8-EKT94ySN3PRy8oVWJ~ANx7s-3mw__",
+    "https://s3-alpha-sig.figma.com/img/beb6/d683/c1a869a235b3addb03a569b4dc9d5b9e?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=O8VKNHYR4dOCPwcDFFKAM0qXmnqD9u3b~y1JQW94sjwfY3Ap~2J3zk~OMi6bmnJXzFjyhXPKwIV5yT~zz~G7INj8gC1DxgZLRWbRiIGcIX6u2abfU96LORsptOeZy0kFtH77yEZPaM9cL7RUP89LW8aqejbsR6RYthhHFc061WEodXjxb5z1f16mGCSJ17DAt7dtudvNnmhGFcyHwot4PqYp~-XKUYhmQuNpzZF1~LDzc0YJpmX3a0WVYocXsXpD25DSoSZjStIEIUq3jxt~tdFqqYaHibLZmeiBozNtVKExZ7o1kKL2Giw-~8-EKT94ySN3PRy8oVWJ~ANx7s-3mw__",
   ];
   const handlePrevImage = () => {
     setCurrentImageIndex((prevIndex) =>
@@ -86,65 +87,135 @@ const ProductDetail = () => {
       </ul>
     </div>
   );
+  const renderRatingTab = () => {
+    const totalReviews = reviews.length;
+    const averageRating = (
+      reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+    ).toFixed(1);
+    const starCounts = [5, 4, 3, 2, 1].map(
+      (star) => reviews.filter((review) => review.rating === star).length
+    );
 
-  const renderRatingTab = () => (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Đánh giá từ khách hàng</h2>
-      <div className="space-y-4">
-        {reviews.map((review) => (
-          <div
-            key={review.id}
-            className="bg-white p-6 rounded-lg shadow-md border border-gray-200"
-          >
-            <div className="flex items-start mb-4">
-              <img
-                src={review.avatar}
-                alt={review.author}
-                className="w-12 h-12 rounded-full mr-4"
-              />
-              <div className="flex-grow">
-                <h3 className="text-xl font-semibold">{review.author}</h3>
-                <div className="flex items-center mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <StarFilled
-                      key={i}
-                      className={`text-lg ${
-                        i < review.rating ? "text-yellow-400" : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                  <span className="ml-2 text-sm text-gray-600">
-                    {new Date().toLocaleDateString()}
-                  </span>
+    const [selectedStarFilter, setSelectedStarFilter] = useState(null);
+
+    const filteredReviews = selectedStarFilter
+      ? reviews.filter((review) => review.rating === selectedStarFilter)
+      : reviews;
+
+    return (
+      <div className="mt-8">
+        <div className="flex items-start mb-8">
+          <div className="text-center mr-8">
+            <div className="text-5xl font-bold text-red-600">
+              {averageRating}
+            </div>
+            <div className="flex justify-center my-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <StarFilled
+                  key={star}
+                  className={`text-lg ${
+                    star <= Math.round(averageRating)
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="text-sm text-gray-500">{totalReviews} đánh giá</div>
+          </div>
+          <div className="flex-grow">
+            {[5, 4, 3, 2, 1].map((star) => (
+              <div key={star} className="flex items-center mb-1">
+                <span className="w-12 text-sm">{star} sao</span>
+                <div className="flex-grow mx-2 bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-yellow-400 h-2 rounded-full"
+                    style={{
+                      width: `${(starCounts[5 - star] / totalReviews) * 100}%`,
+                    }}
+                  ></div>
+                </div>
+                <span className="w-12 text-right text-sm">
+                  {starCounts[5 - star]}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="mb-4">
+          <span className="mr-2 font-semibold">Lọc đánh giá:</span>
+          {[null, 5, 4, 3, 2, 1].map((star) => (
+            <button
+              key={star}
+              onClick={() => setSelectedStarFilter(star)}
+              className={`mr-2 px-3 py-1 rounded ${
+                selectedStarFilter === star
+                  ? "bg-red-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {star === null ? "Tất cả" : `${star} sao`}
+            </button>
+          ))}
+        </div>
+        <div className="space-y-4">
+          {filteredReviews.map((review) => (
+            <div
+              key={review.id}
+              className="bg-white p-6 rounded-lg shadow-md border border-gray-200"
+            >
+              <div className="flex items-start mb-4">
+                <img
+                  src={review.avatar}
+                  alt={review.author}
+                  className="w-12 h-12 rounded-full mr-4"
+                />
+                <div className="flex-grow">
+                  <h3 className="text-xl font-semibold">{review.author}</h3>
+                  <div className="flex items-center mt-1">
+                    {[...Array(5)].map((_, i) => (
+                      <StarFilled
+                        key={i}
+                        className={`text-lg ${
+                          i < review.rating
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                    <span className="ml-2 text-sm text-gray-600">
+                      {new Date().toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
               </div>
+              <p className="text-gray-700 mb-4">{review.comment}</p>
+              <div className="flex items-center space-x-6 text-sm text-gray-500">
+                <button className="flex items-center hover:text-blue-600">
+                  <LikeOutlined className="mr-1" />
+                  <span>{review.likes}</span>
+                </button>
+                <button className="flex items-center hover:text-red-600">
+                  <DislikeOutlined className="mr-1" />
+                  <span>{review.dislikes}</span>
+                </button>
+                <button className="flex items-center hover:text-green-600">
+                  <MessageOutlined className="mr-1" />
+                  <span>{review.replies} phản hồi</span>
+                </button>
+              </div>
             </div>
-            <p className="text-gray-700 mb-4">{review.comment}</p>
-            <div className="flex items-center space-x-6 text-sm text-gray-500">
-              <button className="flex items-center hover:text-blue-600">
-                <LikeOutlined className="mr-1" />
-                <span>{review.likes}</span>
-              </button>
-              <button className="flex items-center hover:text-red-600">
-                <DislikeOutlined className="mr-1" />
-                <span>{review.dislikes}</span>
-              </button>
-              <button className="flex items-center hover:text-green-600">
-                <MessageOutlined className="mr-1" />
-                <span>{review.replies} phản hồi</span>
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <button className="bg-red-600 text-white py-2 px-6 rounded-full hover:bg-red-700 transition duration-300 flex items-center justify-center mx-auto">
+            <MessageOutlined className="mr-2" />
+            Viết đánh giá
+          </button>
+        </div>
       </div>
-      <div className="mt-8 text-center">
-        <button className="bg-red-600 text-white py-2 px-6 rounded-full hover:bg-red-700 transition duration-300 flex items-center justify-center mx-auto">
-          <MessageOutlined className="mr-2" />
-          Viết đánh giá
-        </button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="container p-10 mx-auto px-4 py-8 max-w-6xl">
@@ -282,9 +353,6 @@ const ProductDetail = () => {
         {activeTab === "description"
           ? renderDescriptionTab()
           : renderRatingTab()}
-      </div>
-      <div className="mt-10">
-        <MenuDish />
       </div>
     </div>
   );

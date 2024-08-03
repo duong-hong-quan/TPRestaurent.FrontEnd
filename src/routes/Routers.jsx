@@ -6,6 +6,9 @@ import CartPage from "../pages/common/cart/CartPage";
 import MenuPage from "../pages/common/menu-page/MenuPage";
 import ProductDetail from "../pages/common/product-detail/ProductDetail";
 import Reservation from "../components/reservation/Reservation";
+import ReservationPage from "../pages/common/reservation/ReservationPage";
+import UserLayout from "../layouts/common/UserLayout";
+import PersonalInformation from "../pages/common/personal-information/PersonalInformation";
 
 function Routers() {
   const routing = useRoutes([
@@ -35,7 +38,21 @@ function Routers() {
         },
         {
           path: "booking",
-          element: <Reservation />,
+          element: <ReservationPage />,
+        },
+      ],
+    },
+    {
+      path: "/user",
+      element: <UserLayout />,
+      children: [
+        {
+          index: true,
+          element: <PersonalInformation />,
+        },
+        {
+          path: "info",
+          element: <PersonalInformation />,
         },
       ],
     },
