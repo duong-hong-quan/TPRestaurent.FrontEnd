@@ -6,16 +6,20 @@ const sidebarItems = [
   {
     icon: "fa-calendar-alt",
     text: "Lịch sử đặt bàn",
-    href: "/user/reservation",
+    href: "/user/reservation-history",
   },
-  { icon: "fa-wallet", text: "Ví xu", href: "#" },
+  { icon: "fa-wallet", text: "Ví xu", href: "transaction-history" },
 ];
 
 const SidebarItem = ({ icon, text, href }) => (
   <li>
     <NavLink
       to={href}
-      className="flex items-center px-4 py-4 text-gray-700 hover:bg-red-700 rounded-md transition duration-300 hover:text-white"
+      className={({ isActive }) =>
+        `flex items-center px-4 py-4 text-gray-700 hover:bg-red-700 rounded-md transition duration-300 hover:text-white ${
+          isActive ? "bg-red-700 text-white" : ""
+        }`
+      }
     >
       <i className={`fas ${icon} w-6`}></i>
       <span>{text}</span>
@@ -25,7 +29,7 @@ const SidebarItem = ({ icon, text, href }) => (
 
 const UserSidebar = () => {
   return (
-    <nav className="p-4 rounded-lg shadow-md w-64 min-h-full">
+    <nav className="p-4 rounded-lg shadow-md w-full md:w-64">
       <ul className="space-y-2">
         {sidebarItems.map((item, index) => (
           <SidebarItem key={index} {...item} />

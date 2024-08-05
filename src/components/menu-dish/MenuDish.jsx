@@ -10,11 +10,11 @@ const menuCategories = [
   { icon: "fa-martini-glass", label: "Khác" },
 ];
 
-const MenuDish = () => {
+const MenuDish = ({ dishes }) => {
   return (
-    <div className="bg-[#A31927] p-4">
+    <div className="bg-[#A31927] py-6 px-4">
       <div className="container mx-auto">
-        <h1 className="text-white text-center text-2xl font-pt-serif mb-4">
+        <h1 className="text-white text-center text-2xl font-bold mb-4">
           KHÁM PHÁ THỰC ĐƠN
         </h1>
         <div className="flex justify-end mb-4">
@@ -36,8 +36,12 @@ const MenuDish = () => {
           ))}
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-          {[...Array(4)].map((_, index) => (
+          {/* {[...Array(4)].map((_, index) => (
             <DishCard key={index} />
+          ))} */}
+
+          {dishes.map((dish, index) => (
+            <DishCard key={index} dish={dish} />
           ))}
         </div>
         <div className="flex justify-center">
