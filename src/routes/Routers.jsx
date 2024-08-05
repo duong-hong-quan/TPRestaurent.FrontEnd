@@ -9,6 +9,10 @@ import Reservation from "../components/reservation/Reservation";
 import ReservationPage from "../pages/common/reservation/ReservationPage";
 import UserLayout from "../layouts/common/UserLayout";
 import PersonalInformation from "../pages/common/personal-information/PersonalInformation";
+import PersonalOrder from "../pages/common/personal-information/PersonalOrder";
+import ReservationList from "../components/reservation/reservation-list/ReservationList";
+import PersonalTransaction from "../pages/common/personal-information/PersonalTransaction";
+import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
 
 function Routers() {
   const routing = useRoutes([
@@ -53,6 +57,18 @@ function Routers() {
         {
           path: "info",
           element: <PersonalInformation />,
+        },
+        {
+          path: "order",
+          element: <PersonalOrder />,
+        },
+        {
+          path: "reservation-history",
+          element: <PersonalReservation />,
+        },
+        {
+          path: "transaction-history",
+          element: <PersonalTransaction />,
         },
       ],
     },
