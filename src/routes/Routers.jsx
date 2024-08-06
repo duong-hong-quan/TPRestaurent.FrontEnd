@@ -1,6 +1,5 @@
 import { Navigate, useRoutes } from "react-router-dom";
 import { HomePage } from "../pages/common/home-page/HomePage";
-import { CommonLayout } from "../layouts/common/CommonLayout";
 import LoginPage from "../pages/login/Login";
 import CartPage from "../pages/common/cart/CartPage";
 import MenuPage from "../pages/common/menu-page/MenuPage";
@@ -13,6 +12,8 @@ import PersonalOrder from "../pages/common/personal-information/PersonalOrder";
 import ReservationList from "../components/reservation/reservation-list/ReservationList";
 import PersonalTransaction from "../pages/common/personal-information/PersonalTransaction";
 import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
+import ManagerLayout from "../layouts/common/ManagerLayout";
+import CommonLayout from "../layouts/common/CommonLayout";
 
 function Routers() {
   const routing = useRoutes([
@@ -71,6 +72,10 @@ function Routers() {
           element: <PersonalTransaction />,
         },
       ],
+    },
+    {
+      path: "admin",
+      element: <ManagerLayout />,
     },
   ]);
   return routing;
