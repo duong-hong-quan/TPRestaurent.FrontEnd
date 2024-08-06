@@ -31,14 +31,10 @@ const HeaderManager = ({ userName = "Admin" }) => {
           variant="h4"
           className="mr-4 cursor-pointer py-1.5 lg:ml-2"
         >
-          Admin Dashboard
+          Welcome, {userName}
         </Typography>
 
         <div className="flex items-center gap-4">
-          <Typography variant="paragraph" className="mr-4">
-            Welcome, {userName}
-          </Typography>
-
           <Badge content="4" color="red">
             <IconButton variant="text" color="blue-gray">
               <BellIcon className="h-5 w-5" />

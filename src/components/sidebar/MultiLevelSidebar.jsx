@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   Typography,
   List,
@@ -24,19 +25,37 @@ const menuItems = [
   {
     title: "Tổng quan",
     icon: <FaChartBar className="h-5 w-5 text-white" />,
-    subItems: ["Bảng điều khiển", "Báo cáo"],
+    path: "/overview",
+    subItems: [
+      { title: "Bảng điều khiển", path: "/overview/dashboard" },
+      { title: "Báo cáo", path: "/overview/reports" },
+    ],
   },
   {
     title: "Quản lý giao dịch",
     icon: <FaShoppingBag className="h-5 w-5 text-white" />,
-    subItems: ["Đơn đặt hàng", "Yêu cầu đặt bàn"],
+    path: "/admin",
+    subItems: [
+      { title: "Đơn đặt hàng", path: "/admin/transaction-history" },
+      { title: "Yêu cầu đặt bàn", path: "/admin/reservation-history" },
+      { title: "Giao dịch", path: "/admin/order-history" },
+    ],
   },
-  { title: "Tin nhắn", icon: <FaEnvelope className="h-5 w-5 text-white" /> },
+  {
+    title: "Tin nhắn",
+    icon: <FaEnvelope className="h-5 w-5 text-white" />,
+    path: "/messages",
+  },
   {
     title: "Cấu hình hệ thống",
     icon: <FaCog className="h-5 w-5 text-white" />,
+    path: "/settings",
   },
-  { title: "Đăng xuất", icon: <FaSignOutAlt className="h-5 w-5 text-white" /> },
+  {
+    title: "Đăng xuất",
+    icon: <FaSignOutAlt className="h-5 w-5 text-white" />,
+    path: "/logout",
+  },
 ];
 
 const AccordionItem = ({ item, open, handleOpen, index }) => (
@@ -55,21 +74,33 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
     <ListItem className="p-0" selected={open === index}>
       <AccordionHeader
         onClick={() => handleOpen(index)}
-        className="border-b-0 px-4 py-4  cursor-pointer"
+        className="border-b-0 px-4 py-4 cursor-pointer"
       >
-        <ListItemPrefix>{item.icon}</ListItemPrefix>
-        <Typography className="mr-auto text-white">{item.title}</Typography>
+        <NavLink
+          to={item.path}
+          className="flex items-center w-full"
+          activeClassName="font-bold"
+        >
+          <ListItemPrefix>{item.icon}</ListItemPrefix>
+          <Typography className="mr-auto text-white">{item.title}</Typography>
+        </NavLink>
       </AccordionHeader>
     </ListItem>
     {item.subItems && (
       <AccordionBody className="py-1">
         <List className="p-0">
           {item.subItems.map((subItem, subIndex) => (
-            <ListItem key={subIndex} className="text-white ">
-              <ListItemPrefix>
-                <FaChevronRight className="h-3 w-3" />
-              </ListItemPrefix>
-              <Typography className="text-white">{subItem}</Typography>
+            <ListItem key={subIndex}>
+              <NavLink
+                to={subItem.path}
+                className="flex items-center w-full text-white"
+                activeClassName="font-bold"
+              >
+                <ListItemPrefix>
+                  <FaChevronRight className="h-3 w-3" />
+                </ListItemPrefix>
+                <Typography className="text-white">{subItem.title}</Typography>
+              </NavLink>
             </ListItem>
           ))}
         </List>
@@ -86,7 +117,7 @@ export function MultiLevelSidebar() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#970C1A] text-white transition-transform duration-300 ease-in-out ${

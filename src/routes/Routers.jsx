@@ -14,6 +14,9 @@ import PersonalTransaction from "../pages/common/personal-information/PersonalTr
 import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
 import ManagerLayout from "../layouts/common/ManagerLayout";
 import CommonLayout from "../layouts/common/CommonLayout";
+import { TransactionPage } from "../pages/admin/TransactionPage";
+import { AdminOrderHistoryPage } from "../pages/admin/AdminOrderHistoryPage";
+import { AdminReservationPage } from "../pages/admin/AdminReservationPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -76,6 +79,24 @@ function Routers() {
     {
       path: "admin",
       element: <ManagerLayout />,
+      children: [
+        {
+          index: true,
+          element: <TransactionPage />,
+        },
+        {
+          path: "order-history",
+          element: <AdminOrderHistoryPage />,
+        },
+        {
+          path: "transaction-history",
+          element: <TransactionPage />,
+        },
+        {
+          path: "reservation-history",
+          element: <AdminReservationPage />,
+        },
+      ],
     },
   ]);
   return routing;
