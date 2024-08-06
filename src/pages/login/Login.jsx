@@ -40,12 +40,12 @@ const LoginPage = () => {
         </div>
 
         {/* Form section */}
-        <div className="w-1/2 p-6">
+        <div className="w-1/2 p-6 flex flex-col justify-center">
           <h1 className="text-2xl font-bold text-center text-red-700 mb-4">
             Đăng nhập
           </h1>
           <form className="flex flex-col gap-4" onSubmit={handleLogin}>
-            <label htmlFor="phone" className="text-gray-700">
+            <label htmlFor="phone" className="text-red-700">
               Số điện thoại
             </label>
             <Input
