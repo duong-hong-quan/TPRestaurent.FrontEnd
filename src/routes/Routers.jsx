@@ -20,6 +20,7 @@ import { AdminReservationPage } from "../pages/admin/AdminReservationPage";
 import ChatComponent from "../pages/common/chat/ChatComponent";
 import MessengerApp from "../pages/common/chat/ChatComponent";
 import SettingsPage from "../pages/admin/SettingsPage";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -106,6 +107,10 @@ function Routers() {
         {
           path: "settings",
           element: <SettingsPage />,
+        },
+        {
+          path: "overviews",
+          element: <AdminDashboardPage />,
         },
       ],
     },
