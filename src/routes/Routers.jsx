@@ -21,9 +21,14 @@ import ChatComponent from "../pages/common/chat/ChatComponent";
 import MessengerApp from "../pages/common/chat/ChatComponent";
 import SettingsPage from "../pages/admin/SettingsPage";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
+import ErrorPage from "../pages/common/error/ErrorPage";
 
 function Routers() {
   const routing = useRoutes([
+    {
+      path: "*",
+      element: <ErrorPage />,
+    },
     {
       path: "/",
       element: <CommonLayout />,

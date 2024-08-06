@@ -24,33 +24,32 @@ const mockData = {
   stats: [
     {
       icon: <BanknotesIcon className="w-6 h-6 text-white" />,
-      title: "Today's Revenue",
+      title: "Lợi nhuận hôm nay",
       value: "$15,350",
-      footer: "10% increase from yesterday",
+      footer: "10% tăng so với hôm qua  ",
     },
     {
       icon: <UserIcon className="w-6 h-6 text-white" />,
-      title: "Total Customers",
+      title: "Tổng số khách hàng",
       value: "3,462",
-      footer: "5% increase this week",
+      footer: "5% tăng trong tuần này",
     },
     {
       icon: <TruckIcon className="w-6 h-6 text-white" />,
-      title: "Active Orders",
+      title: "Đơn hàng hôm nay",
       value: "23",
     },
     {
       icon: <ChartBarIcon className="w-6 h-6 text-white" />,
-      title: "Average Order Value",
+      title: "Giá trị đơn hàng trung bình",
       value: "$42.50",
     },
   ],
   orders: [
-    { id: "1001", status: "Completed", total: 125.99 },
-    { id: "1002", status: "In Progress", total: 89.5 },
-    { id: "1003", status: "Pending", total: 54.25 },
-    { id: "1004", status: "Completed", total: 212.75 },
-    { id: "1005", status: "Cancelled", total: 0 },
+    { id: "1001", status: "Hoàn thành", total: 125.99 },
+    { id: "1002", status: "Đang xử lý", total: 89.5 },
+    { id: "1003", status: "Đang xác nhận", total: 54.25 },
+    { id: "1005", status: "Huỷ", total: 0 },
   ],
   popularItems: [
     { name: "Margherita Pizza", sales: 145, price: 12.99 },
@@ -100,16 +99,20 @@ const AdminDashboardPage = ({
       </div>
       <div className="mb-6 grid grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2 ">
         <Card>
-          <CardHeader variant="gradient" color="red" className="mb-8 p-6">
+          <CardHeader
+            variant="gradient"
+            color="red"
+            className="mb-8 p-6 text-center"
+          >
             <Typography variant="h6" color="white">
-              Recent Orders
+              Đơn hàng gần đây
             </Typography>
           </CardHeader>
           <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
             <table className="w-full min-w-[640px] table-auto">
               <thead>
                 <tr>
-                  {["order", "status", "total"].map((el) => (
+                  {["Mã đơn", "trạng thái", "Tổng tiền"].map((el) => (
                     <th
                       key={el}
                       className="border-b border-red-gray-50 py-3 px-5 text-left"
@@ -149,16 +152,20 @@ const AdminDashboardPage = ({
           </CardBody>
         </Card>
         <Card>
-          <CardHeader variant="gradient" color="red" className="mb-8 p-6">
+          <CardHeader
+            variant="gradient"
+            color="red"
+            className="mb-8 p-6 text-center"
+          >
             <Typography variant="h6" color="white">
-              Popular Items
+              Món ăn phổ biến nhất
             </Typography>
           </CardHeader>
           <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
             <table className="w-full min-w-[640px] table-auto">
               <thead>
                 <tr>
-                  {["item", "sales", "price"].map((el) => (
+                  {["Món", "Số lượng", "Giá"].map((el) => (
                     <th
                       key={el}
                       className="border-b border-red-gray-50 py-3 px-5 text-left"
