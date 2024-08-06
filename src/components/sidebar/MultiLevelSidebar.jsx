@@ -44,12 +44,12 @@ const menuItems = [
   {
     title: "Tin nhắn",
     icon: <FaEnvelope className="h-5 w-5 text-white" />,
-    path: "/messages",
+    path: "/admin/messages",
   },
   {
     title: "Cấu hình hệ thống",
     icon: <FaCog className="h-5 w-5 text-white" />,
-    path: "/settings",
+    path: "/admin/settings",
   },
   {
     title: "Đăng xuất",

@@ -17,6 +17,9 @@ import CommonLayout from "../layouts/common/CommonLayout";
 import { TransactionPage } from "../pages/admin/TransactionPage";
 import { AdminOrderHistoryPage } from "../pages/admin/AdminOrderHistoryPage";
 import { AdminReservationPage } from "../pages/admin/AdminReservationPage";
+import ChatComponent from "../pages/common/chat/ChatComponent";
+import MessengerApp from "../pages/common/chat/ChatComponent";
+import SettingsPage from "../pages/admin/SettingsPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -95,6 +98,14 @@ function Routers() {
         {
           path: "reservation-history",
           element: <AdminReservationPage />,
+        },
+        {
+          path: "messages",
+          element: <MessengerApp />,
+        },
+        {
+          path: "settings",
+          element: <SettingsPage />,
         },
       ],
     },

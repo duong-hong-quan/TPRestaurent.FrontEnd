@@ -29,9 +29,14 @@ const HeaderManager = ({ userName = "Admin" }) => {
           as="a"
           href="#"
           variant="h4"
-          className="mr-4 cursor-pointer py-1.5 lg:ml-2"
+          className="flex justify-center items-center mr-4 cursor-pointer py-1.5 lg:ml-2"
         >
           Welcome, {userName}
+          <img
+            src="https://s3-alpha-sig.figma.com/img/bbcf/8c57/d87742f97f75030cb94ee88ccf5f5df3?Expires=1724025600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=qFyMLVesiw9spwlTwLd-ojuipai4dz~MPuN~qJ7pqeq-DgfTUs2f7B1Kx8oNNp15KtcGtVy~XuHz~1B8bLRanP3pm0w8iP5LoiwzYBAi6SKviQXK2x~DqsywXPkSXB-YbKF4TcHK63CPVuSKy~Npr2ZQeg82kto~4y8FgeVJyV8hpvcfa5G6XGBAYwBYGZzlVGM26YqQaBjupx9MO-RcAE~2QTymcNVGazu298UsZHRzdoeJ5TBR~Ej2aILcdke6ShKgVcMoXoEFP1YUr9p00teOceSB6v1RclJ5QS9rDIqvwzTwnYnY8HB4NsV749l6qfqIHN7YCyT9JiVTTOvTWQ__"
+            alt=""
+            className="w-10 h-10 mx-4"
+          />
         </Typography>
 
         <div className="flex items-center gap-4">
