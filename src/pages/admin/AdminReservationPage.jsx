@@ -15,7 +15,10 @@ import {
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAllReservations } from "../../api/reservationApi";
+import LoadingOverlay from "../../components/loading/LoadingOverlay";
+import { set } from "react-hook-form";
 
 const TABS = [
   {
@@ -44,65 +47,21 @@ const TABLE_HEAD = [
   "Mã đặt bàn",
   "Khách hàng",
   "Số người",
-  "Ngày",
-  "Giờ",
+  "Ngày - Giờ",
+  "Tiền cọc",
   "Trạng thái",
-  "",
-];
-
-const TABLE_ROWS = [
-  {
-    id: "DB001",
-    customer: "Nguyễn Văn A",
-    people: 4,
-    date: "05/05/2024",
-    time: "19:00",
-    status: "confirmed",
-  },
-  {
-    id: "DB002",
-    customer: "Trần Thị B",
-    people: 2,
-    date: "06/05/2024",
-    time: "20:30",
-    status: "pending",
-  },
-  {
-    id: "DB003",
-    customer: "Lê Văn C",
-    people: 6,
-    date: "07/05/2024",
-    time: "18:30",
-    status: "completed",
-  },
-  {
-    id: "DB004",
-    customer: "Phạm Thị D",
-    people: 3,
-    date: "08/05/2024",
-    time: "19:30",
-    status: "cancelled",
-  },
-  {
-    id: "DB005",
-    customer: "Hoàng Văn E",
-    people: 5,
-    date: "09/05/2024",
-    time: "20:00",
-    status: "confirmed",
-  },
+  "Hành động",
 ];
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "confirmed":
+    case 0:
       return "green";
-    case "pending":
+    case 1:
       return "amber";
-    case "completed":
+    case 2:
       return "blue";
-    case "cancelled":
-      return "red";
+
     default:
       return "blue-gray";
   }
@@ -110,14 +69,13 @@ const getStatusColor = (status) => {
 
 const getStatusText = (status) => {
   switch (status) {
-    case "confirmed":
+    case 0:
+      return "Đang chờ";
+    case 1:
       return "Đã xác nhận";
-    case "pending":
-      return "Chờ xác nhận";
-    case "completed":
-      return "Đã hoàn thành";
-    case "cancelled":
-      return "Đã hủy";
+    case 2:
+      return "Đã huỷ";
+
     default:
       return "Không xác định";
   }
@@ -125,9 +83,30 @@ const getStatusText = (status) => {
 
 export function AdminReservationPage() {
   const [activeTab, setActiveTab] = useState("confirmed");
-
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const fetchReservations = async (time, pageNumber, pageSize) => {
+    try {
+      setLoading(true);
+      const response = await getAllReservations(time, pageNumber, pageSize);
+      if (response?.isSuccess) {
+        setReservations(response?.result?.items);
+        setTotalPages(response?.result?.totalPages);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchReservations(1, page, 10);
+  }, [page]);
   return (
     <Card className="h-full w-full">
+      <LoadingOverlay isLoading={loading} />
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
@@ -194,22 +173,35 @@ export function AdminReservationPage() {
             </tr>
           </thead>
           <tbody>
-            {TABLE_ROWS.map(
-              ({ id, customer, people, date, time, status }, index) => {
-                const isLast = index === TABLE_ROWS.length - 1;
+            {reservations?.map(
+              (
+                {
+                  reservationId,
+                  reservationDate,
+                  numberOfPeople,
+                  endTime,
+                  customerAccountId,
+                  customerAccount,
+                  deposit,
+                  statusId,
+                  reservationStatus,
+                },
+                index
+              ) => {
+                const isLast = index === reservations.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
 
                 return (
-                  <tr key={id}>
+                  <tr key={reservationId}>
                     <td className={classes}>
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {id}
+                        {reservationId}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -218,7 +210,8 @@ export function AdminReservationPage() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {customer}
+                        {`${customerAccount?.firstName} - ${customerAccount?.phoneNumber}`}
+                        {}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -227,7 +220,7 @@ export function AdminReservationPage() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {people}
+                        {numberOfPeople}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -236,7 +229,7 @@ export function AdminReservationPage() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {date}
+                        {new Date(endTime).toLocaleString()}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -245,16 +238,17 @@ export function AdminReservationPage() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {time}
+                        {deposit}
                       </Typography>
                     </td>
+
                     <td className={classes}>
                       <div className="w-max">
                         <Chip
                           variant="ghost"
                           size="sm"
-                          value={getStatusText(status)}
-                          color={getStatusColor(status)}
+                          value={getStatusText(statusId)}
+                          color={getStatusColor(statusId)}
                         />
                       </div>
                     </td>
@@ -277,10 +271,18 @@ export function AdminReservationPage() {
           Trang 1 / 10
         </Typography>
         <div className="flex gap-2">
-          <Button variant="outlined" size="sm">
+          <Button
+            variant="outlined"
+            size="sm"
+            onClick={() => setPage(page - 1)}
+          >
             Trước
           </Button>
-          <Button variant="outlined" size="sm">
+          <Button
+            variant="outlined"
+            size="sm"
+            onClick={() => setPage(page + 1)}
+          >
             Tiếp
           </Button>
         </div>
