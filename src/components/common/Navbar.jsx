@@ -14,7 +14,7 @@ export const Navbar = () => {
   ];
 
   const icons = [
-    { icon: "fa-magnifying-glass", path: "/search", name: "Tìm kiếm" },
+    { icon: "fa-magnifying-glass", path: "/menu", name: "Tìm kiếm" },
     { icon: "fa-cart-shopping", path: "/cart", name: "Giỏ hàng" },
     { icon: "fa-bell", path: "/notifications", name: "Thông báo" },
   ];
