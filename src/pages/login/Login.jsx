@@ -10,9 +10,8 @@ const LoginPage = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Simulate login success
     setIsOtpModalVisible(true);
-    setCountdown(60); // Reset countdown
+    setCountdown(60);
   };
 
   useEffect(() => {
