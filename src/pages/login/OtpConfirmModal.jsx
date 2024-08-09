@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, message } from "antd";
+import { useNavigate } from "react-router-dom";
 
-const OtpConfirmModal = ({ visible, onClose, countdown }) => {
+const OtpConfirmModal = ({ visible, onClose, countdown, resOtp }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-
+  const navigate = useNavigate();
   const handleChange = (value, index) => {
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -17,13 +18,14 @@ const OtpConfirmModal = ({ visible, onClose, countdown }) => {
 
   const handleSubmit = () => {
     const otpString = otp.join("");
-    if (otpString.length === 6) {
+    if (otpString === resOtp.code) {
       // Here you would typically send the OTP to your backend for verification
       console.log("Submitting OTP:", otpString);
-      message.success("OTP submitted successfully");
+      message.success("Đăng nhập thành công");
+      navigate("/");
       onClose();
     } else {
-      message.error("Please enter a valid 6-digit OTP");
+      message.error("Vui lòng nhập đuúng mã OTP");
     }
   };
 

@@ -22,6 +22,7 @@ import MessengerApp from "../pages/common/chat/ChatComponent";
 import SettingsPage from "../pages/admin/SettingsPage";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import ErrorPage from "../pages/common/error/ErrorPage";
+import SearchResults from "../components/search/SearchResult";
 
 function Routers() {
   const routing = useRoutes([
@@ -46,7 +47,7 @@ function Routers() {
           element: <CartPage />,
         },
         {
-          path: "menu",
+          path: "combo",
           element: <MenuPage />,
         },
         {
@@ -56,6 +57,10 @@ function Routers() {
         {
           path: "booking",
           element: <ReservationPage />,
+        },
+        {
+          path: "search",
+          element: <SearchResults />,
         },
       ],
     },
