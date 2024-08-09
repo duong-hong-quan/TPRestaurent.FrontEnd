@@ -8,6 +8,7 @@ import SliderHome from "../../../components/slider-home/SliderHome";
 import TopFeedback from "../../../components/top-feedback/TopFeedback";
 import TopVoucher from "../../../components/top-voucher/TopVoucher";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import SearchPopover from "../../../components/search/SearchPopover";
 
 export const HomePage = () => {
   const [dishes, setDishes] = useState([]);
@@ -31,15 +32,20 @@ export const HomePage = () => {
   }, []);
   return (
     <div className="container mx-auto">
-      <SliderHome />
-      <TopVoucher />
-      <IntroHome />
-      <BestSeller />
-      <MenuDish dishes={dishes} />
-      <TopFeedback />
-      <Reservation />
-
       <LoadingOverlay isLoading={isLoading} />
+
+      {dishes.length > 0 && (
+        <>
+          <SliderHome />
+          <TopVoucher />
+          <IntroHome />
+          <BestSeller />
+          <MenuDish dishes={dishes} />
+          <TopFeedback />
+
+          <Reservation />
+        </>
+      )}
     </div>
   );
 };

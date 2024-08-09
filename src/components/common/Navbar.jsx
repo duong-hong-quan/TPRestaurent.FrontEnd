@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
+import SearchPopover from "../search/SearchPopover";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Thực đơn", path: "/menu" },
+    { name: "Combo", path: "/combo" },
     { name: "Đặt bàn", path: "/booking" },
     { name: "Giới thiệu", path: "/about" },
     { name: "Khuyến mãi", path: "/promotions" },
@@ -14,7 +15,6 @@ export const Navbar = () => {
   ];
 
   const icons = [
-    { icon: "fa-magnifying-glass", path: "/menu", name: "Tìm kiếm" },
     { icon: "fa-cart-shopping", path: "/cart", name: "Giỏ hàng" },
     { icon: "fa-bell", path: "/notifications", name: "Thông báo" },
   ];
@@ -22,7 +22,7 @@ export const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <nav className="bg-red-800 text-white shadow-lg">
+    <nav className="bg-[#A31927] text-white shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
@@ -72,6 +72,10 @@ export const Navbar = () => {
                 <i className={`fa-solid ${item.icon} text-xl`}></i>
               </NavLink>
             ))}
+            <div className="relative z-50">
+              <SearchPopover />
+            </div>
+
             <NavLink
               to="/login"
               className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold px-4 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
