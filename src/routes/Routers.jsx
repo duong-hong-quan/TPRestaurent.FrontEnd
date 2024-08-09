@@ -23,6 +23,8 @@ import SettingsPage from "../pages/admin/SettingsPage";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import ErrorPage from "../pages/common/error/ErrorPage";
 import SearchResults from "../components/search/SearchResult";
+import AboutUs from "../pages/common/about-us/AboutUs";
+import { ComboDetail } from "../pages/common/menu-page/ComboDetail";
 
 function Routers() {
   const routing = useRoutes([
@@ -61,6 +63,14 @@ function Routers() {
         {
           path: "search",
           element: <SearchResults />,
+        },
+        {
+          path: "about",
+          element: <AboutUs />,
+        },
+        {
+          path: "combo/:id",
+          element: <ComboDetail />,
         },
       ],
     },

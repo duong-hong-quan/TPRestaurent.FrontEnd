@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
+import { login, loginWithOtp } from "../../api/acccountApi";
 
-const OtpConfirmModal = ({ visible, onClose, countdown, resOtp }) => {
+const OtpConfirmModal = ({
+  visible,
+  onClose,
+  countdown,
+  resOtp,
+  phoneNumber,
+}) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const navigate = useNavigate();
   const handleChange = (value, index) => {
@@ -16,14 +23,25 @@ const OtpConfirmModal = ({ visible, onClose, countdown, resOtp }) => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const otpString = otp.join("");
     if (otpString === resOtp.code) {
       // Here you would typically send the OTP to your backend for verification
       console.log("Submitting OTP:", otpString);
-      message.success("Đăng nhập thành công");
-      navigate("/");
-      onClose();
+
+      const resposne = await loginWithOtp({
+        phoneNumber: phoneNumber,
+        otp: otpString,
+      });
+      if (resposne?.isSuccess) {
+        localStorage.setItem("token", resposne?.result?.token);
+        localStorage.setItem("refreshToken", resposne?.result?.refreshToken);
+        message.success("Đăng nhập thành công");
+        navigate("/");
+        onClose();
+      } else {
+        message.error("Đăng nhập thất bại");
+      }
     } else {
       message.error("Vui lòng nhập đuúng mã OTP");
     }

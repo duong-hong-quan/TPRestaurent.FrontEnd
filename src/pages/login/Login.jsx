@@ -1,5 +1,5 @@
 import { PhoneOutlined } from "@ant-design/icons";
-import { Button, Input } from "antd";
+import { Button, Input, Tooltip } from "antd";
 import { useState, useEffect } from "react";
 import OtpConfirmModal from "./OtpConfirmModal";
 import { login } from "../../api/acccountApi";
@@ -97,6 +97,7 @@ const LoginPage = () => {
         countdown={countdown}
         onClose={() => setIsOtpModalVisible(false)}
         resOtp={resOtp}
+        phoneNumber={`0${phone.replace(/^\+84/, "")}`}
       />
     </div>
   );

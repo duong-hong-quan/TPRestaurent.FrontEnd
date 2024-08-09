@@ -8,6 +8,7 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { formatDate, formatPrice } from "../../util/Utility";
+import { NavLink } from "react-router-dom";
 
 const ComboCard = ({ combo }) => {
   return (
@@ -41,16 +42,14 @@ const ComboCard = ({ combo }) => {
           {formatDate(combo.endDate)}
         </Typography>
       </CardBody>
-      <CardFooter className="pt-0 mt-auto  ">
+      <CardFooter className="pt-0 mt-auto">
         <div className="flex justify-center ">
-          <Button
-            color="lightBlue"
-            size="xl"
-            ripple="light"
-            className="bg-red-700 text-white "
+          <NavLink
+            className="bg-red-700 text-white py-2 px-4 rounded-md "
+            to={`/combo/${combo.comboId}`}
           >
             Đặt ngay
-          </Button>
+          </NavLink>
         </div>
       </CardFooter>
     </Card>

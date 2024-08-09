@@ -5,6 +5,7 @@ import { Pagination } from "../../../components/pagination/Pagination";
 import { getAllCombo } from "../../../api/comboApi";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 const MenuPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,7 +29,9 @@ const MenuPage = () => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
     }
   };
 
@@ -79,8 +82,17 @@ const MenuPage = () => {
       </div>
 
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {combos.map((combo) => (
-          <ComboCard key={combo.comboId} combo={combo} />
+        {combos?.map((combo) => (
+          <motion.div
+            key={combo.comboId}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <ComboCard combo={combo} />
+          </motion.div>
         ))}
       </div>
       <Pagination

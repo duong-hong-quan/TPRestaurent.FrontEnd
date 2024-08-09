@@ -11,7 +11,7 @@ import {
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { getDishById } from "../../../api/dishApi";
-import { formatDate, formatPrice } from "../../../util/Utility";
+import { formatDate, formatPrice, isEmptyObject } from "../../../util/Utility";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 
 // Custom hooks
@@ -230,13 +230,13 @@ const ProductDetail = () => {
                 >
                   <div className="flex items-start mb-4">
                     <img
-                      src={review?.avatar}
-                      alt={review?.author}
+                      src={review?.rating?.createByAccount?.avatar}
+                      alt={review?.rating?.createByAccount?.avatar}
                       className="w-12 h-12 rounded-full mr-4"
                     />
                     <div className="flex-grow">
                       <h3 className="text-xl font-semibold">
-                        {review?.author}
+                        {review?.rating?.createByAccount?.firstName}
                       </h3>
                       <div className="flex items-center mt-1">
                         {[...Array(5)].map((_, i) => (
@@ -255,7 +255,24 @@ const ProductDetail = () => {
                       </div>
                     </div>
                   </div>
-                  <p className="text-gray-700 mb-4">{review?.rating?.title}</p>
+
+                  <p className="text-gray-700 mb-4">
+                    {" "}
+                    <strong>Đánh giá: </strong>
+                    {review?.rating?.title}
+                  </p>
+                  {review?.ratingImgs?.length > 0 && (
+                    <div className="flex items-center space-x-4">
+                      {review.ratingImgs.map((img) => (
+                        <img
+                          key={img.ratingImgId}
+                          src={img.path}
+                          alt={img.path}
+                          className="w-24 h-24 object-cover rounded-lg"
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -274,7 +291,7 @@ const ProductDetail = () => {
   return (
     <>
       <LoadingOverlay isLoading={isLoading} />
-      {dish && (
+      {!isEmptyObject(dish) && (
         <div className=" container p-10 mx-auto px-4 py-8 max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
             <ImageGallery
@@ -312,7 +329,7 @@ const ProductDetail = () => {
                   {formatPrice(price)}
                 </p>
               </div>
-              <div className="flex space-x-6">
+              <div className="flex md:flex-row flex-col space-y-2 md:space-x-6">
                 {dishSizeDetails?.map((size) => (
                   <button
                     key={size.dishSizeDetailId}

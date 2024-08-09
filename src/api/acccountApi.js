@@ -10,3 +10,11 @@ export const login = async (phoneNumber) => {
     throw new Error(error);
   }
 };
+export const loginWithOtp = async (data) => {
+  try {
+    const response = await api.post(`/api/account/login`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
