@@ -10,3 +10,12 @@ export const getAllCombo = async (keyword, pageNumber, pageSize) => {
     throw new Error(error);
   }
 };
+
+export const getComboById = async (id) => {
+  try {
+    const response = await api.get(`/combo/get-combo-by-id/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};

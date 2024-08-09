@@ -8,14 +8,14 @@ import SliderHome from "../../../components/slider-home/SliderHome";
 import TopFeedback from "../../../components/top-feedback/TopFeedback";
 import TopVoucher from "../../../components/top-voucher/TopVoucher";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
-import SearchPopover from "../../../components/search/SearchPopover";
 
 export const HomePage = () => {
   const [dishes, setDishes] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const fetchData = async () => {
     try {
       setIsLoading(true);
+
       const response = await getAllDishes("", 1, 10);
       if (response.isSuccess) {
         setDishes(response?.result?.items);
@@ -24,26 +24,30 @@ export const HomePage = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     }
   };
   useEffect(() => {
     fetchData();
   }, []);
   return (
-    <div className="container mx-auto">
+    <div className="">
       <LoadingOverlay isLoading={isLoading} />
 
-      {dishes.length > 0 && (
+      {!isLoading && (
         <>
           <SliderHome />
-          <TopVoucher />
-          <IntroHome />
-          <BestSeller />
-          <MenuDish dishes={dishes} />
-          <TopFeedback />
+          <div className="container mx-auto  ">
+            <TopVoucher />
+            <IntroHome />
+            <BestSeller />
+            <MenuDish dishes={dishes} />
+            <TopFeedback />
 
-          <Reservation />
+            <Reservation />
+          </div>
         </>
       )}
     </div>
