@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Modal, Row, Col, Form, Input, message, Tabs } from "antd";
+import { Modal, Tabs, message, Button, Badge } from "antd";
 import { getAllDishes } from "../../api/dishApi";
 import { getAllCombo } from "../../api/comboApi";
 import DishCard from "../menu-dish/dish-card/DishCard";
@@ -11,21 +11,30 @@ import {
   CardBody,
   CardFooter,
   Typography,
-  Button,
 } from "@material-tailwind/react";
 import ReservationInformation from "./ReservationInformation";
+import { formatPrice } from "../../util/Utility";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from "../../redux/features/cartReservationSlice";
+import { ReservationCart } from "./ReservationCart";
+
 export function ModalReservation({ visible, onCancel, information }) {
   const [dishes, setDishes] = useState([]);
   const [combos, setCombos] = useState([]);
   const [activeTab, setActiveTab] = useState("0");
-  const [selectedSize, setSelectedSize] = useState("M");
-  const sizes = [
-    { label: "S", price: 130000 },
-    { label: "M", price: 150000 },
-    { label: "L", price: 170000 },
-  ];
-  console.log(information);
-  const currentPrice = sizes.find((size) => size.label === selectedSize).price;
+  const [selectedSizes, setSelectedSizes] = useState({});
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cartReservation);
+
+  const handleAddToCart = (dish, size, price) => {
+    dispatch(addToCart({ dish, size, price }));
+  };
+
   const fetchData = useCallback(async () => {
     try {
       const [dishesData, combosData] = await Promise.all([
@@ -54,16 +63,49 @@ export function ModalReservation({ visible, onCancel, information }) {
     setActiveTab(key);
   };
 
+  const handleSizeClick = (dishId, size) => {
+    setSelectedSizes((prevSizes) => ({
+      ...prevSizes,
+      [dishId]: size.dishSize.name,
+    }));
+  };
+  const getCurrentPrice = (dishId) => {
+    const dish = dishes.find((dish) => dish.dish.dishId === dishId);
+    const selectedSize = selectedSizes[dishId];
+    if (dish && selectedSize) {
+      const sizeDetail = dish.dishSizeDetails.find(
+        (size) => size.dishSize.name === selectedSize
+      );
+      return sizeDetail ? sizeDetail.price : 0;
+    }
+    return 0;
+  };
+  const [rightSideTab, setRightSideTab] = useState("1");
+
+  const handleRightSideTabChange = (key) => {
+    setRightSideTab(key);
+  };
+
   return (
-    <Modal visible={visible} onCancel={onCancel} width={1200} footer={null}>
-      <div className="grid grid-cols-1 md:grid-cols-4">
-        <div className="col-span-3">
+    <Modal
+      open={visible}
+      onCancel={onCancel}
+      width="90vw"
+      style={{ top: 20 }}
+      bodyStyle={{
+        height: "calc(100vh - 110px)",
+        overflow: "hidden",
+      }}
+      footer={null}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-4 overflow-hidden">
+        <div className="col-span-3 p-4 overflow-y-scroll">
           <Tabs activeKey={activeTab} onChange={handleTabChange}>
-            <TabPane tab="Món ăn" key="0" className="h-[600px] overflow-y-auto">
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+            <TabPane tab="Món ăn" key="0" className="h-screen ">
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2">
                 {dishes.map((dish) => (
                   <Card
-                    key={dish.dishId}
+                    key={dish?.dish?.dishId}
                     className="mt-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
                   >
                     <CardHeader
@@ -71,12 +113,12 @@ export function ModalReservation({ visible, onCancel, information }) {
                       className="relative h-56 overflow-hidden"
                     >
                       <img
-                        src={dish.image}
-                        alt={dish.name}
+                        src={dish?.dish?.image}
+                        alt={dish?.dish?.name}
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                       />
                       <div className="absolute top-2 right-2 bg-red-800 text-white px-2 py-1 rounded-full text-xs">
-                        {dish.dishItemType?.name}
+                        {dish.dish?.dishItemType?.name}
                       </div>
                     </CardHeader>
                     <CardBody className="p-4">
@@ -84,45 +126,61 @@ export function ModalReservation({ visible, onCancel, information }) {
                         variant="h5"
                         className="mb-2 text-center text-red-800 font-bold"
                       >
-                        {dish.name}
+                        {dish?.dish?.name}
                       </Typography>
                       <Typography className="text-gray-600 text-sm text-center">
-                        {dish.description}
+                        {dish?.dish?.description}
                       </Typography>
                     </CardBody>
                     <CardFooter className="pt-0 pb-4">
                       <div className="flex justify-center space-x-2 mb-3">
-                        {sizes.map((size) => (
+                        {dish?.dishSizeDetails?.map((size) => (
                           <button
-                            key={size.label}
-                            onClick={() => setSelectedSize(size.label)}
-                            className={`w-10 h-10 rounded-full border ${
-                              selectedSize === size.label
+                            key={size.dishSizeDetailId}
+                            onClick={() =>
+                              handleSizeClick(dish.dish.dishId, size)
+                            }
+                            className={`px-2 py-1 rounded-md border ${
+                              selectedSizes[dish.dish.dishId] ===
+                              size.dishSize.name
                                 ? "bg-red-800 text-white"
                                 : "bg-white text-red-800"
                             } font-semibold transition-colors duration-300`}
                           >
-                            {size.label}
+                            {size.dishSize?.name}
                           </button>
                         ))}
                       </div>
                       <Typography className="text-center text-lg font-semibold mb-3">
                         Giá:{" "}
                         <span className="text-red-800">
-                          {currentPrice.toLocaleString()}đ
+                          {getCurrentPrice(dish.dish.dishId).toLocaleString() ==
+                          0
+                            ? formatPrice(dish?.dishSizeDetails?.[0].price)
+                            : formatPrice(getCurrentPrice(dish.dish.dishId))}
                         </span>
                       </Typography>
-                      <div className="flex justify-center">
-                        <Button className="bg-red-800 hover:bg-red-900 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded">
-                          Đặt món
-                        </Button>
-                      </div>
+                      {/* ... rest of the CardFooter content ... */}
+                      <Button
+                        onClick={() =>
+                          handleAddToCart(
+                            dish.dish,
+                            selectedSizes[dish.dish.dishId] ||
+                              dish.dishSizeDetails[0].dishSize.name,
+                            getCurrentPrice(dish.dish.dishId) ||
+                              dish.dishSizeDetails[0].price
+                          )
+                        }
+                        className="w-full mx-auto bg-red-800 text-white"
+                      >
+                        Chọn
+                      </Button>{" "}
                     </CardFooter>
                   </Card>
                 ))}
               </div>
             </TabPane>
-            <TabPane tab="Combo món" key="1">
+            <TabPane tab="Combo món" key="1" className="h-screen">
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                 {combos?.map((combo, index) => (
                   <ComboCard key={index} combo={combo} />
@@ -131,8 +189,31 @@ export function ModalReservation({ visible, onCancel, information }) {
             </TabPane>
           </Tabs>
         </div>
-        <div className="col-span-1">
-          <ReservationInformation reservation={information} />
+        <div className="col-span-1 overflow-y-scroll">
+          <Tabs activeKey={rightSideTab} onChange={handleRightSideTabChange}>
+            <TabPane tab="Thông tin" key="1">
+              <ReservationInformation reservation={information} />
+            </TabPane>
+            <TabPane tab={`Giỏ hàng (${cart.length})`} key="2">
+              <ReservationCart />
+              {cart.length > 0 && (
+                <div className="mt-6">
+                  <Typography
+                    variant="h5"
+                    className="font-bold text-red-700 text-center"
+                  >
+                    Tổng cộng:{" "}
+                    {formatPrice(
+                      cart.reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
+                    )}
+                  </Typography>
+                </div>
+              )}
+            </TabPane>
+          </Tabs>{" "}
         </div>
       </div>
     </Modal>
