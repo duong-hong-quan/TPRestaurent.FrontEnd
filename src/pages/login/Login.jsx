@@ -2,9 +2,9 @@ import { PhoneOutlined } from "@ant-design/icons";
 import { Button, Input, Tooltip } from "antd";
 import { useState, useEffect } from "react";
 import OtpConfirmModal from "./OtpConfirmModal";
-import { login } from "../../api/acccountApi";
 import { toast } from "react-toastify";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
+import { sendOtp } from "../../api/acccountApi";
 
 const LoginPage = () => {
   const [phone, setPhone] = useState("+84");
@@ -27,7 +27,7 @@ const LoginPage = () => {
       }
       setIsLoading(true);
       const phoneNumberWithoutPrefix = phone.replace(/^\+84/, "");
-      const data = await login(phoneNumberWithoutPrefix);
+      const data = await sendOtp(phoneNumberWithoutPrefix, 0);
       if (data?.isSuccess) {
         setResOtp(data?.result);
         setIsOtpModalVisible(true);
@@ -98,6 +98,7 @@ const LoginPage = () => {
         onClose={() => setIsOtpModalVisible(false)}
         resOtp={resOtp}
         phoneNumber={`0${phone.replace(/^\+84/, "")}`}
+        otpType={0}
       />
     </div>
   );

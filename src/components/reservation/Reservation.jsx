@@ -1,4 +1,12 @@
-import { Button, Form, Input, Select, DatePicker, TimePicker } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  TimePicker,
+  message,
+} from "antd";
 import {
   UserOutlined,
   PhoneOutlined,
@@ -7,10 +15,53 @@ import {
   CalendarOutlined,
   ClockCircleOutlined,
 } from "@ant-design/icons";
+import { loginWithOtp, sendOtp } from "../../api/acccountApi";
+import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import OtpConfirmModal from "../../pages/login/OtpConfirmModal";
+import { ModalReservation } from "./ModalReservation";
 
 const { TextArea } = Input;
+const { RangePicker } = DatePicker;
 
 const Reservation = () => {
+  const [form] = Form.useForm();
+  const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
+  const [isReservationModalVisible, setIsReservationModalVisible] =
+    useState(false);
+
+  const [resOtp, setResOtp] = useState(null);
+  const [information, setInformation] = useState({});
+  const onFinish = async (values) => {
+    setInformation(values);
+
+    const response = await sendOtp(values.phone, 9);
+    if (response?.isSuccess) {
+      message.success("Mã OTP đã được gửi đến số điện thoại của bạn.");
+      setIsOtpModalVisible(true);
+      setResOtp(response?.result);
+    } else {
+      // response?.messages.forEach((item) => message.error(item));
+      if (
+        response?.messages?.includes(
+          "Tài khoản không tồn tại hoặc chưa được xác thực"
+        )
+      ) {
+        const phoneNumberWithoutPrefix = values.phone.replace(/^\+84/, "");
+        const data = await sendOtp(phoneNumberWithoutPrefix, 0);
+        if (data?.isSuccess) {
+          setResOtp(data?.result);
+          setIsOtpModalVisible(true);
+        }
+      }
+    }
+  };
+
+  const handleSuccess = () => {
+    setIsReservationModalVisible(true);
+  };
+
+  console.log(isReservationModalVisible);
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 rounded-2xl shadow-2xl">
       <h1 className="text-2xl font-bold uppercase mb-6 text-center">Đặt bàn</h1>
@@ -29,7 +80,13 @@ const Reservation = () => {
           <p className="text-gray-600 mb-6">
             Vui lòng đặt bàn trước giờ dùng ít nhất 1 giờ
           </p>
-          <Form layout="vertical">
+          <Form
+            layout="vertical"
+            form={form}
+            name="basic"
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+          >
             <Form.Item
               name="name"
               rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
@@ -42,7 +99,7 @@ const Reservation = () => {
                 { required: true, message: "Vui lòng nhập số điện thoại" },
               ]}
             >
-              <Input prefix={<PhoneOutlined />} placeholder="Số điện thoại" />
+              <Input prefix={`+84`} placeholder="Số điện thoại" />
             </Form.Item>
             <Form.Item
               name="email"
@@ -51,7 +108,7 @@ const Reservation = () => {
               <Input prefix={<MailOutlined />} placeholder="Email" />
             </Form.Item>
             <Form.Item
-              name="guests"
+              name="numberOfPeople"
               rules={[
                 { required: true, message: "Vui lòng nhập số lượng người" },
               ]}
@@ -63,25 +120,18 @@ const Reservation = () => {
                 placeholder="Số lượng người"
               />
             </Form.Item>
-            <div className="grid grid-cols-2 gap-4">
-              <Form.Item
-                name="date"
-                rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
-              >
-                <DatePicker className="w-full" placeholder="Ngày" />
-              </Form.Item>
-              <Form.Item
-                name="time"
-                rules={[{ required: true, message: "Vui lòng chọn giờ" }]}
-              >
-                <TimePicker
-                  className="w-full"
-                  format="HH:mm"
-                  placeholder="Giờ"
-                />
-              </Form.Item>
-            </div>
             <Form.Item
+              name="date"
+              rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
+            >
+              <RangePicker
+                showTime
+                className="w-full"
+                placeholder="Ngày: giờ"
+                format={"DD/MM/YYYY HH:mm:ss"}
+              />
+            </Form.Item>
+            {/* <Form.Item
               name="tableType"
               rules={[{ required: true, message: "Vui lòng chọn loại bàn" }]}
             >
@@ -91,7 +141,7 @@ const Reservation = () => {
                 <Select.Option value="3">Bàn 6 người</Select.Option>
                 <Select.Option value="4">Bàn 8 người</Select.Option>
               </Select>
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item name="note">
               <TextArea rows={4} placeholder="Ghi chú" />
             </Form.Item>
@@ -106,7 +156,20 @@ const Reservation = () => {
             </Form.Item>
           </Form>
         </div>
+        <OtpConfirmModal
+          visible={isOtpModalVisible}
+          onClose={() => setIsOtpModalVisible(false)}
+          resOtp={resOtp}
+          phoneNumber={form.getFieldValue("phone")}
+          otpType={9}
+          handleSuccess={handleSuccess}
+        />
       </div>
+      <ModalReservation
+        visible={isReservationModalVisible}
+        onCancel={() => setIsReservationModalVisible(false)} //}
+        information={information}
+      />
     </div>
   );
 };

@@ -35,7 +35,7 @@ const MenuDish = ({ dishes }) => {
             </div>
           ))}
         </div>
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3  gap-4 mb-6">
           {/* {[...Array(4)].map((_, index) => (
             <DishCard key={index} />
           ))} */}
