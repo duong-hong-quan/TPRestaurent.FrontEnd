@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { login, loginWithOtp } from "../../api/acccountApi";
+import { loginWithOtp, verifyForReservation } from "../../api/acccountApi";
 
 const OtpConfirmModal = ({
   visible,
   onClose,
-  countdown,
   resOtp,
   phoneNumber,
+  otpType,
+  handleSuccess,
 }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const navigate = useNavigate();
@@ -28,19 +29,44 @@ const OtpConfirmModal = ({
     if (otpString === resOtp.code) {
       // Here you would typically send the OTP to your backend for verification
       console.log("Submitting OTP:", otpString);
+      switch (otpType) {
+        case 0:
+          const resposne = await loginWithOtp({
+            phoneNumber: phoneNumber,
+            otp: otpString,
+          });
+          if (resposne?.isSuccess) {
+            localStorage.setItem("token", resposne?.result?.token);
+            localStorage.setItem(
+              "refreshToken",
+              resposne?.result?.refreshToken
+            );
+            message.success("Đăng nhập thành công");
+            navigate("/");
+            onClose();
+          } else {
+            message.error("Đăng nhập thất bại");
+          }
+          break;
+        case 1:
+          // Send OTP to your backend for verification
+          break;
+        case 9:
+          // Send OTP to your backend for verification
+          const data = await verifyForReservation(phoneNumber, otpString);
+          if (data?.isSuccess) {
+            message.success("Đã đặt lịch thành công");
+            // navigate("/");
+            handleSuccess();
 
-      const resposne = await loginWithOtp({
-        phoneNumber: phoneNumber,
-        otp: otpString,
-      });
-      if (resposne?.isSuccess) {
-        localStorage.setItem("token", resposne?.result?.token);
-        localStorage.setItem("refreshToken", resposne?.result?.refreshToken);
-        message.success("Đăng nhập thành công");
-        navigate("/");
-        onClose();
-      } else {
-        message.error("Đăng nhập thất bại");
+            onClose();
+          } else {
+            message.error("Đã xảy ra l��i, vui lòng thử lại sau");
+          }
+          break;
+        default:
+          message.error("Đã xảy ra loi, vui lòng thử lại sau");
+          break;
       }
     } else {
       message.error("Vui lòng nhập đuúng mã OTP");
@@ -53,7 +79,6 @@ const OtpConfirmModal = ({
       onCancel={onClose}
       footer={null}
       className="font-sans"
-      bodyStyle={{ backgroundColor: "rgb(192, 29, 46, 0.05)" }}
     >
       <div className="p-6">
         <h2 className="text-2xl font-bold text-center mb-6 text-[rgb(192,29,46)]">
@@ -84,7 +109,6 @@ const OtpConfirmModal = ({
         <p className="text-center mt-4 text-gray-600">
           Không nhận được mã OTP?
           <p>Vui lòng nhập mã OTP được gửi đến số điện thoại của bạn.</p>
-          <p>Thời gian còn lại: {countdown} giây</p>
           <a href="#" className="text-[rgb(192,29,46)] hover:underline">
             Gửi lại OTP
           </a>

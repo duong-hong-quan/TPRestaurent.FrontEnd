@@ -19,6 +19,9 @@ const ErrorPage = () => {
             <Button variant="gradient" color="red">
               Trở lại trang chủ chúng tôi
             </Button>
+            <Button>
+              Back
+            </Button>
           </Link>
         </CardBody>
       </Card>
