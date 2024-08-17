@@ -25,6 +25,7 @@ import ErrorPage from "../pages/common/error/ErrorPage";
 import SearchResults from "../components/search/SearchResult";
 import AboutUs from "../pages/common/about-us/AboutUs";
 import { ComboDetail } from "../pages/common/menu-page/ComboDetail";
+import ComboDetail2 from "../pages/common/menu-page/ComboDetail2";
 
 function Routers() {
   const routing = useRoutes([
@@ -71,6 +72,10 @@ function Routers() {
         {
           path: "combo/:id",
           element: <ComboDetail />,
+        },
+        {
+          path: "combo2/:id",
+          element: <ComboDetail2 />,
         },
       ],
     },

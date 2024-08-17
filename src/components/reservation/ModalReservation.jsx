@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Modal, Tabs, message, Button, Badge } from "antd";
 import { getAllDishes } from "../../api/dishApi";
-import { getAllCombo } from "../../api/comboApi";
+import { getAllCombo, getComboById } from "../../api/comboApi";
 import DishCard from "../menu-dish/dish-card/DishCard";
 import ComboCard from "../menu-dish/ComboCard";
 const { TabPane } = Tabs;
@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import ReservationInformation from "./ReservationInformation";
-import { formatPrice } from "../../util/Utility";
+import { formatDate, formatPrice, mergeCartData } from "../../util/Utility";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addToCart,
@@ -22,15 +22,19 @@ import {
   removeFromCart,
 } from "../../redux/features/cartReservationSlice";
 import { ReservationCart } from "./ReservationCart";
+import ComboDetail2 from "../../pages/common/menu-page/ComboDetail2";
 
 export function ModalReservation({ visible, onCancel, information }) {
   const [dishes, setDishes] = useState([]);
   const [combos, setCombos] = useState([]);
   const [activeTab, setActiveTab] = useState("0");
   const [selectedSizes, setSelectedSizes] = useState({});
+  const [selectedCombos, setSelectedCombos] = useState(null);
+  const [combo, setCombo] = useState({});
+  const [isOpenComboDetail, setIsOpenComboDetail] = useState(false);
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cartReservation);
-
+  const cartCombo = useSelector((state) => state.cart);
   const handleAddToCart = (dish, size, price) => {
     dispatch(addToCart({ dish, size, price }));
   };
@@ -85,24 +89,42 @@ export function ModalReservation({ visible, onCancel, information }) {
   const handleRightSideTabChange = (key) => {
     setRightSideTab(key);
   };
-
+  const fetchComboDetail = async () => {
+    const response = await getComboById(selectedCombos);
+    if (response.isSuccess) {
+      setCombo(response.result);
+    }
+  };
+  useEffect(() => {
+    fetchComboDetail();
+  }, [selectedCombos, isOpenComboDetail]);
+  const handleCheckout = async () => {
+    console.log(cartCombo);
+    const data = mergeCartData(cart, cartCombo, {
+      reservationDate: "2024-08-17T11:25:12.414Z",
+      endTime: "2024-08-17T11:25:12.414Z",
+      customerInfoId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      deposit: 0,
+    });
+    console.log(data);
+  };
   return (
     <Modal
       open={visible}
       onCancel={onCancel}
       width="90vw"
       style={{ top: 20 }}
-      bodyStyle={{
-        height: "calc(100vh - 110px)",
-        overflow: "hidden",
-      }}
       footer={null}
     >
-      <div className="grid grid-cols-1 md:grid-cols-4 overflow-hidden">
-        <div className="col-span-3 p-4 overflow-y-scroll">
+      <div className="grid grid-cols-1 md:grid-cols-4 ">
+        <div className="col-span-3 p-4 ">
           <Tabs activeKey={activeTab} onChange={handleTabChange}>
-            <TabPane tab="Món ăn" key="0" className="h-screen ">
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2">
+            <TabPane
+              tab="Món ăn"
+              key="0"
+              className="h-[500px] overflow-y-auto "
+            >
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2 min-h-full">
                 {dishes.map((dish) => (
                   <Card
                     key={dish?.dish?.dishId}
@@ -180,12 +202,72 @@ export function ModalReservation({ visible, onCancel, information }) {
                 ))}
               </div>
             </TabPane>
-            <TabPane tab="Combo món" key="1" className="h-screen">
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                {combos?.map((combo, index) => (
-                  <ComboCard key={index} combo={combo} />
-                ))}
-              </div>
+            <TabPane
+              tab="Combo món"
+              key="1"
+              className="h-[500px] overflow-y-scroll"
+            >
+              {isOpenComboDetail ? (
+                <>
+                  <ComboDetail2
+                    comboData={combo}
+                    handleBack={() => setIsOpenComboDetail(false)}
+                  />
+                </>
+              ) : (
+                <>
+                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    {combos?.map((combo, index) => (
+                      <Card key={index} className=" m-4 ">
+                        <CardHeader color="blue" className="relative h-56">
+                          <img
+                            src={combo?.image}
+                            alt={combo?.name}
+                            className="h-full w-full object-cover"
+                          />
+                        </CardHeader>
+                        <CardBody>
+                          <Typography variant="h5" className="mb-2">
+                            {combo?.name}
+                          </Typography>
+                          <Typography>{combo?.description}</Typography>
+                          <Typography className="mt-4">
+                            <span className="font-bold">Giá:</span>{" "}
+                            {formatPrice(combo?.price)}
+                          </Typography>
+                          {combo?.discount > 0 && (
+                            <Typography className="mt-2 text-red-500">
+                              <span className="font-bold">Giảm:</span>{" "}
+                              {combo?.discount}%
+                            </Typography>
+                          )}
+                          <Typography className="mt-4">
+                            <span className="font-bold">Ngày bắt đầu:</span>{" "}
+                            {formatDate(combo?.startDate)}
+                          </Typography>
+                          <Typography className="mt-2">
+                            <span className="font-bold">Ngày kết thúc:</span>{" "}
+                            {formatDate(combo?.endDate)}
+                          </Typography>
+                        </CardBody>
+                        <CardFooter className="pt-0 mt-auto">
+                          <div className="flex justify-center ">
+                            <Button
+                              className="bg-red-700 text-white py-2 px-4 rounded-md "
+                              onClick={() => {
+                                setIsOpenComboDetail(true);
+                                setSelectedCombos(combo.comboId);
+                              }}
+                            >
+                              Đặt ngay
+                            </Button>
+                          </div>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                </>
+              )}
             </TabPane>
           </Tabs>
         </div>
@@ -210,6 +292,7 @@ export function ModalReservation({ visible, onCancel, information }) {
                       )
                     )}
                   </Typography>
+                  <Button onClick={handleCheckout}>Thanh toán ngay</Button>
                 </div>
               )}
             </TabPane>

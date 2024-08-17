@@ -100,6 +100,7 @@ export function ComboDetail() {
   const { combo, dishCombo, images, isLoading } = useDishData(id);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  console.log(dishCombo);
 
   return (
     <div>
