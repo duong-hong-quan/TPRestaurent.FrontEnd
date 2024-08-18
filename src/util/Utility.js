@@ -123,6 +123,38 @@ function calculateDuration(startDate, endDate) {
 
   return `${days} ngày ${nights} đêm`;
 }
+function calculateTimeDifference(startDateString, endDateString) {
+  // Tạo đối tượng Date từ các chuỗi đầu vào
+  const startDate = new Date(startDateString);
+  const endDate = new Date(endDateString);
+
+  // Tính khoảng cách giữa hai ngày (trong mili giây)
+  const differenceInMilliseconds = endDate - startDate;
+
+  // Chuyển đổi khoảng cách từ mili giây sang các đơn vị khác
+  const millisecondsInSecond = 1000;
+  const secondsInMinute = 60;
+  const minutesInHour = 60;
+  const hoursInDay = 24;
+
+  const totalSeconds = Math.floor(
+    differenceInMilliseconds / millisecondsInSecond
+  );
+  const totalMinutes = Math.floor(totalSeconds / secondsInMinute);
+  const totalHours = Math.floor(totalMinutes / minutesInHour);
+  const totalDays = Math.floor(totalHours / hoursInDay);
+
+  const remainingSeconds = totalSeconds % secondsInMinute;
+  const remainingMinutes = totalMinutes % minutesInHour;
+  const remainingHours = totalHours % hoursInDay;
+
+  return {
+    days: totalDays,
+    hours: remainingHours,
+    minutes: remainingMinutes,
+    seconds: remainingSeconds,
+  };
+}
 function mergeCartData(cartReservation, cartCombos, options = {}) {
   // Default values or from options
   const {
@@ -156,7 +188,6 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
     });
 
     reservationDishDtos.push({
-      dishSizeDetailId: combo.comboId, // Assuming comboId maps to dishSizeDetailId
       combo: {
         comboId: combo.comboId,
         dishComboIds,
@@ -175,6 +206,9 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
     reservationDishDtos,
   };
 }
+export const getKeyByValue = (obj, value) => {
+  return Object.keys(obj).find((key) => obj[key] === value);
+};
 export {
   formatPrice,
   formatDateTime,
@@ -187,4 +221,5 @@ export {
   formatDateToISOString,
   calculateDuration,
   mergeCartData,
+  calculateTimeDifference,
 };

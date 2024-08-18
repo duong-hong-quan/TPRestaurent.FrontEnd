@@ -1,15 +1,13 @@
-import { Navigate, useRoutes } from "react-router-dom";
+import { useRoutes } from "react-router-dom";
 import { HomePage } from "../pages/common/home-page/HomePage";
 import LoginPage from "../pages/login/Login";
 import CartPage from "../pages/common/cart/CartPage";
 import MenuPage from "../pages/common/menu-page/MenuPage";
 import ProductDetail from "../pages/common/product-detail/ProductDetail";
-import Reservation from "../components/reservation/Reservation";
 import ReservationPage from "../pages/common/reservation/ReservationPage";
 import UserLayout from "../layouts/common/UserLayout";
 import PersonalInformation from "../pages/common/personal-information/PersonalInformation";
 import PersonalOrder from "../pages/common/personal-information/PersonalOrder";
-import ReservationList from "../components/reservation/reservation-list/ReservationList";
 import PersonalTransaction from "../pages/common/personal-information/PersonalTransaction";
 import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
 import ManagerLayout from "../layouts/common/ManagerLayout";
@@ -17,7 +15,6 @@ import CommonLayout from "../layouts/common/CommonLayout";
 import { TransactionPage } from "../pages/admin/TransactionPage";
 import { AdminOrderHistoryPage } from "../pages/admin/AdminOrderHistoryPage";
 import { AdminReservationPage } from "../pages/admin/AdminReservationPage";
-import ChatComponent from "../pages/common/chat/ChatComponent";
 import MessengerApp from "../pages/common/chat/ChatComponent";
 import SettingsPage from "../pages/admin/SettingsPage";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
@@ -26,6 +23,7 @@ import SearchResults from "../components/search/SearchResult";
 import AboutUs from "../pages/common/about-us/AboutUs";
 import { ComboDetail } from "../pages/common/menu-page/ComboDetail";
 import ComboDetail2 from "../pages/common/menu-page/ComboDetail2";
+import { OrderHistory } from "../pages/common/customer/OrderHistory";
 
 function Routers() {
   const routing = useRoutes([
@@ -76,6 +74,10 @@ function Routers() {
         {
           path: "combo2/:id",
           element: <ComboDetail2 />,
+        },
+        {
+          path: "order-history",
+          element: <OrderHistory />,
         },
       ],
     },

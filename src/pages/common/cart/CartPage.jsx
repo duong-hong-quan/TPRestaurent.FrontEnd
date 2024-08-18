@@ -1,19 +1,38 @@
 import React, { useState, useEffect } from "react";
-import { Table, InputNumber, Button, Empty, Input, message } from "antd";
+import {
+  Table,
+  InputNumber,
+  Button,
+  Empty,
+  Input,
+  message,
+  Typography,
+} from "antd";
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { formatPrice } from "../../../util/Utility";
 import {
   decreaseQuantity,
+  getTotal,
   increaseQuantity,
   removeFromCart,
 } from "../../../redux/features/cartReservationSlice";
+import {
+  addCombo,
+  removeCombo,
+  clearCart,
+  increaseComboQuantity,
+  decreaseComboQuantity,
+} from "../../../redux/features/cartSlice";
+import CartCombosTable from "../../../components/cart/CartCombosTable";
+import { NavLink } from "react-router-dom";
 
 const { TextArea } = Input;
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const cartReservation = useSelector((state) => state.cartReservation);
+  const cart = useSelector((state) => state.cart);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [note, setNote] = useState("");
@@ -34,7 +53,9 @@ const CartPage = () => {
             height={60}
             className="object-cover rounded-md mr-4"
           />
-          <span className="font-medium">{record.dish.name}</span>
+          <NavLink to={`/product/${record.dish.dishId}`}>
+            <span className="font-medium">{record.dish.name}</span>
+          </NavLink>
         </div>
       ),
     },
@@ -115,7 +136,6 @@ const CartPage = () => {
   ];
 
   const handleApplyCoupon = () => {
-    // This is a mock function. In a real application, you'd validate the coupon with your backend.
     if (coupon === "DISCOUNT10") {
       setDiscount(10);
       message.success("Mã giảm giá đã được áp dụng!");
@@ -125,12 +145,17 @@ const CartPage = () => {
     }
   };
 
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
-  const totalAmount = subtotal * (1 - discount / 100);
+  const cartTotal = useSelector(getTotal);
 
+  const handleDecreaseComboQuantity = (comboId, selectedDishes) => {
+    dispatch(decreaseComboQuantity({ comboId, selectedDishes }));
+  };
+  const handleIncreaseComboQuantity = (comboId, selectedDishes) => {
+    dispatch(increaseComboQuantity({ comboId, selectedDishes }));
+  };
+  const handleRemoveCombo = (comboId, selectedDishes) => {
+    dispatch(removeCombo({ comboId, selectedDishes }));
+  };
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
@@ -145,7 +170,19 @@ const CartPage = () => {
             rowKey="dishSizeDetailId"
             className="mb-8 shadow-md rounded-lg overflow-hidden"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+
+          <div>
+            <h4 className="text-center font-bold text-2xl my-10">Combo</h4>
+            <CartCombosTable
+              cartCombos={cart}
+              formatPrice={formatPrice}
+              handleDecreaseComboQuantity={handleDecreaseComboQuantity}
+              handleIncreaseComboQuantity={handleIncreaseComboQuantity}
+              handleRemoveCombo={handleRemoveCombo}
+            />
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <div>
               <h2 className="text-xl font-semibold mb-4">Mã giảm giá</h2>
               <div className="flex items-center">
@@ -177,9 +214,12 @@ const CartPage = () => {
           <div className="bg-gray-100 p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg">Tạm tính:</span>
-              <span className="text-lg font-medium">
-                {subtotal.toLocaleString("vi-VN")}đ
-              </span>
+              <Typography
+                variant="h2"
+                className="font-bold text-red-700 text-center"
+              >
+                {formatPrice(cartTotal + cart.total)}
+              </Typography>{" "}
             </div>
             {discount > 0 && (
               <div className="flex justify-between items-center mb-4 text-green-600">
@@ -191,7 +231,7 @@ const CartPage = () => {
             )}
             <div className="flex justify-between items-center text-xl font-bold text-red-600">
               <span>Tổng cộng:</span>
-              <span>{totalAmount.toLocaleString("vi-VN")}đ</span>
+              <span></span>
             </div>
           </div>
           <div className="flex justify-end mt-8">
