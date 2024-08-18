@@ -47,7 +47,7 @@ export function ModalReservation({
   const cart = useSelector((state) => state.cartReservation);
   const cartCombo = useSelector((state) => state.cart);
   const handleAddToCart = (dish, size) => {
-    dispatch(addToCart({ dish, size }));
+    dispatch(addToCart({ dish, size, quantity: 1 }));
   };
   const [deposit, setDeposit] = useState(0);
   const fetchData = useCallback(async () => {
@@ -160,11 +160,11 @@ export function ModalReservation({
   console.log(selectedSizes);
   return (
     <Modal
+      footer={null}
       open={visible}
       onCancel={onCancel}
       style={{ top: 5 }}
       width={1500}
-      footer={null}
     >
       <div
         className="grid grid-cols-1 md:grid-cols-4 "
@@ -235,12 +235,13 @@ export function ModalReservation({
                       </Typography>
                       {/* ... rest of the CardFooter content ... */}
                       <Button
-                        onClick={() =>
+                        onClick={() => {
                           handleAddToCart(
                             dish.dish,
                             selectedSizes?.size || dish.dishSizeDetails[0]
-                          )
-                        }
+                          );
+                          message.success("Đã thêm vào giỏ hàng");
+                        }}
                         className="w-full mx-auto bg-red-800 text-white"
                       >
                         Chọn

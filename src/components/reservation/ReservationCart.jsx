@@ -151,7 +151,7 @@ export function ReservationCart() {
           <hr />
           {cartCombos.items.length === 0 ? (
             <Typography color="blue-gray" className="text-center my-4">
-              No combos in cart
+              Chưa có combo nào trong giỏ hàng
             </Typography>
           ) : (
             cartCombos.items.map((item) => (

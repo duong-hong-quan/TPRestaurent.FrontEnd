@@ -4,6 +4,7 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { formatDate, isEmptyObject } from "../../../util/Utility";
 import { useDispatch } from "react-redux";
 import { addCombo } from "../../../redux/features/cartSlice";
+import { message } from "antd";
 const ComboDetail2 = ({ comboData, handleBack }) => {
   // const comboData = {
   //   result: {
@@ -426,6 +427,7 @@ const ComboDetail2 = ({ comboData, handleBack }) => {
       ),
     };
     dispatch(addCombo(selectedCombo));
+    message.success("Đã thêm vào giỏ hàng");
   };
   return (
     <div className="max-w-[1200px] mx-auto p-4">

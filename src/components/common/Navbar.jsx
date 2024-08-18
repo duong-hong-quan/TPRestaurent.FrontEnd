@@ -20,6 +20,7 @@ export const Navbar = () => {
     { name: "Giới thiệu", path: "/about" },
     { name: "Khuyến mãi", path: "/promotions" },
     { name: "Liên hệ", path: "/contact" },
+    { name: "Tra cứu đơn hàng", path: "/order-history" },
   ];
 
   const icons = [

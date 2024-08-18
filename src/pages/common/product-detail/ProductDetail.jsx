@@ -13,6 +13,12 @@ import { toast } from "react-toastify";
 import { getDishById } from "../../../api/dishApi";
 import { formatDate, formatPrice, isEmptyObject } from "../../../util/Utility";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import { useDispatch } from "react-redux";
+import {
+  addToCart,
+  increaseQuantity,
+} from "../../../redux/features/cartReservationSlice";
+import { message } from "antd";
 
 // Custom hooks
 const useDishData = (id) => {
@@ -130,11 +136,6 @@ const ProductDetail = () => {
     ).toFixed(1);
   }, [reviews]);
 
-  const handleSizeChange = useCallback((size) => {
-    setSelectedSize(size.dishSizeDetailId);
-    setPrice(size.price);
-  }, []);
-
   const renderDescriptionTab = () => (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">Mô tả sản phẩm</h2>
@@ -147,7 +148,16 @@ const ProductDetail = () => {
       </ul>
     </div>
   );
-
+  const dispatch = useDispatch();
+  const handleAddToCart = (dish, size) => {
+    if (quantity > 1) {
+      dispatch(
+        increaseQuantity({ dish: dish, size: size, quantity: quantity })
+      );
+    } else {
+      dispatch(addToCart({ dish: dish, size: size }));
+    }
+  };
   const renderRatingTab = () => {
     const totalReviews = reviews?.length;
     const starCounts = [5, 4, 3, 2, 1].map(
@@ -160,7 +170,7 @@ const ProductDetail = () => {
           (review) => review?.rating.pointId === selectedStarFilter
         )
       : reviews;
-
+    console.log(dish);
     return (
       <div className="mt-8">
         <div className="flex items-start mb-8">
@@ -334,11 +344,11 @@ const ProductDetail = () => {
                   <button
                     key={size.dishSizeDetailId}
                     onClick={() => {
-                      setSelectedSize(size.dishSizeDetailId);
+                      setSelectedSize(size);
                       setPrice(size.price);
                     }}
                     className={`flex-1 py-3 px-6 rounded-lg text-lg transition duration-300 ${
-                      selectedSize === size.dishSizeDetailId
+                      selectedSize?.dishSizeDetailId === size.dishSizeDetailId
                         ? "bg-red-600 text-white"
                         : "bg-red-100 text-red-700 hover:bg-red-200"
                     }`}
@@ -366,7 +376,13 @@ const ProductDetail = () => {
                     <PlusOutlined className="text-xl" />
                   </button>
                 </div>
-                <button className="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300 flex items-center justify-center text-lg font-semibold">
+                <button
+                  onClick={() => {
+                    handleAddToCart(dish, selectedSize);
+                    message.success("Đã thêm vào giỏ hàng");
+                  }}
+                  className="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300 flex items-center justify-center text-lg font-semibold"
+                >
                   <ShoppingCartOutlined className="mr-2 text-2xl" />
                   Thêm vào giỏ hàng
                 </button>

@@ -21,3 +21,23 @@ export const createReservation = async (data) => {
     return response.data;
   } catch (error) {}
 };
+export const getAllReservationByPhoneNumber = async (
+  phoneNumber,
+  status,
+  pageNumber,
+  pageSize
+) => {
+  try {
+    const response = await api.get(
+      `/reservation/get-all-reservation-by-phone-number/${pageNumber}/${pageSize}?phoneNumber=${phoneNumber}&status=${status}`
+    );
+    return response.data;
+  } catch (error) {}
+};
+
+export const getReservationById = async (id) => {
+  try {
+    const response = await api.get(`/reservation/get-reservation-detail/${id}`);
+    return response.data;
+  } catch (error) {}
+};

@@ -3,8 +3,11 @@ import ReservationRequestItem from "./ReservationRequestItem";
 const ReservationList = ({ reservations }) => {
   return (
     <div>
-      <ReservationRequestItem />
+      {reservations.map((reservation) => (
+        <ReservationRequestItem reservation={reservation} />
+      ))}
     </div>
   );
 };
+
 export default ReservationList;
