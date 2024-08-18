@@ -3,7 +3,7 @@ import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 const ErrorPage = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen ">
       <Card className="w-96">
         <CardBody className="flex flex-col items-center">
           <Typography variant="h1" color="blue-gray" className="mb-2">
@@ -18,9 +18,6 @@ const ErrorPage = () => {
           <Link to="/">
             <Button variant="gradient" color="red">
               Trở lại trang chủ chúng tôi
-            </Button>
-            <Button>
-              Back
             </Button>
           </Link>
         </CardBody>

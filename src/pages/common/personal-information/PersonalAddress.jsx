@@ -113,7 +113,7 @@ const PersonalAddress = () => {
       </Button>
       <Modal
         title={editingAddress ? "Edit Address" : "Add Address"}
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleModalOk}
         onCancel={() => {
           setIsModalVisible(false);

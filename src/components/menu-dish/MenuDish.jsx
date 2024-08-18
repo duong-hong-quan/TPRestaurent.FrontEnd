@@ -41,7 +41,7 @@ const MenuDish = ({ dishes }) => {
           ))} */}
 
           {dishes.map((dish, index) => (
-            <DishCard key={index} dish={dish} />
+            <DishCard key={index} dish={dish.dish} />
           ))}
         </div>
         <div className="flex justify-center">

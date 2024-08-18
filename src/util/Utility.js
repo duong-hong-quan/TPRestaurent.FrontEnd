@@ -95,7 +95,6 @@ function metersToKilometers(meters) {
 function getTimePeriod(dateTimeString) {
   const dateTime = new Date(dateTimeString);
   const hours = dateTime.getHours();
-  console.log(hours);
   if (hours < 10) {
     return "Sáng";
   } else if (hours >= 10 && hours < 14) {
@@ -124,6 +123,58 @@ function calculateDuration(startDate, endDate) {
 
   return `${days} ngày ${nights} đêm`;
 }
+function mergeCartData(cartReservation, cartCombos, options = {}) {
+  // Default values or from options
+  const {
+    reservationDate = new Date().toISOString(),
+    numberOfPeople = 0,
+    endTime = new Date().toISOString(),
+    customerInfoId = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    deposit = 0,
+  } = options;
+
+  const reservationDishDtos = [];
+
+  // Process cart reservation data
+  cartReservation.forEach((item) => {
+    reservationDishDtos.push({
+      dishSizeDetailId: item.size.dishSizeDetailId, // Using dishId for this example
+      combo: null,
+      quantity: item.quantity,
+      note: `${item.dish.name} - ${item.size}`, // Combine name and size for note
+    });
+  });
+
+  // Process cart combos data
+  cartCombos?.items?.forEach((combo) => {
+    const dishComboIds = [];
+
+    Object.values(combo.selectedDishes).forEach((dishes) => {
+      dishes.forEach((dish) => {
+        dishComboIds.push(dish.dishComboId);
+      });
+    });
+
+    reservationDishDtos.push({
+      dishSizeDetailId: combo.comboId, // Assuming comboId maps to dishSizeDetailId
+      combo: {
+        comboId: combo.comboId,
+        dishComboIds,
+      },
+      quantity: combo.quantity,
+      note: combo.name, // Use combo name for note
+    });
+  });
+
+  return {
+    reservationDate,
+    numberOfPeople,
+    endTime,
+    customerInfoId,
+    deposit,
+    reservationDishDtos,
+  };
+}
 export {
   formatPrice,
   formatDateTime,
@@ -135,4 +186,5 @@ export {
   isEmptyObject,
   formatDateToISOString,
   calculateDuration,
+  mergeCartData,
 };

@@ -70,7 +70,6 @@ export const Navbar = () => {
                 <NavLink
                   to={item.path}
                   className="text-base lg:text-lg font-medium hover:text-yellow-300 transition duration-300 ease-in-out relative group"
-                  activeClassName="text-yellow-300"
                 >
                   {item.name}
                   <span className="absolute left-0 bottom-0 w-full h-0.5 bg-yellow-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
@@ -148,7 +147,6 @@ export const Navbar = () => {
                   <NavLink
                     to={item.path}
                     className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
-                    activeClassName="bg-red-700"
                     onClick={toggleMenu}
                   >
                     {item.name}
@@ -160,7 +158,6 @@ export const Navbar = () => {
                   <NavLink
                     to={item.path}
                     className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
-                    activeClassName="bg-red-700"
                     onClick={toggleMenu}
                   >
                     <i className={`fa-solid ${item.icon} mr-2`}></i>
