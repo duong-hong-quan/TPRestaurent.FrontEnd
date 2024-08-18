@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   CardBody,
@@ -30,7 +29,7 @@ const ReservationInformation = ({ reservation }) => {
             {
               icon: PhoneIcon,
               label: "Số điện thoại",
-              value: reservation.phone,
+              value: `0${reservation.phone}`,
             },
             { icon: EnvelopeIcon, label: "Email", value: reservation.email },
             {

@@ -5,7 +5,7 @@ import OtpConfirmModal from "./OtpConfirmModal";
 import { toast } from "react-toastify";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import { sendOtp } from "../../api/acccountApi";
-
+import loginImage from "../../assets/imgs/login.png";
 const LoginPage = () => {
   const [phone, setPhone] = useState("+84");
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
@@ -59,7 +59,7 @@ const LoginPage = () => {
         {/* Image section */}
         <div className="w-full md:w-1/2 p-6">
           <img
-            src="https://s3-alpha-sig.figma.com/img/b4f8/1dba/8a5eebe699e56d7734b4528f374f435b?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=lMn5S3O8VLHhPWzdwI0uk4l-eiN-BbsSkFokCOj7OgaH1ONw20rFnsuN7-5wsz6O5O0hrlKt~Gbc~QmvAPUS~WlBrtpn0e0beaQr0JzUOVpn1oYFlWAZY6TGIm2HU6NqMC3oJIYKsaaj~qw~txzTkYHR7clorH2p~W6NvKE-GLMlmCa1OZvmNkPrNJ3-PzUdKVymFi44Q~-JeDiOlj60bGBZ3o46G58IfMNEn6TrBelcX9S58CY27xgdIPN3MINyuwi1RLzfQ7uR2xSXlZpDsPbm1z-X1oH5na4rIeF-Vj826d-V8aQ94sr0G3q6qO9IZ5f4vW984asskjB3TQqwGg__"
+            src={loginImage}
             alt="Login"
             className="w-full h-auto rounded-lg"
           />

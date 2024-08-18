@@ -1,6 +1,3 @@
-// src/components/Cart.js
-
-import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   removeFromCart,
@@ -13,7 +10,6 @@ import {
   CardBody,
   Typography,
   IconButton,
-  Button,
 } from "@material-tailwind/react";
 import { PlusIcon, MinusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
@@ -29,48 +25,44 @@ export function ReservationCart() {
   const dispatch = useDispatch();
 
   // Handlers for combo actions
-  const handleIncreaseComboQuantity = (comboId) => {
-    dispatch(increaseComboQuantity(comboId));
+  const handleIncreaseComboQuantity = (comboId, selectedDishes) => {
+    dispatch(increaseComboQuantity({ comboId, selectedDishes }));
   };
 
-  const handleDecreaseComboQuantity = (comboId) => {
-    dispatch(decreaseComboQuantity(comboId));
+  const handleDecreaseComboQuantity = (comboId, selectedDishes) => {
+    dispatch(decreaseComboQuantity({ comboId, selectedDishes }));
   };
 
-  const handleRemoveCombo = (comboId) => {
-    dispatch(removeCombo(comboId));
+  const handleRemoveCombo = (comboId, selectedDishes) => {
+    dispatch(removeCombo({ comboId, selectedDishes }));
   };
-
   // Handlers for reservation actions
-  const handleIncreaseQuantity = (dishId, size) => {
+  const handleIncreaseQuantity = (dish, size) => {
     dispatch(
       increaseQuantity({
-        dishId,
+        dish,
         size,
       })
     );
   };
 
-  const handleDecreaseQuantity = (dishId, size) => {
+  const handleDecreaseQuantity = (dish, size) => {
     dispatch(
       decreaseQuantity({
-        dishId,
+        dish,
         size,
       })
     );
   };
 
-  const handleRemoveFromCart = (dishId, size) => {
+  const handleRemoveFromCart = (dish, size) => {
     dispatch(
       removeFromCart({
-        dishId,
+        dish,
         size,
       })
     );
   };
-
-  console.log("--------------------------------aa", cartCombos);
-  console.log("--------------------------------bb", cartReservation);
 
   return (
     <div className=" mx-auto my-10 bg-white rounded-lg shadow-lg">
@@ -87,27 +79,31 @@ export function ReservationCart() {
             </Typography>
           ) : (
             cartReservation.map((item) => (
-              <div key={`${item.dish.dishId}-${item.size}`} className="">
+              <div
+                key={`${item?.dish.dishId}-${item?.size?.dishSizeDetailId}`}
+                className="flex items-center mb-4"
+              >
                 <img
-                  src={item.dish.image}
-                  alt={item.dish.name}
+                  src={item?.dish?.image}
+                  alt={item?.dish?.name}
                   className="w-20 h-20 rounded-full object-cover"
                 />
-                <div className="flex-grow flex flex-col">
+                <div className="flex-grow flex flex-col ml-4">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <Typography variant="h6" color="blue-gray">
-                        {item.dish.name}
+                        {item?.dish?.name}
                       </Typography>
                       <Typography color="blue-gray" className="text-sm">
-                        {item.size}
+                        {item?.size.dishSize?.vietnameseName ||
+                          item?.size.dishSize?.name}
                       </Typography>
                       <Typography color="blue-gray" className="font-medium">
-                        {formatPrice(item.price)}
+                        {formatPrice(item?.size?.price)}
                       </Typography>
                     </div>
                     <Typography color="blue-gray" className="font-medium">
-                      x{item.quantity}
+                      x{item?.quantity}
                     </Typography>
                   </div>
                   <div className="flex justify-end items-center gap-2">
@@ -116,7 +112,7 @@ export function ReservationCart() {
                       color="blue-gray"
                       size="sm"
                       onClick={() =>
-                        handleDecreaseQuantity(item.dish.dishId, item.size)
+                        handleDecreaseQuantity(item?.dish, item?.size)
                       }
                     >
                       <MinusIcon className="h-4 w-4" />
@@ -132,7 +128,7 @@ export function ReservationCart() {
                       color="blue-gray"
                       size="sm"
                       onClick={() =>
-                        handleIncreaseQuantity(item.dish.dishId, item.size)
+                        handleIncreaseQuantity(item?.dish, item?.size)
                       }
                     >
                       <PlusIcon className="h-4 w-4" />
@@ -142,7 +138,7 @@ export function ReservationCart() {
                       color="red"
                       size="sm"
                       onClick={() =>
-                        handleRemoveFromCart(item.dish.dishId, item.size)
+                        handleRemoveFromCart(item?.dish, item?.size)
                       }
                     >
                       <TrashIcon className="h-4 w-4" />
@@ -152,78 +148,86 @@ export function ReservationCart() {
               </div>
             ))
           )}
+          <hr />
           {cartCombos.items.length === 0 ? (
             <Typography color="blue-gray" className="text-center my-4">
               No combos in cart
             </Typography>
           ) : (
             cartCombos.items.map((item) => (
-              <div key={item.comboId} className=" mb-4">
-                <div>
-                  <div className="flex flex-col justify-between items-start mb-4">
-                    <p className="font-semibold ">{item.name}</p>
-                    <p className="text-gray-600 mb-4">
-                      Price: {item.price.toLocaleString()} VND
-                    </p>
-                    <div className="flex flex-col">
-                      {Object.values(item.selectedDishes).length > 0 &&
-                        Object.values(item.selectedDishes).map((dishCombos) =>
-                          dishCombos.map((dishCombo, index) => (
-                            <div key={index} className="space-y-4">
-                              <div
-                                key={`${index}-dish`}
-                                className="flex flex-row  items-start justify-between"
-                              >
-                                <img
-                                  src={dishCombo.dishSizeDetail?.dish?.image}
-                                  alt={dishCombo.dishSizeDetail?.dish?.name}
-                                  className="w-20 h-20 object-cover rounded-full border border-gray-200"
-                                />
-                                <div className="flex-1">
-                                  <p className="font-medium">
-                                    {dishCombo.dishSizeDetail?.dish?.name}
-                                  </p>
-                                </div>
+              <div key={item.comboId} className="mb-4">
+                <h3 className="text-center font-bold text-xl my-2">Combo</h3>
+                <div className="flex flex-col justify-between items-start mb-4">
+                  <div className="w-full flex flex-col md:flex-row justify-between ">
+                    <span className="font-semibold">{item.name}</span>
+                    <span className="text-black font-bold mx-2">
+                      {formatPrice(item.price)}
+                    </span>
+                  </div>
+                  <div className="flex flex-col w-full">
+                    {Object.values(item.selectedDishes).map(
+                      (dishCombos, dishIndex) =>
+                        dishCombos.map((dishCombo, index) => (
+                          <div
+                            key={`${dishIndex}-${index}`}
+                            className="space-y-4"
+                          >
+                            <div className="flex flex-row items-start justify-between">
+                              <img
+                                src={dishCombo.dishSizeDetail?.dish?.image}
+                                alt={dishCombo.dishSizeDetail?.dish?.name}
+                                className="w-20 h-20 object-cover rounded-full border border-gray-200"
+                              />
+                              <div className="flex-1 ml-4">
+                                <p className="font-medium">
+                                  {dishCombo.dishSizeDetail?.dish?.name}
+                                </p>
                               </div>
                             </div>
-                          ))
-                        )}
-                      <div className="w-full">
-                        <div className=" flex justify-end items-center">
-                          <IconButton
-                            variant="text"
-                            color="blue-gray"
-                            size="sm"
-                            onClick={() =>
-                              handleDecreaseComboQuantity(item.comboId)
-                            }
-                          >
-                            <MinusIcon className="h-4 w-4" />
-                          </IconButton>
-
-                          <Typography className="mx-2">
-                            {item.quantity}
-                          </Typography>
-                          <IconButton
-                            variant="text"
-                            color="blue-gray"
-                            size="sm"
-                            onClick={() =>
-                              handleIncreaseComboQuantity(item.comboId)
-                            }
-                          >
-                            <PlusIcon className="h-4 w-4" />
-                          </IconButton>
-
-                          <IconButton
-                            variant="text"
-                            color="red"
-                            size="sm"
-                            onClick={() => handleRemoveCombo(item.comboId)}
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </IconButton>
-                        </div>
+                          </div>
+                        ))
+                    )}
+                    <div className="w-full mt-4">
+                      <div className="flex justify-end items-center">
+                        <IconButton
+                          variant="text"
+                          color="blue-gray"
+                          size="sm"
+                          onClick={() =>
+                            handleDecreaseComboQuantity(
+                              item.comboId,
+                              item.selectedDishes
+                            )
+                          }
+                        >
+                          <MinusIcon className="h-4 w-4" />
+                        </IconButton>
+                        <Typography className="mx-2">
+                          {item.quantity}
+                        </Typography>
+                        <IconButton
+                          variant="text"
+                          color="blue-gray"
+                          size="sm"
+                          onClick={() =>
+                            handleIncreaseComboQuantity(
+                              item.comboId,
+                              item.selectedDishes
+                            )
+                          }
+                        >
+                          <PlusIcon className="h-4 w-4" />
+                        </IconButton>
+                        <IconButton
+                          variant="text"
+                          color="red"
+                          size="sm"
+                          onClick={() =>
+                            handleRemoveCombo(item.comboId, item.selectedDishes)
+                          }
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </IconButton>
                       </div>
                     </div>
                   </div>

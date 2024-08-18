@@ -76,11 +76,7 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
         onClick={() => handleOpen(index)}
         className="border-b-0 px-4 py-4 cursor-pointer"
       >
-        <NavLink
-          to={item.path}
-          className="flex items-center w-full"
-          activeClassName="font-bold"
-        >
+        <NavLink to={item.path} className="flex items-center w-full">
           <ListItemPrefix>{item.icon}</ListItemPrefix>
           <Typography className="mr-auto text-white">{item.title}</Typography>
         </NavLink>
@@ -94,7 +90,6 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
               <NavLink
                 to={subItem.path}
                 className="flex items-center w-full text-white"
-                activeClassName="font-bold"
               >
                 <ListItemPrefix>
                   <FaChevronRight className="h-3 w-3" />

@@ -2,6 +2,9 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import slider1 from "../../assets/imgs/slider/slider1.png";
+import slider2 from "../../assets/imgs/slider/slider2.png";
+import slider3 from "../../assets/imgs/slider/slider3.png";
 
 const SliderHome = () => {
   const settings = {
@@ -19,27 +22,27 @@ const SliderHome = () => {
   const slides = [
     {
       id: 1,
-      image:
-        "https://s3-alpha-sig.figma.com/img/62f9/82bc/377a67314fcee620f0c8791bf2c0b7f2?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=DfbUwQo1s9YMArTXLgR9LxPMiEAHWlOLc5KWg2Ktoqtvg8Q8LGJECW6lj~GSwNKHKRhDBjRfyTxcHeaBjKLIkomAY17MXuGlzH4nB1QO6YBlFTuNQDvEiqe1qtjBDY6HSkcmP2KkxiSYrGRq-LQoMIBt5T5i1IxyCQCgjeKGJHT~-MzNdB25H-LHwbxW4JcMRDzes4EGou0LeSN~fgz1oufcDXduzZg4dzbYDqyVH1ABCDdnDmucPgYrZCrXPun~ff7zfI3RtHtPG23VZXhMwXm~pZsJCgve1gqbMV3p5ZlIcWkS9c9P1JX0R~RMLt4FsVj0D66VEtQv3LFZoJ7~yg__",
-      alt: "Món ăn 1",
-      title: "Món Ăn Đặc Biệt 1",
-      description: "Thưởng thức hương vị độc đáo của món ăn đặc biệt này.",
+      image: slider1,
+      alt: "Món ăn BBQ ngon",
+      title: "Ăn BBQ Thịnh Soạn",
+      description:
+        "Thưởng thức hương vị đậm đà và hấp dẫn của món BBQ, hoàn hảo cho những bữa tiệc ngoài trời.",
     },
     {
       id: 2,
-      image:
-        "https://s3-alpha-sig.figma.com/img/62f9/82bc/377a67314fcee620f0c8791bf2c0b7f2?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=DfbUwQo1s9YMArTXLgR9LxPMiEAHWlOLc5KWg2Ktoqtvg8Q8LGJECW6lj~GSwNKHKRhDBjRfyTxcHeaBjKLIkomAY17MXuGlzH4nB1QO6YBlFTuNQDvEiqe1qtjBDY6HSkcmP2KkxiSYrGRq-LQoMIBt5T5i1IxyCQCgjeKGJHT~-MzNdB25H-LHwbxW4JcMRDzes4EGou0LeSN~fgz1oufcDXduzZg4dzbYDqyVH1ABCDdnDmucPgYrZCrXPun~ff7zfI3RtHtPG23VZXhMwXm~pZsJCgve1gqbMV3p5ZlIcWkS9c9P1JX0R~RMLt4FsVj0D66VEtQv3LFZoJ7~yg__",
-      alt: "Món ăn 2",
+      image: slider2,
+      alt: "Món ăn đặc sắc",
       title: "Món Ăn Đặc Biệt 2",
-      description: "Khám phá hương vị mới mẻ với món ăn đặc sắc này.",
+      description:
+        "Khám phá sự hòa quyện tuyệt vời của các nguyên liệu tươi ngon trong món ăn độc quyền này.",
     },
     {
       id: 3,
-      image:
-        "https://s3-alpha-sig.figma.com/img/62f9/82bc/377a67314fcee620f0c8791bf2c0b7f2?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=DfbUwQo1s9YMArTXLgR9LxPMiEAHWlOLc5KWg2Ktoqtvg8Q8LGJECW6lj~GSwNKHKRhDBjRfyTxcHeaBjKLIkomAY17MXuGlzH4nB1QO6YBlFTuNQDvEiqe1qtjBDY6HSkcmP2KkxiSYrGRq-LQoMIBt5T5i1IxyCQCgjeKGJHT~-MzNdB25H-LHwbxW4JcMRDzes4EGou0LeSN~fgz1oufcDXduzZg4dzbYDqyVH1ABCDdnDmucPgYrZCrXPun~ff7zfI3RtHtPG23VZXhMwXm~pZsJCgve1gqbMV3p5ZlIcWkS9c9P1JX0R~RMLt4FsVj0D66VEtQv3LFZoJ7~yg__",
-      alt: "Món ăn 3",
+      image: slider3,
+      alt: "Món ăn tuyệt vời",
       title: "Món Ăn Đặc Biệt 3",
-      description: "Trải nghiệm ẩm thực tuyệt vời với món ăn này.",
+      description:
+        "Trải nghiệm ẩm thực đỉnh cao với món ăn được chế biến tinh tế và sang trọng.",
     },
   ];
 

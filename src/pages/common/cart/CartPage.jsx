@@ -1,41 +1,26 @@
-import React, { useState } from "react";
-import { Table, InputNumber, Button, Empty, Input, message, Image } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, InputNumber, Button, Empty, Input, message } from "antd";
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { formatPrice } from "../../../util/Utility";
+import {
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from "../../../redux/features/cartReservationSlice";
 
 const { TextArea } = Input;
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Phở Bò",
-      price: 65000,
-      quantity: 2,
-      image:
-        "https://s3-alpha-sig.figma.com/img/62f9/82bc/377a67314fcee620f0c8791bf2c0b7f2?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=DfbUwQo1s9YMArTXLgR9LxPMiEAHWlOLc5KWg2Ktoqtvg8Q8LGJECW6lj~GSwNKHKRhDBjRfyTxcHeaBjKLIkomAY17MXuGlzH4nB1QO6YBlFTuNQDvEiqe1qtjBDY6HSkcmP2KkxiSYrGRq-LQoMIBt5T5i1IxyCQCgjeKGJHT~-MzNdB25H-LHwbxW4JcMRDzes4EGou0LeSN~fgz1oufcDXduzZg4dzbYDqyVH1ABCDdnDmucPgYrZCrXPun~ff7zfI3RtHtPG23VZXhMwXm~pZsJCgve1gqbMV3p5ZlIcWkS9c9P1JX0R~RMLt4FsVj0D66VEtQv3LFZoJ7~yg__",
-    },
-    {
-      id: 2,
-      name: "Bánh Mì Thịt",
-      price: 25000,
-      quantity: 1,
-      image:
-        "https://s3-alpha-sig.figma.com/img/62f9/82bc/377a67314fcee620f0c8791bf2c0b7f2?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=DfbUwQo1s9YMArTXLgR9LxPMiEAHWlOLc5KWg2Ktoqtvg8Q8LGJECW6lj~GSwNKHKRhDBjRfyTxcHeaBjKLIkomAY17MXuGlzH4nB1QO6YBlFTuNQDvEiqe1qtjBDY6HSkcmP2KkxiSYrGRq-LQoMIBt5T5i1IxyCQCgjeKGJHT~-MzNdB25H-LHwbxW4JcMRDzes4EGou0LeSN~fgz1oufcDXduzZg4dzbYDqyVH1ABCDdnDmucPgYrZCrXPun~ff7zfI3RtHtPG23VZXhMwXm~pZsJCgve1gqbMV3p5ZlIcWkS9c9P1JX0R~RMLt4FsVj0D66VEtQv3LFZoJ7~yg__",
-    },
-    {
-      id: 3,
-      name: "Cà Phê Sữa Đá",
-      price: 30000,
-      quantity: 2,
-      image:
-        "https://s3-alpha-sig.figma.com/img/62f9/82bc/377a67314fcee620f0c8791bf2c0b7f2?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=DfbUwQo1s9YMArTXLgR9LxPMiEAHWlOLc5KWg2Ktoqtvg8Q8LGJECW6lj~GSwNKHKRhDBjRfyTxcHeaBjKLIkomAY17MXuGlzH4nB1QO6YBlFTuNQDvEiqe1qtjBDY6HSkcmP2KkxiSYrGRq-LQoMIBt5T5i1IxyCQCgjeKGJHT~-MzNdB25H-LHwbxW4JcMRDzes4EGou0LeSN~fgz1oufcDXduzZg4dzbYDqyVH1ABCDdnDmucPgYrZCrXPun~ff7zfI3RtHtPG23VZXhMwXm~pZsJCgve1gqbMV3p5ZlIcWkS9c9P1JX0R~RMLt4FsVj0D66VEtQv3LFZoJ7~yg__",
-    },
-  ]);
-
+  const [cartItems, setCartItems] = useState([]);
+  const cartReservation = useSelector((state) => state.cartReservation);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [note, setNote] = useState("");
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    setCartItems(cartReservation);
+  }, [cartReservation]);
   const columns = [
     {
       title: "Sản phẩm",
@@ -43,22 +28,28 @@ const CartPage = () => {
       render: (_, record) => (
         <div className="flex items-center">
           <img
-            src={record.image}
-            alt={record.name}
+            src={record.dish.image}
+            alt={record.dish.name}
             width={60}
             height={60}
-            className="object-cover rounded-md mr-4 "
+            className="object-cover rounded-md mr-4"
           />
-          <span className="font-medium">{record.name}</span>
+          <span className="font-medium">{record.dish.name}</span>
         </div>
       ),
+    },
+    {
+      title: "Kích cỡ",
+      dataIndex: "size",
+      key: "size",
+      render: (_, record) => <span>{record.size.dishSize.name}</span>,
     },
     {
       title: "Đơn giá",
       dataIndex: "price",
       key: "price",
-      render: (price) => (
-        <span className="text-gray-600">{price.toLocaleString("vi-VN")}đ</span>
+      render: (_, record) => (
+        <span className="text-gray-600">{formatPrice(record.size.price)}</span>
       ),
     },
     {
@@ -68,7 +59,11 @@ const CartPage = () => {
         <div className="flex items-center">
           <Button
             icon={<MinusOutlined />}
-            onClick={() => handleQuantityChange(record.id, record.quantity - 1)}
+            onClick={() =>
+              dispatch(
+                decreaseQuantity({ dish: record.dish, size: record.size })
+              )
+            }
             disabled={record.quantity <= 1}
             className="border-gray-300"
           />
@@ -76,13 +71,16 @@ const CartPage = () => {
             min={1}
             max={10}
             value={record.quantity}
-            onChange={(value) => handleQuantityChange(record.id, value)}
             className="mx-2 w-14 text-center"
             disabled
           />
           <Button
             icon={<PlusOutlined />}
-            onClick={() => handleQuantityChange(record.id, record.quantity + 1)}
+            onClick={() =>
+              dispatch(
+                increaseQuantity({ dish: record.dish, size: record.size })
+              )
+            }
             disabled={record.quantity >= 10}
             className="border-gray-300"
           />
@@ -94,7 +92,7 @@ const CartPage = () => {
       key: "total",
       render: (_, record) => (
         <span className="font-semibold text-red-600">
-          {(record.price * record.quantity).toLocaleString("vi-VN")}đ
+          {formatPrice(record.size.price * record.quantity)}
         </span>
       ),
     },
@@ -106,26 +104,15 @@ const CartPage = () => {
           type="text"
           danger
           icon={<DeleteOutlined />}
-          onClick={() => handleRemoveItem(record.id)}
+          onClick={() =>
+            dispatch(removeFromCart({ dish: record.dish, size: record.size }))
+          }
         >
           Xóa
         </Button>
       ),
     },
   ];
-
-  // ... (keep the existing handleQuantityChange, handleRemoveItem, and handleApplyCoupon functions)
-  const handleQuantityChange = (id, value) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: value } : item
-      )
-    );
-  };
-
-  const handleRemoveItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
-  };
 
   const handleApplyCoupon = () => {
     // This is a mock function. In a real application, you'd validate the coupon with your backend.
@@ -155,7 +142,7 @@ const CartPage = () => {
             columns={columns}
             dataSource={cartItems}
             pagination={false}
-            rowKey="id"
+            rowKey="dishSizeDetailId"
             className="mb-8 shadow-md rounded-lg overflow-hidden"
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -220,7 +207,7 @@ const CartPage = () => {
       ) : (
         <Empty
           description={
-            <span className="text-gray-600">Giỏ hàng của bạn đang trống</span>
+            <span className="text-gray-600">Giỗ hàng của bạn đang trống</span>
           }
         >
           <Button type="primary" className="bg-blue-500 hover:bg-blue-600">

@@ -95,7 +95,6 @@ function metersToKilometers(meters) {
 function getTimePeriod(dateTimeString) {
   const dateTime = new Date(dateTimeString);
   const hours = dateTime.getHours();
-  console.log(hours);
   if (hours < 10) {
     return "Sáng";
   } else if (hours >= 10 && hours < 14) {
@@ -139,7 +138,7 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
   // Process cart reservation data
   cartReservation.forEach((item) => {
     reservationDishDtos.push({
-      dishSizeDetailId: item.dish.dishId, // Using dishId for this example
+      dishSizeDetailId: item.size.dishSizeDetailId, // Using dishId for this example
       combo: null,
       quantity: item.quantity,
       note: `${item.dish.name} - ${item.size}`, // Combine name and size for note
@@ -147,7 +146,6 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
   });
 
   // Process cart combos data
-  debugger;
   cartCombos?.items?.forEach((combo) => {
     const dishComboIds = [];
 

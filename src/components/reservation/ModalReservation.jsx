@@ -1,9 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Modal, Tabs, message, Button, Badge } from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { Modal, Tabs, message, Button } from "antd";
 import { getAllDishes } from "../../api/dishApi";
 import { getAllCombo, getComboById } from "../../api/comboApi";
-import DishCard from "../menu-dish/dish-card/DishCard";
-import ComboCard from "../menu-dish/ComboCard";
 const { TabPane } = Tabs;
 import {
   Card,
@@ -13,18 +11,31 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import ReservationInformation from "./ReservationInformation";
-import { formatDate, formatPrice, mergeCartData } from "../../util/Utility";
-import { useDispatch, useSelector } from "react-redux";
 import {
-  addToCart,
-  decreaseQuantity,
-  increaseQuantity,
-  removeFromCart,
-} from "../../redux/features/cartReservationSlice";
+  formatDate,
+  formatDateToISOString,
+  formatPrice,
+  mergeCartData,
+} from "../../util/Utility";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, getTotal } from "../../redux/features/cartReservationSlice";
 import { ReservationCart } from "./ReservationCart";
 import ComboDetail2 from "../../pages/common/menu-page/ComboDetail2";
+import { calculateDeposit, createReservation } from "../../api/reservationApi";
+import {
+  addNewCustomerInfo,
+  sendCustomerInfoOtp,
+  sendOtp,
+} from "../../api/acccountApi";
 
-export function ModalReservation({ visible, onCancel, information }) {
+export function ModalReservation({
+  visible,
+  onCancel,
+  information,
+  handleOpenOtp,
+  handleCloseOtp,
+  isOtpSuccess,
+}) {
   const [dishes, setDishes] = useState([]);
   const [combos, setCombos] = useState([]);
   const [activeTab, setActiveTab] = useState("0");
@@ -35,10 +46,10 @@ export function ModalReservation({ visible, onCancel, information }) {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cartReservation);
   const cartCombo = useSelector((state) => state.cart);
-  const handleAddToCart = (dish, size, price) => {
-    dispatch(addToCart({ dish, size, price }));
+  const handleAddToCart = (dish, size) => {
+    dispatch(addToCart({ dish, size }));
   };
-
+  const [deposit, setDeposit] = useState(0);
   const fetchData = useCallback(async () => {
     try {
       const [dishesData, combosData] = await Promise.all([
@@ -67,12 +78,15 @@ export function ModalReservation({ visible, onCancel, information }) {
     setActiveTab(key);
   };
 
-  const handleSizeClick = (dishId, size) => {
+  const handleSizeClick = (dish, size) => {
     setSelectedSizes((prevSizes) => ({
       ...prevSizes,
-      [dishId]: size.dishSize.name,
+      dish: dish, // Adding or updating the dishSizeName field
+      size: size, // Adding or updating a field with a combined name
+      // You can add more fields here if needed
     }));
   };
+
   const getCurrentPrice = (dishId) => {
     const dish = dishes.find((dish) => dish.dish.dishId === dishId);
     const selectedSize = selectedSizes[dishId];
@@ -99,24 +113,63 @@ export function ModalReservation({ visible, onCancel, information }) {
     fetchComboDetail();
   }, [selectedCombos, isOpenComboDetail]);
   const handleCheckout = async () => {
-    console.log(cartCombo);
+    if (
+      information.customerId === null ||
+      information.customerId === undefined ||
+      information.isVerified === false
+    ) {
+      handleOpenOtp();
+      return;
+    }
     const data = mergeCartData(cart, cartCombo, {
-      reservationDate: "2024-08-17T11:25:12.414Z",
-      endTime: "2024-08-17T11:25:12.414Z",
-      customerInfoId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      deposit: 0,
+      reservationDate: formatDateToISOString(new Date(information.date[0])),
+      endTime: formatDateToISOString(new Date(information.date[1])),
+      customerInfoId: information.customerId,
+      deposit: deposit,
     });
-    console.log(data);
+    const responseReservation = await createReservation(data);
+    if (responseReservation.isSuccess) {
+      message.success("Đặt bàn thành công");
+    } else {
+      responseReservation.messages.forEach((mess) => {
+        message.error(mess);
+      });
+    }
   };
+  const cartTotal = useSelector(getTotal);
+  const handleDeposit = async () => {
+    if (cartCombo.length > 0 || cart.length > 0) {
+      const data = await calculateDeposit(
+        mergeCartData(cart, cartCombo, {
+          reservationDate: formatDateToISOString(new Date(information.date[0])),
+          endTime: formatDateToISOString(new Date(information.date[1])),
+          customerInfoId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          deposit: 0,
+        })
+      );
+      if (data.isSuccess) {
+        setDeposit(data?.result?.deposit);
+      } else {
+        message.error("Failed to calculate deposit: " + data.message);
+      }
+    }
+  };
+  useEffect(() => {
+    handleDeposit();
+  }, [cartCombo, cart]);
+  console.log(selectedSizes);
   return (
     <Modal
       open={visible}
       onCancel={onCancel}
-      width="90vw"
-      style={{ top: 20 }}
+      style={{ top: 5 }}
+      width={1500}
       footer={null}
     >
-      <div className="grid grid-cols-1 md:grid-cols-4 ">
+      <div
+        className="grid grid-cols-1 md:grid-cols-4 "
+        style={{ height: "650px", overflowY: "scroll" }}
+      >
         <div className="col-span-3 p-4 ">
           <Tabs activeKey={activeTab} onChange={handleTabChange}>
             <TabPane
@@ -159,12 +212,10 @@ export function ModalReservation({ visible, onCancel, information }) {
                         {dish?.dishSizeDetails?.map((size) => (
                           <button
                             key={size.dishSizeDetailId}
-                            onClick={() =>
-                              handleSizeClick(dish.dish.dishId, size)
-                            }
+                            onClick={() => handleSizeClick(dish.dish, size)}
                             className={`px-2 py-1 rounded-md border ${
-                              selectedSizes[dish.dish.dishId] ===
-                              size.dishSize.name
+                              selectedSizes?.size?.dishSizeDetailId ===
+                              size.dishSizeDetailId
                                 ? "bg-red-800 text-white"
                                 : "bg-white text-red-800"
                             } font-semibold transition-colors duration-300`}
@@ -187,10 +238,7 @@ export function ModalReservation({ visible, onCancel, information }) {
                         onClick={() =>
                           handleAddToCart(
                             dish.dish,
-                            selectedSizes[dish.dish.dishId] ||
-                              dish.dishSizeDetails[0].dishSize.name,
-                            getCurrentPrice(dish.dish.dishId) ||
-                              dish.dishSizeDetails[0].price
+                            selectedSizes?.size || dish.dishSizeDetails[0]
                           )
                         }
                         className="w-full mx-auto bg-red-800 text-white"
@@ -279,20 +327,20 @@ export function ModalReservation({ visible, onCancel, information }) {
             <TabPane tab={`Giỏ hàng (${cart.length})`} key="2">
               <ReservationCart />
               {cart.length > 0 && (
-                <div className="mt-6">
+                <div className="mt-6 w-full flex justify-center items-center flex-col">
                   <Typography
                     variant="h5"
                     className="font-bold text-red-700 text-center"
                   >
-                    Tổng cộng:{" "}
-                    {formatPrice(
-                      cart.reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
-                    )}
+                    Tổng cộng: {formatPrice(cartTotal + cartCombo.total)}
                   </Typography>
-                  <Button onClick={handleCheckout}>Thanh toán ngay</Button>
+                  <p>Số tiền cọc dự kiến: {formatPrice(deposit)}</p>
+                  <Button
+                    className="bg-red-800 rounded-md text-white mt-10"
+                    onClick={handleCheckout}
+                  >
+                    Thanh toán ngay
+                  </Button>
                 </div>
               )}
             </TabPane>

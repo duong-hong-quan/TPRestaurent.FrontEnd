@@ -1,10 +1,10 @@
-// store.js
+// cartSlice.js
 
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  items: [], // Array to hold combo items
-  total: 0, // Total price of the cart
+  items: [],
+  total: 0,
 };
 
 const cartSlice = createSlice({
@@ -14,63 +14,72 @@ const cartSlice = createSlice({
     addCombo: (state, action) => {
       const newCombo = action.payload;
       const existingComboIndex = state.items.findIndex(
-        (item) => item.comboId === newCombo.comboId
+        (item) =>
+          item.comboId === newCombo.comboId &&
+          JSON.stringify(item.selectedDishes) ===
+            JSON.stringify(newCombo.selectedDishes)
       );
 
       if (existingComboIndex !== -1) {
-        // Combo already in cart, increase quantity
         state.items[existingComboIndex].quantity += 1;
-
-        // Update total
-        state.total = state.items.reduce((acc, item) => {
-          const comboTotal = item.price * item.quantity;
-          return acc + comboTotal;
-        }, 0);
       } else {
-        // New combo, add to cart
-        state.items.push({
-          ...newCombo,
-          quantity: 1, // Initialize quantity
-        });
-
-        // Update total
-        state.total += newCombo.price;
+        state.items.push({ ...newCombo, quantity: 1 });
       }
+
+      state.total = calculateTotal(state.items);
     },
     removeCombo: (state, action) => {
-      const comboId = action.payload;
-      const index = state.items.findIndex((item) => item.comboId === comboId);
+      const { comboId, selectedDishes } = action.payload;
+      const index = state.items.findIndex(
+        (item) =>
+          item.comboId === comboId &&
+          JSON.stringify(item.selectedDishes) === JSON.stringify(selectedDishes)
+      );
 
       if (index !== -1) {
-        // Subtract price
-        state.total -= state.items[index].price * state.items[index].quantity;
         state.items.splice(index, 1);
       }
+
+      state.total = calculateTotal(state.items);
+    },
+    increaseComboQuantity: (state, action) => {
+      const { comboId, selectedDishes } = action.payload;
+      const combo = state.items.find(
+        (item) =>
+          item.comboId === comboId &&
+          JSON.stringify(item.selectedDishes) === JSON.stringify(selectedDishes)
+      );
+
+      if (combo) {
+        combo.quantity += 1;
+      }
+
+      state.total = calculateTotal(state.items);
+    },
+    decreaseComboQuantity: (state, action) => {
+      const { comboId, selectedDishes } = action.payload;
+      const combo = state.items.find(
+        (item) =>
+          item.comboId === comboId &&
+          JSON.stringify(item.selectedDishes) === JSON.stringify(selectedDishes)
+      );
+
+      if (combo && combo.quantity > 1) {
+        combo.quantity -= 1;
+      }
+
+      state.total = calculateTotal(state.items);
     },
     clearCart: (state) => {
       state.items = [];
       state.total = 0;
     },
-    increaseComboQuantity: (state, action) => {
-      const comboId = action.payload;
-      const combo = state.items.find((item) => item.comboId === comboId);
-      if (combo) {
-        combo.quantity += 1;
-        state.total += combo.price;
-      }
-    },
-    decreaseComboQuantity: (state, action) => {
-      const comboId = action.payload;
-      const combo = state.items.find((item) => item.comboId === comboId);
-      if (combo) {
-        if (combo.quantity > 1) {
-          combo.quantity -= 1;
-          state.total -= combo.price;
-        }
-      }
-    },
   },
 });
+
+const calculateTotal = (items) => {
+  return items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+};
 
 export const {
   addCombo,

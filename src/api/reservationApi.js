@@ -7,3 +7,17 @@ export const getAllReservations = async (time, pageNumber, pageSize) => {
     return response.data;
   } catch (error) {}
 };
+
+export const calculateDeposit = async (data) => {
+  try {
+    const response = await api.post(`/reservation/calculate-deposit`, data);
+    return response.data;
+  } catch (error) {}
+};
+
+export const createReservation = async (data) => {
+  try {
+    const response = await api.post(`/reservation/create-reservation`, data);
+    return response.data;
+  } catch (error) {}
+};

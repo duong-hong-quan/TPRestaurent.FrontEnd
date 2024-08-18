@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { loginWithOtp, verifyForReservation } from "../../api/acccountApi";
+import {
+  loginWithOtp,
+  verifyCustomerInfoOTP,
+  verifyForReservation,
+} from "../../api/acccountApi";
 
 const OtpConfirmModal = ({
   visible,
@@ -26,56 +30,44 @@ const OtpConfirmModal = ({
 
   const handleSubmit = async () => {
     const otpString = otp.join("");
-    if (otpString === resOtp.code) {
-      // Here you would typically send the OTP to your backend for verification
-      console.log("Submitting OTP:", otpString);
-      switch (otpType) {
-        case 0:
-          const resposne = await loginWithOtp({
-            phoneNumber: phoneNumber,
-            otp: otpString,
-          });
-          if (resposne?.isSuccess) {
-            localStorage.setItem("token", resposne?.result?.token);
-            localStorage.setItem(
-              "refreshToken",
-              resposne?.result?.refreshToken
-            );
-            message.success("Đăng nhập thành công");
-            navigate("/");
-            onClose();
-          } else {
-            message.error("Đăng nhập thất bại");
-          }
-          break;
-        case 1:
-          // Send OTP to your backend for verification
-          break;
-        case 9:
-          // Send OTP to your backend for verification
-          const data = await verifyForReservation(phoneNumber, otpString);
-          if (data?.isSuccess) {
-            message.success("Đã đặt lịch thành công");
-            // navigate("/");
-            handleSuccess();
-
-            onClose();
-          } else {
-            message.error("Đã xảy ra l��i, vui lòng thử lại sau");
-          }
-          break;
-        default:
-          message.error("Đã xảy ra loi, vui lòng thử lại sau");
-          break;
-      }
-    } else {
-      message.error("Vui lòng nhập đuúng mã OTP");
+    switch (otpType) {
+      case 0:
+        const resposne = await loginWithOtp({
+          phoneNumber: phoneNumber,
+          otp: otpString,
+        });
+        if (resposne?.isSuccess) {
+          localStorage.setItem("token", resposne?.result?.token);
+          localStorage.setItem("refreshToken", resposne?.result?.refreshToken);
+          message.success("Đăng nhập thành công");
+          navigate("/");
+          onClose();
+        } else {
+          message.error("Đăng nhập thất bại");
+        }
+        break;
+      case 1:
+        // Send OTP to your backend for verification
+        break;
+      case 9:
+        // Send OTP to your backend for verification
+        const data = await verifyCustomerInfoOTP(phoneNumber, otpString, 1);
+        if (data?.isSuccess) {
+          handleSuccess();
+          onClose();
+        } else {
+          message.error("Đã xảy ra lỗi, vui lòng thử lại sau");
+        }
+        break;
+      default:
+        message.error("Đã xảy ra loi, vui lòng thử lại sau");
+        break;
     }
   };
 
   return (
     <Modal
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       footer={null}
       className="font-sans"
