@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Card,
-  CardHeader,
   CardBody,
   Typography,
   List,
@@ -9,7 +8,7 @@ import {
   ListItemPrefix,
   Chip,
 } from "@material-tailwind/react";
-import { formatPrice } from "../../../util/Utility";
+import { formatDateTime, formatPrice } from "../../../util/Utility";
 import { NavLink } from "react-router-dom";
 
 const ReservationDetail = ({ reservationData }) => {
@@ -25,58 +24,103 @@ const ReservationDetail = ({ reservationData }) => {
           Mã đặt chỗ: {reservation?.reservationId.substring(0, 8)}
         </Typography>
         <Typography color="blue-gray" className="font-medium" textGradient>
-          Ngày đặt:{" "}
-          {new Date(reservation?.reservationDate).toLocaleString("vi-VN")}
+          Ngày đặt: {formatDateTime(reservation?.reservationDate)}
         </Typography>
         <Typography color="blue-gray" className="font-medium" textGradient>
-          Tiền đặt cọc: {reservation?.deposit.toLocaleString("vi-VN")} VNĐ
+          Tiền đặt cọc: {formatPrice(reservation?.deposit)}
         </Typography>
 
         <List>
           {reservationDishes?.length > 0 &&
             reservationDishes.map((dish) => (
-              <ListItem key={dish.reservationDishId}>
-                <ListItemPrefix>
-                  <img
-                    src={dish.dishSizeDetail?.dish?.image || dish.combo?.image}
-                    alt={dish.dishSizeDetail?.dish?.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                </ListItemPrefix>
-                <div>
-                  {dish.dishSizeDetail === null ? (
-                    <>
-                      <NavLink to={`/combo/${dish.combo?.comboId}`}>
-                        {dish.combo?.name}
-                      </NavLink>
-                    </>
-                  ) : (
-                    <>
-                      <NavLink
-                        to={`/product/${dish.dishSizeDetail?.dish?.dishId}`}
-                      >
-                        <Typography variant="h6" color="blue-gray">
-                          {dish.dishSizeDetail?.dish?.name || dish.combo?.name}
+              <React.Fragment key={dish.reservationDishId}>
+                <ListItem>
+                  <ListItemPrefix>
+                    <img
+                      src={
+                        dish.dishSizeDetail?.dish?.image ||
+                        dish.comboDish?.combo?.image
+                      }
+                      alt={
+                        dish.dishSizeDetail?.dish?.name ||
+                        dish.comboDish?.combo?.name
+                      }
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  </ListItemPrefix>
+                  <div>
+                    {dish.comboDish ? (
+                      <>
+                        <NavLink to={`/combo/${dish.comboDish.combo.comboId}`}>
+                          <Typography variant="h6" color="blue-gray">
+                            {dish.comboDish.combo.name}
+                          </Typography>
+                        </NavLink>
+                        <Typography
+                          variant="small"
+                          color="gray"
+                          className="font-normal"
+                        >
+                          Combo
                         </Typography>
-                      </NavLink>
-                    </>
-                  )}
+                      </>
+                    ) : (
+                      <>
+                        <NavLink
+                          to={`/product/${dish.dishSizeDetail.dish.dishId}`}
+                        >
+                          <Typography variant="h6" color="blue-gray">
+                            {dish.dishSizeDetail.dish.name}
+                          </Typography>
+                        </NavLink>
+                        <Typography
+                          variant="small"
+                          color="gray"
+                          className="font-normal"
+                        >
+                          Size: {dish.dishSizeDetail.dishSize.vietnameseName}
+                        </Typography>
+                      </>
+                    )}
+                  </div>
+                  <Chip
+                    value={formatPrice(
+                      dish.dishSizeDetail?.price || dish.comboDish?.combo?.price
+                    )}
+                    className="ml-auto"
+                  />
+                </ListItem>
 
-                  <Typography
-                    variant="small"
-                    color="gray"
-                    className="font-normal"
-                  >
-                    Số lượng: {dish.quantity}
-                  </Typography>
-                </div>
-                <Chip
-                  value={`${formatPrice(
-                    dish.dishSizeDetail?.price || dish.combo?.price
-                  )}`}
-                  className="ml-auto"
-                />
-              </ListItem>
+                {dish.comboDish && (
+                  <List className="pl-8">
+                    {dish.comboDish?.dishCombos?.map((comboDish) => (
+                      <ListItem key={comboDish.dishComboId}>
+                        <ListItemPrefix>
+                          <img
+                            src={comboDish.dishSizeDetail?.dish?.image}
+                            alt={comboDish.dishSizeDetail?.dish?.name}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                        </ListItemPrefix>
+                        <div>
+                          <Typography variant="small" color="blue-gray">
+                            {comboDish.dishSizeDetail?.dish?.name}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="gray"
+                            className="font-normal"
+                          >
+                            Size:{" "}
+                            {comboDish.dishSizeDetail?.dishSize?.vietnameseName.toLowerCase()}
+                            , Số lượng: {comboDish.quantity}
+                          </Typography>
+                        </div>
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </React.Fragment>
             ))}
         </List>
       </CardBody>
