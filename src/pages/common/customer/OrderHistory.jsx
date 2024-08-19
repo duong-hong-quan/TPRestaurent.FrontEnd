@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Button, Table, Tag, Typography, Card, message } from "antd";
-import { Input } from "@material-tailwind/react";
+import { Button, Table, Tag, Typography, Card, message, Input } from "antd";
 import {
   CalendarIcon,
   UserGroupIcon,
@@ -54,19 +53,19 @@ export function OrderHistory() {
           Tra cứu thông tin đặt chỗ
         </Title>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center ">
           <Input
-            type="tel"
             label="Số điện thoại"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             className="flex-grow"
+            prefix={"+84"}
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
           />
           <Button
             onClick={handleSearch}
             loading={loading}
-            className="bg-red-700 text-white px-4 py-6 rounded"
+            className="bg-red-700 text-white px-4 py-4 md:py-6 rounded"
           >
             Tìm kiếm
           </Button>

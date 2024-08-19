@@ -71,9 +71,15 @@ const ReservationRequestItem = ({ reservation }) => {
             className="w-16 h-16 object-cover rounded-full mr-4"
           />
           <div>
-            <p className="font-semibold">aaa</p>
-            <p className="text-gray-600">aaa</p>
-            <p className="text-gray-600">aaa</p>
+            <p className="font-semibold">
+              Tên: {reservation?.customerInfo?.name}
+            </p>
+            <p className="text-gray-600">
+              0{reservation?.customerInfo?.phoneNumber}
+            </p>
+            <p className="text-gray-600">
+              {reservation?.customerInfo?.gender ? "Nam" : "Nữ"}
+            </p>
           </div>
         </div>
         <div className="text-right">
