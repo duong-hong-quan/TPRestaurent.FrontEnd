@@ -20,7 +20,6 @@ import {
 import {
   addCombo,
   removeCombo,
-  clearCart,
   increaseComboQuantity,
   decreaseComboQuantity,
 } from "../../../redux/features/cartSlice";

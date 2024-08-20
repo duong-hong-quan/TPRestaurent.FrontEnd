@@ -34,6 +34,7 @@ const Reservation = () => {
       // setInformation(response.result);
       // setInformation(values);
       console.log(values);
+
       setInformation({
         name: response.result.items[0].name,
         phone: response.result.items[0].phoneNumber,
@@ -42,21 +43,45 @@ const Reservation = () => {
         date: values.date,
         note: values.note,
         customerId: response.result.items[0].customerId,
-        isverified: response.result.items[0].isverified,
+        isVerified: response.result.items[0].isverified,
       });
     }
   };
 
-  const handleSuccess = (isSuccess) => {
+  const handleSuccess = async (isSuccess) => {
     if (isSuccess) {
       message.success("Xác thực OTP thành công");
+      const response = await addNewCustomerInfo({
+        name: information.name,
+        phoneNumber: information.phone.replace(/^\+84/, ""),
+        address: null,
+        accountId: null,
+      });
+      if (response?.isSuccess) {
+        setIsReservationModalVisible(true);
+      } else {
+        // setInformation(response.result);
+        // setInformation(values);
+
+        setInformation({
+          name: response.result.items[0].name,
+          phone: response.result.items[0].phoneNumber,
+          email: information.email,
+          numberOfPeople: information.numberOfPeople,
+          date: [information.date[0], information.date[1]],
+          note: information.note,
+          customerId: response.result.items[0].customerId,
+          isVerified: response.result.items[0].isVerified,
+        });
+        console.log(information);
+      }
       setIsOtpSuccess(true);
     } else {
       message.error("Xác thực OTP thất bại");
       setIsOtpSuccess(false);
     }
   };
-
+  console.log(information);
   console.log(isReservationModalVisible);
 
   const handleOpenOtp = () => {
@@ -165,7 +190,7 @@ const Reservation = () => {
           onClose={() => setIsOtpModalVisible(false)}
           resOtp={resOtp}
           phoneNumber={form.getFieldValue("phone")}
-          otpType={9}
+          otpType={1}
           handleSuccess={handleSuccess}
         />
       </div>

@@ -47,17 +47,17 @@ const OtpConfirmModal = ({
         }
         break;
       case 1:
-        // Send OTP to your backend for verification
-        break;
-      case 9:
-        // Send OTP to your backend for verification
         const data = await verifyCustomerInfoOTP(phoneNumber, otpString, 1);
         if (data?.isSuccess) {
-          handleSuccess();
+          handleSuccess(true);
           onClose();
         } else {
           message.error("Đã xảy ra lỗi, vui lòng thử lại sau");
         }
+        break;
+      case 9:
+        // Send OTP to your backend for verification
+
         break;
       default:
         message.error("Đã xảy ra loi, vui lòng thử lại sau");

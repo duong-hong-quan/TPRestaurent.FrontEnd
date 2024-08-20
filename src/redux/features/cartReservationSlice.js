@@ -56,6 +56,9 @@ const cartReservationSlice = createSlice({
         item.quantity -= 1;
       }
     },
+    clearCart: () => {
+      return [];
+    },
   },
 });
 
@@ -67,7 +70,12 @@ export const getTotal = createSelector([selectCartItems], (items) =>
   items.reduce((total, item) => total + item.size.price * item.quantity, 0)
 );
 
-export const { addToCart, removeFromCart, increaseQuantity, decreaseQuantity } =
-  cartReservationSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+  clearCart,
+} = cartReservationSlice.actions;
 
 export default cartReservationSlice.reducer;

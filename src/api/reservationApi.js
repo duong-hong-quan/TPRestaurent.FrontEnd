@@ -1,8 +1,13 @@
 import api from "./config/axios";
-export const getAllReservations = async (time, pageNumber, pageSize) => {
+export const getAllReservations = async (
+  time,
+  pageNumber,
+  pageSize,
+  status
+) => {
   try {
     const response = await api.get(
-      `/reservation/get-all-reservation?time=${time}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+      `/reservation/get-all-reservation/${pageNumber}/${pageSize}?time=${time}&status=${status}`
     );
     return response.data;
   } catch (error) {}
@@ -38,6 +43,12 @@ export const getAllReservationByPhoneNumber = async (
 export const getReservationById = async (id) => {
   try {
     const response = await api.get(`/reservation/get-reservation-detail/${id}`);
+    return response.data;
+  } catch (error) {}
+};
+export const suggestTable = async (data) => {
+  try {
+    const response = await api.post(`/reservation/suggest-table`, data);
     return response.data;
   } catch (error) {}
 };
