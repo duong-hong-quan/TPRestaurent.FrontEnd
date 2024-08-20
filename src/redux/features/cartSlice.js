@@ -70,7 +70,7 @@ const cartSlice = createSlice({
 
       state.total = calculateTotal(state.items);
     },
-    clearCart: (state) => {
+    clearCartReservation: (state) => {
       state.items = [];
       state.total = 0;
     },
@@ -84,7 +84,7 @@ const calculateTotal = (items) => {
 export const {
   addCombo,
   removeCombo,
-  clearCart,
+  clearCartReservation,
   increaseComboQuantity,
   decreaseComboQuantity,
 } = cartSlice.actions;

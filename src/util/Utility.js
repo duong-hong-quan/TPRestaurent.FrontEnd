@@ -158,11 +158,11 @@ function calculateTimeDifference(startDateString, endDateString) {
 function mergeCartData(cartReservation, cartCombos, options = {}) {
   // Default values or from options
   const {
-    reservationDate = new Date().toISOString(),
-    numberOfPeople = 0,
-    endTime = new Date().toISOString(),
-    customerInfoId = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    deposit = 0,
+    reservationDate = options.reservationDate,
+    numberOfPeople = options.numberOfPeople,
+    endTime = options.endTime,
+    customerInfoId = options.customerInfoId,
+    deposit = options.deposit,
   } = options;
 
   const reservationDishDtos = [];

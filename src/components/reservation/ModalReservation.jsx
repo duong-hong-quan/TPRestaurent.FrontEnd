@@ -18,7 +18,11 @@ import {
   mergeCartData,
 } from "../../util/Utility";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, getTotal } from "../../redux/features/cartReservationSlice";
+import {
+  addToCart,
+  clearCart,
+  getTotal,
+} from "../../redux/features/cartReservationSlice";
 import { ReservationCart } from "./ReservationCart";
 import ComboDetail2 from "../../pages/common/menu-page/ComboDetail2";
 import { calculateDeposit, createReservation } from "../../api/reservationApi";
@@ -27,6 +31,7 @@ import {
   sendCustomerInfoOtp,
   sendOtp,
 } from "../../api/acccountApi";
+import { clearCartReservation } from "../../redux/features/cartSlice";
 
 export function ModalReservation({
   visible,
@@ -72,6 +77,7 @@ export function ModalReservation({
     if (visible) {
       fetchData();
     }
+    handleDeposit();
   }, [visible, fetchData]);
 
   const handleTabChange = (key) => {
@@ -118,9 +124,15 @@ export function ModalReservation({
       information.customerId === undefined ||
       information.isVerified === false
     ) {
-      handleOpenOtp();
-      return;
+      const response = await sendCustomerInfoOtp(information.phone, 1);
+      if (response?.isSuccess) {
+        handleOpenOtp();
+        return;
+      } else {
+        message.error("Failed to send OTP: ");
+      }
     }
+    debugger;
     const data = mergeCartData(cart, cartCombo, {
       reservationDate: formatDateToISOString(new Date(information.date[0])),
       endTime: formatDateToISOString(new Date(information.date[1])),
@@ -130,6 +142,8 @@ export function ModalReservation({
     const responseReservation = await createReservation(data);
     if (responseReservation.isSuccess) {
       message.success("Đặt bàn thành công");
+      dispatch(clearCart());
+      dispatch(clearCartReservation());
     } else {
       responseReservation.messages.forEach((mess) => {
         message.error(mess);
@@ -143,7 +157,7 @@ export function ModalReservation({
         mergeCartData(cart, cartCombo, {
           reservationDate: formatDateToISOString(new Date(information.date[0])),
           endTime: formatDateToISOString(new Date(information.date[1])),
-          customerInfoId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          customerInfoId: information.customerId,
           deposit: 0,
         })
       );

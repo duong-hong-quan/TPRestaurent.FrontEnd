@@ -16,9 +16,11 @@ import {
   Tooltip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { getAllReservations } from "../../api/reservationApi";
+import { getAllReservations, suggestTable } from "../../api/reservationApi";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import { set } from "react-hook-form";
+import { formatDateTime, formatPrice } from "../../util/Utility";
+import TableSuggestionModal from "./reservation/TableSuggestionModal";
 
 const TABS = [
   {
@@ -90,7 +92,7 @@ export function AdminReservationPage() {
   const fetchReservations = async (time, pageNumber, pageSize) => {
     try {
       setLoading(true);
-      const response = await getAllReservations(time, pageNumber, pageSize);
+      const response = await getAllReservations(time, pageNumber, pageSize, 0);
       if (response?.isSuccess) {
         setReservations(response?.result?.items);
         setTotalPages(response?.result?.totalPages);
@@ -104,6 +106,31 @@ export function AdminReservationPage() {
   useEffect(() => {
     fetchReservations(1, page, 10);
   }, [page]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tables, setTables] = useState([]);
+  const startDate = "2024-08-20";
+  const endDate = "2024-08-21";
+  const people = 4;
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleSuggestTable = async (startDate, endDate, people) => {
+    openModal();
+    try {
+      const response = await suggestTable({
+        startTime: startDate,
+        endTime: endDate,
+        numOfPeople: people,
+        isPrivate: false,
+      });
+      if (response?.isSuccess) {
+        setTables(response?.result);
+      }
+    } catch (error) {
+    } finally {
+    }
+  };
   return (
     <Card className="h-full w-full">
       <LoadingOverlay isLoading={loading} />
@@ -180,8 +207,8 @@ export function AdminReservationPage() {
                   reservationDate,
                   numberOfPeople,
                   endTime,
-                  customerAccountId,
-                  customerAccount,
+                  customerInfoId,
+                  customerInfo,
                   deposit,
                   statusId,
                   reservationStatus,
@@ -201,7 +228,7 @@ export function AdminReservationPage() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {reservationId}
+                        {reservationId.substring(0, 8)}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -210,7 +237,7 @@ export function AdminReservationPage() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {`${customerAccount?.firstName} - ${customerAccount?.phoneNumber}`}
+                        {`${customerInfo?.name} - ${customerInfo?.phoneNumber}`}
                         {}
                       </Typography>
                     </td>
@@ -229,7 +256,7 @@ export function AdminReservationPage() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {new Date(endTime).toLocaleString()}
+                        {formatDateTime(endTime)}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -238,7 +265,7 @@ export function AdminReservationPage() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {deposit}
+                        {formatPrice(deposit)}
                       </Typography>
                     </td>
 
@@ -254,7 +281,16 @@ export function AdminReservationPage() {
                     </td>
                     <td className={classes}>
                       <Tooltip content="Xem chi tiết">
-                        <IconButton variant="text">
+                        <IconButton
+                          variant="text"
+                          onClick={() =>
+                            handleSuggestTable(
+                              reservationDate,
+                              endTime,
+                              numberOfPeople
+                            )
+                          }
+                        >
                           <EyeIcon className="h-4 w-4" />
                         </IconButton>
                       </Tooltip>
@@ -287,6 +323,14 @@ export function AdminReservationPage() {
           </Button>
         </div>
       </CardFooter>
+      <TableSuggestionModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        tables={tables}
+        startDate={startDate}
+        endDate={endDate}
+        people={people}
+      />
     </Card>
   );
 }
