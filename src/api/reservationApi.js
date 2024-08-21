@@ -52,3 +52,15 @@ export const suggestTable = async (data) => {
     return response.data;
   } catch (error) {}
 };
+
+export const addTableToReservation = async (reservationId, data) => {
+  try {
+    const response = await api.post(
+      `/reservation/add-table-to-reservation?reservationId=${reservationId}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};

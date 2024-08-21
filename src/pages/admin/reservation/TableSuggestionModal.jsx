@@ -11,24 +11,47 @@ import {
   CardFooter,
 } from "@material-tailwind/react";
 import { formatDate } from "../../../util/Utility";
+import { addTableToReservation } from "../../../api/reservationApi";
+import { message } from "antd";
 
 const TableSuggestionModal = ({
-  startDate,
-  endDate,
-  people,
   tables,
   isOpen,
   onClose,
+  selectedReservation,
 }) => {
-  const [selectedTable, setSelectedTable] = useState(null);
+  const [selectedTables, setSelectedTables] = useState([]);
 
   const handleTableSelect = (table) => {
-    setSelectedTable(table);
+    setSelectedTables((prevSelectedTables) => {
+      if (prevSelectedTables.some((t) => t.tableId === table.tableId)) {
+        // If the table is already selected, remove it
+        return prevSelectedTables.filter((t) => t.tableId !== table.tableId);
+      } else {
+        // Otherwise, add the table to the selection
+        return [...prevSelectedTables, table];
+      }
+    });
   };
 
-  const handleConfirm = () => {
-    // Handle confirmation logic here
-    onClose();
+  const handleConfirm = async () => {
+    console.log(selectedReservation);
+    // onClose();
+    console.log(selectedTables);
+    const data = selectedTables.map((item) => item.tableId);
+    console.log(data);
+    const response = await addTableToReservation(
+      selectedReservation.reservationId,
+      data
+    );
+    if (response?.isSuccess) {
+      message.success("Chọn bàn thành công");
+      onClose();
+    } else {
+      response.messages.forEach((item) => {
+        message.error(item);
+      });
+    }
   };
 
   return (
@@ -44,7 +67,7 @@ const TableSuggestionModal = ({
           <Card
             key={table.tableId}
             className={`cursor-pointer transition-all ${
-              selectedTable?.tableId === table.tableId
+              selectedTables.some((t) => t.tableId === table.tableId)
                 ? "border-2 border-red-500"
                 : ""
             }`}
@@ -61,14 +84,16 @@ const TableSuggestionModal = ({
               <Button
                 size="sm"
                 variant={
-                  selectedTable?.tableId === table.tableId
+                  selectedTables.some((t) => t.tableId === table.tableId)
                     ? "filled"
                     : "outlined"
                 }
                 fullWidth
                 className="bg-red-800 text-white"
               >
-                {selectedTable?.tableId === table.tableId ? "Đã chọn" : "Chọn"}
+                {selectedTables.some((t) => t.tableId === table.tableId)
+                  ? "Đã chọn"
+                  : "Chọn"}
               </Button>
             </CardFooter>
           </Card>
@@ -78,10 +103,11 @@ const TableSuggestionModal = ({
         <div className="flex flex-col md:flex-row justify-between items-center w-full">
           <div className="mb-4 md:mb-0">
             <Typography variant="small" color="gray">
-              Yêu cầu đặt bàn cho {people} người
+              Yêu cầu đặt bàn cho {selectedReservation?.people} người
             </Typography>
             <Typography variant="small" color="gray">
-              Từ: {formatDate(startDate)} đến: {formatDate(endDate)}
+              Từ: {formatDate(selectedReservation?.startDate)} đến:{" "}
+              {formatDate(selectedReservation?.endDate)}
             </Typography>
           </div>
           <div className="flex gap-2">
@@ -92,7 +118,7 @@ const TableSuggestionModal = ({
               variant="filled"
               color="red"
               onClick={handleConfirm}
-              disabled={!selectedTable}
+              disabled={selectedTables.length === 0}
             >
               Xác nhận
             </Button>

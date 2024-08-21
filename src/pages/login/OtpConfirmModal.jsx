@@ -20,11 +20,21 @@ const OtpConfirmModal = ({
   const handleChange = (value, index) => {
     const newOtp = [...otp];
     newOtp[index] = value;
-    setOtp(newOtp);
 
-    // Move focus to the next input
+    // Move focus to the next input if value is entered and it's not the last input
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`).focus();
+    }
+
+    // Handle clearing the OTP if the last input is deleted
+    if (value === "" && index === 5) {
+      // Clear all OTP inputs
+      setOtp(["", "", "", "", "", ""]);
+      // Move focus to the first input
+      document.getElementById(`otp-0`).focus();
+    } else {
+      // Update the OTP state
+      setOtp(newOtp);
     }
   };
 

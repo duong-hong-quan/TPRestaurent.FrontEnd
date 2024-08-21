@@ -14,7 +14,7 @@ const SliderHome = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 600,
+    autoplaySpeed: 2600,
     fade: true,
     cssEase: "linear",
   };
