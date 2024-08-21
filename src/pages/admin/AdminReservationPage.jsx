@@ -89,6 +89,7 @@ export function AdminReservationPage() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedReservation, setSelectedReservation] = useState(null);
   const fetchReservations = async (time, pageNumber, pageSize) => {
     try {
       setLoading(true);
@@ -108,14 +109,23 @@ export function AdminReservationPage() {
   }, [page]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tables, setTables] = useState([]);
-  const startDate = "2024-08-20";
-  const endDate = "2024-08-21";
-  const people = 4;
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleSuggestTable = async (startDate, endDate, people) => {
+  const handleSuggestTable = async (
+    startDate,
+    endDate,
+    people,
+    reservationId
+  ) => {
+    setSelectedReservation({
+      startDate: startDate,
+      endDate: endDate,
+      people: people,
+      isPrivate: false,
+      reservationId: reservationId,
+    });
     openModal();
     try {
       const response = await suggestTable({
@@ -287,7 +297,8 @@ export function AdminReservationPage() {
                             handleSuggestTable(
                               reservationDate,
                               endTime,
-                              numberOfPeople
+                              numberOfPeople,
+                              reservationId
                             )
                           }
                         >
@@ -327,9 +338,7 @@ export function AdminReservationPage() {
         isOpen={isModalOpen}
         onClose={closeModal}
         tables={tables}
-        startDate={startDate}
-        endDate={endDate}
-        people={people}
+        selectedReservation={selectedReservation}
       />
     </Card>
   );

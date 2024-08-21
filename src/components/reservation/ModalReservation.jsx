@@ -32,6 +32,7 @@ import {
   sendOtp,
 } from "../../api/acccountApi";
 import { clearCartReservation } from "../../redux/features/cartSlice";
+import { useNavigate } from "react-router-dom";
 
 export function ModalReservation({
   visible,
@@ -49,6 +50,7 @@ export function ModalReservation({
   const [combo, setCombo] = useState({});
   const [isOpenComboDetail, setIsOpenComboDetail] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cart = useSelector((state) => state.cartReservation);
   const cartCombo = useSelector((state) => state.cart);
   const handleAddToCart = (dish, size) => {
@@ -138,12 +140,14 @@ export function ModalReservation({
       endTime: formatDateToISOString(new Date(information.date[1])),
       customerInfoId: information.customerId,
       deposit: deposit,
+      numberOfPeople: information.numberOfPeople,
     });
     const responseReservation = await createReservation(data);
     if (responseReservation.isSuccess) {
       message.success("Đặt bàn thành công");
       dispatch(clearCart());
       dispatch(clearCartReservation());
+      navigate("/order-history");
     } else {
       responseReservation.messages.forEach((mess) => {
         message.error(mess);
@@ -158,6 +162,7 @@ export function ModalReservation({
           reservationDate: formatDateToISOString(new Date(information.date[0])),
           endTime: formatDateToISOString(new Date(information.date[1])),
           customerInfoId: information.customerId,
+          numberOfPeople: information.numberOfPeople,
           deposit: 0,
         })
       );
