@@ -78,7 +78,9 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
       >
         <NavLink to={item.path} className="flex items-center w-full">
           <ListItemPrefix>{item.icon}</ListItemPrefix>
-          <Typography className="mr-auto text-white">{item.title}</Typography>
+          <Typography className="mr-auto text-white font-bold">
+            {item.title}
+          </Typography>
         </NavLink>
       </AccordionHeader>
     </ListItem>
@@ -94,7 +96,9 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
                 <ListItemPrefix>
                   <FaChevronRight className="h-3 w-3" />
                 </ListItemPrefix>
-                <Typography className="text-white">{subItem.title}</Typography>
+                <Typography className="text-white font-semibold">
+                  {subItem.title}
+                </Typography>
               </NavLink>
             </ListItem>
           ))}
@@ -112,10 +116,10 @@ export function MultiLevelSidebar() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#970C1A] text-white transition-transform duration-300 ease-in-out ${
+        className={`fixed h-screen inset-y-0 left-0 z-50 w-64 bg-[#970C1A] text-white transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0`}
       >

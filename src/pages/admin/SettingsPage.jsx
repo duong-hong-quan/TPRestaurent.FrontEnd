@@ -23,6 +23,9 @@ const SettingsPage = () => {
       title: "Tên cấu hình",
       dataIndex: "name",
       key: "name",
+      render(_, record) {
+        return <span>{record.vietnameseName}</span>;
+      },
     },
     {
       title: "Giá trị hiện tại",

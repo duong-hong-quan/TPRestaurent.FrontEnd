@@ -313,7 +313,7 @@ export function AdminReservationPage() {
           </tbody>
         </table>
       </CardBody>
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+      {/* <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
         <Typography variant="small" color="blue-gray" className="font-normal">
           Trang 1 / 10
         </Typography>
@@ -333,7 +333,7 @@ export function AdminReservationPage() {
             Tiếp
           </Button>
         </div>
-      </CardFooter>
+      </CardFooter> */}
       <TableSuggestionModal
         isOpen={isModalOpen}
         onClose={closeModal}
