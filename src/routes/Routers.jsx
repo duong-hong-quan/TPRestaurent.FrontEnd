@@ -24,6 +24,7 @@ import AboutUs from "../pages/common/about-us/AboutUs";
 import { ComboDetail } from "../pages/common/menu-page/ComboDetail";
 import ComboDetail2 from "../pages/common/menu-page/ComboDetail2";
 import { OrderHistory } from "../pages/common/customer/OrderHistory";
+import TableView from "../pages/kitchen/TableView";
 
 function Routers() {
   const routing = useRoutes([
@@ -138,6 +139,16 @@ function Routers() {
         {
           path: "overviews",
           element: <AdminDashboardPage />,
+        },
+      ],
+    },
+    {
+      path: "kitchen",
+      element: <ManagerLayout />,
+      children: [
+        {
+          index: true,
+          element: <TableView />,
         },
       ],
     },

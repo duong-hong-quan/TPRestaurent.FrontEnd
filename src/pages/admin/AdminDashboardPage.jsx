@@ -71,8 +71,7 @@ const AdminDashboardPage = ({
           <Card key={title}>
             <CardHeader
               variant="gradient"
-              color="red"
-              className="absolute -mt-4 grid h-16 w-16 place-items-center"
+              className="bg-red-900 absolute -mt-4 grid h-16 w-16 place-items-center"
             >
               {icon}
             </CardHeader>
@@ -101,8 +100,7 @@ const AdminDashboardPage = ({
         <Card>
           <CardHeader
             variant="gradient"
-            color="red"
-            className="mb-8 p-6 text-center"
+            className="mb-8 p-6 text-center bg-red-900"
           >
             <Typography variant="h6" color="white">
               Đơn hàng gần đây
@@ -154,8 +152,7 @@ const AdminDashboardPage = ({
         <Card>
           <CardHeader
             variant="gradient"
-            color="red"
-            className="mb-8 p-6 text-center"
+            className="mb-8 p-6 text-center bg-red-900"
           >
             <Typography variant="h6" color="white">
               Món ăn phổ biến nhất

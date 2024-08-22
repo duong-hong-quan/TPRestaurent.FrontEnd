@@ -9,6 +9,8 @@ import {
   CardBody,
   CardFooter,
   Typography,
+  Dialog,
+  DialogFooter,
 } from "@material-tailwind/react";
 import ReservationInformation from "./ReservationInformation";
 import {
@@ -178,34 +180,23 @@ export function ModalReservation({
   }, [cartCombo, cart]);
   console.log(selectedSizes);
   return (
-    <Modal
-      footer={null}
+    <Dialog
       open={visible}
-      onCancel={onCancel}
-      style={{ top: 5 }}
-      width={1500}
+      handler={onCancel}
+      size="xxl"
+      className="overflow-y-auto max-h-[90vh]"
     >
-      <div
-        className="grid grid-cols-1 md:grid-cols-4 "
-        style={{ height: "650px", overflowY: "scroll" }}
-      >
+      <div className="grid grid-cols-1 md:grid-cols-4 ">
         <div className="col-span-3 p-4 ">
           <Tabs activeKey={activeTab} onChange={handleTabChange}>
-            <TabPane
-              tab="Món ăn"
-              key="0"
-              className="h-[500px] overflow-y-auto "
-            >
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2 min-h-full">
+            <TabPane tab="Món ăn" key="0">
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2 ">
                 {dishes.map((dish) => (
                   <Card
                     key={dish?.dish?.dishId}
                     className="mt-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
                   >
-                    <CardHeader
-                      color="blue-gray"
-                      className="relative h-56 overflow-hidden"
-                    >
+                    <CardHeader color="blue-gray" className="relative h-56">
                       <img
                         src={dish?.dish?.image}
                         alt={dish?.dish?.name}
@@ -270,11 +261,7 @@ export function ModalReservation({
                 ))}
               </div>
             </TabPane>
-            <TabPane
-              tab="Combo món"
-              key="1"
-              className="h-[500px] overflow-y-scroll"
-            >
+            <TabPane tab="Combo món" key="1">
               {isOpenComboDetail ? (
                 <>
                   <ComboDetail2
@@ -339,7 +326,7 @@ export function ModalReservation({
             </TabPane>
           </Tabs>
         </div>
-        <div className="col-span-1 overflow-y-scroll">
+        <div className="col-span-1">
           <Tabs activeKey={rightSideTab} onChange={handleRightSideTabChange}>
             <TabPane tab="Thông tin" key="1">
               <ReservationInformation reservation={information} />
@@ -367,6 +354,11 @@ export function ModalReservation({
           </Tabs>{" "}
         </div>
       </div>
-    </Modal>
+      <DialogFooter>
+        <Button variant="text" color="red" onClick={onCancel}>
+          Đóng
+        </Button>
+      </DialogFooter>
+    </Dialog>
   );
 }
