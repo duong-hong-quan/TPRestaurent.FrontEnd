@@ -10,8 +10,13 @@ import {
 } from "antd";
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { formatPrice } from "../../../util/Utility";
 import {
+  formatPrice,
+  isEmptyObject,
+  mergeCartData,
+} from "../../../util/Utility";
+import {
+  clearCart,
   decreaseQuantity,
   getTotal,
   increaseQuantity,
@@ -22,19 +27,65 @@ import {
   removeCombo,
   increaseComboQuantity,
   decreaseComboQuantity,
+  clearCartReservation,
 } from "../../../redux/features/cartSlice";
 import CartCombosTable from "../../../components/cart/CartCombosTable";
 import { NavLink } from "react-router-dom";
+import InfoModal from "../../../components/user/InfoModal.jsx";
+import {
+  addNewCustomerInfo,
+  getCustomerInfoByPhoneNumber,
+  updateCustomerInfo,
+} from "../../../api/acccountApi.js";
+import CustomerCard from "../../../components/user/CustomerCard.jsx";
+import UserInfo from "../../../components/user/UserInfo.jsx";
+import { createOrder } from "../../../api/orderApi.js";
+import PaymentMethodSelector from "../../../components/cart/PaymentMethodSelector.jsx";
+import { createPayment } from "../../../api/transactionApi.js";
 
 const { TextArea } = Input;
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const cartReservation = useSelector((state) => state.cartReservation);
+  const [phoneNumber, setPhoneNumber] = useState("");
   const cart = useSelector((state) => state.cart);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [note, setNote] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [initialData, setInitialData] = useState({});
+  const [selectedMethod, setSelectedMethod] = useState(1);
+  const handleOpenModal = (data = null) => {
+    setIsUpdate(!!data);
+    setInitialData(data);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSubmit = async (formData) => {
+    // Handle form submission (create or update) here
+    console.log(formData);
+    if (isUpdate) {
+      const data = await updateCustomerInfo(formData);
+      if (data?.isSuccess) {
+        message.success("Cập nhật thông tin thành công!");
+      } else {
+        message.error("Cập nhật thông tin thất bại!");
+      }
+    } else {
+      const data = await addNewCustomerInfo(formData);
+      if (data?.isSuccess) {
+        message.success("Thêm mới thông tin thành công!");
+      } else {
+        message.success("Thêm mới thông tin thất bại!");
+      }
+    }
+  };
   const dispatch = useDispatch();
   useEffect(() => {
     setCartItems(cartReservation);
@@ -155,8 +206,74 @@ const CartPage = () => {
   const handleRemoveCombo = (comboId, selectedDishes) => {
     dispatch(removeCombo({ comboId, selectedDishes }));
   };
+  const handlePhone = async () => {
+    const data = await getCustomerInfoByPhoneNumber(phoneNumber);
+    if (data?.isSuccess) {
+      if (data.result) {
+        setIsUpdate(true);
+        window.scrollTo(0, 0);
+        setInitialData(data.result);
+      }
+    } else {
+      setIsUpdate(false);
+      setIsModalOpen(true);
+    }
+  };
+  const handleChangeMethod = (data) => {
+    setSelectedMethod(data);
+  };
+  const checkOut = async () => {
+    // console.log(mergeCartData(cartReservation, cart));
+    if (phoneNumber === "" || phoneNumber === null) {
+      message.error("Vui lòng nhập số điện thoại");
+    }
+    const data = {
+      customerId: initialData?.customerInfo?.customerId,
+      paymentMethodId: selectedMethod,
+      reservationId: null,
+      couponId: null,
+      note: null,
+      isDelivering: true,
+      orderDetailsDtos: mergeCartData(cartReservation, cart)
+        .reservationDishDtos,
+      loyalPointsToUse: 0,
+      tableId: null,
+    };
+    console.log(data);
+    const response = await createOrder(data);
+    if (response?.isSuccess) {
+      message.success(
+        "Đặt hàng thành công! Chúng tôi đang tiến hành chuyển đến cổng thanh toán"
+      );
+      window.location.href = response?.result?.paymentLink;
+      // const responsePayment = await createPayment({
+      //   orderId: response.result?.order?.orderId,
+      //   paymentMethodId: selectedMethod,
+      // });
+      // if (responsePayment?.isSuccess) {
+      //   console.log(responsePayment);
+      //   //     dispatch(clearCart());
+      //   //    dispatch(clearCartReservation());
+      // }
+
+      // window.location.href = "/";
+      console.log(response);
+    } else {
+      response.messages.forEach((item) => {
+        message.error(item);
+      });
+    }
+  };
   return (
     <div className="container mx-auto px-4 py-8">
+      {!isEmptyObject(initialData) && (
+        <>
+          <UserInfo
+            userData={initialData.customerInfo}
+            handleOpenUpdate={() => setIsModalOpen(true)}
+          />
+        </>
+      )}
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
         Giỏ hàng của bạn
       </h1>
@@ -183,7 +300,27 @@ const CartPage = () => {
 
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <div>
-              <h2 className="text-xl font-semibold mb-4">Mã giảm giá</h2>
+              <h2 className="text-xl font-semibold mb-4">Số điện thoại</h2>
+
+              <div className="flex items-center">
+                <Input
+                  prefix={"+84"}
+                  placeholder="Nhập số điện thoại"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="mr-2 flex-grow"
+                />
+                <Button
+                  type="primary"
+                  className="bg-red-700 hover:bg-red-600"
+                  onClick={handlePhone}
+                >
+                  Xác nhận
+                </Button>
+              </div>
+              <PaymentMethodSelector handleChange={handleChangeMethod} />
+
+              <h2 className="mt-4 text-xl font-semibold mb-4">Mã giảm giá</h2>
               <div className="flex items-center">
                 <Input
                   placeholder="Nhập mã giảm giá"
@@ -200,6 +337,7 @@ const CartPage = () => {
                 </Button>
               </div>
             </div>
+
             <div>
               <h2 className="text-xl font-semibold mb-4">Ghi chú</h2>
               <TextArea
@@ -238,6 +376,7 @@ const CartPage = () => {
               type="primary"
               size="large"
               className="bg-red-700 hover:bg-red-600 text-lg h-12 px-8"
+              onClick={checkOut}
             >
               Đặt ngay
             </Button>
@@ -254,6 +393,13 @@ const CartPage = () => {
           </Button>
         </Empty>
       )}
+      <InfoModal
+        initialData={initialData}
+        isOpen={isModalOpen}
+        isUpdate={isUpdate}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 };

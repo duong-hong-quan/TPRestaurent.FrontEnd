@@ -25,6 +25,8 @@ import { ComboDetail } from "../pages/common/menu-page/ComboDetail";
 import ComboDetail2 from "../pages/common/menu-page/ComboDetail2";
 import { OrderHistory } from "../pages/common/customer/OrderHistory";
 import TableView from "../pages/kitchen/TableView";
+import OrderDetailView from "../pages/common/customer/OrderDetailView";
+import VerifyPayment from "../pages/common/verify-payment/VerifyPayment";
 
 function Routers() {
   const routing = useRoutes([
@@ -79,6 +81,14 @@ function Routers() {
         {
           path: "order-history",
           element: <OrderHistory />,
+        },
+        {
+          path: "order-history/:id",
+          element: <OrderDetailView />,
+        },
+        {
+          path: "payment/*",
+          element: <VerifyPayment />,
         },
       ],
     },
