@@ -58,3 +58,23 @@ export const sendCustomerInfoOtp = async (phoneNumber, otpType) => {
     throw new Error(error);
   }
 };
+
+export const getCustomerInfoByPhoneNumber = async (phoneNumber) => {
+  try {
+    const response = await api.get(
+      `/api/account/get-customer-info-by-phonenumber?phoneNumber=${phoneNumber}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const updateCustomerInfo = async (data) => {
+  try {
+    const response = await api.put(`/api/account/update-customer-info`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};

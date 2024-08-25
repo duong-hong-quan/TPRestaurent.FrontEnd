@@ -35,6 +35,7 @@ import {
 } from "../../api/acccountApi";
 import { clearCartReservation } from "../../redux/features/cartSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export function ModalReservation({
   visible,
@@ -151,6 +152,9 @@ export function ModalReservation({
       dispatch(clearCartReservation());
       navigate("/order-history");
     } else {
+      debugger;
+      console.log(responseReservation.messages);
+
       responseReservation.messages.forEach((mess) => {
         message.error(mess);
       });
@@ -180,14 +184,15 @@ export function ModalReservation({
   }, [cartCombo, cart]);
   console.log(selectedSizes);
   return (
-    <Dialog
+    <Modal
+      footer={null}
       open={visible}
-      handler={onCancel}
-      size="xxl"
-      className="overflow-y-auto max-h-[90vh]"
+      onCancel={onCancel}
+      width={2000}
+      className="max-h-[700px]"
     >
       <div className="grid grid-cols-1 md:grid-cols-4 ">
-        <div className="col-span-3 p-4 ">
+        <div className="col-span-3 p-4 max-h-[800px] overflow-y-auto ">
           <Tabs activeKey={activeTab} onChange={handleTabChange}>
             <TabPane tab="Món ăn" key="0">
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2 ">
@@ -359,6 +364,6 @@ export function ModalReservation({
           Đóng
         </Button>
       </DialogFooter>
-    </Dialog>
+    </Modal>
   );
 }
