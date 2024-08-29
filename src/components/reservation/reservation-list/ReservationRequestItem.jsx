@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaCalendar,
   FaIdCard,
@@ -7,14 +7,14 @@ import {
   FaInfoCircle,
 } from "react-icons/fa";
 import {
-  calculateDuration,
   calculateTimeDifference,
   formatDate,
   getKeyByValue,
 } from "../../../util/Utility";
 import ReservationDetail from "../reservation-detail/ReservationDetail";
 import { getReservationById } from "../../../api/reservationApi";
-import { ReservationRequestStatus } from "../../../util/GlobalType";
+import { ReservationStatus } from "../../../util/GlobalType";
+import { createPayment } from "../../../api/transactionApi";
 
 const ReservationRequestItem = ({ reservation }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -39,13 +39,32 @@ const ReservationRequestItem = ({ reservation }) => {
     if (showDetails) {
     }
   }, [showDetails, reservationId]);
-  const statusKey = getKeyByValue(
-    ReservationRequestStatus,
-    reservation.statusId
-  );
+  const statusKey = getKeyByValue(ReservationStatus, reservation.statusId);
   const handlePayment = async () => {
-    // Call API to process payment
+    const data = await createPayment({
+      reservationId: reservation.reservationId,
+      paymentMethod: 2,
+    });
+    if (data?.isSuccess) {
+      window.location.href = data?.result;
+    }
   };
+  function getBadgeColor(status) {
+    switch (status) {
+      case ReservationStatus.PENDING:
+        return "yellow";
+      case ReservationStatus.TABLE_ASSIGNED:
+        return "blue";
+      case ReservationStatus.PAID:
+        return "green";
+      case ReservationStatus.DINING:
+        return "orange";
+      case ReservationStatus.CANCELLED:
+        return "red";
+      default:
+        return "gray"; // Default color for unknown status
+    }
+  }
   console.log(reservation);
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-4">
@@ -61,7 +80,11 @@ const ReservationRequestItem = ({ reservation }) => {
             ID: {reservation.reservationId.substring(0, 8)}
           </p>
         </div>
-        <p className="text-yellow-600 font-semibold bg-yellow-100 px-3 py-1 rounded-full">
+        <p
+          className={`text-yellow-600 font-semibold px-3 py-1 rounded-full text-${getBadgeColor(
+            statusKey
+          )}-700`}
+        >
           {statusKey}
         </p>
       </div>
@@ -104,8 +127,11 @@ const ReservationRequestItem = ({ reservation }) => {
           <span className="text-gray-700 ml-2">{reservation.note}</span>
         </p>
         <div className="flex">
-          {reservation?.statusId === 0 && (
-            <button className="bg-red-600 mx-2 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
+          {reservation?.statusId === 1 && (
+            <button
+              onClick={() => handlePayment(reservation)}
+              className="bg-red-600 mx-2 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+            >
               Thanh toán ngay
             </button>
           )}

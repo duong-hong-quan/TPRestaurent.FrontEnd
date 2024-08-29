@@ -64,3 +64,14 @@ export const addTableToReservation = async (reservationId, data) => {
     throw new Error(error);
   }
 };
+
+export const updateReservationStatus = async (reservationId, status) => {
+  try {
+    const response = await api.put(
+      `/reservation/update-reservation-status/${reservationId}/${status}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};

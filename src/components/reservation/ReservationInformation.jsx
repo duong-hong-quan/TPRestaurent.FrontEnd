@@ -17,6 +17,7 @@ import {
 import { formatDateTime } from "../../util/Utility";
 
 const ReservationInformation = ({ reservation }) => {
+  console.log(reservation);
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardBody>
@@ -57,7 +58,8 @@ const ReservationInformation = ({ reservation }) => {
                           variant="small"
                           className="font-medium break-words"
                         >
-                          {formatDateTime(date)}
+                          {/* {formatDateTime(date)} */}
+                          {date}
                         </Typography>
                       ))
                     ) : (
