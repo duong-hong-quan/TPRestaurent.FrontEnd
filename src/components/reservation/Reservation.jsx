@@ -14,15 +14,17 @@ import OtpConfirmModal from "../../pages/login/OtpConfirmModal";
 import { ModalReservation } from "./ModalReservation";
 import reservationImage from "../../assets/imgs/reservation.png";
 import moment from "moment";
-import { formatPhoneNumber } from "../../util/Utility";
+import { convertToISOString, formatPhoneNumber } from "../../util/Utility";
+import { suggestTable } from "../../api/reservationApi";
+import { set } from "react-hook-form";
 const { TextArea } = Input;
 
 const Reservation = () => {
   const [form] = Form.useForm();
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
   const [isReservationModalVisible, setIsReservationModalVisible] =
-    useState(true);
-
+    useState(false);
+  const [isValid, setIsValid] = useState(false);
   const [information, setInformation] = useState({});
   const [isOtpSuccess, setIsOtpSuccess] = useState(false);
   const [selectedEndTime, setSelectedEndTime] = useState(null);
@@ -52,67 +54,75 @@ const Reservation = () => {
   const handlePhoneChange = (e) => {
     const cleanedPhone = e.target.value.replace(/\s+/g, "");
     form.setFieldsValue({ phone: cleanedPhone });
+    if (form.getFieldValue("phone") && isValidatePhone) {
+      setIsValid(false);
+    }
   };
 
-  const handlePhoneBlur = (e) => {
+  const handlePhoneBlur = async (e) => {
     const formattedPhone = formatPhoneNumber(e.target.value);
     form.setFieldsValue({ phone: formattedPhone });
   };
   const onFinish = async (values) => {
-    message.error("Hiện tại các bàn dành cho 2 người đã đầy");
-    const combinedDate = [values.date, values.startTime, values.endTime];
-    setInformation({ ...values, date: combinedDate });
-    setIsReservationModalVisible(true);
-    const response = await addNewCustomerInfo({
-      name: values.name,
-      phoneNumber: values.phone.replace(/^\+84/, ""),
-      address: null,
-      accountId: null,
+    // message.error("Hiện tại các bàn dành cho 2 người đã đầy");
+    // const combinedDate = [values.date, values.startTime, values.endTime];
+    // setInformation({ ...values, date: combinedDate });
+    // setIsReservationModalVisible(true);
+    // const response = await addNewCustomerInfo({
+    //   name: values.name,
+    //   phoneNumber: values.phone.replace(/^\+84/, ""),
+    //   address: null,
+    //   accountId: null,
+    // });
+    // if (response?.isSuccess) {
+    //   setIsReservationModalVisible(true);
+    // } else {
+    //   setInformation({
+    //     name: response.result.items[0].name,
+    //     phone: response.result.items[0].phoneNumber,
+    //     email: values.email,
+    //     numberOfPeople: values.numberOfPeople,
+    //     date: combinedDate,
+    //     note: values.note,
+    //     customerId: response.result.items[0].customerId,
+    //     isVerified: response.result.items[0].isverified,
+    //   });
+    // }
+    const combinedDate = [
+      form.getFieldValue("date"),
+      form.getFieldValue("startTime"),
+      form.getFieldValue("endTime"),
+    ];
+    console.log(convertToISOString(combinedDate));
+    const responseSuggessTable = await suggestTable({
+      startTime: convertToISOString(combinedDate)[0],
+      endTime: convertToISOString(combinedDate)[1],
+      numOfPeople: form.getFieldValue("numberOfPeople"),
+      isPrivate: form.getFieldValue("isPrivate"),
     });
-    if (response?.isSuccess) {
-      setIsReservationModalVisible(true);
-    } else {
-      setInformation({
-        name: response.result.items[0].name,
-        phone: response.result.items[0].phoneNumber,
-        email: values.email,
-        numberOfPeople: values.numberOfPeople,
-        date: combinedDate,
-        note: values.note,
-        customerId: response.result.items[0].customerId,
-        isVerified: response.result.items[0].isverified,
-      });
+    if (responseSuggessTable?.isSuccess) {
+      if (responseSuggessTable?.result?.length > 0) {
+        setInformation({
+          ...information,
+          date: convertToISOString(combinedDate),
+          numberOfPeople: form.getFieldValue("numberOfPeople"),
+          note: form.getFieldValue("note"),
+        });
+        message.success("Hệ thống chúng tôi đã tìm ra bàn phù hợp với bạn");
+        setIsReservationModalVisible(true);
+      } else if (responseSuggessTable?.result === null) {
+        message.error("Hiện tại không còn bàn trống");
+      }
     }
   };
 
   const handleSuccess = async (isSuccess) => {
     if (isSuccess) {
-      message.success("Xác thực OTP thành công");
-      const response = await addNewCustomerInfo({
-        name: information.name,
-        phoneNumber: information.phone.replace(/^\+84/, ""),
-        address: null,
-        accountId: null,
-      });
-      if (response?.isSuccess) {
-        setIsReservationModalVisible(true);
-      } else {
-        setInformation({
-          name: response.result.items[0].name,
-          phone: response.result.items[0].phoneNumber,
-          email: information.email,
-          numberOfPeople: information.numberOfPeople,
-          date: [information.date[0], information.date[1]],
-          note: information.note,
-          customerId: response.result.items[0].customerId,
-          isVerified: response.result.items[0].isVerified,
-        });
-        console.log(information);
-      }
-      setIsOtpSuccess(true);
+      message.success("Xác thực thành công");
+      setIsValidatePhone(true);
+      setIsValid(true);
     } else {
-      message.error("Xác thực OTP thất bại");
-      setIsOtpSuccess(false);
+      message.error("Xác thực thất bại");
     }
   };
 
@@ -156,7 +166,33 @@ const Reservation = () => {
   const filteredTimeSlots = timeSlots.filter((time) =>
     moment(time, "HH:mm").isAfter(moment())
   );
-
+  const handleValidatePhone = async () => {
+    debugger;
+    const response = await addNewCustomerInfo({
+      name: form.getFieldValue("name"),
+      phoneNumber: form.getFieldValue("phone").replace(/\s+/g, ""),
+      address: null,
+      accountId: null,
+    });
+    if (response !== null) {
+      setInformation({
+        name: response?.result?.name,
+        phone: response?.result?.phoneNumber,
+        email: form.getFieldValue("email"),
+        numberOfPeople: form.getFieldValue("numberOfPeople"),
+        date: null,
+        note: form.getFieldValue("note"),
+        customerId: response?.result?.customerId,
+        isVerified: response?.result?.isVerified,
+      });
+      if (response?.isSuccess) {
+        setIsOtpModalVisible(true);
+      } else {
+        setIsValid(true);
+        setIsValidatePhone(true);
+      }
+    }
+  };
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 rounded-2xl shadow-2xl">
       <h1 className="text-2xl font-bold uppercase mb-6 text-center">Đặt bàn</h1>
@@ -194,10 +230,6 @@ const Reservation = () => {
               name="phone"
               rules={[
                 { required: true, message: "Vui lòng nhập số điện thoại" },
-                {
-                  pattern: /^[0-9]{10}$/,
-                  message: "Số điện thoại tối thiểu 10 số hoặc 11 số",
-                },
               ]}
             >
               <Input
@@ -214,6 +246,16 @@ const Reservation = () => {
             >
               <Input prefix={<MailOutlined />} placeholder="Email" />
             </Form.Item>
+
+            {!isValid && (
+              <Button
+                onClick={handleValidatePhone}
+                className="bg-red-800 text-white mb-4"
+              >
+                Xác thực số điện thoại{" "}
+              </Button>
+            )}
+
             <Form.Item
               label="Số lượng người"
               name="numberOfPeople"
@@ -312,7 +354,7 @@ const Reservation = () => {
           visible={isOtpModalVisible}
           onClose={() => setIsOtpModalVisible(false)}
           resOtp={null}
-          phoneNumber={form.getFieldValue("phone")}
+          phoneNumber={form.getFieldValue("phone")?.replace(/\s+/g, "")}
           otpType={1}
           handleSuccess={handleSuccess}
         />

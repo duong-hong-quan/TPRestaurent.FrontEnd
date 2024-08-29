@@ -9,7 +9,6 @@ import {
   CardBody,
   CardFooter,
   Typography,
-  Dialog,
   DialogFooter,
 } from "@material-tailwind/react";
 import ReservationInformation from "./ReservationInformation";
@@ -28,14 +27,9 @@ import {
 import { ReservationCart } from "./ReservationCart";
 import ComboDetail2 from "../../pages/common/menu-page/ComboDetail2";
 import { calculateDeposit, createReservation } from "../../api/reservationApi";
-import {
-  addNewCustomerInfo,
-  sendCustomerInfoOtp,
-  sendOtp,
-} from "../../api/acccountApi";
+import { sendCustomerInfoOtp } from "../../api/acccountApi";
 import { clearCartReservation } from "../../redux/features/cartSlice";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 
 export function ModalReservation({
   visible,
@@ -139,12 +133,13 @@ export function ModalReservation({
     }
     debugger;
     const data = mergeCartData(cart, cartCombo, {
-      reservationDate: formatDateToISOString(new Date(information.date[0])),
-      endTime: formatDateToISOString(new Date(information.date[1])),
+      reservationDate: information?.date?.[0],
+      endTime: information?.date?.[1],
       customerInfoId: information.customerId,
       deposit: deposit,
       numberOfPeople: information.numberOfPeople,
     });
+    console.log(data);
     const responseReservation = await createReservation(data);
     if (responseReservation.isSuccess) {
       message.success("Đặt bàn thành công");
@@ -165,8 +160,8 @@ export function ModalReservation({
     if (cartCombo.length > 0 || cart.length > 0) {
       const data = await calculateDeposit(
         mergeCartData(cart, cartCombo, {
-          reservationDate: formatDateToISOString(new Date(information.date[0])),
-          endTime: formatDateToISOString(new Date(information.date[1])),
+          reservationDate: information.date[0],
+          endTime: information.date[1],
           customerInfoId: information.customerId,
           numberOfPeople: information.numberOfPeople,
           deposit: 0,
@@ -182,7 +177,7 @@ export function ModalReservation({
   useEffect(() => {
     handleDeposit();
   }, [cartCombo, cart]);
-  console.log(selectedSizes);
+  console.log(information);
   return (
     <Modal
       footer={null}
@@ -351,7 +346,7 @@ export function ModalReservation({
                     className="bg-red-800 rounded-md text-white mt-10"
                     onClick={handleCheckout}
                   >
-                    Thanh toán ngay
+                    Đặt bàn ngay{" "}
                   </Button>
                 </div>
               )}

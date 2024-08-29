@@ -73,9 +73,10 @@ export const ReservationRequestStatus = {
 // enums/ReservationStatus.js
 export const ReservationStatus = {
   PENDING: 0,
-  PAID: 1,
-  DINING: 2,
-  CANCELLED: 3,
+  TABLE_ASSIGNED: 1,
+  PAID: 2,
+  DINING: 3,
+  CANCELLED: 4,
 };
 // enums/TableSize.js
 export const TableSize = {

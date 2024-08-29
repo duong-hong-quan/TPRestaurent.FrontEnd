@@ -31,3 +31,14 @@ export const getOrderDetailById = async (id) => {
     throw new Error(error);
   }
 };
+
+export const changeOrderStatus = async (orderId, isSuccessful) => {
+  try {
+    const response = await api.put(
+      `/order/change-order-status/${orderId}?isSuccessful=${isSuccessful}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};

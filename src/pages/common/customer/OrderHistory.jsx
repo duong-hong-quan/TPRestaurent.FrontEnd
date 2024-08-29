@@ -36,7 +36,7 @@ export function OrderHistory() {
     setLoading(true);
     try {
       const [response, responseOrder, responseInfo] = await Promise.all([
-        getAllReservationByPhoneNumber(phoneNumber, 0, 1, 10),
+        getAllReservationByPhoneNumber(phoneNumber, 1, 1, 10),
         getAllOrderByPhoneNumber(phoneNumber, 1, 10),
         getCustomerInfoByPhoneNumber(phoneNumber),
       ]);

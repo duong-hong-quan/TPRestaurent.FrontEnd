@@ -93,7 +93,7 @@ export function AdminReservationPage() {
   const fetchReservations = async (time, pageNumber, pageSize) => {
     try {
       setLoading(true);
-      const response = await getAllReservations(time, pageNumber, pageSize, 0);
+      const response = await getAllReservations(time, pageNumber, pageSize, 1);
       if (response?.isSuccess) {
         setReservations(response?.result?.items);
         setTotalPages(response?.result?.totalPages);
