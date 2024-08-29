@@ -94,14 +94,13 @@ export function OrderHistory() {
           >
             {sidebarOpen ? "Menu" : " Menu"}
           </button>
-
+          {reservations.length > 0 && (
+            <ReservationList reservations={reservations} />
+          )}
           <div className="md:flex justify-center">
             <div className={` ${sidebarOpen ? "block" : "hidden"} md:block`}>
-              <UserSidebar />
+              {/* <UserSidebar /> */}
             </div>
-            {reservations.length > 0 && (
-              <ReservationList reservations={reservations} />
-            )}
           </div>
         </div>
       </div>

@@ -353,7 +353,9 @@ const ProductDetail = () => {
                         : "bg-red-100 text-red-700 hover:bg-red-200"
                     }`}
                   >
-                    <p className="font-semibold">{size.dishSize?.name}</p>
+                    <p className="font-semibold">
+                      {size.dishSize?.vietnameseName}
+                    </p>
                     <p className="font-bold">{formatPrice(size.price)}</p>
                   </button>
                 ))}

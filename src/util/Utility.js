@@ -209,6 +209,42 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
 export const getKeyByValue = (obj, value) => {
   return Object.keys(obj).find((key) => obj[key] === value);
 };
+
+const convertToISOString = (dateArray) => {
+  const [dateString, startTime, endTime] = dateArray;
+  const date = new Date(dateString);
+
+  const startDateTime = new Date(date);
+  const [startHour, startMinute] = startTime.split(":");
+  startDateTime.setUTCHours(startHour, startMinute);
+
+  const endDateTime = new Date(date);
+  const [endHour, endMinute] = endTime.split(":");
+  endDateTime.setUTCHours(endHour, endMinute);
+
+  return [startDateTime.toISOString(), endDateTime.toISOString()];
+};
+function formatPhoneNumber(phoneNumber) {
+  // Remove any non-digit characters
+  const cleaned = ("" + phoneNumber).replace(/\D/g, "");
+
+  // Match and format the phone number
+  let match;
+  if (cleaned.length === 9) {
+    match = cleaned.match(/^(\d{3})(\d{3})(\d{3})$/);
+    if (match) {
+      return `${match[1]} ${match[2]} ${match[3]}`;
+    }
+  } else if (cleaned.length === 10) {
+    match = cleaned.match(/^(\d{4})(\d{3})(\d{3})$/);
+    if (match) {
+      return `${match[1]} ${match[2]} ${match[3]}`;
+    }
+  }
+
+  return phoneNumber;
+}
+
 export {
   formatPrice,
   formatDateTime,
@@ -222,4 +258,6 @@ export {
   calculateDuration,
   mergeCartData,
   calculateTimeDifference,
+  convertToISOString,
+  formatPhoneNumber,
 };
