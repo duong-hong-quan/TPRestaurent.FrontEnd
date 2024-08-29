@@ -92,18 +92,18 @@ export function ModalReservation({
   const handleSizeClick = (dish, size) => {
     setSelectedSizes((prevSizes) => ({
       ...prevSizes,
-      dish: dish, // Adding or updating the dishSizeName field
-      size: size, // Adding or updating a field with a combined name
-      // You can add more fields here if needed
+      dish: dish,
+      size: size,
     }));
   };
 
   const getCurrentPrice = (dishId) => {
     const dish = dishes.find((dish) => dish.dish.dishId === dishId);
-    const selectedSize = selectedSizes[dishId];
-    if (dish && selectedSize) {
+    console.log(dish, "dish");
+    console.log(selectedSizes, "selectedSizes");
+    if (dish && selectedSizes) {
       const sizeDetail = dish.dishSizeDetails.find(
-        (size) => size.dishSize.name === selectedSize
+        (size) => size === selectedSizes.size
       );
       return sizeDetail ? sizeDetail.price : 0;
     }

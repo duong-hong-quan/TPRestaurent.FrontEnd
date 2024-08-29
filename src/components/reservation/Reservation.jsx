@@ -21,7 +21,7 @@ const Reservation = () => {
   const [form] = Form.useForm();
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
   const [isReservationModalVisible, setIsReservationModalVisible] =
-    useState(false);
+    useState(true);
 
   const [information, setInformation] = useState({});
   const [isOtpSuccess, setIsOtpSuccess] = useState(false);
