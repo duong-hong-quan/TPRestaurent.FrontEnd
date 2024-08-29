@@ -1,27 +1,68 @@
-import { Button, Form, Input, DatePicker, message } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  DatePicker,
+  message,
+  Select,
+  Checkbox,
+} from "antd";
 import { UserOutlined, MailOutlined, TeamOutlined } from "@ant-design/icons";
-import { addNewCustomerInfo, sendOtp } from "../../api/acccountApi";
-import { useState } from "react";
+import { addNewCustomerInfo } from "../../api/acccountApi";
+import { useState, useEffect } from "react";
 import OtpConfirmModal from "../../pages/login/OtpConfirmModal";
 import { ModalReservation } from "./ModalReservation";
 import reservationImage from "../../assets/imgs/reservation.png";
+import moment from "moment";
+import { formatPhoneNumber } from "../../util/Utility";
 const { TextArea } = Input;
-const { RangePicker } = DatePicker;
 
 const Reservation = () => {
   const [form] = Form.useForm();
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
   const [isReservationModalVisible, setIsReservationModalVisible] =
-    useState(false);
+    useState(true);
 
-  const [resOtp, setResOtp] = useState(null);
   const [information, setInformation] = useState({});
   const [isOtpSuccess, setIsOtpSuccess] = useState(false);
-  const [otpType, setOtpType] = useState(null);
+  const [selectedEndTime, setSelectedEndTime] = useState(null);
+  const [endTimeSlots, setEndTimeSlots] = useState([]);
+  const [isValidatePhone, setIsValidatePhone] = useState(false);
+  useEffect(() => {
+    const now = moment();
+    const roundedStartTime = now
+      .clone()
+      .minute(Math.ceil(now.minute() / 30) * 30)
+      .second(0);
+    const initialStartTime = roundedStartTime.isBefore(now)
+      ? roundedStartTime.add(30, "minutes")
+      : roundedStartTime;
+    const initialEndTime = initialStartTime
+      .clone()
+      .add(1, "hour")
+      .format("HH:mm");
+    form.setFieldsValue({
+      startTime: initialStartTime.format("HH:mm"),
+      endTime: initialEndTime,
+    });
+    setSelectedEndTime(initialEndTime);
+    setEndTimeSlots(generateEndTimeSlots(initialStartTime));
+  }, [form]);
+
+  const handlePhoneChange = (e) => {
+    const cleanedPhone = e.target.value.replace(/\s+/g, "");
+    form.setFieldsValue({ phone: cleanedPhone });
+  };
+
+  const handlePhoneBlur = (e) => {
+    const formattedPhone = formatPhoneNumber(e.target.value);
+    form.setFieldsValue({ phone: formattedPhone });
+  };
   const onFinish = async (values) => {
-    setInformation(values);
+    message.error("Hiện tại các bàn dành cho 2 người đã đầy");
+    const combinedDate = [values.date, values.startTime, values.endTime];
+    setInformation({ ...values, date: combinedDate });
     setIsReservationModalVisible(true);
-    debugger;
     const response = await addNewCustomerInfo({
       name: values.name,
       phoneNumber: values.phone.replace(/^\+84/, ""),
@@ -31,16 +72,12 @@ const Reservation = () => {
     if (response?.isSuccess) {
       setIsReservationModalVisible(true);
     } else {
-      // setInformation(response.result);
-      // setInformation(values);
-      console.log(values);
-
       setInformation({
         name: response.result.items[0].name,
         phone: response.result.items[0].phoneNumber,
         email: values.email,
         numberOfPeople: values.numberOfPeople,
-        date: values.date,
+        date: combinedDate,
         note: values.note,
         customerId: response.result.items[0].customerId,
         isVerified: response.result.items[0].isverified,
@@ -60,9 +97,6 @@ const Reservation = () => {
       if (response?.isSuccess) {
         setIsReservationModalVisible(true);
       } else {
-        // setInformation(response.result);
-        // setInformation(values);
-
         setInformation({
           name: response.result.items[0].name,
           phone: response.result.items[0].phoneNumber,
@@ -81,8 +115,6 @@ const Reservation = () => {
       setIsOtpSuccess(false);
     }
   };
-  console.log(information);
-  console.log(isReservationModalVisible);
 
   const handleOpenOtp = () => {
     setIsOtpModalVisible(true);
@@ -90,6 +122,40 @@ const Reservation = () => {
   const handleCloseOtp = () => {
     setIsOtpModalVisible(false);
   };
+
+  const disabledDate = (current) => {
+    return current && current < moment().startOf("day");
+  };
+
+  const generateTimeSlots = () => {
+    const times = [];
+    const start = moment().startOf("day").hour(10); // Start at 10:00
+    const end = moment().startOf("day").hour(22); // End at 22:00
+    while (start <= end) {
+      times.push(start.format("HH:mm"));
+      start.add(30, "minutes");
+    }
+    return times;
+  };
+
+  const generateEndTimeSlots = (startTime) => {
+    const times = generateTimeSlots();
+    const startMoment = moment(startTime, "HH:mm");
+    return times.filter((time) => moment(time, "HH:mm").isAfter(startMoment));
+  };
+
+  const timeSlots = generateTimeSlots();
+
+  const handleStartTimeChange = (value) => {
+    const newEndTime = moment(value, "HH:mm").add(1, "hour").format("HH:mm");
+    setSelectedEndTime(newEndTime);
+    form.setFieldsValue({ endTime: newEndTime });
+    setEndTimeSlots(generateEndTimeSlots(value));
+  };
+
+  const filteredTimeSlots = timeSlots.filter((time) =>
+    moment(time, "HH:mm").isAfter(moment())
+  );
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 rounded-2xl shadow-2xl">
@@ -117,26 +183,39 @@ const Reservation = () => {
             onFinish={onFinish}
           >
             <Form.Item
+              label="Họ và tên"
               name="name"
               rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
             >
               <Input prefix={<UserOutlined />} placeholder="Họ và tên" />
             </Form.Item>
             <Form.Item
+              label="Số điện thoại"
               name="phone"
               rules={[
                 { required: true, message: "Vui lòng nhập số điện thoại" },
+                {
+                  pattern: /^[0-9]{10}$/,
+                  message: "Số điện thoại tối thiểu 10 số hoặc 11 số",
+                },
               ]}
             >
-              <Input prefix={`+84`} placeholder="Số điện thoại" />
+              <Input
+                prefix={`+84`}
+                placeholder="Số điện thoại"
+                onChange={handlePhoneChange}
+                onBlur={handlePhoneBlur}
+              />
             </Form.Item>
             <Form.Item
+              label="Email"
               name="email"
               rules={[{ type: "email", message: "Email không hợp lệ" }]}
             >
               <Input prefix={<MailOutlined />} placeholder="Email" />
             </Form.Item>
             <Form.Item
+              label="Số lượng người"
               name="numberOfPeople"
               rules={[
                 { required: true, message: "Vui lòng nhập số lượng người" },
@@ -147,38 +226,82 @@ const Reservation = () => {
                 type="number"
                 min={1}
                 placeholder="Số lượng người"
+                disabled={!isValidatePhone}
               />
             </Form.Item>
-            <Form.Item
-              name="date"
-              rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
-            >
-              <RangePicker
-                showTime
-                className="w-full"
-                placeholder="Ngày: giờ"
-                format={"DD/MM/YYYY HH:mm:ss"}
+            <div className="flex flex-col md:flex-row">
+              <Form.Item
+                label="Ngày"
+                name="date"
+                rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
+              >
+                <DatePicker
+                  className="w-full"
+                  format={"DD/MM/YYYY"}
+                  disabledDate={disabledDate}
+                  placeholder="Chọn ngày"
+                  disabled={!isValidatePhone}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Giờ bắt đầu"
+                name="startTime"
+                rules={[
+                  { required: true, message: "Vui lòng nhập giờ bắt đầu" },
+                ]}
+                className="md:mx-4"
+              >
+                <Select
+                  className="w-full"
+                  placeholder="Chọn giờ bắt đầu"
+                  onChange={handleStartTimeChange}
+                  disabled={!isValidatePhone}
+                >
+                  {filteredTimeSlots.map((time) => (
+                    <Select.Option key={time} value={time}>
+                      {time}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label="Giờ kết thúc"
+                name="endTime"
+                rules={[
+                  { required: true, message: "Vui lòng nhập giờ kết thúc" },
+                ]}
+              >
+                <Select
+                  className="w-full"
+                  placeholder="Chọn giờ kết thúc"
+                  value={selectedEndTime}
+                  disabled={!isValidatePhone}
+                >
+                  {endTimeSlots.map((time) => (
+                    <Select.Option key={time} value={time}>
+                      {time}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+            <Form.Item name="isPrivate" valuePropName="checked">
+              <Checkbox disabled={!isValidatePhone}>Đặt bàn riêng tư</Checkbox>
+            </Form.Item>
+            <Form.Item name="note" label="Ghi chú">
+              <TextArea
+                rows={4}
+                placeholder="Ghi chú"
+                disabled={!isValidatePhone}
               />
             </Form.Item>
-            {/* <Form.Item
-              name="tableType"
-              rules={[{ required: true, message: "Vui lòng chọn loại bàn" }]}
-            >
-              <Select placeholder="Chọn loại bàn">
-                <Select.Option value="1">Bàn 2 người</Select.Option>
-                <Select.Option value="2">Bàn 4 người</Select.Option>
-                <Select.Option value="3">Bàn 6 người</Select.Option>
-                <Select.Option value="4">Bàn 8 người</Select.Option>
-              </Select>
-            </Form.Item> */}
-            <Form.Item name="note">
-              <TextArea rows={4} placeholder="Ghi chú" />
-            </Form.Item>
+
             <Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
-                className="w-full bg-[#A31927] hover:bg-[#8B1621]"
+                className="w-full bg-[#A31927] hover:bg-[#8B1621] text-white hover:text-white"
+                disabled={!isValidatePhone}
               >
                 Đặt bàn
               </Button>
@@ -188,7 +311,7 @@ const Reservation = () => {
         <OtpConfirmModal
           visible={isOtpModalVisible}
           onClose={() => setIsOtpModalVisible(false)}
-          resOtp={resOtp}
+          resOtp={null}
           phoneNumber={form.getFieldValue("phone")}
           otpType={1}
           handleSuccess={handleSuccess}
@@ -196,7 +319,7 @@ const Reservation = () => {
       </div>
       <ModalReservation
         visible={isReservationModalVisible}
-        onCancel={() => setIsReservationModalVisible(false)} //}
+        onCancel={() => setIsReservationModalVisible(false)}
         information={information}
         handleCloseOtp={handleCloseOtp}
         handleOpenOtp={handleOpenOtp}

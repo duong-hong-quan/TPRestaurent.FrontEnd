@@ -388,7 +388,7 @@ const CartPage = () => {
             <span className="text-gray-600">Giỗ hàng của bạn đang trống</span>
           }
         >
-          <Button type="primary" className="bg-blue-500 hover:bg-blue-600">
+          <Button className="bg-red-500 hover:bg-red-600 text-white">
             Tiếp tục mua sắm
           </Button>
         </Empty>

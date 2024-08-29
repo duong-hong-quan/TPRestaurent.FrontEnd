@@ -43,7 +43,10 @@ const ReservationRequestItem = ({ reservation }) => {
     ReservationRequestStatus,
     reservation.statusId
   );
-  console.log(statusKey);
+  const handlePayment = async () => {
+    // Call API to process payment
+  };
+  console.log(reservation);
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-4">
       <div className="flex flex-col md:flex-row justify-between items-center mb-4">
@@ -100,12 +103,22 @@ const ReservationRequestItem = ({ reservation }) => {
           Ghi chú:{" "}
           <span className="text-gray-700 ml-2">{reservation.note}</span>
         </p>
-        <button
-          onClick={() => handleChange(reservation.reservationId)}
-          className="bg-red-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
-        >
-          {showDetails ? "Ẩn thông tin chi tiết" : "Chi tiết thông tin đặt bàn"}
-        </button>
+        <div className="flex">
+          {reservation?.statusId === 0 && (
+            <button className="bg-red-600 mx-2 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
+              Thanh toán ngay
+            </button>
+          )}
+
+          <button
+            onClick={() => handleChange(reservation.reservationId)}
+            className="bg-gray-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            {showDetails
+              ? "Ẩn thông tin chi tiết"
+              : "Chi tiết thông tin đặt bàn"}
+          </button>
+        </div>
       </div>
 
       {showDetails && <ReservationDetail reservationData={reservationData} />}

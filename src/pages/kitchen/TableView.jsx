@@ -77,29 +77,29 @@ const TableView = () => {
   const handleSelectAll = (listType) => {
     switch (listType) {
       case "unchecked":
-        const allUncheckedIds = data.uncheckedPrelistOrderDetails.map(
+        const allUncheckedIds = data?.uncheckedPrelistOrderDetails?.map(
           (order) => order.prelistOrder.prelistOrderId
         );
         setSelectedUnchecked(
-          selectedUnchecked.length === allUncheckedIds.length
+          selectedUnchecked?.length === allUncheckedIds?.length
             ? []
             : allUncheckedIds
         );
         break;
       case "read":
-        const allReadIds = data.readPrelistOrderDetails.map(
+        const allReadIds = data?.readPrelistOrderDetails?.map(
           (order) => order.prelistOrder.prelistOrderId
         );
         setSelectedRead(
-          selectedRead.length === allReadIds.length ? [] : allReadIds
+          selectedRead?.length === allReadIds?.length ? [] : allReadIds
         );
         break;
       case "ready":
-        const allReadyIds = data.readyToServePrelistOrderDetails.map(
+        const allReadyIds = data?.readyToServePrelistOrderDetails?.map(
           (order) => order.prelistOrder.prelistOrderId
         );
         setSelectedReady(
-          selectedReady.length === allReadyIds.length ? [] : allReadyIds
+          selectedReady?.length === allReadyIds?.length ? [] : allReadyIds
         );
         break;
     }
@@ -162,7 +162,7 @@ const TableView = () => {
         Quản lý bàn
       </Typography>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {tables.map((table) => (
+        {tables?.map((table) => (
           <Card
             key={table.tableId}
             className="cursor-pointer transform transition-transform hover:scale-105"
@@ -199,19 +199,19 @@ const TableView = () => {
                 <Checkbox
                   label="Chọn tất cả"
                   checked={
-                    selectedUnchecked.length > 0 &&
-                    selectedUnchecked.length ===
+                    selectedUnchecked?.length > 0 &&
+                    selectedUnchecked?.length ===
                       data.uncheckedPrelistOrderDetails?.length
                   }
                   onChange={() => handleSelectAll("unchecked")}
                 />
               </div>
               <List>
-                {data.uncheckedPrelistOrderDetails?.map((order) => (
+                {data?.uncheckedPrelistOrderDetails?.map((order) => (
                   <ListItem key={order.prelistOrder.prelistOrderId}>
                     <ListItemPrefix>
                       <Checkbox
-                        checked={selectedUnchecked.includes(
+                        checked={selectedUnchecked?.includes(
                           order.prelistOrder.prelistOrderId
                         )}
                         onChange={() =>
@@ -223,23 +223,23 @@ const TableView = () => {
                       />
                       <Avatar
                         variant="circular"
-                        alt={order.prelistOrder.dishSizeDetail.dish.name}
-                        src={order.prelistOrder.dishSizeDetail.dish.image}
+                        alt={order?.prelistOrder?.dishSizeDetail?.dish?.name}
+                        src={order?.prelistOrder?.dishSizeDetail?.dish.image}
                       />
                     </ListItemPrefix>
                     <div className="flex-grow">
                       <Typography variant="h6" color="blue-gray">
-                        {order.prelistOrder.dishSizeDetail.dish.name}
+                        {order?.prelistOrder?.dishSizeDetail?.dish?.name}
                       </Typography>
                       <Typography variant="small" color="gray">
-                        Số lượng: {order.prelistOrder.quantity}
+                        Số lượng: {order?.prelistOrder?.quantity}
                       </Typography>
                     </div>
                     <CustomBadge color="red" content="Mới" />
                   </ListItem>
                 ))}
               </List>
-              {selectedUnchecked.length > 0 && (
+              {selectedUnchecked?.length > 0 && (
                 <Button
                   className="bg-red-900 "
                   onClick={() => handleChangeStatus("unchecked")}
@@ -260,24 +260,24 @@ const TableView = () => {
                       <Checkbox
                         label="Chọn tất cả"
                         checked={
-                          selectedRead.length > 0 &&
-                          selectedRead.length ===
-                            data.readPrelistOrderDetails?.length
+                          selectedRead?.length > 0 &&
+                          selectedRead?.length ===
+                            data?.readPrelistOrderDetails?.length
                         }
                         onChange={() => handleSelectAll("read")}
                       />
                     </div>
                     <List>
-                      {data.readPrelistOrderDetails?.map((order) => (
-                        <ListItem key={order.prelistOrder.prelistOrderId}>
+                      {data?.readPrelistOrderDetails?.map((order) => (
+                        <ListItem key={order?.prelistOrder?.prelistOrderId}>
                           <ListItemPrefix>
                             <Checkbox
-                              checked={selectedRead.includes(
-                                order.prelistOrder.prelistOrderId
+                              checked={selectedRead?.includes(
+                                order?.prelistOrder?.prelistOrderId
                               )}
                               onChange={() =>
                                 handleCheckboxChange(
-                                  order.prelistOrder.prelistOrderId,
+                                  order?.prelistOrder?.prelistOrderId,
                                   "read"
                                 )
                               }
@@ -285,29 +285,29 @@ const TableView = () => {
                             <Avatar
                               variant="circular"
                               alt={
-                                order.prelistOrder.combo?.name ||
-                                order.prelistOrder.dishSizeDetail?.dish.name
+                                order?.prelistOrder?.combo?.name ||
+                                order?.prelistOrder?.dishSizeDetail?.dish?.name
                               }
                               src={
-                                order.prelistOrder.combo?.image ||
-                                order.prelistOrder.dishSizeDetail?.dish.image
+                                order?.prelistOrder?.combo?.image ||
+                                order?.prelistOrder?.dishSizeDetail?.dish?.image
                               }
                             />
                           </ListItemPrefix>
                           <div className="flex-grow">
                             <Typography variant="h6" color="blue-gray">
-                              {order.prelistOrder.combo?.name ||
-                                order.prelistOrder.dishSizeDetail?.dish.name}
+                              {order?.prelistOrder?.combo?.name ||
+                                order?.prelistOrder?.dishSizeDetail?.dish?.name}
                             </Typography>
                             <Typography variant="small" color="gray">
-                              Số lượng: {order.prelistOrder.quantity}
+                              Số lượng: {order?.prelistOrder?.quantity}
                             </Typography>
                           </div>
                           <CustomBadge color="blue" content="Đã đọc" />
                         </ListItem>
                       ))}
                     </List>
-                    {selectedRead.length > 0 && (
+                    {selectedRead?.length > 0 && (
                       <Button
                         className="bg-red-900 "
                         onClick={() => handleChangeStatus("read")}
@@ -318,25 +318,25 @@ const TableView = () => {
                   </TabPanel>
                   <TabPanel value="ready">
                     <List>
-                      {data.readyToServePrelistOrderDetails?.map((order) => (
-                        <ListItem key={order.prelistOrder?.prelistOrderId}>
+                      {data?.readyToServePrelistOrderDetails?.map((order) => (
+                        <ListItem key={order?.prelistOrder?.prelistOrderId}>
                           <ListItemPrefix>
                             <Avatar
                               variant="circular"
                               alt={
-                                order.prelistOrder?.dishSizeDetail?.dish?.name
+                                order?.prelistOrder?.dishSizeDetail?.dish?.name
                               }
                               src={
-                                order.prelistOrder?.dishSizeDetail?.dish?.image
+                                order?.prelistOrder?.dishSizeDetail?.dish?.image
                               }
                             />
                           </ListItemPrefix>
                           <div className="flex-grow">
                             <Typography variant="h6" color="blue-gray">
-                              {order.prelistOrder?.dishSizeDetail?.dish?.name}
+                              {order?.prelistOrder?.dishSizeDetail?.dish?.name}
                             </Typography>
                             <Typography variant="small" color="gray">
-                              Số lượng: {order.prelistOrder?.quantity}
+                              Số lượng: {order?.prelistOrder?.quantity}
                             </Typography>
                           </div>
                           <CustomBadge color="green" content="Sẵn sàng" />
