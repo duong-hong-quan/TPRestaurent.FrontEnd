@@ -7,10 +7,9 @@ import {
   Typography,
   Button,
   CardBody,
-  Chip,
-  CardFooter,
   IconButton,
   Tooltip,
+  Chip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { Table } from "antd";
@@ -23,15 +22,11 @@ const TABS = [
     value: "",
   },
   {
-    label: "Chờ xác nhận",
-    value: "0",
-  },
-  {
-    label: "Đang xử lý",
+    label: "Chờ xử lý",
     value: "1",
   },
   {
-    label: "Đã hoàn thành",
+    label: "Đang xử lý",
     value: "2",
   },
   {
@@ -44,46 +39,17 @@ const TABS = [
   },
 ];
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "0":
-      return "green";
-    case "1":
-      return "blue";
-    case "2":
-      return "red";
-    default:
-      return "blue-gray";
-  }
-};
-
-const getStatusText = (status) => {
-  switch (status) {
-    case "0":
-      return "Chờ xác nhận";
-    case "1":
-      return "Đang xử lý";
-    case "2":
-      return "Đã hoàn thành";
-    case "3":
-      return "Đã hủy";
-    case "4":
-      return "Đã giao hàng";
-
-    default:
-      return "Không xác định";
-  }
-};
-
 export function AdminOrderHistoryPage() {
   const [activeTab, setActiveTab] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [data, setData] = useState([]);
 
   const columns = [
     {
       title: "Mã đơn hàng",
       dataIndex: "orderId",
       key: "orderId",
-      render: (text) => <Typography>{text}</Typography>,
+      render: (text) => <Typography>{text.substring(0, 8)}</Typography>,
     },
     {
       title: "Khách hàng",
@@ -109,16 +75,11 @@ export function AdminOrderHistoryPage() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      filters: [
-        { text: "CHỜ XỬ LÝ", value: "Pending" },
-        { text: "ĐANG XỬ LÝ", value: "Processing" },
-        { text: "ĐÃ GIAO HÀNG", value: "Delivered" },
-      ],
-      onFilter: (value, record) => record.status.name === value,
       render: (status) => (
         <Chip
           variant="ghost"
           size="sm"
+          className="text-center"
           value={status.vietnameseName}
           color={
             status.name === "Pending"
@@ -141,7 +102,7 @@ export function AdminOrderHistoryPage() {
     {
       title: "Hành động",
       key: "action",
-      render: (_, record) => (
+      render: () => (
         <Tooltip content="Xem chi tiết">
           <IconButton variant="text">
             <EyeIcon className="h-4 w-4" />
@@ -150,16 +111,26 @@ export function AdminOrderHistoryPage() {
       ),
     },
   ];
-  const [data, setData] = useState([]);
+
   const fetchOrder = async () => {
     const response = await getAllOrder(1, 10, activeTab);
     if (response?.isSuccess) {
       setData(response?.result?.items);
     }
   };
+
   useEffect(() => {
     fetchOrder();
   }, [activeTab]);
+
+  const filteredData = data.filter((item) => {
+    const customerInfo = item.customerInfo || {};
+    const searchString = `${customerInfo.name || ""} ${
+      customerInfo.phoneNumber || ""
+    }`.toLowerCase();
+    return searchString.includes(searchQuery.toLowerCase());
+  });
+
   return (
     <>
       <Card className="h-full w-full">
@@ -177,7 +148,11 @@ export function AdminOrderHistoryPage() {
               <Button variant="outlined" size="sm">
                 Xuất báo cáo
               </Button>
-              <Button className="flex items-center bg-red-700 gap-3" size="sm">
+              <Button
+                className="flex items-center bg-red-700 gap-3"
+                size="sm"
+                onClick={fetchOrder}
+              >
                 <ArrowPathIcon strokeWidth={2} className="h-4 w-4" /> Làm mới
               </Button>
             </div>
@@ -204,12 +179,14 @@ export function AdminOrderHistoryPage() {
               <Input
                 label="Tìm kiếm"
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
         </CardHeader>
         <CardBody className="overflow-auto h-[550px]">
-          <Table columns={columns} dataSource={data} rowKey="id" />
+          <Table columns={columns} dataSource={filteredData} rowKey="orderId" />
         </CardBody>
       </Card>
     </>

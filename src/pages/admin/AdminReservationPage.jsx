@@ -49,7 +49,6 @@ const getStatusColor = (status) => {
       return "amber";
     case 2:
       return "blue";
-
     default:
       return "blue-gray";
   }
@@ -63,10 +62,8 @@ const getStatusText = (status) => {
       return "Đã thanh toán";
     case 3:
       return "Đang dùng bữa";
-
     case 4:
       return "Đã hủy";
-      break;
     default:
       return "Không xác định";
   }
@@ -74,6 +71,7 @@ const getStatusText = (status) => {
 
 export function AdminReservationPage() {
   const [activeTab, setActiveTab] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -185,7 +183,7 @@ export function AdminReservationPage() {
     {
       title: "Hành động",
       key: "action",
-      render: (text, record) => (
+      render: (record) => (
         <Tooltip content="Xem chi tiết">
           <IconButton
             variant="text"
@@ -205,6 +203,14 @@ export function AdminReservationPage() {
     },
   ];
 
+  const filteredReservations = reservations.filter((item) => {
+    const customerInfo = item.customerInfo || {};
+    const searchString = `${customerInfo.name || ""} ${
+      customerInfo.phoneNumber || ""
+    }`.toLowerCase();
+    return searchString.includes(searchQuery.toLowerCase());
+  });
+
   return (
     <Card className="h-full w-full">
       <LoadingOverlay isLoading={loading} />
@@ -222,7 +228,11 @@ export function AdminReservationPage() {
             <Button variant="outlined" size="sm">
               Xuất báo cáo
             </Button>
-            <Button className="flex items-center bg-red-700 gap-3" size="sm">
+            <Button
+              className="flex items-center bg-red-700 gap-3"
+              size="sm"
+              onClick={fetchReservations}
+            >
               <ArrowPathIcon strokeWidth={2} className="h-4 w-4" /> Làm mới
             </Button>
           </div>
@@ -249,6 +259,8 @@ export function AdminReservationPage() {
             <Input
               label="Tìm kiếm"
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
@@ -256,7 +268,7 @@ export function AdminReservationPage() {
       <CardBody className="overflow-auto h-[550px]">
         <Table
           columns={columns}
-          dataSource={reservations}
+          dataSource={filteredReservations}
           rowKey="reservationId"
         />
       </CardBody>

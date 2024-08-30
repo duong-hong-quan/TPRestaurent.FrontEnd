@@ -35,9 +35,9 @@ const menuItems = [
     icon: <FaShoppingBag className="h-5 w-5 text-white" />,
     path: "/admin",
     subItems: [
-      { title: "Đơn đặt hàng", path: "/admin/transaction-history" },
+      { title: "Giao dịch", path: "/admin/transaction-history" },
       { title: "Yêu cầu đặt bàn", path: "/admin/reservation-history" },
-      { title: "Giao dịch", path: "/admin/order-history" },
+      { title: "Đơn hàng", path: "/admin/order-history" },
     ],
   },
   {
