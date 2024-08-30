@@ -42,3 +42,13 @@ export const changeOrderStatus = async (orderId, isSuccessful) => {
     throw new Error(error);
   }
 };
+export const getAllOrder = async (pageNumber, pageSize, status) => {
+  try {
+    const response = await api.get(
+      `/order/get-all-order-by-status/${pageNumber}/${pageSize}?status=${status}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
