@@ -91,11 +91,11 @@ const ReservationRequestItem = ({ reservation }) => {
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-4">
         <div className="flex items-center mb-2 md:mb-0">
-          <img
+          {/* <img
             src="/path/to/default-avatar.png"
             alt="User Avatar"
             className="w-16 h-16 object-cover rounded-full mr-4"
-          />
+          /> */}
           <div>
             <p className="font-semibold">
               Tên: {reservation?.customerInfo?.name}

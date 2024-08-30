@@ -46,7 +46,7 @@ export const HomePage = () => {
             <MenuDish dishes={dishes} />
             <TopFeedback />
 
-            <Reservation />
+            {/* <Reservation /> */}
           </div>
         </>
       )}

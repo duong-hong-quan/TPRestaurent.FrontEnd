@@ -14,11 +14,12 @@ import {
   CalendarIcon,
   PencilIcon,
 } from "@heroicons/react/24/solid";
+import { formatDateTime } from "../../util/Utility";
 
 const ReservationInformation = ({ reservation }) => {
   console.log(reservation);
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-md min-h-[670px] mx-auto">
       <CardBody>
         <Typography variant="h5" className="mb-4 text-center">
           Thông tin đặt bàn
@@ -75,7 +76,7 @@ const ReservationInformation = ({ reservation }) => {
           )}
         </List>
       </CardBody>
-    </Card>
+    </div>
   );
 };
 

@@ -174,18 +174,16 @@ export function ModalReservation({
   }, [cartCombo, cart]);
   console.log(information);
   return (
-    <Modal
-      footer={null}
-      open={visible}
-      onCancel={onCancel}
-      width={2000}
-      className="max-h-[700px]"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-4 ">
-        <div className="col-span-3 p-4 max-h-[800px] overflow-y-auto ">
+    <div className="mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-4 max-h-[1200px] rounded-2xl shadow-xl pl-6">
+        <div className="col-span-3">
           <Tabs activeKey={activeTab} onChange={handleTabChange}>
-            <TabPane tab="Món ăn" key="0">
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2 ">
+            <TabPane
+              tab="Món ăn"
+              key="0"
+              style={{ overflow: "auto", maxHeight: "600px" }}
+            >
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2">
                 {dishes.map((dish) => (
                   <Card
                     key={dish?.dish?.dishId}
@@ -256,14 +254,16 @@ export function ModalReservation({
                 ))}
               </div>
             </TabPane>
-            <TabPane tab="Combo món" key="1">
+            <TabPane
+              tab="Combo món"
+              key="1"
+              style={{ overflow: "auto", maxHeight: "600px" }}
+            >
               {isOpenComboDetail ? (
-                <>
-                  <ComboDetail2
-                    comboData={combo}
-                    handleBack={() => setIsOpenComboDetail(false)}
-                  />
-                </>
+                <ComboDetail2
+                  comboData={combo}
+                  handleBack={() => setIsOpenComboDetail(false)}
+                />
               ) : (
                 <>
                   <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
@@ -337,23 +337,26 @@ export function ModalReservation({
                     Tổng cộng: {formatPrice(cartTotal + cartCombo.total)}
                   </Typography>
                   <p>Số tiền cọc dự kiến: {formatPrice(deposit)}</p>
-                  <Button
-                    className="bg-red-800 rounded-md text-white mt-10"
-                    onClick={handleCheckout}
-                  >
-                    Đặt bàn ngay{" "}
-                  </Button>
                 </div>
               )}
             </TabPane>
-          </Tabs>{" "}
+          </Tabs>
+        </div>
+        <div className="flex justify-end col-span-4 gap-2 m-3">
+          <Button
+            className=" bg-red-800 rounded-md text-white mt-10"
+            onClick={onCancel}
+          >
+            Back
+          </Button>
+          <Button
+            className="bg-red-800 rounded-md text-white mt-10"
+            onClick={handleCheckout}
+          >
+            Đặt bàn ngay
+          </Button>
         </div>
       </div>
-      <DialogFooter>
-        <Button variant="text" color="red" onClick={onCancel}>
-          Đóng
-        </Button>
-      </DialogFooter>
-    </Modal>
+    </div>
   );
 }
