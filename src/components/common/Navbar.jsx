@@ -1,16 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import {
-  Popover,
-  PopoverHandler,
-  PopoverContent,
-  Button,
-  IconButton,
-} from "@material-tailwind/react";
-import LoadingOverlay from "../loading/LoadingOverlay";
-import { motion, AnimatePresence } from "framer-motion";
+import { Button, IconButton } from "@material-tailwind/react";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

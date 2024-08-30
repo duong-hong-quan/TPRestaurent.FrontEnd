@@ -14,7 +14,6 @@ import {
   CalendarIcon,
   PencilIcon,
 } from "@heroicons/react/24/solid";
-import { formatDateTime } from "../../util/Utility";
 
 const ReservationInformation = ({ reservation }) => {
   console.log(reservation);
