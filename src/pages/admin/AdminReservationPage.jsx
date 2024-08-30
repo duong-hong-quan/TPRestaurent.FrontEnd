@@ -8,51 +8,37 @@ import {
   Button,
   CardBody,
   Chip,
-  CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { getAllReservations, suggestTable } from "../../api/reservationApi";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
-import { set } from "react-hook-form";
 import { formatDateTime, formatPrice } from "../../util/Utility";
 import TableSuggestionModal from "./reservation/TableSuggestionModal";
+import { Table } from "antd";
 
 const TABS = [
   {
     label: "Tất cả",
-    value: "all",
+    value: "",
   },
   {
-    label: "Chờ xác nhận",
-    value: "pending",
+    label: "Đã chọn bàn",
+    value: "1",
   },
   {
-    label: "Đã xác nhận",
-    value: "confirmed",
+    label: "Đã thanh toán",
+    value: "2",
   },
   {
-    label: "Đã hoàn thành",
-    value: "completed",
+    label: "Đang dùng bữa",
+    value: "3",
   },
   {
     label: "Đã hủy",
-    value: "cancelled",
+    value: "4",
   },
-];
-
-const TABLE_HEAD = [
-  "Mã đặt bàn",
-  "Khách hàng",
-  "Số người",
-  "Ngày - Giờ",
-  "Tiền cọc",
-  "Trạng thái",
-  "Hành động",
 ];
 
 const getStatusColor = (status) => {
@@ -71,32 +57,40 @@ const getStatusColor = (status) => {
 
 const getStatusText = (status) => {
   switch (status) {
-    case 0:
-      return "Đang chờ";
     case 1:
-      return "Đã xác nhận";
+      return "Đã chọn bàn";
     case 2:
-      return "Đã huỷ";
+      return "Đã thanh toán";
+    case 3:
+      return "Đang dùng bữa";
 
+    case 4:
+      return "Đã hủy";
+      break;
     default:
       return "Không xác định";
   }
 };
 
 export function AdminReservationPage() {
-  const [activeTab, setActiveTab] = useState("confirmed");
+  const [activeTab, setActiveTab] = useState("");
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tables, setTables] = useState([]);
   const [selectedReservation, setSelectedReservation] = useState(null);
+
   const fetchReservations = async (time, pageNumber, pageSize) => {
     try {
       setLoading(true);
-      const response = await getAllReservations(time, pageNumber, pageSize, 1);
+      const response = await getAllReservations(
+        time,
+        pageNumber,
+        pageSize,
+        activeTab
+      );
       if (response?.isSuccess) {
         setReservations(response?.result?.items);
-        setTotalPages(response?.result?.totalPages);
       }
     } catch (error) {
       console.error(error);
@@ -104,11 +98,10 @@ export function AdminReservationPage() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchReservations(1, page, 10);
-  }, [page]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tables, setTables] = useState([]);
+    fetchReservations(1, 1, 10);
+  }, [activeTab]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -141,6 +134,77 @@ export function AdminReservationPage() {
     } finally {
     }
   };
+
+  const columns = [
+    {
+      title: "Mã đặt bàn",
+      dataIndex: "reservationId",
+      key: "reservationId",
+      render: (text) => <Typography>{text.substring(0, 8)}</Typography>,
+    },
+    {
+      title: "Khách hàng",
+      dataIndex: "customerInfo",
+      key: "customerInfo",
+      render: (customerInfo) => (
+        <Typography>{`${customerInfo?.name} - ${customerInfo?.phoneNumber}`}</Typography>
+      ),
+    },
+    {
+      title: "Số người",
+      dataIndex: "numberOfPeople",
+      key: "numberOfPeople",
+      render: (numberOfPeople) => <Typography>{numberOfPeople}</Typography>,
+    },
+    {
+      title: "Ngày - Giờ",
+      dataIndex: "endTime",
+      key: "endTime",
+      render: (endTime) => <Typography>{formatDateTime(endTime)}</Typography>,
+    },
+    {
+      title: "Tiền cọc",
+      dataIndex: "deposit",
+      key: "deposit",
+      render: (deposit) => <Typography>{formatPrice(deposit)}</Typography>,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "statusId",
+      key: "statusId",
+      render: (statusId) => (
+        <Chip
+          variant="ghost"
+          size="sm"
+          className="text-center"
+          value={getStatusText(statusId)}
+          color={getStatusColor(statusId)}
+        />
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (text, record) => (
+        <Tooltip content="Xem chi tiết">
+          <IconButton
+            variant="text"
+            onClick={() =>
+              handleSuggestTable(
+                record.reservationDate,
+                record.endTime,
+                record.numberOfPeople,
+                record.reservationId
+              )
+            }
+          >
+            <EyeIcon className="h-4 w-4" />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+  ];
+
   return (
     <Card className="h-full w-full">
       <LoadingOverlay isLoading={loading} />
@@ -189,151 +253,13 @@ export function AdminReservationPage() {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="overflow-scroll px-0">
-        <table className="mt-4 w-full min-w-max table-auto text-left">
-          <thead>
-            <tr>
-              {TABLE_HEAD.map((head) => (
-                <th
-                  key={head}
-                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                >
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none opacity-70"
-                  >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {reservations?.map(
-              (
-                {
-                  reservationId,
-                  reservationDate,
-                  numberOfPeople,
-                  endTime,
-                  customerInfoId,
-                  customerInfo,
-                  deposit,
-                  statusId,
-                  reservationStatus,
-                },
-                index
-              ) => {
-                const isLast = index === reservations.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
-
-                return (
-                  <tr key={reservationId}>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {reservationId.substring(0, 8)}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {`${customerInfo?.name} - ${customerInfo?.phoneNumber}`}
-                        {}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {numberOfPeople}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {formatDateTime(endTime)}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {formatPrice(deposit)}
-                      </Typography>
-                    </td>
-
-                    <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={getStatusText(statusId)}
-                          color={getStatusColor(statusId)}
-                        />
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Tooltip content="Xem chi tiết">
-                        <IconButton
-                          variant="text"
-                          onClick={() =>
-                            handleSuggestTable(
-                              reservationDate,
-                              endTime,
-                              numberOfPeople,
-                              reservationId
-                            )
-                          }
-                        >
-                          <EyeIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              }
-            )}
-          </tbody>
-        </table>
+      <CardBody className="overflow-auto h-[550px]">
+        <Table
+          columns={columns}
+          dataSource={reservations}
+          rowKey="reservationId"
+        />
       </CardBody>
-      {/* <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          Trang 1 / 10
-        </Typography>
-        <div className="flex gap-2">
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={() => setPage(page - 1)}
-          >
-            Trước
-          </Button>
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={() => setPage(page + 1)}
-          >
-            Tiếp
-          </Button>
-        </div>
-      </CardFooter> */}
       <TableSuggestionModal
         isOpen={isModalOpen}
         onClose={closeModal}

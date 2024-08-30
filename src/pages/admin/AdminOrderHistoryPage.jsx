@@ -9,87 +9,48 @@ import {
   CardBody,
   Chip,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Table } from "antd";
+import { getAllOrder } from "../../api/orderApi";
+import { formatDateTime } from "../../util/Utility";
 
 const TABS = [
   {
     label: "Tất cả",
-    value: "all",
+    value: "",
+  },
+  {
+    label: "Chờ xác nhận",
+    value: "0",
   },
   {
     label: "Đang xử lý",
-    value: "processing",
+    value: "1",
+  },
+  {
+    label: "Đã hoàn thành",
+    value: "2",
   },
   {
     label: "Đã giao hàng",
-    value: "delivered",
+    value: "4",
   },
   {
     label: "Đã hủy",
-    value: "cancelled",
-  },
-];
-
-const TABLE_HEAD = [
-  "Mã đơn hàng",
-  "Khách hàng",
-  "Tổng tiền",
-  "Trạng thái",
-  "Ngày đặt hàng",
-  "",
-];
-
-const TABLE_ROWS = [
-  {
-    id: "DH001",
-    customer: "Nguyễn Văn A",
-    total: "1,500,000 VND",
-    status: "delivered",
-    orderDate: "23/04/2024",
-  },
-  {
-    id: "DH002",
-    customer: "Trần Thị B",
-    total: "800,000 VND",
-    status: "processing",
-    orderDate: "24/04/2024",
-  },
-  {
-    id: "DH003",
-    customer: "Lê Văn C",
-    total: "2,200,000 VND",
-    status: "delivered",
-    orderDate: "25/04/2024",
-  },
-  {
-    id: "DH004",
-    customer: "Phạm Thị D",
-    total: "1,000,000 VND",
-    status: "cancelled",
-    orderDate: "26/04/2024",
-  },
-  {
-    id: "DH005",
-    customer: "Hoàng Văn E",
-    total: "1,800,000 VND",
-    status: "processing",
-    orderDate: "27/04/2024",
+    value: "3",
   },
 ];
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "delivered":
+    case "0":
       return "green";
-    case "processing":
+    case "1":
       return "blue";
-    case "cancelled":
+    case "2":
       return "red";
     default:
       return "blue-gray";
@@ -98,171 +59,159 @@ const getStatusColor = (status) => {
 
 const getStatusText = (status) => {
   switch (status) {
-    case "delivered":
-      return "Đã giao hàng";
-    case "processing":
+    case "0":
+      return "Chờ xác nhận";
+    case "1":
       return "Đang xử lý";
-    case "cancelled":
+    case "2":
+      return "Đã hoàn thành";
+    case "3":
       return "Đã hủy";
+    case "4":
+      return "Đã giao hàng";
+
     default:
       return "Không xác định";
   }
 };
 
 export function AdminOrderHistoryPage() {
-  const [activeTab, setActiveTab] = useState("delivered");
+  const [activeTab, setActiveTab] = useState("");
 
+  const columns = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "orderId",
+      key: "orderId",
+      render: (text) => <Typography>{text}</Typography>,
+    },
+    {
+      title: "Khách hàng",
+      dataIndex: "customerInfo",
+      key: "customerInfo",
+      render: (customerInfo) => (
+        <Typography>
+          {customerInfo
+            ? `${customerInfo.name} - ${customerInfo.phoneNumber}`
+            : "N/A"}
+        </Typography>
+      ),
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
+      render: (totalAmount) => (
+        <Typography>{totalAmount.toLocaleString()} VND</Typography>
+      ),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      filters: [
+        { text: "CHỜ XỬ LÝ", value: "Pending" },
+        { text: "ĐANG XỬ LÝ", value: "Processing" },
+        { text: "ĐÃ GIAO HÀNG", value: "Delivered" },
+      ],
+      onFilter: (value, record) => record.status.name === value,
+      render: (status) => (
+        <Chip
+          variant="ghost"
+          size="sm"
+          value={status.vietnameseName}
+          color={
+            status.name === "Pending"
+              ? "amber"
+              : status.name === "Processing"
+              ? "blue"
+              : "green"
+          }
+        />
+      ),
+    },
+    {
+      title: "Ngày đặt hàng",
+      dataIndex: "orderDate",
+      key: "orderDate",
+      render: (orderDate) => (
+        <Typography>{formatDateTime(orderDate)}</Typography>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <Tooltip content="Xem chi tiết">
+          <IconButton variant="text">
+            <EyeIcon className="h-4 w-4" />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+  ];
+  const [data, setData] = useState([]);
+  const fetchOrder = async () => {
+    const response = await getAllOrder(1, 10, activeTab);
+    if (response?.isSuccess) {
+      setData(response?.result?.items);
+    }
+  };
+  useEffect(() => {
+    fetchOrder();
+  }, [activeTab]);
   return (
-    <Card className="h-full w-full">
-      <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="mb-8 flex items-center justify-between gap-8">
-          <div>
-            <Typography variant="h5" color="blue-gray">
-              Lịch sử đơn hàng
-            </Typography>
-            <Typography color="gray" className="mt-1 font-normal">
-              Xem và quản lý tất cả các đơn hàng
-            </Typography>
-          </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button variant="outlined" size="sm">
-              Xuất báo cáo
-            </Button>
-            <Button className="flex items-center bg-red-700 gap-3" size="sm">
-              <ArrowPathIcon strokeWidth={2} className="h-4 w-4" /> Làm mới
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="mb-4">
-            <div className="flex border-b border-gray-200">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.value}
-                  className={`py-2 px-4 font-medium text-sm focus:outline-none ${
-                    activeTab === tab.value
-                      ? "border-b-2 border-red-700 text-red-700"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                  onClick={() => setActiveTab(tab.value)}
-                >
-                  {tab.label}
-                </button>
-              ))}
+    <>
+      <Card className="h-full w-full">
+        <CardHeader floated={false} shadow={false} className="rounded-none">
+          <div className="mb-8 flex items-center justify-between gap-8">
+            <div>
+              <Typography variant="h5" color="blue-gray">
+                Lịch sử đơn hàng
+              </Typography>
+              <Typography color="gray" className="mt-1 font-normal">
+                Xem và quản lý tất cả các đơn hàng
+              </Typography>
+            </div>
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+              <Button variant="outlined" size="sm">
+                Xuất báo cáo
+              </Button>
+              <Button className="flex items-center bg-red-700 gap-3" size="sm">
+                <ArrowPathIcon strokeWidth={2} className="h-4 w-4" /> Làm mới
+              </Button>
             </div>
           </div>
-
-          <div className="w-full md:w-72">
-            <Input
-              label="Tìm kiếm"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            />
-          </div>
-        </div>
-      </CardHeader>
-      <CardBody className="overflow-scroll px-0">
-        <table className="mt-4 w-full min-w-max table-auto text-left">
-          <thead>
-            <tr>
-              {TABLE_HEAD.map((head) => (
-                <th
-                  key={head}
-                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                >
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none opacity-70"
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="mb-4">
+              <div className="flex border-b border-gray-200">
+                {TABS.map((tab) => (
+                  <button
+                    key={tab.value}
+                    className={`py-2 px-4 font-medium text-sm focus:outline-none ${
+                      activeTab === tab.value
+                        ? "border-b-2 border-red-700 text-red-700"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                    onClick={() => setActiveTab(tab.value)}
                   >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {TABLE_ROWS.map(
-              ({ id, customer, total, status, orderDate }, index) => {
-                const isLast = index === TABLE_ROWS.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
-
-                return (
-                  <tr key={id}>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {id}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {customer}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {total}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={getStatusText(status)}
-                          color={getStatusColor(status)}
-                        />
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {orderDate}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Tooltip content="Xem chi tiết">
-                        <IconButton variant="text">
-                          <EyeIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              }
-            )}
-          </tbody>
-        </table>
-      </CardBody>
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          Trang 1 / 10
-        </Typography>
-        <div className="flex gap-2">
-          <Button variant="outlined" size="sm">
-            Trước
-          </Button>
-          <Button variant="outlined" size="sm">
-            Tiếp
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="w-full md:w-72">
+              <Input
+                label="Tìm kiếm"
+                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody className="overflow-auto h-[550px]">
+          <Table columns={columns} dataSource={data} rowKey="id" />
+        </CardBody>
+      </Card>
+    </>
   );
 }

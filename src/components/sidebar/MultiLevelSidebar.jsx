@@ -115,10 +115,10 @@ export function MultiLevelSidebar() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-full bg-gray-100">
       {/* Sidebar */}
-      <aside
-        className={`fixed h-screen inset-y-0 left-0 z-50 w-64 bg-[#970C1A] text-white transition-transform duration-300 ease-in-out ${
+      <div
+        className={`fixed min-h-full inset-y-0 left-0 z-50 w-64 bg-[#970C1A] text-white transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0`}
       >
@@ -144,7 +144,7 @@ export function MultiLevelSidebar() {
             />
           ))}
         </List>
-      </aside>
+      </div>
     </div>
   );
 }
