@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.VITE_KEY_HASH;
-console.log(import.meta.env.VITE_KEY_HASH);
+const baseUrl = import.meta.env.VITE_API_URL;
 const config = {
   baseUrl,
   timeout: 3000000,
