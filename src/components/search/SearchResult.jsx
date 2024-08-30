@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
 import MenuDish from "../menu-dish/MenuDish";
 import { getAllDishes } from "../../api/dishApi";
 import LoadingOverlay from "../loading/LoadingOverlay";

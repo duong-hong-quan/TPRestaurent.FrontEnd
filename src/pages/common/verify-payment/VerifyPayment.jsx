@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Card,
@@ -11,10 +11,8 @@ import {
 import { HomePage } from "../home-page/HomePage";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { updateReservationStatus } from "../../../api/reservationApi";
-import { set } from "react-hook-form";
 import { changeOrderStatus } from "../../../api/orderApi";
 import { addToStoreCredit } from "../../../api/storeCreditApi";
-import { message } from "antd";
 import { decodeHashing } from "../../../api/hashingApi";
 
 const VerifyPayment = () => {
@@ -35,7 +33,7 @@ const VerifyPayment = () => {
     const id = searchParams.get("vnp_TxnRef");
     const typeData = await decodeHashing(
       orderInfo,
-      "tprestauranttprestauranttprestau"
+      import.meta.env.VITE_KEY_HASH
     );
 
     if (vnpResponseCode) {

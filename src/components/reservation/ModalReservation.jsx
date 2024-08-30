@@ -12,12 +12,7 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import ReservationInformation from "./ReservationInformation";
-import {
-  formatDate,
-  formatDateToISOString,
-  formatPrice,
-  mergeCartData,
-} from "../../util/Utility";
+import { formatDate, formatPrice, mergeCartData } from "../../util/Utility";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addToCart,

@@ -1,11 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import {
-  loginWithOtp,
-  verifyCustomerInfoOTP,
-  verifyForReservation,
-} from "../../api/acccountApi";
+import { loginWithOtp, verifyCustomerInfoOTP } from "../../api/acccountApi";
 
 const OtpConfirmModal = ({
   visible,
@@ -21,7 +17,7 @@ const OtpConfirmModal = ({
     const newOtp = [...otp];
     newOtp[index] = value;
 
-    // Move focus to the next input if value is entered and it's not the last input
+    // Move focus to the next inputß if value is entered and it's not the last input
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`).focus();
     }

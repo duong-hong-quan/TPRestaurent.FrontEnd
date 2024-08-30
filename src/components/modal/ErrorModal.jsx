@@ -1,9 +1,5 @@
-import React from "react";
 import { Modal, Button } from "antd";
-import {
-  ExclamationCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const ErrorModal = ({ isVisible, onClose, messages }) => {
   return (

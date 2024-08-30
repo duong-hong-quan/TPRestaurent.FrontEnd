@@ -16,7 +16,6 @@ import reservationImage from "../../assets/imgs/reservation.png";
 import moment from "moment";
 import { convertToISOString, formatPhoneNumber } from "../../util/Utility";
 import { suggestTable } from "../../api/reservationApi";
-import { set } from "react-hook-form";
 const { TextArea } = Input;
 
 const Reservation = () => {

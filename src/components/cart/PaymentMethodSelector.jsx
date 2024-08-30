@@ -1,11 +1,5 @@
-import React, { useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Typography,
-  Radio,
-} from "@material-tailwind/react";
+import { useState } from "react";
+import { Card, CardBody, Typography, Radio } from "@material-tailwind/react";
 
 export const PaymentMethod = {
   CASH: 1,

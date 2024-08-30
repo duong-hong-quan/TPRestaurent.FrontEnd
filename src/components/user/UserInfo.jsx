@@ -1,4 +1,3 @@
-import React from "react";
 import { formatDate } from "../../util/Utility";
 
 const UserInfo = ({ userData, handleOpenUpdate }) => {
