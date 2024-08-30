@@ -192,6 +192,18 @@ const Reservation = () => {
       }
     }
   };
+  if (isReservationModalVisible) {
+    return (
+      <ModalReservation
+        visible={isReservationModalVisible}
+        onCancel={() => setIsReservationModalVisible(false)}
+        information={information}
+        handleCloseOtp={handleCloseOtp}
+        handleOpenOtp={handleOpenOtp}
+        isOtpSuccess={isOtpSuccess}
+      />
+    );
+  }
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 rounded-2xl shadow-2xl">
       <h1 className="text-2xl font-bold uppercase mb-6 text-center">Đặt bàn</h1>
@@ -358,14 +370,6 @@ const Reservation = () => {
           handleSuccess={handleSuccess}
         />
       </div>
-      <ModalReservation
-        visible={isReservationModalVisible}
-        onCancel={() => setIsReservationModalVisible(false)}
-        information={information}
-        handleCloseOtp={handleCloseOtp}
-        handleOpenOtp={handleOpenOtp}
-        isOtpSuccess={isOtpSuccess}
-      />
     </div>
   );
 };

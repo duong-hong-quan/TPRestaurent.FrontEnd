@@ -73,6 +73,7 @@ const CartPage = () => {
     if (isUpdate) {
       const data = await updateCustomerInfo(formData);
       if (data?.isSuccess) {
+        await handlePhone(formData.phoneNumber);
         message.success("Cập nhật thông tin thành công!");
       } else {
         message.error("Cập nhật thông tin thất bại!");

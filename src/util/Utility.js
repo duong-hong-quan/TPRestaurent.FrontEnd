@@ -213,7 +213,7 @@ export const getKeyByValue = (obj, value) => {
 const convertToISOString = (dateArray) => {
   const [dateString, startTime, endTime] = dateArray;
   const date = new Date(dateString);
-
+  console.log(date);
   const startDateTime = new Date(date);
   const [startHour, startMinute] = startTime.split(":");
   startDateTime.setUTCHours(startHour, startMinute);
