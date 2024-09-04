@@ -32,8 +32,9 @@ function SearchResults() {
     const query = searchParams.get("q");
 
     if (query) {
-      setLoading(true);
       fetchData(query);
+    } else {
+      fetchData();
     }
   }, [location.search, currentPage]);
   const handlePageChange = (page) => {
