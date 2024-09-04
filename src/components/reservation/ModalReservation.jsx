@@ -1,54 +1,59 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Modal, Tabs, message, Button } from "antd";
-import { getAllDishes } from "../../api/dishApi";
-import { getAllCombo, getComboById } from "../../api/comboApi";
-const { TabPane } = Tabs;
 import {
   Card,
   CardHeader,
   CardBody,
   CardFooter,
   Typography,
-  DialogFooter,
 } from "@material-tailwind/react";
-import ReservationInformation from "./ReservationInformation";
-import { formatDate, formatPrice, mergeCartData } from "../../util/Utility";
-import { useDispatch, useSelector } from "react-redux";
+
+import { getAllDishes } from "../../api/dishApi";
+import { getAllCombo, getComboById } from "../../api/comboApi";
+import { calculateDeposit, createReservation } from "../../api/reservationApi";
+import { sendCustomerInfoOtp } from "../../api/acccountApi";
+
 import {
   addToCart,
   clearCart,
   getTotal,
 } from "../../redux/features/cartReservationSlice";
-import { ReservationCart } from "./ReservationCart";
-import ComboDetail2 from "../../pages/common/menu-page/ComboDetail2";
-import { calculateDeposit, createReservation } from "../../api/reservationApi";
-import { sendCustomerInfoOtp } from "../../api/acccountApi";
 import { clearCartReservation } from "../../redux/features/cartSlice";
-import { useNavigate } from "react-router-dom";
 
-export function ModalReservation({
+import ReservationInformation from "./ReservationInformation";
+import { ReservationCart } from "./ReservationCart";
+import ComboDetail2 from "../../pages/common/menu-page/ComboDetail";
+
+import { formatDate, formatPrice, mergeCartData } from "../../util/Utility";
+
+const { TabPane } = Tabs;
+
+const ModalReservation = ({
   visible,
   onCancel,
   information,
   handleOpenOtp,
   handleCloseOtp,
   isOtpSuccess,
-}) {
+}) => {
   const [dishes, setDishes] = useState([]);
   const [combos, setCombos] = useState([]);
   const [activeTab, setActiveTab] = useState("0");
+  const [rightSideTab, setRightSideTab] = useState("1");
   const [selectedSizes, setSelectedSizes] = useState({});
   const [selectedCombos, setSelectedCombos] = useState(null);
   const [combo, setCombo] = useState({});
   const [isOpenComboDetail, setIsOpenComboDetail] = useState(false);
+  const [deposit, setDeposit] = useState(0);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cartReservation);
   const cartCombo = useSelector((state) => state.cart);
-  const handleAddToCart = (dish, size) => {
-    dispatch(addToCart({ dish, size, quantity: 1 }));
-  };
-  const [deposit, setDeposit] = useState(0);
+  const cartTotal = useSelector(getTotal);
+
   const fetchData = useCallback(async () => {
     try {
       const [dishesData, combosData] = await Promise.all([
@@ -74,9 +79,22 @@ export function ModalReservation({
     handleDeposit();
   }, [visible, fetchData]);
 
-  const handleTabChange = (key) => {
-    setActiveTab(key);
+  useEffect(() => {
+    if (selectedCombos) {
+      fetchComboDetail();
+    }
+  }, [selectedCombos, isOpenComboDetail]);
+
+  useEffect(() => {
+    handleDeposit();
+  }, [cartCombo, cart]);
+
+  const handleAddToCart = (dish, size) => {
+    dispatch(addToCart({ dish, size, quantity: 1 }));
   };
+
+  const handleTabChange = (key) => setActiveTab(key);
+  const handleRightSideTabChange = (key) => setRightSideTab(key);
 
   const handleSizeClick = (dish, size) => {
     setSelectedSizes((prevSizes) => ({
@@ -88,8 +106,6 @@ export function ModalReservation({
 
   const getCurrentPrice = (dishId) => {
     const dish = dishes.find((dish) => dish.dish.dishId === dishId);
-    console.log(dish, "dish");
-    console.log(selectedSizes, "selectedSizes");
     if (dish && selectedSizes) {
       const sizeDetail = dish.dishSizeDetails.find(
         (size) => size === selectedSizes.size
@@ -98,35 +114,25 @@ export function ModalReservation({
     }
     return 0;
   };
-  const [rightSideTab, setRightSideTab] = useState("1");
 
-  const handleRightSideTabChange = (key) => {
-    setRightSideTab(key);
-  };
   const fetchComboDetail = async () => {
     const response = await getComboById(selectedCombos);
     if (response.isSuccess) {
       setCombo(response.result);
     }
   };
-  useEffect(() => {
-    fetchComboDetail();
-  }, [selectedCombos, isOpenComboDetail]);
+
   const handleCheckout = async () => {
-    if (
-      information.customerId === null ||
-      information.customerId === undefined ||
-      information.isVerified === false
-    ) {
+    if (!information.customerId || information.isVerified === false) {
       const response = await sendCustomerInfoOtp(information.phone, 1);
       if (response?.isSuccess) {
         handleOpenOtp();
         return;
       } else {
-        message.error("Failed to send OTP: ");
+        message.error("Failed to send OTP");
       }
     }
-    debugger;
+
     const data = mergeCartData(cart, cartCombo, {
       reservationDate: information?.date?.[0],
       endTime: information?.date?.[1],
@@ -134,7 +140,7 @@ export function ModalReservation({
       deposit: deposit,
       numberOfPeople: information.numberOfPeople,
     });
-    console.log(data);
+
     const responseReservation = await createReservation(data);
     if (responseReservation.isSuccess) {
       message.success("Đặt bàn thành công");
@@ -142,15 +148,12 @@ export function ModalReservation({
       dispatch(clearCartReservation());
       navigate("/order-history");
     } else {
-      debugger;
-      console.log(responseReservation.messages);
-
       responseReservation.messages.forEach((mess) => {
         message.error(mess);
       });
     }
   };
-  const cartTotal = useSelector(getTotal);
+
   const handleDeposit = async () => {
     if (cartCombo.length > 0 || cart.length > 0) {
       const data = await calculateDeposit(
@@ -169,10 +172,120 @@ export function ModalReservation({
       }
     }
   };
-  useEffect(() => {
-    handleDeposit();
-  }, [cartCombo, cart]);
-  console.log(information);
+
+  const renderDishCard = (dish) => (
+    <Card
+      key={dish?.dish?.dishId}
+      className="mt-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+    >
+      <CardHeader color="blue-gray" className="relative h-56">
+        <img
+          src={dish?.dish?.image}
+          alt={dish?.dish?.name}
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+        />
+        <div className="absolute top-2 right-2 bg-red-800 text-white px-2 py-1 rounded-full text-xs">
+          {dish.dish?.dishItemType?.name}
+        </div>
+      </CardHeader>
+      <CardBody className="p-4">
+        <Typography
+          variant="h5"
+          className="mb-2 text-center text-red-800 font-bold"
+        >
+          {dish?.dish?.name}
+        </Typography>
+        <Typography className="text-gray-600 text-sm text-center">
+          {dish?.dish?.description}
+        </Typography>
+      </CardBody>
+      <CardFooter className="pt-0 pb-4">
+        <div className="flex justify-center space-x-2 mb-3">
+          {dish?.dishSizeDetails?.map((size) => (
+            <button
+              key={size.dishSizeDetailId}
+              onClick={() => handleSizeClick(dish.dish, size)}
+              className={`px-2 py-1 rounded-md border ${
+                selectedSizes?.size?.dishSizeDetailId === size.dishSizeDetailId
+                  ? "bg-red-800 text-white"
+                  : "bg-white text-red-800"
+              } font-semibold transition-colors duration-300`}
+            >
+              {size.dishSize?.vietnameseName || size.dishSize?.name}
+            </button>
+          ))}
+        </div>
+        <Typography className="text-center text-lg font-semibold mb-3">
+          Giá:{" "}
+          <span className="text-red-800">
+            {getCurrentPrice(dish.dish.dishId) === 0
+              ? formatPrice(dish?.dishSizeDetails?.[0].price)
+              : formatPrice(getCurrentPrice(dish.dish.dishId))}
+          </span>
+        </Typography>
+        <Button
+          onClick={() => {
+            handleAddToCart(
+              dish.dish,
+              selectedSizes?.size || dish.dishSizeDetails[0]
+            );
+            message.success("Đã thêm vào giỏ hàng");
+          }}
+          className="w-full mx-auto bg-red-800 text-white"
+        >
+          Chọn
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+
+  const renderComboCard = (combo) => (
+    <Card key={combo.comboId} className="m-4">
+      <CardHeader color="blue" className="relative h-56">
+        <img
+          src={combo?.image}
+          alt={combo?.name}
+          className="h-full w-full object-cover"
+        />
+      </CardHeader>
+      <CardBody>
+        <Typography variant="h5" className="mb-2">
+          {combo?.name}
+        </Typography>
+        <Typography>{combo?.description}</Typography>
+        <Typography className="mt-4">
+          <span className="font-bold">Giá:</span> {formatPrice(combo?.price)}
+        </Typography>
+        {combo?.discount > 0 && (
+          <Typography className="mt-2 text-red-500">
+            <span className="font-bold">Giảm:</span> {combo?.discount}%
+          </Typography>
+        )}
+        <Typography className="mt-4">
+          <span className="font-bold">Ngày bắt đầu:</span>{" "}
+          {formatDate(combo?.startDate)}
+        </Typography>
+        <Typography className="mt-2">
+          <span className="font-bold">Ngày kết thúc:</span>{" "}
+          {formatDate(combo?.endDate)}
+        </Typography>
+      </CardBody>
+      <CardFooter className="pt-0 mt-auto">
+        <div className="flex justify-center">
+          <Button
+            className="bg-red-700 text-white py-2 px-4 rounded-md"
+            onClick={() => {
+              setIsOpenComboDetail(true);
+              setSelectedCombos(combo.comboId);
+            }}
+          >
+            Đặt ngay
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+
   return (
     <div className="mt-10">
       <div className="grid grid-cols-1 md:grid-cols-4 max-h-[1200px] rounded-2xl shadow-xl pl-6">
@@ -184,74 +297,7 @@ export function ModalReservation({
               style={{ overflow: "auto", maxHeight: "600px" }}
             >
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2">
-                {dishes.map((dish) => (
-                  <Card
-                    key={dish?.dish?.dishId}
-                    className="mt-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
-                  >
-                    <CardHeader color="blue-gray" className="relative h-56">
-                      <img
-                        src={dish?.dish?.image}
-                        alt={dish?.dish?.name}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                      />
-                      <div className="absolute top-2 right-2 bg-red-800 text-white px-2 py-1 rounded-full text-xs">
-                        {dish.dish?.dishItemType?.name}
-                      </div>
-                    </CardHeader>
-                    <CardBody className="p-4">
-                      <Typography
-                        variant="h5"
-                        className="mb-2 text-center text-red-800 font-bold"
-                      >
-                        {dish?.dish?.name}
-                      </Typography>
-                      <Typography className="text-gray-600 text-sm text-center">
-                        {dish?.dish?.description}
-                      </Typography>
-                    </CardBody>
-                    <CardFooter className="pt-0 pb-4">
-                      <div className="flex justify-center space-x-2 mb-3">
-                        {dish?.dishSizeDetails?.map((size) => (
-                          <button
-                            key={size.dishSizeDetailId}
-                            onClick={() => handleSizeClick(dish.dish, size)}
-                            className={`px-2 py-1 rounded-md border ${
-                              selectedSizes?.size?.dishSizeDetailId ===
-                              size.dishSizeDetailId
-                                ? "bg-red-800 text-white"
-                                : "bg-white text-red-800"
-                            } font-semibold transition-colors duration-300`}
-                          >
-                            {size.dishSize?.name}
-                          </button>
-                        ))}
-                      </div>
-                      <Typography className="text-center text-lg font-semibold mb-3">
-                        Giá:{" "}
-                        <span className="text-red-800">
-                          {getCurrentPrice(dish.dish.dishId).toLocaleString() ==
-                          0
-                            ? formatPrice(dish?.dishSizeDetails?.[0].price)
-                            : formatPrice(getCurrentPrice(dish.dish.dishId))}
-                        </span>
-                      </Typography>
-                      {/* ... rest of the CardFooter content ... */}
-                      <Button
-                        onClick={() => {
-                          handleAddToCart(
-                            dish.dish,
-                            selectedSizes?.size || dish.dishSizeDetails[0]
-                          );
-                          message.success("Đã thêm vào giỏ hàng");
-                        }}
-                        className="w-full mx-auto bg-red-800 text-white"
-                      >
-                        Chọn
-                      </Button>{" "}
-                    </CardFooter>
-                  </Card>
-                ))}
+                {dishes.map(renderDishCard)}
               </div>
             </TabPane>
             <TabPane
@@ -265,58 +311,9 @@ export function ModalReservation({
                   handleBack={() => setIsOpenComboDetail(false)}
                 />
               ) : (
-                <>
-                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                    {combos?.map((combo, index) => (
-                      <Card key={index} className=" m-4 ">
-                        <CardHeader color="blue" className="relative h-56">
-                          <img
-                            src={combo?.image}
-                            alt={combo?.name}
-                            className="h-full w-full object-cover"
-                          />
-                        </CardHeader>
-                        <CardBody>
-                          <Typography variant="h5" className="mb-2">
-                            {combo?.name}
-                          </Typography>
-                          <Typography>{combo?.description}</Typography>
-                          <Typography className="mt-4">
-                            <span className="font-bold">Giá:</span>{" "}
-                            {formatPrice(combo?.price)}
-                          </Typography>
-                          {combo?.discount > 0 && (
-                            <Typography className="mt-2 text-red-500">
-                              <span className="font-bold">Giảm:</span>{" "}
-                              {combo?.discount}%
-                            </Typography>
-                          )}
-                          <Typography className="mt-4">
-                            <span className="font-bold">Ngày bắt đầu:</span>{" "}
-                            {formatDate(combo?.startDate)}
-                          </Typography>
-                          <Typography className="mt-2">
-                            <span className="font-bold">Ngày kết thúc:</span>{" "}
-                            {formatDate(combo?.endDate)}
-                          </Typography>
-                        </CardBody>
-                        <CardFooter className="pt-0 mt-auto">
-                          <div className="flex justify-center ">
-                            <Button
-                              className="bg-red-700 text-white py-2 px-4 rounded-md "
-                              onClick={() => {
-                                setIsOpenComboDetail(true);
-                                setSelectedCombos(combo.comboId);
-                              }}
-                            >
-                              Đặt ngay
-                            </Button>
-                          </div>
-                        </CardFooter>
-                      </Card>
-                    ))}
-                  </div>
-                </>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                  {combos?.map(renderComboCard)}
+                </div>
               )}
             </TabPane>
           </Tabs>
@@ -344,7 +341,7 @@ export function ModalReservation({
         </div>
         <div className="flex justify-end col-span-4 gap-2 m-3">
           <Button
-            className=" bg-red-800 rounded-md text-white mt-10"
+            className="bg-red-800 rounded-md text-white mt-10"
             onClick={onCancel}
           >
             Back
@@ -359,4 +356,6 @@ export function ModalReservation({
       </div>
     </div>
   );
-}
+};
+
+export default ModalReservation;

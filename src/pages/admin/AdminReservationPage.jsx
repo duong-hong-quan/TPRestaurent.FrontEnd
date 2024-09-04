@@ -203,7 +203,7 @@ export function AdminReservationPage() {
     },
   ];
 
-  const filteredReservations = reservations.filter((item) => {
+  const filteredReservations = reservations?.filter((item) => {
     const customerInfo = item.customerInfo || {};
     const searchString = `${customerInfo.name || ""} ${
       customerInfo.phoneNumber || ""

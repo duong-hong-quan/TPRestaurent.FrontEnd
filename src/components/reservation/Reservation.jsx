@@ -11,7 +11,7 @@ import { UserOutlined, MailOutlined, TeamOutlined } from "@ant-design/icons";
 import { addNewCustomerInfo } from "../../api/acccountApi";
 import { useState, useEffect } from "react";
 import OtpConfirmModal from "../../pages/login/OtpConfirmModal";
-import { ModalReservation } from "./ModalReservation";
+import ModalReservation from "./ModalReservation";
 import reservationImage from "../../assets/imgs/reservation.png";
 import moment from "moment";
 import { convertToISOString, formatPhoneNumber } from "../../util/Utility";

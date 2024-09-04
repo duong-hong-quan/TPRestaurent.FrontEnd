@@ -123,9 +123,12 @@ export function MultiLevelSidebar() {
         } md:relative md:translate-x-0`}
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <p className="font-bold text-2xl text-center text-white w-full">
+          <NavLink
+            to={"/"}
+            className="font-bold text-2xl text-center text-white w-full"
+          >
             Thien Phu
-          </p>
+          </NavLink>
           <button
             onClick={toggleSidebar}
             className="md:hidden text-white focus:outline-none"

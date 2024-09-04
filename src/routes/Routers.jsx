@@ -21,8 +21,7 @@ import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import ErrorPage from "../pages/common/error/ErrorPage";
 import SearchResults from "../components/search/SearchResult";
 import AboutUs from "../pages/common/about-us/AboutUs";
-import { ComboDetail } from "../pages/common/menu-page/ComboDetail";
-import ComboDetail2 from "../pages/common/menu-page/ComboDetail2";
+import { ComboDetailPage } from "../pages/common/menu-page/ComboDetailPage";
 import { OrderHistory } from "../pages/common/customer/OrderHistory";
 import TableView from "../pages/kitchen/TableView";
 import OrderDetailView from "../pages/common/customer/OrderDetailView";
@@ -72,11 +71,7 @@ function Routers() {
         },
         {
           path: "combo/:id",
-          element: <ComboDetail />,
-        },
-        {
-          path: "combo2/:id",
-          element: <ComboDetail2 />,
+          element: <ComboDetailPage />,
         },
         {
           path: "order-history",

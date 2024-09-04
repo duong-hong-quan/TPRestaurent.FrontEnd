@@ -1,5 +1,5 @@
 import { PhoneOutlined } from "@ant-design/icons";
-import { Button, Input, Tooltip } from "antd";
+import { Button, Input } from "antd";
 import { useState, useEffect } from "react";
 import OtpConfirmModal from "./OtpConfirmModal";
 import { toast } from "react-toastify";

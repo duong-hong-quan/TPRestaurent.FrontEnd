@@ -265,6 +265,7 @@ const CartPage = () => {
       });
     }
   };
+  console.log(cartItems.length);
   return (
     <div className="container mx-auto px-4 py-8">
       {!isEmptyObject(initialData) && (
@@ -278,122 +279,110 @@ const CartPage = () => {
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
         Giỏ hàng của bạn
       </h1>
-      {cartItems.length > 0 ? (
-        <>
-          <Table
-            columns={columns}
-            dataSource={cartItems}
-            pagination={false}
-            rowKey="dishSizeDetailId"
-            className="mb-8 shadow-md rounded-lg overflow-hidden"
+      <>
+        <Table
+          columns={columns}
+          dataSource={cartItems}
+          pagination={false}
+          rowKey="dishSizeDetailId"
+          className="mb-8 shadow-md rounded-lg overflow-hidden"
+        />
+
+        <div>
+          <h4 className="text-center font-bold text-2xl my-10">Combo</h4>
+          <CartCombosTable
+            cartCombos={cart}
+            formatPrice={formatPrice}
+            handleDecreaseComboQuantity={handleDecreaseComboQuantity}
+            handleIncreaseComboQuantity={handleIncreaseComboQuantity}
+            handleRemoveCombo={handleRemoveCombo}
           />
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Số điện thoại</h2>
+
+            <div className="flex items-center">
+              <Input
+                prefix={"+84"}
+                placeholder="Nhập số điện thoại"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className="mr-2 flex-grow"
+              />
+              <Button
+                type="primary"
+                className="bg-red-700 hover:bg-red-600"
+                onClick={handlePhone}
+              >
+                Xác nhận
+              </Button>
+            </div>
+            <PaymentMethodSelector handleChange={handleChangeMethod} />
+
+            <h2 className="mt-4 text-xl font-semibold mb-4">Mã giảm giá</h2>
+            <div className="flex items-center">
+              <Input
+                placeholder="Nhập mã giảm giá"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value)}
+                className="mr-2 flex-grow"
+              />
+              <Button
+                onClick={handleApplyCoupon}
+                type="primary"
+                className="bg-red-700 hover:bg-red-600"
+              >
+                Áp dụng
+              </Button>
+            </div>
+          </div>
 
           <div>
-            <h4 className="text-center font-bold text-2xl my-10">Combo</h4>
-            <CartCombosTable
-              cartCombos={cart}
-              formatPrice={formatPrice}
-              handleDecreaseComboQuantity={handleDecreaseComboQuantity}
-              handleIncreaseComboQuantity={handleIncreaseComboQuantity}
-              handleRemoveCombo={handleRemoveCombo}
+            <h2 className="text-xl font-semibold mb-4">Ghi chú</h2>
+            <TextArea
+              rows={4}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Nhập ghi chú cho đơn hàng của bạn"
             />
           </div>
-
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Số điện thoại</h2>
-
-              <div className="flex items-center">
-                <Input
-                  prefix={"+84"}
-                  placeholder="Nhập số điện thoại"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="mr-2 flex-grow"
-                />
-                <Button
-                  type="primary"
-                  className="bg-red-700 hover:bg-red-600"
-                  onClick={handlePhone}
-                >
-                  Xác nhận
-                </Button>
-              </div>
-              <PaymentMethodSelector handleChange={handleChangeMethod} />
-
-              <h2 className="mt-4 text-xl font-semibold mb-4">Mã giảm giá</h2>
-              <div className="flex items-center">
-                <Input
-                  placeholder="Nhập mã giảm giá"
-                  value={coupon}
-                  onChange={(e) => setCoupon(e.target.value)}
-                  className="mr-2 flex-grow"
-                />
-                <Button
-                  onClick={handleApplyCoupon}
-                  type="primary"
-                  className="bg-red-700 hover:bg-red-600"
-                >
-                  Áp dụng
-                </Button>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Ghi chú</h2>
-              <TextArea
-                rows={4}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Nhập ghi chú cho đơn hàng của bạn"
-              />
-            </div>
-          </div>
-          <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-lg">Tạm tính:</span>
-              <Typography
-                variant="h2"
-                className="font-bold text-red-700 text-center"
-              >
-                {formatPrice(cartTotal + cart.total)}
-              </Typography>{" "}
-            </div>
-            {discount > 0 && (
-              <div className="flex justify-between items-center mb-4 text-green-600">
-                <span className="text-lg">Giảm giá ({discount}%):</span>
-                <span className="text-lg font-medium">
-                  -{((subtotal * discount) / 100).toLocaleString("vi-VN")}đ
-                </span>
-              </div>
-            )}
-            <div className="flex justify-between items-center text-xl font-bold text-red-600">
-              <span>Tổng cộng:</span>
-              <span></span>
-            </div>
-          </div>
-          <div className="flex justify-end mt-8">
-            <Button
-              type="primary"
-              size="large"
-              className="bg-red-700 hover:bg-red-600 text-lg h-12 px-8"
-              onClick={checkOut}
+        </div>
+        <div className="bg-gray-100 p-6 rounded-lg shadow-md">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-lg">Tạm tính:</span>
+            <Typography
+              variant="h2"
+              className="font-bold text-red-700 text-center"
             >
-              Đặt ngay
-            </Button>
+              {formatPrice(cartTotal + cart.total)}
+            </Typography>{" "}
           </div>
-        </>
-      ) : (
-        <Empty
-          description={
-            <span className="text-gray-600">Giỗ hàng của bạn đang trống</span>
-          }
-        >
-          <Button className="bg-red-500 hover:bg-red-600 text-white">
-            Tiếp tục mua sắm
+          {discount > 0 && (
+            <div className="flex justify-between items-center mb-4 text-green-600">
+              <span className="text-lg">Giảm giá ({discount}%):</span>
+              <span className="text-lg font-medium">
+                -{((subtotal * discount) / 100).toLocaleString("vi-VN")}đ
+              </span>
+            </div>
+          )}
+          <div className="flex justify-between items-center text-xl font-bold text-red-600">
+            <span>Tổng cộng:</span>
+            <span></span>
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <Button
+            type="primary"
+            size="large"
+            className="bg-red-700 hover:bg-red-600 text-lg h-12 px-8 "
+            onClick={checkOut}
+          >
+            Đặt ngay
           </Button>
-        </Empty>
-      )}
+        </div>
+      </>
       <InfoModal
         initialData={initialData}
         isOpen={isModalOpen}
