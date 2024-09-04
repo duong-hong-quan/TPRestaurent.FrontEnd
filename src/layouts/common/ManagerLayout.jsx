@@ -7,9 +7,9 @@ const ManagerLayout = () => {
   return (
     <div className="flex">
       <MultiLevelSidebar />
-      <div className=" flex-1 w-full h-full bg-blue-gray-50">
+      <div className=" flex-1 w-full min-h-dvh bg-blue-gray-50">
         <HeaderManager />
-        <div className=" m-2 mt-8">
+        <div className="m-2 mt-8">
           <Outlet />
         </div>
       </div>
