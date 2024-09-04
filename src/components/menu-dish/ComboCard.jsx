@@ -10,7 +10,7 @@ import { NavLink } from "react-router-dom";
 
 const ComboCard = ({ combo }) => {
   return (
-    <div className=" m-4 ">
+    <div className=" m-4 h-full grid">
       <CardHeader className="relative h-44">
         <img
           src={combo?.image}
@@ -23,7 +23,7 @@ const ComboCard = ({ combo }) => {
           </div>
         )}
       </CardHeader>
-      <CardBody>
+      <CardBody className="py-0">
         <Typography variant="h4" className="mb-2">
           {combo?.name}
         </Typography>
@@ -51,7 +51,7 @@ const ComboCard = ({ combo }) => {
       <CardFooter className="pt-0 mt-auto">
         <div className="flex justify-end ">
           <NavLink
-            className="bg-white text-red-700 border border-red-300 font-bold py-2 px-4 rounded-md "
+            className="mt-autoinline-block w-fit bg-white text-red-700 border border-red-300 font-bold py-2 px-4 rounded-md "
             to={`/combo/${combo?.comboId}`}
           >
             Xem chi tiết{" "}

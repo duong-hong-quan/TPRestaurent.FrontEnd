@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
   Typography,
@@ -14,6 +13,7 @@ import { updateReservationStatus } from "../../../api/reservationApi";
 import { changeOrderStatus } from "../../../api/orderApi";
 import { addToStoreCredit } from "../../../api/storeCreditApi";
 import { decodeHashing } from "../../../api/hashingApi";
+import { formatPrice } from "../../../util/Utility";
 
 const VerifyPayment = () => {
   const location = useLocation();
@@ -21,7 +21,7 @@ const VerifyPayment = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isVNPAY, setIsVNPAY] = useState(false);
-
+  const [totalAmount, setTotalAmount] = useState(0);
   const handleUrl = async () => {
     debugger;
     setModalIsOpen(true);
@@ -31,6 +31,7 @@ const VerifyPayment = () => {
     const resultCode = searchParams.get("resultCode");
     const orderInfo = searchParams.get("vnp_OrderInfo");
     const id = searchParams.get("vnp_TxnRef");
+    setTotalAmount(searchParams.get("vnp_Amount"));
     const typeData = await decodeHashing(
       orderInfo,
       import.meta.env.VITE_KEY_HASH
@@ -109,47 +110,42 @@ const VerifyPayment = () => {
       <HomePage />
       {modalIsOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <Card className="w-96 shadow-xl">
-            <CardHeader
-              variant="gradient"
-              color={isSuccess ? "green" : "red"}
-              className="mb-4 grid h-28 place-items-center"
-            >
-              <Typography variant="h3" color="white">
-                Thông báo
-              </Typography>
-            </CardHeader>
-            <CardBody className="flex flex-col items-center text-center px-6">
-              {isSuccess ? (
-                <CheckCircleIcon className="w-20 h-20 text-green-500 mb-4" />
-              ) : (
-                <XCircleIcon className="w-20 h-20 text-red-500 mb-4" />
-              )}
+          <Card className="w-[500px] shadow-xl">
+            <CardBody className="flex flex-col items-center px-6">
+              <div className="flex flex-col items-center">
+                {isSuccess ? (
+                  <CheckCircleIcon className="w-36 h-36 text-green-500 mb-4" />
+                ) : (
+                  <XCircleIcon className="w-20 h-20 text-red-500 mb-4" />
+                )}
+              </div>
               <Typography
                 variant="h5"
                 color={isSuccess ? "green" : "red"}
-                className="mb-2 font-bold"
+                className="mb-2 font-bold text-center"
               >
-                Thanh toán {isSuccess ? "Thành công" : "Thất bại"}
+                Thanh toán {isSuccess ? "thành công" : "thất bại"}
               </Typography>
-              <Typography
-                variant="h5"
-                color={isSuccess ? "green" : "red"}
-                className="mb-4 font-bold"
-              >
-                với {isVNPAY ? "VNPAY" : "MOMO"}
-              </Typography>
-              <Typography className="font-normal text-blue-gray-600">
-                {modalMessage}
-              </Typography>
+              <div className="flex flex-col p-6 w-full">
+                <div className="flex justify-between w-full">
+                  <span className="font-bold"> Phương thức thanh toán:</span>
+                  <span>{isVNPAY ? "VNPAY" : "MOMO"}</span>
+                </div>
+                <div className="flex justify-between w-full">
+                  <span className="font-bold"> Tổng tiền:</span>
+                  <span>{formatPrice(totalAmount / 100)}</span>
+                </div>
+                <hr className="border-t-2 border-dashed border-gray-300 my-4" />
+                <p className="text-center text-gray-600 ">
+                  Cảm ơn bạn đã luôn tin tưởng Thiên Phú
+                </p>
+              </div>
             </CardBody>
             <CardFooter className="pt-0">
               <Button
-                variant="gradient"
-                color={isSuccess ? "green" : "red"}
                 onClick={closeModal}
                 fullWidth
-                className="shadow-md hover:shadow-lg transition-all duration-300"
+                className="shadow-md hover:shadow-lg transition-all duration-300 bg-red-800 text-white"
               >
                 Đóng
               </Button>
