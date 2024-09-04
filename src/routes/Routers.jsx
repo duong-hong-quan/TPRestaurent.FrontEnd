@@ -26,6 +26,7 @@ import { OrderHistory } from "../pages/common/customer/OrderHistory";
 import TableView from "../pages/kitchen/TableView";
 import OrderDetailView from "../pages/common/customer/OrderDetailView";
 import VerifyPayment from "../pages/common/verify-payment/VerifyPayment";
+import { AdminDevicePage } from "../pages/admin/AdminDevicePage";
 
 function Routers() {
   const routing = useRoutes([
@@ -144,6 +145,10 @@ function Routers() {
         {
           path: "overviews",
           element: <AdminDashboardPage />,
+        },
+        {
+          path: "manage-devices",
+          element: <AdminDevicePage />,
         },
       ],
     },

@@ -7,6 +7,7 @@ import { Button, IconButton } from "@material-tailwind/react";
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navItems = [
+    { name: "Thực đơn", path: "/search" },
     { name: "Combo", path: "/combo" },
     { name: "Đặt bàn", path: "/booking" },
     { name: "Giới thiệu", path: "/about" },
@@ -44,7 +45,6 @@ export const Navbar = () => {
             </NavLink>
           </h1>
 
-          {/* Mobile menu button */}
           <button
             onClick={toggleMenu}
             className="md:hidden text-white focus:outline-none"
@@ -93,6 +93,7 @@ export const Navbar = () => {
                     />
                     <Button
                       size="lg"
+                      type="submit"
                       className=" sm:w-auto bg-red-700 hover:bg-red-600 transition-all duration-300 text-nowrap"
                       onClick={handleSearch}
                     >
