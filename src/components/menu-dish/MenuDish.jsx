@@ -1,4 +1,8 @@
+import { useState } from "react";
+import { formatPrice } from "../../util/Utility";
 import DishCard from "./dish-card/DishCard";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../redux/features/cartReservationSlice";
 
 const menuCategories = [
   { icon: "fa-martini-glass", label: "Gợi ý" },
@@ -11,6 +15,30 @@ const menuCategories = [
 ];
 
 const MenuDish = ({ dishes }) => {
+  const handleSizeClick = (dish, size) => {
+    setSelectedSizes((prevSizes) => ({
+      ...prevSizes,
+      dish: dish,
+      size: size,
+    }));
+  };
+  const [selectedSizes, setSelectedSizes] = useState({});
+  const dispatch = useDispatch();
+  const handleAddToCart = (dish, size) => {
+    dispatch(addToCart({ dish, size, quantity: 1 }));
+  };
+
+  const getCurrentPrice = (dishId) => {
+    const dish = dishes.find((dish) => dish.dish.dishId === dishId);
+    if (dish && selectedSizes) {
+      const sizeDetail = dish.dishSizeDetails.find(
+        (size) => size === selectedSizes.size
+      );
+      return sizeDetail ? sizeDetail.price : 0;
+    }
+    return 0;
+  };
+
   return (
     <div className="bg-[#A31927] py-6 px-4">
       <div className="container mx-auto">
@@ -41,7 +69,15 @@ const MenuDish = ({ dishes }) => {
           ))} */}
 
           {dishes.map((dish, index) => (
-            <DishCard key={index} dish={dish.dish} />
+            <DishCard
+              key={index}
+              dish={dish}
+              formatPrice={formatPrice}
+              getCurrentPrice={getCurrentPrice}
+              handleSizeClick={handleSizeClick}
+              selectedSizes={selectedSizes}
+              handleAddToCart={handleAddToCart}
+            />
           ))}
         </div>
         <div className="flex justify-center">

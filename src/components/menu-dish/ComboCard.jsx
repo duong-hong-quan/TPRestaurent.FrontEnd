@@ -10,27 +10,35 @@ import { NavLink } from "react-router-dom";
 
 const ComboCard = ({ combo }) => {
   return (
-    <Card className=" m-4 ">
-      <CardHeader color="blue" className="relative h-56">
+    <div className=" m-4 ">
+      <CardHeader className="relative h-44">
         <img
           src={combo?.image}
           alt={combo?.name}
           className="h-full w-full object-cover"
         />
+        {combo?.discount > 0 && (
+          <div className="absolute mt-2 text-white font-bold top-0 bg-gray-800 px-2 py-1 rounded-md">
+            <span className="font-bold">Giảm:</span> {combo?.discount}%
+          </div>
+        )}
       </CardHeader>
       <CardBody>
-        <Typography variant="h5" className="mb-2">
+        <Typography variant="h4" className="mb-2">
           {combo?.name}
         </Typography>
-        <Typography>{combo?.description}</Typography>
-        <Typography className="mt-4">
-          <span className="font-bold">Giá:</span> {formatPrice(combo?.price)}
+        <Typography className="mt-4 flex-col md:flex-row">
+          <span className="font-bold text-red-800 text-xl">
+            {formatPrice(combo?.price)}
+          </span>
+          &nbsp;
+          {combo?.discount > 0 && (
+            <span className="font-bold text-gray-400 text-xl line-through">
+              {formatPrice(combo?.price)}
+            </span>
+          )}
         </Typography>
-        {combo?.discount > 0 && (
-          <Typography className="mt-2 text-red-500">
-            <span className="font-bold">Giảm:</span> {combo?.discount}%
-          </Typography>
-        )}
+
         <Typography className="mt-4">
           <span className="font-bold">Ngày bắt đầu:</span>{" "}
           {formatDate(combo?.startDate)}
@@ -41,16 +49,16 @@ const ComboCard = ({ combo }) => {
         </Typography>
       </CardBody>
       <CardFooter className="pt-0 mt-auto">
-        <div className="flex justify-center ">
+        <div className="flex justify-end ">
           <NavLink
-            className="bg-red-700 text-white py-2 px-4 rounded-md "
+            className="bg-white text-red-700 border border-red-300 font-bold py-2 px-4 rounded-md "
             to={`/combo/${combo?.comboId}`}
           >
-            Đặt ngay
+            Xem chi tiết{" "}
           </NavLink>
         </div>
       </CardFooter>
-    </Card>
+    </div>
   );
 };
 
