@@ -7,3 +7,13 @@ export const createPayment = async (data) => {
     throw new Error(error);
   }
 };
+export const getAllTransactions = async (pageNumber, pageSize) => {
+  try {
+    const response = await api.get(
+      `/transaction/get-all-payment/${pageNumber}/${pageSize}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
