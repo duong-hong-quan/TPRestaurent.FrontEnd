@@ -17,3 +17,16 @@ export const getAllTransactions = async (pageNumber, pageSize) => {
     throw new Error(error);
   }
 };
+export const updateTransactionStatus = async (
+  transactionId,
+  transactionStatus
+) => {
+  try {
+    const response = await api.put(
+      `update-transaction-status/${transactionId}/${transactionStatus}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
