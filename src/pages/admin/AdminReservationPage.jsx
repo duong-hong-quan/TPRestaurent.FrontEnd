@@ -145,7 +145,7 @@ export function AdminReservationPage() {
       dataIndex: "customerInfo",
       key: "customerInfo",
       render: (customerInfo) => (
-        <Typography>{`${customerInfo?.name} - ${customerInfo?.phoneNumber}`}</Typography>
+        <Typography>{`${customerInfo?.name} - 0${customerInfo?.phoneNumber}`}</Typography>
       ),
     },
     {

@@ -11,6 +11,9 @@ import { Table } from "antd";
 import { ArrowPathIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { getAllDevices } from "../../api/deviceApi";
 import { useEffect, useState } from "react";
+import { render } from "react-dom";
+import { FaLock } from "react-icons/fa";
+import { MdEditNote } from "react-icons/md";
 
 export function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
@@ -35,9 +38,50 @@ export function AdminDevicePage() {
       key: "tableName",
     },
     {
-      title: "Bàn",
+      title: " Loại bàn",
       dataIndex: ["table", "tableSizeId"],
       key: "tableSizeId",
+      render: (tableSizeId) => {
+        switch (tableSizeId) {
+          case 1:
+            return "Bàn 1 người";
+          case 2:
+            return "Bàn 2 người";
+          case 3:
+            return "Bàn 3 người";
+          case 4:
+            return "Bàn 4 người";
+          case 5:
+            return "Bàn 5 người";
+          case 6:
+            return "Bàn 6 người";
+          case 7:
+            return "Bàn 7 người";
+          case 8:
+            return "Bàn 8 người";
+          case 9:
+            return "Bàn 9 người";
+          case 10:
+            return "Bàn 10 người";
+          default:
+            return "Bàn 2 người";
+        }
+      },
+    },
+    {
+      title: "Hành động",
+      dataIndex: "",
+      key: "",
+      render: () => (
+        <div className="flex gap-4">
+          <Button size="sm" className="bg-white text-yellow-800">
+            <FaLock />
+          </Button>
+          <Button size="sm" className="bg-white text-red-800">
+            <MdEditNote />
+          </Button>
+        </div>
+      ),
     },
   ];
   return (

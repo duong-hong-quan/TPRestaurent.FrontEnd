@@ -12,9 +12,11 @@ import {
   Chip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { Table } from "antd";
-import { getAllOrder } from "../../api/orderApi";
+import { message, Table } from "antd";
+import { getAllOrder, getOrderDetailById } from "../../api/orderApi";
 import { formatDateTime } from "../../util/Utility";
+import OrderDetailModal from "./order-detail/OrderDetailModal";
+import LoadingOverlay from "../../components/loading/LoadingOverlay";
 
 const TABS = [
   {
@@ -43,7 +45,9 @@ export function AdminOrderHistoryPage() {
   const [activeTab, setActiveTab] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(!open);
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -58,7 +62,7 @@ export function AdminOrderHistoryPage() {
       render: (customerInfo) => (
         <Typography>
           {customerInfo
-            ? `${customerInfo.name} - ${customerInfo.phoneNumber}`
+            ? `${customerInfo.name} - 0${customerInfo.phoneNumber}`
             : "N/A"}
         </Typography>
       ),
@@ -102,9 +106,15 @@ export function AdminOrderHistoryPage() {
     {
       title: "Hành động",
       key: "action",
-      render: () => (
+      dataIndex: "orderId",
+      render: (text) => (
         <Tooltip content="Xem chi tiết">
-          <IconButton variant="text">
+          <IconButton
+            variant="text"
+            onClick={async () => {
+              await fetchOrderDetail(text);
+            }}
+          >
             <EyeIcon className="h-4 w-4" />
           </IconButton>
         </Tooltip>
@@ -113,9 +123,16 @@ export function AdminOrderHistoryPage() {
   ];
 
   const fetchOrder = async () => {
-    const response = await getAllOrder(1, 10, activeTab);
-    if (response?.isSuccess) {
-      setData(response?.result?.items);
+    setIsLoading(true);
+    try {
+      const response = await getAllOrder(1, 10, activeTab);
+      if (response?.isSuccess) {
+        setData(response?.result?.items);
+      }
+    } catch (error) {
+      message.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -130,6 +147,21 @@ export function AdminOrderHistoryPage() {
     }`.toLowerCase();
     return searchString.includes(searchQuery.toLowerCase());
   });
+  const [orderSelected, setOrderSelected] = useState({});
+  const fetchOrderDetail = async (orderId) => {
+    try {
+      setIsLoading(true);
+      const response = await getOrderDetailById(orderId);
+      if (response?.isSuccess) {
+        setOrderSelected(response?.result);
+        handleOpen();
+      }
+    } catch (error) {
+      message.error("Đã xảy ra lỗi khi tìm kiếm");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -189,6 +221,12 @@ export function AdminOrderHistoryPage() {
           <Table columns={columns} dataSource={filteredData} rowKey="orderId" />
         </CardBody>
       </Card>
+      <OrderDetailModal
+        order={orderSelected}
+        handleOpen={handleOpen}
+        open={open}
+      />
+      <LoadingOverlay isLoading={isLoading} />
     </>
   );
 }
