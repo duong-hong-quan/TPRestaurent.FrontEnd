@@ -15,8 +15,8 @@ export const Navbar = () => {
   console.log(cart);
   const caculatorItems = () => {
     let total = 0;
-    total += cart.items.length;
-    total += cartReservation.length;
+    total += cart?.items?.length;
+    total += cartReservation?.length;
     return total;
   };
   useEffect(() => {

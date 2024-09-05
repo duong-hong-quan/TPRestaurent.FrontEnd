@@ -16,7 +16,7 @@ const OtpConfirmModal = ({
   const handleChange = (value, index) => {
     const newOtp = [...otp];
     newOtp[index] = value;
-
+    console.log(visible);
     // Move focus to the next inputß if value is entered and it's not the last input
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`).focus();
@@ -72,12 +72,7 @@ const OtpConfirmModal = ({
   };
 
   return (
-    <Modal
-      open={visible}
-      onCancel={onClose}
-      footer={null}
-      className="font-sans"
-    >
+    <Modal open={visible} onCancel={onClose} footer={null}>
       <div className="p-6">
         <h2 className="text-2xl font-bold text-center mb-6 text-[rgb(192,29,46)]">
           Nhập mã xác thực OTP
