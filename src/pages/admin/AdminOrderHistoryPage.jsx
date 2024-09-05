@@ -104,6 +104,14 @@ export function AdminOrderHistoryPage() {
       ),
     },
     {
+      title: "Ngày đặt hàng",
+      dataIndex: "orderDate",
+      key: "orderDate",
+      render: (orderDate) => (
+        <Typography>{formatDateTime(orderDate)}</Typography>
+      ),
+    },
+    {
       title: "Hành động",
       key: "action",
       dataIndex: "orderId",

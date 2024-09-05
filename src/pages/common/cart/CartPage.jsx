@@ -114,14 +114,14 @@ const CartPage = () => {
       title: "Kích cỡ",
       dataIndex: "size",
       key: "size",
-      render: (_, record) => <span>{record.size.dishSize.name}</span>,
+      render: (_, record) => <span>{record.size?.dishSize?.name}</span>,
     },
     {
       title: "Đơn giá",
       dataIndex: "price",
       key: "price",
       render: (_, record) => (
-        <span className="text-gray-600">{formatPrice(record.size.price)}</span>
+        <span className="text-gray-600">{formatPrice(record.size?.price)}</span>
       ),
     },
     {
@@ -373,14 +373,12 @@ const CartPage = () => {
           </div>
         </div>
         <div className="flex justify-end">
-          <Button
-            type="primary"
-            size="large"
-            className="bg-red-700 hover:bg-red-600 text-lg h-12 px-8 "
+          <button
+            className="bg-red-800 hover:bg-red-400 text-lg h-12 px-8 mt-4 text-white "
             onClick={checkOut}
           >
             Đặt ngay
-          </Button>
+          </button>
         </div>
       </>
       <InfoModal

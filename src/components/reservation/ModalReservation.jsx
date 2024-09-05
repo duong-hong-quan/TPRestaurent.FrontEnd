@@ -53,7 +53,18 @@ const ModalReservation = ({
   const cart = useSelector((state) => state.cartReservation);
   const cartCombo = useSelector((state) => state.cart);
   const cartTotal = useSelector(getTotal);
-
+  const cartReservation = useSelector((state) => state.cartReservation);
+  const [totalItems, setTotalItems] = useState(0);
+  console.log(cart);
+  const caculatorItems = () => {
+    let total = 0;
+    total += cart.items.length;
+    total += cartReservation.length;
+    return total;
+  };
+  useEffect(() => {
+    setTotalItems(caculatorItems());
+  }, [cart, cartReservation]);
   const fetchData = useCallback(async () => {
     try {
       const [dishesData, combosData] = await Promise.all([
@@ -323,7 +334,7 @@ const ModalReservation = ({
             <TabPane tab="Thông tin" key="1">
               <ReservationInformation reservation={information} />
             </TabPane>
-            <TabPane tab={`Giỏ hàng (${cart.length})`} key="2">
+            <TabPane tab={`Giỏ hàng (${totalItems})`} key="2">
               <ReservationCart />
               {cart.length > 0 && (
                 <div className="mt-6 w-full flex justify-center items-center flex-col">

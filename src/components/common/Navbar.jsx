@@ -1,11 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { Button, IconButton } from "@material-tailwind/react";
+import { Button, IconButton, useSelect } from "@material-tailwind/react";
+import { Badge } from "antd";
+import { useSelector } from "react-redux";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const cart = useSelector((state) => state.cart);
+  const cartReservation = useSelector((state) => state.cartReservation);
+  const [totalItems, setTotalItems] = useState(0);
+  console.log(cart);
+  const caculatorItems = () => {
+    let total = 0;
+    total += cart.items.length;
+    total += cartReservation.length;
+    return total;
+  };
+  useEffect(() => {
+    setTotalItems(caculatorItems());
+  }, [cart, cartReservation]);
   const navItems = [
     { name: "Thực đơn", path: "/search" },
     { name: "Combo", path: "/combo" },
@@ -17,8 +33,13 @@ export const Navbar = () => {
   ];
 
   const icons = [
-    { icon: "fa-cart-shopping", path: "/cart", name: "Giỏ hàng" },
-    { icon: "fa-bell", path: "/notifications", name: "Thông báo" },
+    {
+      icon: "fa-cart-shopping",
+      path: "/cart",
+      name: "Giỏ hàng",
+      value: totalItems,
+    },
+    { icon: "fa-bell", path: "/notifications", name: "Thông báo", value: 0 },
   ];
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +99,9 @@ export const Navbar = () => {
                 to={item.path}
                 className="hover:text-yellow-300 transition duration-300 ease-in-out"
               >
-                <i className={`fa-solid ${item.icon} text-xl`}></i>
+                <Badge count={item.value}>
+                  <i className={`fa-solid ${item.icon} text-xl text-white`}></i>
+                </Badge>
               </NavLink>
             ))}
 
