@@ -14,6 +14,7 @@ import { changeOrderStatus } from "../../../api/orderApi";
 import { addToStoreCredit } from "../../../api/storeCreditApi";
 import { decodeHashing } from "../../../api/hashingApi";
 import { formatPrice } from "../../../util/Utility";
+import { updateTransactionStatus } from "../../../api/transactionApi";
 
 const VerifyPayment = () => {
   const location = useLocation();
@@ -46,13 +47,16 @@ const VerifyPayment = () => {
         if (typeData.includes("CR")) {
           const parts = typeData.split("_");
           const id = parts[1];
-          const data = await addToStoreCredit(id, parts[2]);
-          if (data?.isSuccess) {
-            setModalMessage("Nạp tiền vào ví thành công");
-          } else {
-            data?.messages.forEach((message) => {
-              setModalMessage(message);
-            });
+          const updateData = await updateTransactionStatus(id, 2);
+          if (updateData?.isSuccess) {
+            const data = await addToStoreCredit(id);
+            if (data?.isSuccess) {
+              setModalMessage("Nạp tiền vào ví thành công");
+            } else {
+              data?.messages.forEach((message) => {
+                setModalMessage(message);
+              });
+            }
           }
         } else {
           switch (typeData) {
