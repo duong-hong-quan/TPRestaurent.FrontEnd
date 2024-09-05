@@ -14,7 +14,7 @@ const menuCategories = [
   { icon: "fa-martini-glass", label: "Khác" },
 ];
 
-const MenuDish = ({ dishes }) => {
+const MenuDish = ({ dishes, handleAddItem }) => {
   const handleSizeClick = (dish, size) => {
     setSelectedSizes((prevSizes) => ({
       ...prevSizes,
@@ -81,7 +81,10 @@ const MenuDish = ({ dishes }) => {
           ))}
         </div>
         <div className="flex justify-center">
-          <button className="btn rounded-md shadow-md text-center bg-white text-red-600 px-4 py-2 hover:bg-red-100 transition-colors">
+          <button
+            className="btn rounded-md shadow-md text-center bg-white text-red-600 px-4 py-2 hover:bg-red-100 transition-colors"
+            onClick={handleAddItem}
+          >
             Xem thêm
           </button>
         </div>

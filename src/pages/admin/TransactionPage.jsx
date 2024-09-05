@@ -15,73 +15,46 @@ import {
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import TransactionTable from "./transaction/TransactionTable";
+import { getAllTransactions } from "../../api/transactionApi";
 
 const TABS = [
   {
     label: "Tất cả",
-    value: "all",
+    value: "",
   },
   {
-    label: "Đang chờ thanh toán",
-    value: "pending",
+    label: "Đang xử lý",
+    value: "0",
   },
   {
-    label: "Thanh toán thành công",
-    value: "completed",
-  },
-];
-
-const TABLE_HEAD = [
-  "Mã giao dịch",
-  "Người dùng",
-  "Số tiền",
-  "Trạng thái",
-  "Ngày",
-  "",
-];
-
-const TABLE_ROWS = [
-  {
-    id: "GD001",
-    user: "Nguyễn Văn A",
-    amount: "1,000,000 VND",
-    status: "completed",
-    date: "23/04/2024",
+    label: "Thất bại",
+    value: "1",
   },
   {
-    id: "GD002",
-    user: "Trần Thị B",
-    amount: "500,000 VND",
-    status: "pending",
-    date: "24/04/2024",
+    label: "Thành công",
+    value: "2",
   },
   {
-    id: "GD003",
-    user: "Lê Văn C",
-    amount: "2,000,000 VND",
-    status: "completed",
-    date: "25/04/2024",
-  },
-  {
-    id: "GD004",
-    user: "Phạm Thị D",
-    amount: "750,000 VND",
-    status: "pending",
-    date: "26/04/2024",
-  },
-  {
-    id: "GD005",
-    user: "Hoàng Văn E",
-    amount: "1,500,000 VND",
-    status: "completed",
-    date: "27/04/2024",
+    label: "Đã áp dụng",
+    value: "3",
   },
 ];
 
 export function TransactionPage() {
-  const [activeTab, setActiveTab] = useState("pending");
+  const [activeTab, setActiveTab] = useState("");
+  const [transactionData, setTransactionData] = useState([]);
 
+  const fetchData = async () => {
+    const response = await getAllTransactions(1, 10);
+    if (response?.isSuccess) {
+      setTransactionData(response.result?.items);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -130,108 +103,8 @@ export function TransactionPage() {
         </div>
       </CardHeader>
       <CardBody className="overflow-scroll px-0">
-        <table className="mt-4 w-full min-w-max table-auto text-left">
-          <thead>
-            <tr>
-              {TABLE_HEAD.map((head) => (
-                <th
-                  key={head}
-                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                >
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none opacity-70"
-                  >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {TABLE_ROWS.map(({ id, user, amount, status, date }, index) => {
-              const isLast = index === TABLE_ROWS.length - 1;
-              const classes = isLast
-                ? "p-4"
-                : "p-4 border-b border-blue-gray-50";
-
-              return (
-                <tr key={id}>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {id}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {user}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {amount}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <div className="w-max">
-                      <Chip
-                        variant="ghost"
-                        size="sm"
-                        value={
-                          status === "completed" ? "Đã thanh toán" : "Đang chờ"
-                        }
-                        color={status === "completed" ? "green" : "blue-gray"}
-                      />
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {date}
-                    </Typography>
-                  </td>
-                  <td className={classes}>
-                    <Tooltip content="Xem chi tiết">
-                      <IconButton variant="text">
-                        <EyeIcon className="h-4 w-4" />
-                      </IconButton>
-                    </Tooltip>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <TransactionTable data={transactionData} />
       </CardBody>
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          Trang 1 / 10
-        </Typography>
-        <div className="flex gap-2">
-          <Button variant="outlined" size="sm">
-            Trước
-          </Button>
-          <Button variant="outlined" size="sm">
-            Tiếp
-          </Button>
-        </div>
-      </CardFooter>
     </Card>
   );
 }

@@ -27,12 +27,17 @@ import TableView from "../pages/kitchen/TableView";
 import OrderDetailView from "../pages/common/customer/OrderDetailView";
 import VerifyPayment from "../pages/common/verify-payment/VerifyPayment";
 import { AdminDevicePage } from "../pages/admin/AdminDevicePage";
+import RestaurantCheckout from "../pages/common/customer/RestaurentCheckout";
 
 function Routers() {
   const routing = useRoutes([
     {
       path: "*",
       element: <ErrorPage />,
+    },
+    {
+      path: "restaurant-checkout",
+      element: <RestaurantCheckout />,
     },
     {
       path: "/",

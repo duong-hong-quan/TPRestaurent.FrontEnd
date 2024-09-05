@@ -11,7 +11,7 @@ function SearchResults() {
   const [dishes, setDishes] = useState([]);
   const [totalPage, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(9);
   const fetchData = async (query) => {
     try {
       setLoading(true);
@@ -36,25 +36,17 @@ function SearchResults() {
     } else {
       fetchData();
     }
-  }, [location.search, currentPage]);
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  }, [location.search, pageSize]);
 
   if (loading) {
     return <LoadingOverlay isLoading={loading} />;
   }
-
+  const handleAddItem = () => {
+    setPageSize(pageSize + 3);
+  };
   return (
     <div>
-      <MenuDish dishes={dishes} />
-      <div className="mt-10">
-        <Pagination
-          page={totalPage}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      <MenuDish dishes={dishes} handleAddItem={handleAddItem} />
     </div>
   );
 }
