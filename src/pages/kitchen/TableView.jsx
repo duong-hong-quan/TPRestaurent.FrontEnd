@@ -118,7 +118,7 @@ const TableView = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <Typography variant="h3" className="text-center mb-6 text-blue-gray-800">
+      <Typography variant="h3" className="text-center mb-6 text-red-800">
         Quản lý bàn
       </Typography>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

@@ -18,6 +18,7 @@ import {
   FaEnvelope,
   FaCog,
   FaSignOutAlt,
+  FaNewspaper,
 } from "react-icons/fa";
 
 const menuItems = [
@@ -32,7 +33,7 @@ const menuItems = [
   },
   {
     title: "Quản lý giao dịch",
-    icon: <FaShoppingBag className="h-5 w-5 text-white" />,
+    icon: <FaNewspaper className="h-5 w-5 text-white" />,
     path: "/admin",
     subItems: [
       { title: "Giao dịch", path: "/admin/transaction-history" },
@@ -78,9 +79,9 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
         onClick={() => handleOpen(index)}
         className="border-b-0 px-4 py-4 cursor-pointer"
       >
-        <NavLink to={item.path} className="flex items-center w-full">
+        <NavLink to={item.path} className="flex items-center w-full text-white">
           <ListItemPrefix>{item.icon}</ListItemPrefix>
-          <Typography className="mr-auto text-white font-bold">
+          <Typography className="mr-auto text-white font-bold text-nowrap">
             {item.title}
           </Typography>
         </NavLink>

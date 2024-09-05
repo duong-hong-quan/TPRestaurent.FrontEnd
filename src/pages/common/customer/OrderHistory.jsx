@@ -12,15 +12,11 @@ import {
   Space,
 } from "antd";
 import {
-  Calendar,
-  Users,
-  Clock,
-  DollarSign,
-  Lock,
-  Unlock,
-  Search,
-  Phone,
-} from "lucide-react";
+  CheckCircleOutlined,
+  SyncOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getAllReservationByPhoneNumber } from "../../../api/reservationApi";
 import { getAllOrderByPhoneNumber } from "../../../api/orderApi";
 import {
@@ -31,17 +27,15 @@ import UserInfo from "../../../components/user/UserInfo";
 import { formatPrice, isEmptyObject } from "../../../util/Utility";
 import ReservationList from "../../../components/reservation/reservation-list/ReservationList";
 import InfoModal from "../../../components/user/InfoModal";
-import {
-  CheckCircleOutlined,
-  SyncOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+import { Search } from "lucide-react";
 
 const { Title } = Typography;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
 export function OrderHistory() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [reservationStatus, setReservationStatus] = useState("");
   const [orderStatus, setOrderStatus] = useState("all");
@@ -52,16 +46,31 @@ export function OrderHistory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
 
-  const handleSearch = async () => {
-    if (!phoneNumber.trim()) {
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const phone = searchParams.get("phoneNumber");
+    if (phone) {
+      setPhoneNumber(phone);
+      handleSearch(phone);
+    }
+  }, [location.search]);
+
+  const handleSearch = async (phone) => {
+    const searchPhoneNumber = phone || phoneNumber;
+    if (!searchPhoneNumber.trim()) {
       message.error("Vui lòng nhập số điện thoại");
       return;
     }
     setLoading(true);
     try {
       const [responseReservation, responseInfo] = await Promise.all([
-        getAllReservationByPhoneNumber(phoneNumber, reservationStatus, 1, 10),
-        getCustomerInfoByPhoneNumber(phoneNumber),
+        getAllReservationByPhoneNumber(
+          searchPhoneNumber,
+          reservationStatus,
+          1,
+          10
+        ),
+        getCustomerInfoByPhoneNumber(searchPhoneNumber),
       ]);
       if (responseReservation?.isSuccess && responseInfo?.isSuccess) {
         setReservations(responseReservation?.result?.items);
@@ -161,6 +170,7 @@ export function OrderHistory() {
         ),
     },
   ];
+
   const fetchDataReservation = async () => {
     try {
       const response = await getAllReservationByPhoneNumber(
@@ -176,6 +186,7 @@ export function OrderHistory() {
       message.error("Đã xảy ra lỗi khi tìm kiếm");
     }
   };
+
   const fetchDataOrder = async () => {
     try {
       const response = await getAllOrderByPhoneNumber(phoneNumber, 1, 10);
@@ -186,10 +197,19 @@ export function OrderHistory() {
       message.error("Đã xảy ra lỗi khi tìm kiếm");
     }
   };
+
   useEffect(() => {
-    fetchDataReservation();
-    fetchDataOrder();
+    if (phoneNumber) {
+      fetchDataReservation();
+      fetchDataOrder();
+    }
   }, [reservationStatus, orderStatus]);
+
+  const updateUrlWithPhoneNumber = (phone) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("phoneNumber", phone);
+    navigate({ search: searchParams.toString() });
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -209,7 +229,10 @@ export function OrderHistory() {
             />
             <Button
               className="flex-grow-1 bg-red-800"
-              onClick={handleSearch}
+              onClick={() => {
+                handleSearch();
+                updateUrlWithPhoneNumber(phoneNumber);
+              }}
               loading={loading}
               type="primary"
               icon={<Search />}
@@ -228,49 +251,50 @@ export function OrderHistory() {
           />
         </Card>
       )}
-
-      <Card>
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="Lịch sử đặt chỗ" key="1">
-            <Space className="mb-4">
-              <Select
-                value={reservationStatus}
-                style={{ width: 200 }}
-                onChange={(value) => setReservationStatus(value)}
-              >
-                <Option value="">Tất cả</Option>
-                <Option value="1">Đang chờ thanh toán</Option>
-                <Option value="2">Đã thanh toán</Option>
-                <Option value="3">Đã hủy</Option>
-              </Select>
-            </Space>
-            {reservations.length > 0 ? (
-              <ReservationList reservations={reservations} />
-            ) : (
-              <p>Không có dữ liệu đặt chỗ</p>
-            )}
-          </TabPane>
-          <TabPane tab="Lịch sử đơn hàng" key="2">
-            <Space className="mb-4">
-              <Select
-                value={orderStatus}
-                style={{ width: 200 }}
-                onChange={(value) => setOrderStatus(value)}
-              >
-                <Option value="all">Tất cả</Option>
-                <Option value="1">Đang xử lý</Option>
-                <Option value="2">Đã hoàn thành</Option>
-                <Option value="3">Đã hủy</Option>
-              </Select>
-            </Space>
-            {orders.length > 0 ? (
-              <Table columns={columns} dataSource={orders} />
-            ) : (
-              <p>Không có dữ liệu đơn hàng</p>
-            )}
-          </TabPane>
-        </Tabs>
-      </Card>
+      {!isEmptyObject(customer) && (
+        <Card>
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="Lịch sử đặt chỗ" key="1">
+              <Space className="mb-4">
+                <Select
+                  value={reservationStatus}
+                  style={{ width: 200 }}
+                  onChange={(value) => setReservationStatus(value)}
+                >
+                  <Option value="">Tất cả</Option>
+                  <Option value="1">Đang chờ thanh toán</Option>
+                  <Option value="2">Đã thanh toán</Option>
+                  <Option value="3">Đã hủy</Option>
+                </Select>
+              </Space>
+              {reservations.length > 0 ? (
+                <ReservationList reservations={reservations} />
+              ) : (
+                <p>Không có dữ liệu đặt chỗ</p>
+              )}
+            </TabPane>
+            <TabPane tab="Lịch sử đơn hàng" key="2">
+              <Space className="mb-4">
+                <Select
+                  value={orderStatus}
+                  style={{ width: 200 }}
+                  onChange={(value) => setOrderStatus(value)}
+                >
+                  <Option value="all">Tất cả</Option>
+                  <Option value="1">Đang xử lý</Option>
+                  <Option value="2">Đã hoàn thành</Option>
+                  <Option value="3">Đã hủy</Option>
+                </Select>
+              </Space>
+              {orders.length > 0 ? (
+                <Table columns={columns} dataSource={orders} />
+              ) : (
+                <p>Không có dữ liệu đơn hàng</p>
+              )}
+            </TabPane>
+          </Tabs>
+        </Card>
+      )}
 
       <InfoModal
         initialData={customer}
