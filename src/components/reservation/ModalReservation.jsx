@@ -58,12 +58,12 @@ const ModalReservation = ({
   console.log(cart);
   const caculatorItems = () => {
     let total = 0;
-    total += cart.items.length;
-    total += cartReservation.length;
+    total += cart?.items?.length;
+    total += cartReservation?.length;
     return total;
   };
   useEffect(() => {
-    setTotalItems(caculatorItems());
+    setTotalItems(caculatorItems() === NaN ? 0 : caculatorItems());
   }, [cart, cartReservation]);
   const fetchData = useCallback(async () => {
     try {

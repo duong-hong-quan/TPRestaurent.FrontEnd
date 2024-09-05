@@ -127,6 +127,7 @@ const Reservation = () => {
 
   const handleOpenOtp = () => {
     setIsOtpModalVisible(true);
+    debugger;
   };
   const handleCloseOtp = () => {
     setIsOtpModalVisible(false);
@@ -194,14 +195,24 @@ const Reservation = () => {
   };
   if (isReservationModalVisible) {
     return (
-      <ModalReservation
-        visible={isReservationModalVisible}
-        onCancel={() => setIsReservationModalVisible(false)}
-        information={information}
-        handleCloseOtp={handleCloseOtp}
-        handleOpenOtp={handleOpenOtp}
-        isOtpSuccess={isOtpSuccess}
-      />
+      <>
+        <ModalReservation
+          visible={isReservationModalVisible}
+          onCancel={() => setIsReservationModalVisible(false)}
+          information={information}
+          handleCloseOtp={handleCloseOtp}
+          handleOpenOtp={handleOpenOtp}
+          isOtpSuccess={isOtpSuccess}
+        />
+        <OtpConfirmModal
+          visible={isOtpModalVisible}
+          onClose={() => setIsOtpModalVisible(false)}
+          resOtp={null}
+          phoneNumber={form.getFieldValue("phone")?.replace(/\s+/g, "")}
+          otpType={1}
+          handleSuccess={handleSuccess}
+        />
+      </>
     );
   }
   return (
@@ -361,14 +372,6 @@ const Reservation = () => {
             </Form.Item>
           </Form>
         </div>
-        <OtpConfirmModal
-          visible={isOtpModalVisible}
-          onClose={() => setIsOtpModalVisible(false)}
-          resOtp={null}
-          phoneNumber={form.getFieldValue("phone")?.replace(/\s+/g, "")}
-          otpType={1}
-          handleSuccess={handleSuccess}
-        />
       </div>
     </div>
   );
