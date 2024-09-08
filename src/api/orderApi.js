@@ -1,0 +1,54 @@
+import api from "./config/axios";
+
+export const createOrder = async (data) => {
+  try {
+    const response = await api.post(`/order/create-order`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const getAllOrderByPhoneNumber = async (
+  phoneNumber,
+  pageNumber,
+  pageSize
+) => {
+  try {
+    const response = await api.get(
+      `/order/get-all-order-by-phone-number/${pageNumber}/${pageSize}?phoneNumber=${phoneNumber}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+export const getOrderDetailById = async (id) => {
+  try {
+    const response = await api.get(`/order/get-order-detail/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const changeOrderStatus = async (orderId, isSuccessful) => {
+  try {
+    const response = await api.put(
+      `/order/change-order-status/${orderId}?isSuccessful=${isSuccessful}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+export const getAllOrder = async (pageNumber, pageSize, status) => {
+  try {
+    const response = await api.get(
+      `/order/get-all-order-by-status/${pageNumber}/${pageSize}?status=${status}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
