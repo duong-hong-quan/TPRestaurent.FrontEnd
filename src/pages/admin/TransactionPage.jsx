@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { EyeIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -7,13 +7,6 @@ import {
   Typography,
   Button,
   CardBody,
-  Chip,
-  CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  IconButton,
-  Tooltip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import TransactionTable from "./transaction/TransactionTable";

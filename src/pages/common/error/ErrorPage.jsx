@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 const ErrorPage = () => {

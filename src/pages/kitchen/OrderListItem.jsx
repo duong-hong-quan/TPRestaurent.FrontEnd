@@ -1,7 +1,5 @@
-import React from "react";
 import {
   ListItem,
-  ListItemPrefix,
   Avatar,
   Checkbox,
   Typography,

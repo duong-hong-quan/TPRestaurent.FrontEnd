@@ -6,12 +6,10 @@ import {
   Input,
   Typography,
 } from "@material-tailwind/react";
-import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import { Table } from "antd";
 import { ArrowPathIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { getAllDevices } from "../../api/deviceApi";
 import { useEffect, useState } from "react";
-import { render } from "react-dom";
 import { FaLock } from "react-icons/fa";
 import { MdEditNote } from "react-icons/md";
 

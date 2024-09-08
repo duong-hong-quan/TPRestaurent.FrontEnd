@@ -1,23 +1,9 @@
-import React from "react";
 import {
   Card,
   CardBody,
   CardHeader,
   Typography,
-  Button,
-  IconButton,
-  Input,
-  Menu,
-  MenuHandler,
-  MenuList,
-  MenuItem,
 } from "@material-tailwind/react";
-import {
-  ArrowUpIcon,
-  ArrowDownIcon,
-  EllipsisVerticalIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
 import { BanknotesIcon, ChartBarIcon } from "@heroicons/react/24/solid";
 import { TruckIcon, UserIcon } from "lucide-react";
 const mockData = {
