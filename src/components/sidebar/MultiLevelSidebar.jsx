@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   Typography,
   List,
@@ -14,12 +14,13 @@ import {
   FaChevronRight,
   FaTimes,
   FaChartBar,
-  FaShoppingBag,
   FaEnvelope,
   FaCog,
   FaSignOutAlt,
   FaNewspaper,
 } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { close } from "../../redux/features/sidebarSlice";
 
 const menuItems = [
   {
@@ -113,17 +114,35 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
 
 export function MultiLevelSidebar() {
   const [open, setOpen] = useState(0);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const sidebar = useSelector((state) => state.sidebar);
   const handleOpen = (value) => setOpen(open === value ? 0 : value);
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        dispatch(close());
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(close());
+  }, [location, dispatch]);
 
   return (
     <div className="flex min-h-full bg-gray-100">
-      {/* Sidebar */}
       <div
+        ref={sidebarRef}
         className={`fixed min-h-full inset-y-0 left-0 z-50 w-64 bg-[#970C1A] text-white transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          sidebar.isOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0`}
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10">
@@ -134,7 +153,7 @@ export function MultiLevelSidebar() {
             Thien Phu
           </NavLink>
           <button
-            onClick={toggleSidebar}
+            onClick={() => dispatch(sidebar.isOpen ? close() : open())}
             className="md:hidden text-white focus:outline-none"
           >
             <FaTimes className="h-6 w-6 text" />

@@ -16,15 +16,39 @@ import {
   Cog6ToothIcon,
   PowerIcon,
 } from "@heroicons/react/24/solid";
+import { FaBars, FaTimes } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { close, open } from "../../redux/features/sidebarSlice";
 
 const HeaderManager = ({ userName = "Admin" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const closeMenu = () => setIsMenuOpen(false);
-
+  const dispatch = useDispatch();
+  const siderbar = useSelector((state) => state.sidebar);
+  console.log(siderbar);
   return (
     <Navbar className="mx-auto max-w-full px-4 py-6">
       <div className="flex items-center justify-between text-blue-gray-900">
+        <button
+          onClick={() => {
+            if (siderbar.isOpen) {
+              dispatch(close());
+            } else {
+              dispatch(open());
+            }
+          }}
+          className="md:hidden focus:outline-none"
+        >
+          {siderbar?.isOpen ? (
+            <>
+              <FaTimes className="h-6 w-6 text" />
+            </>
+          ) : (
+            <>
+              <FaBars className="h-6 w-6 text" />
+            </>
+          )}
+        </button>
         <Typography
           as="a"
           href="#"
