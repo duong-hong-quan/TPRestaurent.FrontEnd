@@ -9,7 +9,7 @@ export const PaymentMethod = {
 };
 
 const PaymentMethodSelector = ({ handleChange }) => {
-  const [selectedMethod, setSelectedMethod] = useState(PaymentMethod.CASH);
+  const [selectedMethod, setSelectedMethod] = useState(PaymentMethod.VNPAY);
 
   const handleMethodChange = (value) => {
     setSelectedMethod(parseInt(value));

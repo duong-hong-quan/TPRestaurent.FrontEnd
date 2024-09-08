@@ -43,19 +43,9 @@ const CartPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [initialData, setInitialData] = useState({});
-  const [selectedMethod, setSelectedMethod] = useState(1);
-  const handleOpenModal = (data = null) => {
-    setIsUpdate(!!data);
-    setInitialData(data);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const [selectedMethod, setSelectedMethod] = useState(2);
 
   const handleSubmit = async (formData) => {
-    // Handle form submission (create or update) here
     console.log(formData);
     if (isUpdate) {
       const data = await updateCustomerInfo(formData);

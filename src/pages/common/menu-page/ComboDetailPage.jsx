@@ -8,25 +8,25 @@ const useDishData = (id) => {
   const [dishCombo, setDishCombo] = useState([]);
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getComboById(id);
-        if (response?.isSuccess) {
-          const { combo, dishCombo, imgs } = response?.result;
-          setImages(imgs);
-          setCombo(combo);
-          setDishCombo(dishCombo);
-        }
-      } catch (error) {
-        toast.error("Có lỗi xảy ra khi lấy dữ liệu");
-      } finally {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 3000);
+  const fetchData = async () => {
+    try {
+      const response = await getComboById(id);
+      if (response?.isSuccess) {
+        const { combo, dishCombo, imgs } = response?.result;
+        setImages(imgs);
+        setCombo(combo);
+        setDishCombo(dishCombo);
       }
-    };
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi lấy dữ liệu");
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [id]);
 
@@ -36,8 +36,6 @@ const useDishData = (id) => {
 export function ComboDetailPage() {
   const { id } = useParams();
   const { combo, dishCombo, images, isLoading } = useDishData(id);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
   const [comboData, setComboData] = useState({});
   const fetchData = async () => {
     try {

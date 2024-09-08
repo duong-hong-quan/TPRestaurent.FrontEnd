@@ -39,20 +39,17 @@ function formatDateTime(ngayGio) {
 
 function formatDate(ngayGio) {
   /**
-   * Định dạng thời gian thành chuỗi dd/mm/yyyy hh/mm/ss.
+   * Định dạng thời gian thành chuỗi dd/mm/yyyy hh:mm:ss.
    *
    * @param {Date} ngayGio - Thời gian cần định dạng.
    * @returns {string} - Chuỗi đã định dạng thời gian.
    */
   var date = new Date(ngayGio);
-  var ngay = date.getDate();
-  var thang = date.getMonth() + 1; // Tháng trong JavaScript bắt đầu từ 0
+  var ngay = String(date.getDate()).padStart(2, "0");
+  var thang = String(date.getMonth() + 1).padStart(2, "0"); // Tháng trong JavaScript bắt đầu từ 0
   var nam = date.getFullYear();
-  var gio = date.getHours();
-  var phut = date.getMinutes();
-  var giay = date.getSeconds();
 
-  return ngay + "/" + thang + "/" + nam;
+  return `${ngay}/${thang}/${nam}`;
 }
 function differenceInDays(ngayGio1, ngayGio2) {
   var date1 = new Date(ngayGio1);
@@ -176,24 +173,21 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
       note: `${item.dish.name} - ${item.size}`, // Combine name and size for note
     });
   });
-
+  debugger;
   // Process cart combos data
-  cartCombos?.items?.forEach((combo) => {
+  cartCombos?.items?.forEach((comboOrigin) => {
     const dishComboIds = [];
 
-    Object.values(combo.selectedDishes).forEach((dishes) => {
-      dishes.forEach((dish) => {
-        dishComboIds.push(dish.dishComboId);
-      });
+    comboOrigin.selectedDishes.forEach((dishes) => {
+      dishComboIds.push(dishes.dishComboId);
     });
 
     reservationDishDtos.push({
       combo: {
-        comboId: combo.comboId,
+        comboId: comboOrigin.combo.comboId,
         dishComboIds,
       },
-      quantity: combo.quantity,
-      note: combo.name, // Use combo name for note
+      quantity: comboOrigin.quantity,
     });
   });
 

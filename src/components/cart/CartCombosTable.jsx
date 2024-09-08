@@ -15,7 +15,7 @@ const CartCombosTable = ({
   const columns = [
     {
       title: "Combo",
-      dataIndex: "name",
+      dataIndex: ["combo", "name"],
       key: "name",
       render: (text, record) => (
         <Space direction="vertical">
@@ -76,7 +76,7 @@ const CartCombosTable = ({
       key: "total",
       render: (_, record) => (
         <Text strong className="text-red-700 font-bold">
-          {formatPrice(record.price * record.quantity)}
+          {formatPrice(record.combo.price * record.quantity)}
         </Text>
       ),
     },
@@ -97,7 +97,7 @@ const CartCombosTable = ({
       ),
     },
   ];
-
+  console.log(cartCombos.items);
   return (
     <Table
       dataSource={cartCombos.items}
