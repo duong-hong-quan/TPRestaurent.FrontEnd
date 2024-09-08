@@ -97,7 +97,7 @@ const LoginPage = () => {
         countdown={countdown}
         onClose={() => setIsOtpModalVisible(false)}
         resOtp={resOtp}
-        phoneNumber={`0${phone.replace(/^\+84/, "")}`}
+        phoneNumber={`${phone.replace(/^\+84/, "")}`}
         otpType={0}
       />
     </div>
