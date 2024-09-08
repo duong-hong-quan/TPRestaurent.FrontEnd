@@ -12,7 +12,6 @@ import PersonalTransaction from "../pages/common/personal-information/PersonalTr
 import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
 import ManagerLayout from "../layouts/common/ManagerLayout";
 import CommonLayout from "../layouts/common/CommonLayout";
-import { TransactionPage } from "../pages/admin/TransactionPage";
 import { AdminOrderHistoryPage } from "../pages/admin/AdminOrderHistoryPage";
 import { AdminReservationPage } from "../pages/admin/AdminReservationPage";
 import MessengerApp from "../pages/common/chat/ChatComponent";
@@ -28,7 +27,7 @@ import OrderDetailView from "../pages/common/customer/OrderDetailView";
 import VerifyPayment from "../pages/common/verify-payment/VerifyPayment";
 import { AdminDevicePage } from "../pages/admin/AdminDevicePage";
 import RestaurantCheckout from "../pages/common/customer/RestaurentCheckout";
-
+import { TransactionPage } from "../pages/admin/TransactionPage";
 function Routers() {
   const routing = useRoutes([
     {
