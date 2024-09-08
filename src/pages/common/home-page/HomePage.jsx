@@ -12,11 +12,17 @@ export const HomePage = () => {
   const [dishes, setDishes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [pageSize, setPageSize] = useState(9);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const fetchData = async () => {
     try {
       setIsLoading(true);
-
-      const response = await getAllDishes("", 1, pageSize);
+      if (selectedCategory === null) {
+        const response = await getAllDishes("", "", 1, pageSize);
+        if (response.isSuccess) {
+          setDishes(response?.result?.items);
+        }
+      }
+      const response = await getAllDishes(selectedCategory, "", 1, pageSize);
       if (response.isSuccess) {
         setDishes(response?.result?.items);
       } else {
@@ -35,6 +41,26 @@ export const HomePage = () => {
   const handleAddItem = () => {
     setPageSize(pageSize + 3);
   };
+
+  const menuCategories = [
+    { name: "APPETIZER", icon: "fa-martini-glass" },
+    { name: "SOUP", icon: "fa-temperature-high" },
+    { name: "HOTPOT", icon: "fa-fire-burner" },
+    { name: "BBQ", icon: "fa-lemon" },
+    { name: "HOTPOT_BROTH", icon: "fa-martini-glass" },
+    { name: "HOTPOT_MEAT", icon: "fa-scroll" },
+    { name: "HOTPOT_SEAFOOD", icon: "fa-martini-glass" },
+    { name: "HOTPOT_VEGGIE", icon: "fa-martini-glass" },
+    { name: "BBQ_MEAT", icon: "fa-martini-glass" },
+    { name: "BBQ_SEAFOOD", icon: "fa-martini-glass" },
+    { name: "HOTPOT_TOPPING", icon: "fa-martini-glass" },
+    { name: "BBQ_TOPPING", icon: "fa-martini-glass" },
+    { name: "SIDEDISH", icon: "fa-martini-glass" },
+    { name: "DRINK", icon: "fa-martini-glass" },
+    { name: "DESSERT", icon: "fa-martini-glass" },
+    { name: "SAUCE", icon: "fa-martini-glass" },
+  ];
+
   return (
     <div className="">
       <LoadingOverlay isLoading={isLoading} />
@@ -46,7 +72,14 @@ export const HomePage = () => {
             <TopVoucher />
             <IntroHome />
             <BestSeller />
-            <MenuDish dishes={dishes} handleAddItem={handleAddItem} />
+            <MenuDish
+              dishes={dishes}
+              handleAddItem={handleAddItem}
+              fetchDishes={fetchData}
+              setSelectedCategory={setSelectedCategory}
+              selectedCategory={selectedCategory}
+              menuCategories={menuCategories}
+            />
             <TopFeedback />
 
             {/* <Reservation /> */}

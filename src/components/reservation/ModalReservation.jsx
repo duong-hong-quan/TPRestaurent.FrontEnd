@@ -68,7 +68,7 @@ const ModalReservation = ({
   const fetchData = useCallback(async () => {
     try {
       const [dishesData, combosData] = await Promise.all([
-        getAllDishes("", 1, 10),
+        getAllDishes("", "", 1, 10),
         getAllCombo("", 1, 10),
       ]);
 

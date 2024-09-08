@@ -1,20 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatPrice } from "../../util/Utility";
 import DishCard from "./dish-card/DishCard";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cartReservationSlice";
+import { getAllDishTypes } from "../../api/dishApi";
 
-const menuCategories = [
-  { icon: "fa-martini-glass", label: "Gợi ý" },
-  { icon: "fa-temperature-high", label: "Chiên nướng" },
-  { icon: "fa-fire-burner", label: "Nướng" },
-  { icon: "fa-lemon", label: "Xào" },
-  { icon: "fa-martini-glass", label: "Tráng miệng" },
-  { icon: "fa-scroll", label: "Cuốn/ cháo" },
-  { icon: "fa-martini-glass", label: "Khác" },
-];
+const MenuDish = ({
+  dishes,
+  handleAddItem,
+  fetchDishes,
+  setSelectedCategory,
+  selectedCategory,
+  menuCategories,
+}) => {
+  const [menuCategoriesWithIcons, setMenuCategoriesWithIcons] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState({});
+  const dispatch = useDispatch();
+  const fetchData = async () => {
+    const response = await getAllDishTypes(1, 10);
+    if (response?.isSuccess) {
+      const categoriesWithIcons = response.result.items.map((category) => {
+        const matchedCategory = menuCategories.find(
+          (menuCategory) => menuCategory.name === category.name
+        );
+        return {
+          ...category,
+          icon: matchedCategory ? matchedCategory.icon : "fa-martini-glass",
+        };
+      });
+      setMenuCategoriesWithIcons(categoriesWithIcons);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-const MenuDish = ({ dishes, handleAddItem }) => {
   const handleSizeClick = (dish, size) => {
     setSelectedSizes((prevSizes) => ({
       ...prevSizes,
@@ -22,8 +42,7 @@ const MenuDish = ({ dishes, handleAddItem }) => {
       size: size,
     }));
   };
-  const [selectedSizes, setSelectedSizes] = useState({});
-  const dispatch = useDispatch();
+
   const handleAddToCart = (dish, size) => {
     dispatch(addToCart({ dish, size, quantity: 1 }));
   };
@@ -51,23 +70,25 @@ const MenuDish = ({ dishes, handleAddItem }) => {
           </a>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
-          {menuCategories.map((category, index) => (
+          {menuCategoriesWithIcons.map((category, index) => (
             <div
+              onClick={() => {
+                setSelectedCategory(category.id);
+                fetchDishes();
+              }}
               key={index}
-              className="rounded-lg text-red-600 p-2 font-bold bg-white shadow-2xl text-center flex flex-col justify-center items-center"
+              className={`${
+                selectedCategory === category.id ? "bg-gray-400" : "bg-red-800"
+              }  rounded-lg text-red-600 p-2 font-bold bg-white shadow-2xl text-center flex flex-col justify-center items-center`}
             >
               <div>
                 <i className={`fa-solid ${category.icon}`}></i>
               </div>
-              <p>{category.label}</p>
+              <p>{category.vietnameseName}</p>
             </div>
           ))}
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-3  gap-4 mb-6">
-          {/* {[...Array(4)].map((_, index) => (
-            <DishCard key={index} />
-          ))} */}
-
           {dishes.map((dish, index) => (
             <DishCard
               key={index}
