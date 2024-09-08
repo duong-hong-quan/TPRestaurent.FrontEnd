@@ -7,10 +7,20 @@ export const createPayment = async (data) => {
     throw new Error(error);
   }
 };
-export const getAllTransactions = async (pageNumber, pageSize) => {
+export const getAllTransactions = async (
+  pageNumber,
+  pageSize,
+  transactionStatus
+) => {
   try {
+    if (transactionStatus === "") {
+      const response = await api.get(
+        `/transaction/get-all-payment/${pageNumber}/${pageSize}`
+      );
+      return response.data;
+    }
     const response = await api.get(
-      `/transaction/get-all-payment/${pageNumber}/${pageSize}`
+      `/transaction/get-all-payment/${pageNumber}/${pageSize}?transationStatus=${transactionStatus}`
     );
     return response.data;
   } catch (error) {

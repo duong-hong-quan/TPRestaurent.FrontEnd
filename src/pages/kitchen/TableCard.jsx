@@ -1,5 +1,3 @@
-import React from "react";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { BellIcon } from "@heroicons/react/24/solid";
 import tableImg from "../../assets/imgs/table.png";
 const NotificationBell = ({ count }) => (

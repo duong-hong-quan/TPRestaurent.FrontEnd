@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Card,
   CardBody,
@@ -9,7 +9,6 @@ import {
   ListItem,
   ListItemPrefix,
   Radio,
-  Chip,
 } from "@material-tailwind/react";
 import {
   Utensils,
@@ -19,7 +18,6 @@ import {
   CreditCard,
   Wallet,
   ShoppingCart,
-  Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 

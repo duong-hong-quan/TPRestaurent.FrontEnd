@@ -1,5 +1,4 @@
-import React from "react";
-import { Typography, Button } from "@material-tailwind/react";
+import { Typography } from "@material-tailwind/react";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 

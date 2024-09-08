@@ -1,13 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  Table,
-  InputNumber,
-  Button,
-  Empty,
-  Input,
-  message,
-  Typography,
-} from "antd";
+import { useState, useEffect } from "react";
+import { Table, InputNumber, Button, Input, message, Typography } from "antd";
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,18 +8,15 @@ import {
   mergeCartData,
 } from "../../../util/Utility";
 import {
-  clearCart,
   decreaseQuantity,
   getTotal,
   increaseQuantity,
   removeFromCart,
 } from "../../../redux/features/cartReservationSlice";
 import {
-  addCombo,
   removeCombo,
   increaseComboQuantity,
   decreaseComboQuantity,
-  clearCartReservation,
 } from "../../../redux/features/cartSlice";
 import CartCombosTable from "../../../components/cart/CartCombosTable";
 import { NavLink } from "react-router-dom";
@@ -37,11 +26,9 @@ import {
   getCustomerInfoByPhoneNumber,
   updateCustomerInfo,
 } from "../../../api/acccountApi.js";
-import CustomerCard from "../../../components/user/CustomerCard.jsx";
 import UserInfo from "../../../components/user/UserInfo.jsx";
 import { createOrder } from "../../../api/orderApi.js";
 import PaymentMethodSelector from "../../../components/cart/PaymentMethodSelector.jsx";
-import { createPayment } from "../../../api/transactionApi.js";
 
 const { TextArea } = Input;
 

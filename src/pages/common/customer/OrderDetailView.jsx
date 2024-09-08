@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
   CardBody,
   Typography,
   Chip,
-  Button,
 } from "@material-tailwind/react";
 import { useParams } from "react-router-dom";
 import { getOrderDetailById } from "../../../api/orderApi";

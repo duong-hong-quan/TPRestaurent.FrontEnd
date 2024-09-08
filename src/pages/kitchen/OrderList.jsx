@@ -1,4 +1,3 @@
-import React from "react";
 import { List, Checkbox, Button, Typography } from "@material-tailwind/react";
 import OrderListItem from "./OrderListItem";
 
