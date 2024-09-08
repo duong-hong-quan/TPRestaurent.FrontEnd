@@ -41,8 +41,8 @@ export const HomePage = () => {
 
       {!isLoading && (
         <>
-          <SliderHome />
-          <div className="container mx-auto  ">
+          <div className="container">
+            <SliderHome />
             <TopVoucher />
             <IntroHome />
             <BestSeller />

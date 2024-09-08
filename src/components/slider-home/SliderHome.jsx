@@ -46,8 +46,8 @@ const SliderHome = () => {
   ];
 
   return (
-    <div className="relative h-screen ">
-      <Slider {...settings} className="h-full">
+    <div className=" min-w-full">
+      <Slider {...settings} className="h-full relative">
         {slides.map((slide) => (
           <div key={slide.id} className="relative h-screen">
             <img
