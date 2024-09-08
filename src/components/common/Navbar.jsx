@@ -1,27 +1,50 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import { Button, IconButton, useSelect } from "@material-tailwind/react";
+import { Button, IconButton } from "@material-tailwind/react";
 import { Badge } from "antd";
 import { useSelector } from "react-redux";
+import { isEmptyObject } from "../../util/Utility";
+import { FaUser } from "react-icons/fa";
+import NotificationDemo from "../notification/NotificationDemo";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMenuUserOpen, setIsMenuUserOpen] = useState(false);
 
   const cart = useSelector((state) => state.cart);
   const cartReservation = useSelector((state) => state.cartReservation);
-  const [totalItems, setTotalItems] = useState(0);
-  console.log(cart);
+  const user = useSelector((state) => state.user);
+  const navigate = useNavigate();
+
+  const toggleNotification = () => {
+    setIsNotificationOpen(!isNotificationOpen);
+  };
+
+  const toggleMenuUser = () => {
+    setIsMenuUserOpen(!isMenuUserOpen);
+  };
+
+  const handleLogout = () => {
+    // Add your logout logic here
+    console.log("Logged out");
+  };
+
   const caculatorItems = () => {
     let total = 0;
     total += cart?.items?.length;
     total += cartReservation?.length;
     return total;
   };
+
   useEffect(() => {
     setTotalItems(caculatorItems());
   }, [cart, cartReservation]);
+
   const navItems = [
     { name: "Thực đơn", path: "/search" },
     { name: "Combo", path: "/combo" },
@@ -39,12 +62,8 @@ export const Navbar = () => {
       name: "Giỏ hàng",
       value: totalItems,
     },
-    { icon: "fa-bell", path: "/notifications", name: "Thông báo", value: 0 },
+    { icon: "fa-bell", path: "/notifications", name: "Thông báo", value: 1 },
   ];
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
 
   const handleSearch = () => {
     setIsOpen(false);
@@ -54,7 +73,7 @@ export const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <nav className="bg-[#A31927] text-white shadow-lg  sticky top-0 z-50 ">
+    <nav className="bg-[#A31927] text-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between h-20">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
@@ -93,17 +112,41 @@ export const Navbar = () => {
           </ul>
 
           <div className="hidden md:flex items-center space-x-4">
-            {icons.map((item) => (
-              <NavLink
-                key={item.icon}
-                to={item.path}
-                className="hover:text-yellow-300 transition duration-300 ease-in-out"
-              >
-                <Badge count={item.value}>
-                  <i className={`fa-solid ${item.icon} text-xl text-white`}></i>
-                </Badge>
-              </NavLink>
-            ))}
+            {icons
+              .filter((i) => i.name !== "Thông báo")
+              .map((item) => (
+                <NavLink
+                  key={item.icon}
+                  to={item.path}
+                  className="hover:text-yellow-300 transition duration-300 ease-in-out"
+                >
+                  <Badge count={item.value}>
+                    <i
+                      className={`fa-solid ${item.icon} text-xl text-white`}
+                    ></i>
+                  </Badge>
+                </NavLink>
+              ))}
+            <div className="relative">
+              {icons
+                .filter((i) => i.name === "Thông báo")
+                .map((item, index) => (
+                  <IconButton
+                    key={index}
+                    className="bg-transparent"
+                    onClick={toggleNotification}
+                  >
+                    <i
+                      className={`fa-solid ${item.icon} text-xl text-white`}
+                    ></i>
+                  </IconButton>
+                ))}
+              {isNotificationOpen && (
+                <div className="absolute right-0 mt-2 w-[550px] bg-white rounded-md shadow-lg py-2 z-20">
+                  <NotificationDemo />
+                </div>
+              )}
+            </div>
 
             {isOpen && (
               <div className="left-1/2 -translate-x-1/2 top-20 absolute w-full px-4 sm:px-6 lg:px-8 z-50">
@@ -117,7 +160,7 @@ export const Navbar = () => {
                     <Button
                       size="lg"
                       type="submit"
-                      className=" sm:w-auto bg-red-700 hover:bg-red-600 transition-all duration-300 text-nowrap"
+                      className="sm:w-auto bg-red-700 hover:bg-red-600 transition-all duration-300 text-nowrap"
                       onClick={handleSearch}
                     >
                       Tra cứu
@@ -146,12 +189,38 @@ export const Navbar = () => {
                 />
               </svg>
             </IconButton>
-            <NavLink
-              to="/login"
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold px-4 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-            >
-              Đăng nhập
-            </NavLink>
+            {isEmptyObject(user) ? (
+              <NavLink
+                to="/login"
+                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold px-4 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+              >
+                Đăng nhập
+              </NavLink>
+            ) : (
+              <>
+                <div className="relative">
+                  <button onClick={toggleMenuUser}>
+                    <FaUser className="inline-block mr-2" />
+                  </button>
+                  {isMenuUserOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
+                      <NavLink
+                        to="/user/"
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                      >
+                        Hồ sơ của tôi
+                      </NavLink>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
+                      >
+                        Đăng xuất
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -182,15 +251,32 @@ export const Navbar = () => {
                   </NavLink>
                 </li>
               ))}
-              <li>
-                <NavLink
-                  to="/login"
-                  className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
-                  onClick={toggleMenu}
-                >
-                  Đăng nhập
-                </NavLink>
-              </li>
+              {isEmptyObject(user) ? (
+                <li>
+                  <NavLink
+                    to="/login"
+                    className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
+                    onClick={toggleMenu}
+                  >
+                    Đăng nhập
+                  </NavLink>
+                </li>
+              ) : (
+                <>
+                  <NavLink
+                    to="/user/"
+                    className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
+                  >
+                    Hồ sơ của tôi
+                  </NavLink>
+                  <button
+                    onClick={handleLogout}
+                    className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
+                  >
+                    Đăng xuất
+                  </button>
+                </>
+              )}
             </ul>
           </div>
         )}

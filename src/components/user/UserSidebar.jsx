@@ -29,7 +29,7 @@ const SidebarItem = ({ icon, text, href }) => (
 
 const UserSidebar = () => {
   return (
-    <nav className="p-4 rounded-lg shadow-md w-full md:w-64">
+    <nav className="p-4 rounded-lg shadow-md w-full min-h-full md:w-64">
       <ul className="space-y-2">
         {sidebarItems.map((item, index) => (
           <SidebarItem key={index} {...item} />

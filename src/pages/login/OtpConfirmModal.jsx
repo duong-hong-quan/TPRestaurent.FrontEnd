@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Modal, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { loginWithOtp, verifyCustomerInfoOTP } from "../../api/acccountApi";
+import { useDispatch } from "react-redux";
+import { author, login } from "../../redux/features/authSlice";
 
 const OtpConfirmModal = ({
   visible,
@@ -33,6 +35,7 @@ const OtpConfirmModal = ({
       setOtp(newOtp);
     }
   };
+  const dispatch = useDispatch();
 
   const handleSubmit = async () => {
     const otpString = otp.join("");
@@ -40,11 +43,13 @@ const OtpConfirmModal = ({
       case 0:
         const resposne = await loginWithOtp({
           phoneNumber: phoneNumber,
-          otp: otpString,
+          otpCode: otpString,
         });
         if (resposne?.isSuccess) {
           localStorage.setItem("token", resposne?.result?.token);
           localStorage.setItem("refreshToken", resposne?.result?.refreshToken);
+          dispatch(login(resposne?.result?.account));
+          dispatch(author(resposne?.result?.mainRole));
           message.success("Đăng nhập thành công");
           navigate("/");
           onClose();
