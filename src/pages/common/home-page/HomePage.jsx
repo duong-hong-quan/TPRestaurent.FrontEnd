@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getAllDishes } from "../../../api/dishApi";
 import BestSeller from "../../../components/best-seller/BestSeller";
 import IntroHome from "../../../components/intro-home/IntroHome";
 import MenuDish from "../../../components/menu-dish/MenuDish";
@@ -7,32 +6,38 @@ import SliderHome from "../../../components/slider-home/SliderHome";
 import TopFeedback from "../../../components/top-feedback/TopFeedback";
 import TopVoucher from "../../../components/top-voucher/TopVoucher";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import useCallApi from "../../../api/useCallApi";
+import { DishApi } from "../../../api/endpoint";
 
 export const HomePage = () => {
   const [dishes, setDishes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [pageSize, setPageSize] = useState(9);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const { callApi, error, loading } = useCallApi();
   const fetchData = async () => {
     try {
-      setIsLoading(true);
       if (selectedCategory === null) {
-        const response = await getAllDishes("", "", 1, pageSize);
+        debugger;
+        const response = await callApi(
+          `${DishApi.GET_ALL}/${1}/${pageSize}`,
+          "GET"
+        );
         if (response.isSuccess) {
           setDishes(response?.result?.items);
         }
-      }
-      const response = await getAllDishes(selectedCategory, "", 1, pageSize);
-      if (response.isSuccess) {
-        setDishes(response?.result?.items);
       } else {
+        const response = await await callApi(
+          `${DishApi.GET_ALL}/${1}/${pageSize}?type=${selectedCategory}`,
+          "GET"
+        );
+        if (response.isSuccess) {
+          setDishes(response?.result?.items);
+        } else {
+        }
       }
     } catch (error) {
       console.log(error);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 500);
     }
   };
   useEffect(() => {
@@ -63,9 +68,9 @@ export const HomePage = () => {
 
   return (
     <div className="">
-      <LoadingOverlay isLoading={isLoading} />
+      <LoadingOverlay isLoading={loading} />
 
-      {!isLoading && (
+      {!loading && (
         <>
           <div className="container">
             <SliderHome />

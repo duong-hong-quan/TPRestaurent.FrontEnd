@@ -1,8 +1,8 @@
 import React from "react";
 import { StarFilled, ShoppingCartOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { CardFooter } from "react-bootstrap";
 import { Button, message, Typography } from "antd";
+import { CardFooter } from "@material-tailwind/react";
 
 export const DishCard = ({
   dish,
@@ -33,7 +33,9 @@ export const DishCard = ({
           </h3>
           <div className="flex justify-center items-center mb-2">
             <StarFilled className="text-yellow-400 mr-1" />
-            <span className="text-gray-700">4.8 (1.2k)</span>
+            <span className="text-gray-700">
+              {dish?.dish?.averageRating} ({dish?.dish?.numberOfRating})
+            </span>
           </div>
           <CardFooter className="pt-0 pb-4">
             <div className="flex justify-center space-x-2 mb-3">

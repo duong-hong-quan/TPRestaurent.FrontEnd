@@ -36,8 +36,8 @@ const useDishData = (id) => {
           const { dish, dishSizeDetails, dishImgs, ratingDish } =
             response?.result;
           setImages(dishImgs.map((img) => img.path));
-          setDish(dish);
-          setDishSizeDetails(dishSizeDetails);
+          setDish(dish?.dish);
+          setDishSizeDetails(dish?.dishSizeDetails);
           setReviews(ratingDish);
         }
       } catch (error) {
@@ -119,7 +119,7 @@ const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedStarFilter, setSelectedStarFilter] = useState(null);
   useEffect(() => {
-    if (dishSizeDetails.length > 0) {
+    if (dishSizeDetails?.length > 0) {
       setPrice(dishSizeDetails[0].price);
       setSelectedSize(dishSizeDetails[0].dishSizeDetailId);
     }
@@ -128,13 +128,6 @@ const ProductDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const averageRating = useMemo(() => {
-    return (
-      reviews?.reduce((sum, review) => sum + review?.rating?.pointId, 0) /
-      reviews?.length
-    ).toFixed(1);
-  }, [reviews]);
 
   const renderDescriptionTab = () => (
     <div className="mt-8">
@@ -176,14 +169,14 @@ const ProductDetail = () => {
         <div className="flex items-start mb-8">
           <div className="text-center mr-8">
             <div className="text-5xl font-bold text-red-600">
-              {averageRating}
+              {dish?.averageRating}
             </div>
             <div className="flex justify-center my-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <StarFilled
                   key={star}
                   className={`text-lg ${
-                    star <= Math.round(averageRating)
+                    star <= Math.round(dish?.averageRating)
                       ? "text-yellow-400"
                       : "text-gray-300"
                   }`}
@@ -316,7 +309,7 @@ const ProductDetail = () => {
                   <StarFilled key={star} className="text-yellow-400 text-md" />
                 ))}
                 <span className="ml-2 text-gray-600 text-lg">
-                  ({averageRating})
+                  {dish?.averageRating}
                 </span>
               </div>
               <div className="border-b-2 pb-6">

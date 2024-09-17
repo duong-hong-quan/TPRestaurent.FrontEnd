@@ -3,14 +3,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getComboById } from "../../../api/comboApi";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import ComboDetail from "./ComboDetail";
+import useCallApi from "../../../api/useCallApi";
+import { ComboApi } from "../../../api/endpoint";
 const useDishData = (id) => {
   const [combo, setCombo] = useState({});
   const [dishCombo, setDishCombo] = useState([]);
   const [images, setImages] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { callApi, error, loading } = useCallApi();
   const fetchData = async () => {
     try {
-      const response = await getComboById(id);
+      const response = await callApi(`${ComboApi.GET_ALL}/${id}`);
       if (response?.isSuccess) {
         const { combo, dishCombo, imgs } = response?.result;
         setImages(imgs);
@@ -20,9 +22,6 @@ const useDishData = (id) => {
     } catch (error) {
       toast.error("Có lỗi xảy ra khi lấy dữ liệu");
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
     }
   };
 
@@ -30,12 +29,12 @@ const useDishData = (id) => {
     fetchData();
   }, [id]);
 
-  return { combo, dishCombo, images, isLoading };
+  return { combo, dishCombo, images, loading };
 };
 
 export function ComboDetailPage() {
   const { id } = useParams();
-  const { combo, dishCombo, images, isLoading } = useDishData(id);
+  const { combo, dishCombo, images, loading } = useDishData(id);
   const [comboData, setComboData] = useState({});
   const fetchData = async () => {
     try {
@@ -56,7 +55,7 @@ export function ComboDetailPage() {
   };
   return (
     <div>
-      <LoadingOverlay isLoading={isLoading} />
+      <LoadingOverlay isLoading={loading} />
       <ComboDetail
         comboData={comboData}
         key={`combodetail`}

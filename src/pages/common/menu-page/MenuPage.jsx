@@ -6,6 +6,8 @@ import { getAllCombo } from "../../../api/comboApi";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import useCallApi from "../../../api/useCallApi";
+import { ComboApi } from "../../../api/endpoint";
 
 const MenuPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,7 +15,7 @@ const MenuPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10); // Example total number of pages
   const [isLoading, setIsLoading] = useState(true);
-
+  const { callApi, error, loading } = useCallApi();
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -21,9 +23,20 @@ const MenuPage = () => {
   const fetchCombos = async () => {
     try {
       setIsLoading(true);
-      const data = await getAllCombo(searchQuery, currentPage, totalPages);
+      let data;
+      if (searchQuery != "") {
+        data = await callApi(
+          `${ComboApi.GET_ALL}/${currentPage}/${totalPages}?keyword=${searchQuery}`,
+          "GET"
+        );
+      } else {
+        data = await callApi(
+          `${ComboApi.GET_ALL}/${currentPage}/${totalPages}`,
+          "GET"
+        );
+      }
       if (data?.isSuccess) {
-        setCombos(data?.result?.items);
+        setCombos(data?.result);
         setTotalPages(data?.result?.totalPages);
       }
     } catch (error) {
