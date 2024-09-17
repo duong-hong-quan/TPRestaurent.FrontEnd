@@ -66,7 +66,6 @@ const MenuPage = () => {
 
   return (
     <div className="my-16">
-      <LoadingOverlay isLoading={isLoading} />
       <h1 className="uppercase font-bold text-center text-3xl mb-8">
         Khám phá thực đơn của chúng tôi
       </h1>

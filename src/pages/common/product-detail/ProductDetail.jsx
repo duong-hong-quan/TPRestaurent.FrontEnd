@@ -332,7 +332,7 @@ const ProductDetail = () => {
                   {formatPrice(price)}
                 </p>
               </div>
-              <div className="flex md:flex-row flex-col space-y-2 md:space-x-6">
+              <div className="flex md:flex-row flex-col">
                 {dishSizeDetails?.map((size) => (
                   <button
                     key={size.dishSizeDetailId}
@@ -340,24 +340,22 @@ const ProductDetail = () => {
                       setSelectedSize(size);
                       setPrice(size.price);
                     }}
-                    className={`flex-1 py-3 px-6 rounded-lg text-lg transition duration-300 ${
+                    className={`flex-1 py-3 h-full my-2 md:mx-2  w-full px-6  rounded-lg text-lg transition duration-300 ${
                       selectedSize?.dishSizeDetailId === size.dishSizeDetailId
-                        ? "bg-red-600 text-white"
-                        : "bg-red-100 text-red-700 hover:bg-red-200"
+                        ? "bg-[#F2D2D5] text-[#C01D2E] border border-[#C01D2E]"
+                        : "bg-[#EEEEEF] text-[#0F172AA8]"
                     }`}
                   >
-                    <p className="font-semibold">
-                      {size.dishSize?.vietnameseName}
-                    </p>
+                    <p className="">{size.dishSize?.vietnameseName}</p>
                     <p className="font-bold">{formatPrice(size.price)}</p>
                   </button>
                 ))}
               </div>
               <div className="flex items-center space-x-6">
-                <div className="flex items-center border-2 rounded-lg">
+                <div className="flex items-center border-2  border-[#cd5a65] rounded-lg">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition duration-300"
+                    className="px-4 py-2transition duration-300"
                   >
                     <MinusOutlined className="text-xl" />
                   </button>
@@ -366,7 +364,7 @@ const ProductDetail = () => {
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition duration-300"
+                    className="px-4 py-2transition duration-300"
                   >
                     <PlusOutlined className="text-xl" />
                   </button>
@@ -376,7 +374,7 @@ const ProductDetail = () => {
                     handleAddToCart(dish, selectedSize);
                     message.success("Đã thêm vào giỏ hàng");
                   }}
-                  className="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300 flex items-center justify-center text-lg font-semibold"
+                  className="flex-1 text-[#E45834] py-3 px-6 rounded-lg border  border-[#cd5a65] transition duration-300 flex items-center justify-center text-lg font-semibold"
                 >
                   <ShoppingCartOutlined className="mr-2 text-2xl" />
                   Thêm vào giỏ hàng
