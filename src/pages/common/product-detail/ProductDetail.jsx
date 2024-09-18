@@ -36,8 +36,8 @@ const useDishData = (id) => {
           const { dish, dishSizeDetails, dishImgs, ratingDish } =
             response?.result;
           setImages(dishImgs.map((img) => img.path));
-          setDish(dish);
-          setDishSizeDetails(dishSizeDetails);
+          setDish(dish?.dish);
+          setDishSizeDetails(dish?.dishSizeDetails);
           setReviews(ratingDish);
         }
       } catch (error) {
@@ -119,7 +119,7 @@ const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedStarFilter, setSelectedStarFilter] = useState(null);
   useEffect(() => {
-    if (dishSizeDetails.length > 0) {
+    if (dishSizeDetails?.length > 0) {
       setPrice(dishSizeDetails[0].price);
       setSelectedSize(dishSizeDetails[0].dishSizeDetailId);
     }
@@ -128,13 +128,6 @@ const ProductDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const averageRating = useMemo(() => {
-    return (
-      reviews?.reduce((sum, review) => sum + review?.rating?.pointId, 0) /
-      reviews?.length
-    ).toFixed(1);
-  }, [reviews]);
 
   const renderDescriptionTab = () => (
     <div className="mt-8">
@@ -176,14 +169,14 @@ const ProductDetail = () => {
         <div className="flex items-start mb-8">
           <div className="text-center mr-8">
             <div className="text-5xl font-bold text-red-600">
-              {averageRating}
+              {dish?.averageRating}
             </div>
             <div className="flex justify-center my-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <StarFilled
                   key={star}
                   className={`text-lg ${
-                    star <= Math.round(averageRating)
+                    star <= Math.round(dish?.averageRating)
                       ? "text-yellow-400"
                       : "text-gray-300"
                   }`}
@@ -316,7 +309,7 @@ const ProductDetail = () => {
                   <StarFilled key={star} className="text-yellow-400 text-md" />
                 ))}
                 <span className="ml-2 text-gray-600 text-lg">
-                  ({averageRating})
+                  {dish?.averageRating}
                 </span>
               </div>
               <div className="border-b-2 pb-6">
@@ -339,7 +332,7 @@ const ProductDetail = () => {
                   {formatPrice(price)}
                 </p>
               </div>
-              <div className="flex md:flex-row flex-col space-y-2 md:space-x-6">
+              <div className="flex md:flex-row flex-col">
                 {dishSizeDetails?.map((size) => (
                   <button
                     key={size.dishSizeDetailId}
@@ -347,24 +340,22 @@ const ProductDetail = () => {
                       setSelectedSize(size);
                       setPrice(size.price);
                     }}
-                    className={`flex-1 py-3 px-6 rounded-lg text-lg transition duration-300 ${
+                    className={`flex-1 py-3 h-full my-2 md:mx-2  w-full px-6  rounded-lg text-lg transition duration-300 ${
                       selectedSize?.dishSizeDetailId === size.dishSizeDetailId
-                        ? "bg-red-600 text-white"
-                        : "bg-red-100 text-red-700 hover:bg-red-200"
+                        ? "bg-[#F2D2D5] text-[#C01D2E] border border-[#C01D2E]"
+                        : "bg-[#EEEEEF] text-[#0F172AA8]"
                     }`}
                   >
-                    <p className="font-semibold">
-                      {size.dishSize?.vietnameseName}
-                    </p>
+                    <p className="">{size.dishSize?.vietnameseName}</p>
                     <p className="font-bold">{formatPrice(size.price)}</p>
                   </button>
                 ))}
               </div>
               <div className="flex items-center space-x-6">
-                <div className="flex items-center border-2 rounded-lg">
+                <div className="flex items-center border-2  border-[#cd5a65] rounded-lg">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition duration-300"
+                    className="px-4 py-2transition duration-300"
                   >
                     <MinusOutlined className="text-xl" />
                   </button>
@@ -373,7 +364,7 @@ const ProductDetail = () => {
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition duration-300"
+                    className="px-4 py-2transition duration-300"
                   >
                     <PlusOutlined className="text-xl" />
                   </button>
@@ -383,7 +374,7 @@ const ProductDetail = () => {
                     handleAddToCart(dish, selectedSize);
                     message.success("Đã thêm vào giỏ hàng");
                   }}
-                  className="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300 flex items-center justify-center text-lg font-semibold"
+                  className="flex-1 text-[#E45834] py-3 px-6 rounded-lg border  border-[#cd5a65] transition duration-300 flex items-center justify-center text-lg font-semibold"
                 >
                   <ShoppingCartOutlined className="mr-2 text-2xl" />
                   Thêm vào giỏ hàng

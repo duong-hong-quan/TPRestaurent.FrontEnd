@@ -14,8 +14,13 @@ import OtpConfirmModal from "../../pages/login/OtpConfirmModal";
 import ModalReservation from "./ModalReservation";
 import reservationImage from "../../assets/imgs/reservation.png";
 import moment from "moment";
-import { convertToISOString, formatPhoneNumber } from "../../util/Utility";
+import {
+  convertToISOString,
+  formatPhoneNumber,
+  isEmptyObject,
+} from "../../util/Utility";
 import { suggestTable } from "../../api/reservationApi";
+import { useSelector } from "react-redux";
 const { TextArea } = Input;
 
 const Reservation = () => {
@@ -29,6 +34,12 @@ const Reservation = () => {
   const [selectedEndTime, setSelectedEndTime] = useState(null);
   const [endTimeSlots, setEndTimeSlots] = useState([]);
   const [isValidatePhone, setIsValidatePhone] = useState(false);
+  const user = useSelector((state) => state.user.user || {});
+  const initData = () => {
+    if (!isEmptyObject(user)) {
+      form.setFieldValue("name", user.firstName);
+    }
+  };
   useEffect(() => {
     const now = moment();
     const roundedStartTime = now
@@ -62,41 +73,17 @@ const Reservation = () => {
     const formattedPhone = formatPhoneNumber(e.target.value);
     form.setFieldsValue({ phone: formattedPhone });
   };
-  const onFinish = async (values) => {
-    // message.error("Hiện tại các bàn dành cho 2 người đã đầy");
-    // const combinedDate = [values.date, values.startTime, values.endTime];
-    // setInformation({ ...values, date: combinedDate });
-    // setIsReservationModalVisible(true);
-    // const response = await addNewCustomerInfo({
-    //   name: values.name,
-    //   phoneNumber: values.phone.replace(/^\+84/, ""),
-    //   address: null,
-    //   accountId: null,
-    // });
-    // if (response?.isSuccess) {
-    //   setIsReservationModalVisible(true);
-    // } else {
-    //   setInformation({
-    //     name: response.result.items[0].name,
-    //     phone: response.result.items[0].phoneNumber,
-    //     email: values.email,
-    //     numberOfPeople: values.numberOfPeople,
-    //     date: combinedDate,
-    //     note: values.note,
-    //     customerId: response.result.items[0].customerId,
-    //     isVerified: response.result.items[0].isverified,
-    //   });
-    // }
+  const onFinish = async () => {
     const combinedDate = [
       form.getFieldValue("date"),
       form.getFieldValue("startTime"),
       form.getFieldValue("endTime"),
     ];
-    console.log(convertToISOString(combinedDate));
+    debugger;
     const responseSuggessTable = await suggestTable({
       startTime: convertToISOString(combinedDate)[0],
       endTime: convertToISOString(combinedDate)[1],
-      numOfPeople: form.getFieldValue("numberOfPeople"),
+      numOfPeople: Number(form.getFieldValue("numberOfPeople")),
       isPrivate: form.getFieldValue("isPrivate"),
     });
     if (responseSuggessTable?.isSuccess) {
@@ -139,8 +126,8 @@ const Reservation = () => {
 
   const generateTimeSlots = () => {
     const times = [];
-    const start = moment().startOf("day").hour(10); // Start at 10:00
-    const end = moment().startOf("day").hour(22); // End at 22:00
+    const start = moment().startOf("day").hour(6); // Start at 10:00
+    const end = moment().startOf("day").hour(23); // End at 22:00
     while (start <= end) {
       times.push(start.format("HH:mm"));
       start.add(30, "minutes");
@@ -240,13 +227,24 @@ const Reservation = () => {
             initialValues={{ remember: true }}
             onFinish={onFinish}
           >
-            <Form.Item
-              label="Họ và tên"
-              name="name"
-              rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
-            >
-              <Input prefix={<UserOutlined />} placeholder="Họ và tên" />
-            </Form.Item>
+            <div className="flex justify-between">
+              <Form.Item
+                label="Họ"
+                name="lastName"
+                className="w-1/2"
+                rules={[{ required: true, message: "Vui lòng nhập họ" }]}
+              >
+                <Input prefix={<UserOutlined />} placeholder="Họ" />
+              </Form.Item>
+              <Form.Item
+                label="Tên"
+                name="firstName"
+                className="w-1/2 mx-2"
+                rules={[{ required: true, message: "Vui lòng nhập tên" }]}
+              >
+                <Input prefix={<UserOutlined />} placeholder="Tên" />
+              </Form.Item>
+            </div>
             <Form.Item
               label="Số điện thoại"
               name="phone"

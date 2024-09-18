@@ -4,6 +4,8 @@ import DishCard from "./dish-card/DishCard";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cartReservationSlice";
 import { getAllDishTypes } from "../../api/dishApi";
+import useCallApi from "../../api/useCallApi";
+import { DishApi } from "../../api/endpoint";
 
 const MenuDish = ({
   dishes,
@@ -15,9 +17,10 @@ const MenuDish = ({
 }) => {
   const [menuCategoriesWithIcons, setMenuCategoriesWithIcons] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState({});
+  const { callApi, error, loading } = useCallApi();
   const dispatch = useDispatch();
   const fetchData = async () => {
-    const response = await getAllDishTypes(1, 10);
+    const response = await callApi(`${DishApi.GET_ALL_DISH_TYPE}/1/100`);
     if (response?.isSuccess) {
       const categoriesWithIcons = response.result.items.map((category) => {
         const matchedCategory = menuCategories.find(

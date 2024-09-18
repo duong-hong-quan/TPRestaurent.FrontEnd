@@ -48,7 +48,7 @@ export const getReservationById = async (id) => {
 };
 export const suggestTable = async (data) => {
   try {
-    const response = await api.post(`/reservation/suggest-table`, data);
+    const response = await api.post(`/order/suggest-table`, data);
     return response.data;
   } catch (error) {}
 };

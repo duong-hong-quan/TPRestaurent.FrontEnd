@@ -38,12 +38,10 @@ const TopVoucher = () => {
         </Slider>
       </div>
       <div className="md:hidden grid grid-cols-1  gap-4">
-        <TopVoucherDetail />
-        <TopVoucherDetail />
-        <TopVoucherDetail />
-        <TopVoucherDetail />
-        <TopVoucherDetail />
-        <TopVoucherDetail />
+        {coupons.length > 0 &&
+          coupons.map((coupon, index) => (
+            <TopVoucherDetail key={index} coupon={coupon} />
+          ))}
       </div>
     </>
   );

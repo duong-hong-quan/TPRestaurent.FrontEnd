@@ -3,10 +3,11 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 import { Button, IconButton } from "@material-tailwind/react";
 import { Badge } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { isEmptyObject } from "../../util/Utility";
 import { FaUser } from "react-icons/fa";
 import NotificationDemo from "../notification/NotificationDemo";
+import { logout } from "../../redux/features/authSlice";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,9 +19,9 @@ export const Navbar = () => {
 
   const cart = useSelector((state) => state.cart);
   const cartReservation = useSelector((state) => state.cartReservation);
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user || {});
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const toggleNotification = () => {
     setIsNotificationOpen(!isNotificationOpen);
   };
@@ -30,8 +31,8 @@ export const Navbar = () => {
   };
 
   const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logged out");
+    dispatch(logout());
+    navigate("/");
   };
 
   const caculatorItems = () => {
@@ -102,7 +103,7 @@ export const Navbar = () => {
               <li key={item.name}>
                 <NavLink
                   to={item.path}
-                  className="text-base lg:text-lg font-medium hover:text-yellow-300 transition duration-300 ease-in-out relative group"
+                  className="text-base lg:text-lg font-medium hover:text-yellow-300 transition duration-300 ease-in-out relative group text-nowrap"
                 >
                   {item.name}
                   <span className="absolute left-0 bottom-0 w-full h-0.5 bg-yellow-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
