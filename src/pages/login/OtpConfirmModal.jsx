@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { loginWithOtp, verifyCustomerInfoOTP } from "../../api/acccountApi";
 import { useDispatch } from "react-redux";
 import { author, login } from "../../redux/features/authSlice";
+import useCallApi from "../../api/useCallApi";
+import { AccountApi } from "../../api/endpoint";
+import { showError } from "../../util/Utility";
 
 const OtpConfirmModal = ({
   visible,
@@ -15,6 +18,7 @@ const OtpConfirmModal = ({
 }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const navigate = useNavigate();
+  const { loading, error, callApi } = useCallApi();
   const handleChange = (value, index) => {
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -58,12 +62,19 @@ const OtpConfirmModal = ({
         }
         break;
       case 1:
-        const data = await verifyCustomerInfoOTP(phoneNumber, otpString, 1);
+        // const data = await verifyCustomerInfoOTP(phoneNumber, otpString, 1);
+        const data = await callApi(
+          `${
+            AccountApi.VERIFY_ACCOUNT_OTP
+          }?phoneNumber=${phoneNumber}&code=${otpString}&otpType=${1}`,
+          "POST"
+        );
         if (data?.isSuccess) {
           handleSuccess(true);
           onClose();
         } else {
-          message.error("Đã xảy ra lỗi, vui lòng thử lại sau");
+          console.log(error);
+          showError(error);
         }
         break;
       case 9:
@@ -100,6 +111,7 @@ const OtpConfirmModal = ({
         <Button
           onClick={handleSubmit}
           className="w-full h-12 bg-[rgb(192,29,46)] hover:bg-[rgb(172,26,41)] focus:bg-[rgb(172,26,41)] border-none text-white text-lg font-semibold rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+          loading={loading}
         >
           Xác nhận
         </Button>

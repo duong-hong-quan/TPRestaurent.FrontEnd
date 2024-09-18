@@ -67,12 +67,12 @@ export function ReservationCart() {
   return (
     <div className=" mx-auto bg-white ">
       <Typography variant="h4" className="mb-4 text-center">
-        Giỏ hàng
+        Danh sách món order
       </Typography>
 
       {/* Reservation Cart Section */}
       <div className="w-full">
-        <div className="p-2 max-h-[550px] overflow-auto">
+        <div className="p-2 max-h-[300px] overflow-auto">
           {cartReservation.length === 0 ? (
             <Typography color="blue-gray" className="text-center my-4">
               Giỏ hàng trống
@@ -81,7 +81,7 @@ export function ReservationCart() {
             cartReservation.map((item) => (
               <div
                 key={`${item?.dish.dishId}-${item?.size?.dishSizeDetailId}`}
-                className="flex items-center mb-4 border-b-2 border-gray-100 "
+                className="flex items-center mb-4 bg-[#EAF0F0] p-2 rounded-md"
               >
                 <img
                   src={item?.dish?.image}
@@ -113,8 +113,8 @@ export function ReservationCart() {
                       </Typography>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center ">
-                    <div className="flex items-center">
+                  <div className="flex justify-between items-center p-1">
+                    <div className="flex items-center  bg-white my-1 rounded-2xl p-1 border border-[#EAF0F0] shadow-md">
                       <IconButton
                         variant="text"
                         color="blue-gray"
@@ -122,6 +122,7 @@ export function ReservationCart() {
                         onClick={() =>
                           handleDecreaseQuantity(item?.dish, item?.size)
                         }
+                        className="rounded-full bg-[#EAF0F0] "
                       >
                         <MinusIcon className="h-4 w-4" />
                       </IconButton>
@@ -138,6 +139,7 @@ export function ReservationCart() {
                         onClick={() =>
                           handleIncreaseQuantity(item?.dish, item?.size)
                         }
+                        className="rounded-full bg-[#EAF0F0] "
                       >
                         <PlusIcon className="h-4 w-4" />
                       </IconButton>

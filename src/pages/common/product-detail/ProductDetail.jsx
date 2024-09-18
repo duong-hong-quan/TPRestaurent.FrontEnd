@@ -309,7 +309,7 @@ const ProductDetail = () => {
                   <StarFilled key={star} className="text-yellow-400 text-md" />
                 ))}
                 <span className="ml-2 text-gray-600 text-lg">
-                  {dish?.averageRating}
+                  {dish?.dish?.averageRating}
                 </span>
               </div>
               <div className="border-b-2 pb-6">
@@ -359,12 +359,12 @@ const ProductDetail = () => {
                   >
                     <MinusOutlined className="text-xl" />
                   </button>
-                  <span className="px-6 py-2 text-xl font-semibold">
+                  <span className="px-6 py-2 text-xl font-semibold text-red-700">
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="px-4 py-2transition duration-300"
+                    className="px-4 py-2transition  duration-300"
                   >
                     <PlusOutlined className="text-xl" />
                   </button>

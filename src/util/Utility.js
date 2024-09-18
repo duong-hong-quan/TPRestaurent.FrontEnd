@@ -106,6 +106,7 @@ function getTimePeriod(dateTimeString) {
 function isEmptyObject(obj) {
   return Object.keys(obj).length === 0;
 }
+import { message } from "antd";
 import moment from "moment-timezone";
 
 function formatDateToISOString(date) {
@@ -239,6 +240,30 @@ function formatPhoneNumber(phoneNumber) {
   return phoneNumber;
 }
 
+function showError(errors) {
+  if (Array.isArray(errors) && errors.length > 0) {
+    const errorMessage = errors.join(", ");
+    message.error(errorMessage);
+  }
+}
+const padZero = (num) => (num < 10 ? `0${num}` : num);
+
+export const formatDateRange = (start, end) => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  const day = padZero(startDate.getDate());
+  const month = padZero(startDate.getMonth() + 1); // Months are zero-based
+  const year = startDate.getFullYear();
+
+  const startHours = padZero(startDate.getHours());
+  const startMinutes = padZero(startDate.getMinutes());
+
+  const endHours = padZero(endDate.getHours());
+  const endMinutes = padZero(endDate.getMinutes());
+
+  return `${day}/${month}/${year} ${startHours}:${startMinutes} - ${endHours}:${endMinutes}`;
+};
 export {
   formatPrice,
   formatDateTime,
@@ -254,4 +279,5 @@ export {
   calculateTimeDifference,
   convertToISOString,
   formatPhoneNumber,
+  showError,
 };
