@@ -26,9 +26,7 @@ const useCallApi = () => {
           throw new Error(`Unsupported method: ${method}`);
       }
       if (result.data.isSuccess === false) {
-        result.data.message.forEach((m) => {
-          setError((prev) => [...(prev || []), m]);
-        });
+        setError(result.data.messages);
       }
       return result.data;
     } catch (err) {

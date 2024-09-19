@@ -4,18 +4,28 @@ import MenuDish from "../menu-dish/MenuDish";
 import { getAllDishes } from "../../api/dishApi";
 import LoadingOverlay from "../loading/LoadingOverlay";
 import { Pagination } from "../pagination/Pagination";
+import useCallApi from "../../api/useCallApi";
+import { DishApi } from "../../api/endpoint";
 
 function SearchResults() {
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const [dishes, setDishes] = useState([]);
   const [totalPage, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(9);
+  const { callApi, error, loading } = useCallApi();
   const fetchData = async (query) => {
     try {
-      setLoading(true);
-      const response = await getAllDishes(query || "", currentPage, pageSize);
+      let response;
+      if (!query) {
+        response = await callApi(`${DishApi.GET_ALL}/${currentPage}/10`, "GET");
+      } else {
+        response = await callApi(
+          `${DishApi.GET_ALL}/${currentPage}/10?keyword=${query}`,
+          "GET"
+        );
+      }
+
       if (response.isSuccess) {
         setDishes(response?.result?.items);
         setTotalPages(response?.result?.totalPages);
@@ -23,8 +33,6 @@ function SearchResults() {
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
   useEffect(() => {
@@ -38,9 +46,6 @@ function SearchResults() {
     }
   }, [location.search, pageSize]);
 
-  if (loading) {
-    return <LoadingOverlay isLoading={loading} />;
-  }
   const handleAddItem = () => {
     setPageSize(pageSize + 3);
   };

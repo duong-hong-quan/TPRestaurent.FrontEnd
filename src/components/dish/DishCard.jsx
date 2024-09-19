@@ -4,7 +4,7 @@ import {
   CardHeader,
   Typography,
 } from "@material-tailwind/react";
-import { Card } from "antd";
+import { Button, Card } from "antd";
 import React from "react";
 
 function DishCard({
@@ -13,6 +13,7 @@ function DishCard({
   handleSizeClick,
   getCurrentPrice,
   formatPrice,
+  selectedSizes,
 }) {
   return (
     <div>
