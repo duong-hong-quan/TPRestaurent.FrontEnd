@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { formatPrice, showError } from "../../../util/Utility";
 import ReservationInformation from "../ReservationInformation";
@@ -9,11 +9,14 @@ import useCallApi from "../../../api/useCallApi";
 import LoadingOverlay from "../../loading/LoadingOverlay";
 import { OrderApi } from "../../../api/endpoint";
 import { useNavigate } from "react-router-dom";
+import { clearCart } from "../../../redux/features/cartReservationSlice";
+import { clearCartReservation } from "../../../redux/features/cartSlice";
 
 const OrderSummary = ({ back, data, information }) => {
   console.log(data);
   const cartReservation = useSelector((state) => state.cartReservation);
   const cartCombos = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
   const [selectedMethod, setSelectedMethod] = useState(2);
   const { callApi, error, loading } = useCallApi();
   const navigate = useNavigate();
@@ -49,6 +52,8 @@ const OrderSummary = ({ back, data, information }) => {
     );
     if (response.isSuccess) {
       message.success(`Đặt thành công`);
+      dispatch(clearCart());
+      dispatch(clearCartReservation());
       navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
     } else {
       showError(error);
