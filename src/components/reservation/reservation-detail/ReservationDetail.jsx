@@ -10,10 +10,11 @@ import {
 } from "@material-tailwind/react";
 import { formatDateTime, formatPrice } from "../../../util/Utility";
 import { NavLink } from "react-router-dom";
+import { MapPinIcon } from "lucide-react";
 
 const ReservationDetail = ({ reservationData }) => {
-  const { reservation, reservationDishes } = reservationData;
-
+  const { order, orderDishes, orderTables } = reservationData;
+  console.log(orderTables);
   return (
     <Card>
       <CardBody className="text-center">
@@ -21,18 +22,18 @@ const ReservationDetail = ({ reservationData }) => {
           Chi tiết đặt chỗ
         </Typography>
         <Typography color="blue-gray" className="font-medium" textGradient>
-          Mã đặt chỗ: {reservation?.reservationId.substring(0, 8)}
+          Mã đặt chỗ: {order?.orderId?.substring(0, 8)}
         </Typography>
         <Typography color="blue-gray" className="font-medium" textGradient>
-          Ngày đặt: {formatDateTime(reservation?.reservationDate)}
+          Ngày đặt: {formatDateTime(order?.reservationDate)}
         </Typography>
         <Typography color="blue-gray" className="font-medium" textGradient>
-          Tiền đặt cọc: {formatPrice(reservation?.deposit)}
+          Tiền đặt cọc: {formatPrice(order?.deposit)}
         </Typography>
 
         <List>
-          {reservationDishes?.length > 0 &&
-            reservationDishes.map((dish) => (
+          {orderDishes?.length > 0 &&
+            orderDishes.map((dish) => (
               <React.Fragment key={dish.reservationDishId}>
                 <ListItem>
                   <ListItemPrefix>
@@ -123,6 +124,20 @@ const ReservationDetail = ({ reservationData }) => {
               </React.Fragment>
             ))}
         </List>
+        <div className="grid grid-cols-1 ">
+          {orderTables?.map((item, index) => (
+            <div key={index} className="p-4">
+              <div className="flex items-start mb-2">
+                <Typography variant="h6" color="blue-gray">
+                  Bàn: {item?.table?.tableName}
+                </Typography>
+                <Typography color="gray" className="mx-2">
+                  Sức chứa: {item?.table?.tableSizeId} người
+                </Typography>
+              </div>
+            </div>
+          ))}
+        </div>
       </CardBody>
     </Card>
   );

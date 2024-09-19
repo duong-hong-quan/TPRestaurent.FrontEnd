@@ -24,10 +24,12 @@ import {
   updateCustomerInfo,
 } from "../../../api/acccountApi";
 import UserInfo from "../../../components/user/UserInfo";
-import { formatPrice, isEmptyObject } from "../../../util/Utility";
+import { formatPrice, isEmptyObject, showError } from "../../../util/Utility";
 import ReservationList from "../../../components/reservation/reservation-list/ReservationList";
 import InfoModal from "../../../components/user/InfoModal";
 import { Search } from "lucide-react";
+import useCallApi from "../../../api/useCallApi";
+import { AccountApi, OrderApi } from "../../../api/endpoint";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -41,11 +43,11 @@ export function OrderHistory() {
   const [orderStatus, setOrderStatus] = useState("all");
   const [reservations, setReservations] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [customer, setCustomer] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
-
+  const { callApi, error, loading } = useCallApi();
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const phone = searchParams.get("phoneNumber");
@@ -61,30 +63,33 @@ export function OrderHistory() {
       message.error("Vui lòng nhập số điện thoại");
       return;
     }
-    setLoading(true);
-    try {
-      const [responseReservation, responseInfo] = await Promise.all([
-        getAllReservationByPhoneNumber(
-          searchPhoneNumber,
-          reservationStatus,
-          1,
-          10
-        ),
-        getCustomerInfoByPhoneNumber(searchPhoneNumber),
-      ]);
-      if (responseReservation?.isSuccess && responseInfo?.isSuccess) {
-        setReservations(responseReservation?.result?.items);
-        setCustomer(responseInfo?.result);
-        setIsUpdate(true);
-      } else {
-        setIsUpdate(false);
-        setIsModalOpen(true);
-        message.error("Không tìm thấy thông tin đặt chỗ");
-      }
-    } catch (error) {
-      message.error("Đã xảy ra lỗi khi tìm kiếm");
-    } finally {
-      setLoading(false);
+    // setLoading(true);
+
+    // const [responseReservation, responseInfo] = await Promise.all([
+    //   getAllReservationByPhoneNumber(
+    //     searchPhoneNumber,
+    //     reservationStatus,
+    //     1,
+    //     10
+    //   ),
+    //   getCustomerInfoByPhoneNumber(searchPhoneNumber),
+    // ]);
+    const responseReservation = await callApi(
+      `${OrderApi.GET_BY_PHONE}/1/10?phoneNumber=${searchPhoneNumber}`,
+      "GET"
+    );
+    const responseInfo = await callApi(
+      `${AccountApi.GET_BY_PHONE}?phoneNumber=${searchPhoneNumber}`,
+      "GET"
+    );
+    if (responseReservation?.isSuccess && responseInfo?.isSuccess) {
+      setReservations(responseReservation?.result?.items);
+      setCustomer(responseInfo?.result);
+      setIsUpdate(true);
+    } else {
+      setIsUpdate(false);
+      setIsModalOpen(true);
+      showError(error);
     }
   };
 
@@ -200,8 +205,8 @@ export function OrderHistory() {
 
   useEffect(() => {
     if (phoneNumber) {
-      fetchDataReservation();
-      fetchDataOrder();
+      // fetchDataReservation();
+      // fetchDataOrder();
     }
   }, [reservationStatus, orderStatus]);
 

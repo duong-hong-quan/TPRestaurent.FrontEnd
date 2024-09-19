@@ -15,6 +15,8 @@ import ReservationDetail from "../reservation-detail/ReservationDetail";
 import { getReservationById } from "../../../api/reservationApi";
 import { ReservationStatus } from "../../../util/GlobalType";
 import { createPayment } from "../../../api/transactionApi";
+import useCallApi from "../../../api/useCallApi";
+import { OrderApi } from "../../../api/endpoint";
 
 const ReservationRequestItem = ({ reservation }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -23,13 +25,13 @@ const ReservationRequestItem = ({ reservation }) => {
     reservation.reservationDate,
     reservation.endTime
   );
-
+  const { callApi, error, loading } = useCallApi();
   // Format the time difference for display
   const timeDifferenceString = `${timeDifference.hours} giờ ${timeDifference.minutes} phút`;
   const [reservationData, setReservationData] = useState({});
   const handleChange = async (id) => {
     setShowDetails(!showDetails);
-    const response = await getReservationById(id);
+    const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
     if (response?.isSuccess) {
       setReservationData(response?.result);
       setCurrentReservationId(id);
@@ -77,7 +79,7 @@ const ReservationRequestItem = ({ reservation }) => {
           <span className="text-gray-400">|</span>
           <FaIdCard className="text-gray-500 mx-2" />
           <p className="text-gray-600 ml-2">
-            ID: {reservation.reservationId.substring(0, 8)}
+            ID: {reservation.orderId.substring(0, 8)}
           </p>
         </div>
         <p
@@ -85,7 +87,7 @@ const ReservationRequestItem = ({ reservation }) => {
             statusKey
           )}-700`}
         >
-          {statusKey}
+          {reservation.status.vietnameseName}
         </p>
       </div>
 
@@ -98,13 +100,14 @@ const ReservationRequestItem = ({ reservation }) => {
           /> */}
           <div>
             <p className="font-semibold">
-              Tên: {reservation?.customerInfo?.name}
+              Tên:{" "}
+              {`${reservation?.account?.firstName} ${reservation.account.lastName}`}
             </p>
             <p className="text-gray-600">
-              0{reservation?.customerInfo?.phoneNumber}
+              {`${reservation?.account?.phoneNumber} `}
             </p>
             <p className="text-gray-600">
-              {reservation?.customerInfo?.gender ? "Nam" : "Nữ"}
+              {reservation?.account?.gender ? "Nam" : "Nữ"}
             </p>
           </div>
         </div>
@@ -115,7 +118,7 @@ const ReservationRequestItem = ({ reservation }) => {
           </p>
           <p className="text-gray-600 flex items-center justify-end">
             <FaUsers className="mr-2 text-gray-500" />
-            Số người: {reservation.numberOfPeople}
+            Số người: {reservation.numOfPeople}
           </p>
         </div>
       </div>
@@ -137,7 +140,7 @@ const ReservationRequestItem = ({ reservation }) => {
           )}
 
           <button
-            onClick={() => handleChange(reservation.reservationId)}
+            onClick={() => handleChange(reservation.orderId)}
             className="bg-gray-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
           >
             {showDetails
