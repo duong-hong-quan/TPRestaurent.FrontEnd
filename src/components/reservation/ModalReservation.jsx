@@ -29,6 +29,7 @@ import useCallApi from "../../api/useCallApi";
 import { ComboApi, DishApi, OrderApi } from "../../api/endpoint";
 import DishCard from "../dish/DishCard";
 import ComboCard from "../combo/ComboCard";
+import OrderSummary from "./reservation-list/OrderSummary";
 
 const { TabPane } = Tabs;
 
@@ -55,6 +56,9 @@ const ModalReservation = ({
   const cartReservation = useSelector((state) => state.cartReservation);
   const [totalItems, setTotalItems] = useState(0);
   const { callApi, error, loading } = useCallApi();
+  const [isSummary, setIsSummary] = useState(false);
+  const [dataSend, setDataSend] = useState({});
+
   console.log(cart);
   const caculatorItems = () => {
     let total = 0;
@@ -147,15 +151,20 @@ const ModalReservation = ({
       numberOfPeople: information.numberOfPeople,
     });
     const { reservationDishDtos } = data;
-    // const responseReservation = await createReservation(data);
-    // if (responseReservation.isSuccess) {
-    //   message.success("Đặt bàn thành công");
-    //   dispatch(clearCart());
-    //   dispatch(clearCartReservation());
-    //   navigate("/order-history");
-    // } else {
-    //   showError(responseReservation.messages);
-    // }
+    setDataSend({
+      customerId: information.customerId,
+      orderType: 1,
+      note: information.note,
+      orderDetailsDtos: reservationDishDtos,
+      reservationOrder: {
+        numberOfPeople: information.numberOfPeople,
+        mealTime: information.date[0],
+        endTime: information.date[1],
+        isPrivate: information.isPrivate,
+        deposit: deposit,
+      },
+    });
+    console.log(dataSend);
   };
 
   const handleDeposit = async () => {
@@ -208,70 +217,82 @@ const ModalReservation = ({
       <Modal
         open={visible}
         width={1700}
-        style={{ height: "calc(100vh - 100px)" }}
+        // style={{ height: "calc(100vh - 100px)" }}
         footer={null}
         onCancel={onCancel}
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 max-h-[1200px] rounded-2xl pl-6">
-          <div className="col-span-3">
-            <Tabs activeKey={activeTab} onChange={handleTabChange}>
-              <TabPane
-                tab="Món ăn"
-                key="0"
-                style={{ overflow: "auto", maxHeight: "600px" }}
-              >
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2">
-                  {dishes.map(renderDishCard)}
-                </div>
-              </TabPane>
-              <TabPane
-                tab="Combo món"
-                key="1"
-                style={{ overflow: "auto", maxHeight: "600px" }}
-              >
-                {isOpenComboDetail ? (
-                  <ComboDetail2
-                    comboData={combo}
-                    handleBack={() => setIsOpenComboDetail(false)}
-                  />
-                ) : (
-                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                    {combos?.map(renderComboCard)}
-                  </div>
-                )}
-              </TabPane>
-            </Tabs>
-          </div>
-          <div className="col-span-1">
-            <ReservationInformation reservation={information} />
-            <ReservationCart />
-            {cart.length > 0 && (
-              <div className=" w-full flex justify-center items-center flex-col">
-                <Typography
-                  variant="h5"
-                  className="font-bold text-red-700 text-center"
+        {!isSummary && (
+          <div className="grid grid-cols-1 md:grid-cols-4 max-h-[80vh] overflow-auto rounded-2xl pl-6">
+            <div className="col-span-3">
+              <Tabs activeKey={activeTab} onChange={handleTabChange}>
+                <TabPane
+                  tab="Món ăn"
+                  key="0"
+                  style={{ overflow: "auto", maxHeight: "600px" }}
                 >
-                  Tổng cộng: {formatPrice(cartTotal + cartCombo.total)}
-                </Typography>
-                <p>Số tiền cọc dự kiến: {formatPrice(deposit)}</p>
-              </div>
-            )}
+                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2">
+                    {dishes.map(renderDishCard)}
+                  </div>
+                </TabPane>
+                <TabPane
+                  tab="Combo món"
+                  key="1"
+                  style={{ overflow: "auto", maxHeight: "600px" }}
+                >
+                  {isOpenComboDetail ? (
+                    <ComboDetail2
+                      comboData={combo}
+                      handleBack={() => setIsOpenComboDetail(false)}
+                    />
+                  ) : (
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                      {combos?.map(renderComboCard)}
+                    </div>
+                  )}
+                </TabPane>
+              </Tabs>
+            </div>
+            <div className="col-span-1">
+              <ReservationInformation reservation={information} />
+              <ReservationCart />
+              {cart.length > 0 && (
+                <div className=" w-full flex justify-center items-center flex-col">
+                  <Typography
+                    variant="h5"
+                    className="font-bold text-red-700 text-center"
+                  >
+                    Tổng cộng: {formatPrice(cartTotal + cartCombo.total)}
+                  </Typography>
+                  <p>Số tiền cọc dự kiến: {formatPrice(deposit)}</p>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end col-span-4 gap-2 m-3">
+              <Button
+                className="bg-red-800 rounded-md text-white mt-10"
+                onClick={onCancel}
+              >
+                Back
+              </Button>
+              <Button
+                className="bg-red-800 rounded-md text-white mt-10"
+                onClick={() => {
+                  setIsSummary(true);
+                  handleCheckout();
+                }}
+              >
+                Đặt bàn ngay
+              </Button>
+            </div>
           </div>
-          <div className="flex justify-end col-span-4 gap-2 m-3">
-            <Button
-              className="bg-red-800 rounded-md text-white mt-10"
-              onClick={onCancel}
-            >
-              Back
-            </Button>
-            <Button
-              className="bg-red-800 rounded-md text-white mt-10"
-              onClick={handleCheckout}
-            >
-              Đặt bàn ngay
-            </Button>
-          </div>
-        </div>
+        )}
+        {isSummary && (
+          <OrderSummary
+            data={dataSend}
+            information={information}
+            back={() => setIsSummary(false)}
+          />
+        )}
       </Modal>
     </div>
   );

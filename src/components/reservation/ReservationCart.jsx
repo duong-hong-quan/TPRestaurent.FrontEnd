@@ -164,42 +164,41 @@ export function ReservationCart() {
               Chưa có combo nào trong giỏ hàng
             </Typography>
           ) : (
-            cartCombos.items.map((item) => (
-              <div key={item.comboId} className="mb-4">
+            cartCombos?.items?.map((item) => (
+              <div
+                key={item.comboId}
+                className="mb-4  bg-[#EAF0F0] p-2 rounded-md"
+              >
                 <h3 className="text-center font-bold text-xl my-2">Combo</h3>
                 <div className="flex flex-col justify-between items-start mb-4 border-b-2">
                   <div className="w-full flex flex-col md:flex-row justify-between mb-2">
-                    <span className="font-semibold">{item.name}</span>
+                    <span className="font-semibold">{item?.combo?.name}</span>
                     <span className="text-black font-bold mx-2">
-                      {formatPrice(item.price)}
+                      {formatPrice(item?.combo?.price)}
                     </span>
                   </div>
                   <div className="flex flex-col w-full">
                     {Object.values(item.selectedDishes).map(
-                      (dishCombos, dishIndex) =>
-                        dishCombos.map((dishCombo, index) => (
-                          <div
-                            key={`${dishIndex}-${index}`}
-                            className="space-y-4"
-                          >
-                            <div className="flex flex-row items-center justify-between">
-                              <img
-                                src={dishCombo.dishSizeDetail?.dish?.image}
-                                alt={dishCombo.dishSizeDetail?.dish?.name}
-                                className="w-16 h-16 object-cover rounded-full border border-gray-200"
-                              />
-                              <div className="flex-1 ml-4">
-                                <p className="font-medium">
-                                  {dishCombo.dishSizeDetail?.dish?.name}
-                                </p>
-                              </div>
+                      (dishCombo, dishIndex) => (
+                        <div key={`${dishIndex}`} className="space-y-4">
+                          <div className="flex flex-row items-center justify-between">
+                            <img
+                              src={dishCombo.dishSizeDetail?.dish?.image}
+                              alt={dishCombo.dishSizeDetail?.dish?.name}
+                              className="w-16 h-16 object-cover rounded-full border border-gray-200"
+                            />
+                            <div className="flex-1 ml-4">
+                              <p className="font-medium">
+                                {dishCombo.dishSizeDetail?.dish?.name}
+                              </p>
                             </div>
                           </div>
-                        ))
+                        </div>
+                      )
                     )}
                     <div className="w-full">
                       <div className="flex justify-between ml-20 items-center">
-                        <div className="flex justify-start items-center">
+                        <div className="flex items-center  bg-white my-1 rounded-2xl p-1 border border-[#EAF0F0] shadow-md">
                           <IconButton
                             variant="text"
                             color="blue-gray"
@@ -210,6 +209,7 @@ export function ReservationCart() {
                                 item.selectedDishes
                               )
                             }
+                            className="rounded-full bg-[#EAF0F0] "
                           >
                             <MinusIcon className="h-4 w-4" />
                           </IconButton>
@@ -226,6 +226,7 @@ export function ReservationCart() {
                                 item.selectedDishes
                               )
                             }
+                            className="rounded-full bg-[#EAF0F0] "
                           >
                             <PlusIcon className="h-4 w-4" />
                           </IconButton>
