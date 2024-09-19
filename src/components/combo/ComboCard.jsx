@@ -1,12 +1,14 @@
 import {
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Typography,
 } from "@material-tailwind/react";
+import { Button } from "antd";
 import React from "react";
 
-function ComboCard({ formatPrice, formatDate }) {
+function ComboCard({ formatPrice, formatDate, onClick, combo }) {
   return (
     <Card key={combo.comboId} className="m-4">
       <CardHeader color="blue" className="relative h-56">
@@ -42,10 +44,7 @@ function ComboCard({ formatPrice, formatDate }) {
         <div className="flex justify-center">
           <Button
             className="bg-red-700 text-white py-2 px-4 rounded-md"
-            onClick={() => {
-              setIsOpenComboDetail(true);
-              setSelectedCombos(combo.comboId);
-            }}
+            onClick={onClick}
           >
             Đặt ngay
           </Button>

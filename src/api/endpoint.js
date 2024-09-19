@@ -2,6 +2,9 @@ export const AccountApi = {
   SEND_OTP: "/api/account/send-otp",
   LOGIN: "/api/account/login",
   VERIFY_FOR_RESERVATION: "/api/account/verify-for-reservation",
+  GET_BY_PHONE: "/api/account/get-account-by-phone-number",
+  CREATE_ACCOUNT: "/api/account/create-account",
+  VERIFY_ACCOUNT_OTP: "/api/account/verify-account-otp",
 };
 
 export const ComboApi = {
@@ -31,6 +34,7 @@ export const OrderApi = {
   SUGGEST_TABLE: "/order/suggest-table",
   ADD_TABLE_TO_RESEVATION: "/reservation/add-table-to-reservation",
   UPDATE_RESERVATION: "/reservation/update-reservation-status",
+  CALCULATE_RESERVATION: "/order/calculate-reservation",
 };
 
 export const ReservationApi = {

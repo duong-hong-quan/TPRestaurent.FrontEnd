@@ -18,9 +18,13 @@ import {
   convertToISOString,
   formatPhoneNumber,
   isEmptyObject,
+  showError,
 } from "../../util/Utility";
 import { suggestTable } from "../../api/reservationApi";
 import { useSelector } from "react-redux";
+import useCallApi from "../../api/useCallApi";
+import { AccountApi } from "../../api/endpoint";
+import { toast } from "react-toastify";
 const { TextArea } = Input;
 
 const Reservation = () => {
@@ -35,6 +39,7 @@ const Reservation = () => {
   const [endTimeSlots, setEndTimeSlots] = useState([]);
   const [isValidatePhone, setIsValidatePhone] = useState(false);
   const user = useSelector((state) => state.user.user || {});
+  const { loading, callApi, error } = useCallApi();
   const initData = () => {
     if (!isEmptyObject(user)) {
       form.setFieldValue("name", user.firstName);
@@ -154,29 +159,43 @@ const Reservation = () => {
     moment(time, "HH:mm").isAfter(moment())
   );
   const handleValidatePhone = async () => {
-    debugger;
-    const response = await addNewCustomerInfo({
-      name: form.getFieldValue("name"),
-      phoneNumber: form.getFieldValue("phone").replace(/\s+/g, ""),
-      address: null,
-      accountId: null,
-    });
-    if (response !== null) {
+    const data = await callApi(
+      `${AccountApi.GET_BY_PHONE}?phoneNumber=${form
+        .getFieldValue("phone")
+        .replace(/\s+/g, "")}`,
+      "GET"
+    );
+    if (data.isSuccess) {
+      if (!data.result?.customerInfo?.isVerified) {
+        setIsOtpModalVisible(true);
+      }
       setInformation({
-        name: response?.result?.name,
-        phone: response?.result?.phoneNumber,
+        firstName: data?.result?.customerInfo?.firstName,
+        lastName: data?.result?.customerInfo?.lastName,
+        phoneNumber: data?.result?.customerInfo?.phoneNumber,
         email: form.getFieldValue("email"),
-        numberOfPeople: form.getFieldValue("numberOfPeople"),
-        date: null,
         note: form.getFieldValue("note"),
-        customerId: response?.result?.customerId,
-        isVerified: response?.result?.isVerified,
+        customerId: data?.result?.customerInfo?.id,
       });
-      if (response?.isSuccess) {
+      setIsValid(true);
+      setIsValidatePhone(true);
+    } else {
+      const responseCreate = await callApi(
+        `${AccountApi.CREATE_ACCOUNT}`,
+        "POST",
+        {
+          email: form.getFieldValue("email"),
+          firstName: form.getFieldValue("firstName"),
+          lastName: form.getFieldValue("lastName"),
+          gender: true,
+          phoneNumber: form.getFieldValue("phone").replace(/\s+/g, ""),
+        }
+      );
+      if (responseCreate?.isSuccess) {
+        message.success("Tài khoản của bạn đã được tạo thành công.");
         setIsOtpModalVisible(true);
       } else {
-        setIsValid(true);
-        setIsValidatePhone(true);
+        showError(error);
       }
     }
   };
@@ -371,6 +390,14 @@ const Reservation = () => {
           </Form>
         </div>
       </div>
+      <OtpConfirmModal
+        visible={isOtpModalVisible}
+        onClose={() => setIsOtpModalVisible(false)}
+        resOtp={null}
+        phoneNumber={form.getFieldValue("phone")?.replace(/\s+/g, "")}
+        otpType={1}
+        handleSuccess={handleSuccess}
+      />
     </div>
   );
 };
