@@ -174,7 +174,6 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
       note: `${item.dish.name} - ${item.size}`, // Combine name and size for note
     });
   });
-  debugger;
   // Process cart combos data
   cartCombos?.items?.forEach((comboOrigin) => {
     const dishComboIds = [];

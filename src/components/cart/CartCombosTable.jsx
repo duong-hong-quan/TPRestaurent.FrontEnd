@@ -11,6 +11,7 @@ const CartCombosTable = ({
   handleIncreaseComboQuantity,
   handleRemoveCombo,
   formatPrice,
+  isDisabled,
 }) => {
   const columns = [
     {
@@ -55,19 +56,29 @@ const CartCombosTable = ({
       key: "quantity",
       render: (_, record) => (
         <Space>
-          <Button
-            icon={<MinusOutlined />}
-            onClick={() =>
-              handleDecreaseComboQuantity(record.comboId, record.selectedDishes)
-            }
-          />
+          {!isDisabled && (
+            <Button
+              icon={<MinusOutlined />}
+              onClick={() =>
+                handleDecreaseComboQuantity(
+                  record.comboId,
+                  record.selectedDishes
+                )
+              }
+            />
+          )}
           <Text>{record.quantity}</Text>
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() =>
-              handleIncreaseComboQuantity(record.comboId, record.selectedDishes)
-            }
-          />
+          {!isDisabled && (
+            <Button
+              icon={<PlusOutlined />}
+              onClick={() =>
+                handleIncreaseComboQuantity(
+                  record.comboId,
+                  record.selectedDishes
+                )
+              }
+            />
+          )}
         </Space>
       ),
     },
@@ -80,7 +91,7 @@ const CartCombosTable = ({
         </Text>
       ),
     },
-    {
+    !isDisabled && {
       title: "Thao tác",
       key: "actions",
       render: (_, record) => (
@@ -96,7 +107,7 @@ const CartCombosTable = ({
         </Button>
       ),
     },
-  ];
+  ].filter(Boolean);
   console.log(cartCombos.items);
   return (
     <Table

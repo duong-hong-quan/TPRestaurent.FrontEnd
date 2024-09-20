@@ -17,7 +17,6 @@ export const HomePage = () => {
   const fetchData = async () => {
     try {
       if (selectedCategory === null) {
-        debugger;
         const response = await callApi(
           `${DishApi.GET_ALL}/${1}/${pageSize}`,
           "GET"
