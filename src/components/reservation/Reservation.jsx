@@ -84,7 +84,6 @@ const Reservation = () => {
       form.getFieldValue("startTime"),
       form.getFieldValue("endTime"),
     ];
-    debugger;
     const responseSuggessTable = await suggestTable({
       startTime: convertToISOString(combinedDate)[0],
       endTime: convertToISOString(combinedDate)[1],
@@ -119,7 +118,6 @@ const Reservation = () => {
 
   const handleOpenOtp = () => {
     setIsOtpModalVisible(true);
-    debugger;
   };
   const handleCloseOtp = () => {
     setIsOtpModalVisible(false);

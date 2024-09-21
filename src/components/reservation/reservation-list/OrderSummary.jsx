@@ -1,41 +1,53 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
+import { Card, CardBody } from "@material-tailwind/react";
 import { formatPrice, showError } from "../../../util/Utility";
 import ReservationInformation from "../ReservationInformation";
-import { Button, message } from "antd";
+import { Button, InputNumber, message, Modal, Table, Typography } from "antd";
 import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
 import { useState } from "react";
 import useCallApi from "../../../api/useCallApi";
 import LoadingOverlay from "../../loading/LoadingOverlay";
 import { OrderApi } from "../../../api/endpoint";
-import { useNavigate } from "react-router-dom";
-import { clearCart } from "../../../redux/features/cartReservationSlice";
-import { clearCartReservation } from "../../../redux/features/cartSlice";
-
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  clearCart,
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from "../../../redux/features/cartReservationSlice";
+import {
+  clearCartReservation,
+  decreaseComboQuantity,
+  increaseComboQuantity,
+  removeCombo,
+} from "../../../redux/features/cartSlice";
+import Card_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
+import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
+import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
+import CartCombosTable from "../../cart/CartCombosTable";
+import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 const OrderSummary = ({ back, data, information }) => {
-  console.log(data);
   const cartReservation = useSelector((state) => state.cartReservation);
   const cartCombos = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [selectedMethod, setSelectedMethod] = useState(2);
   const { callApi, error, loading } = useCallApi();
   const navigate = useNavigate();
-  const calculateTotalPrice = () => {
-    const reservationTotal = cartReservation.reduce((total, item) => {
-      return total + item.quantity * item.size.price;
-    }, 0);
+  const [open, setOpen] = useState(false);
 
-    const comboTotal = cartCombos.items.reduce((total, item) => {
-      return total + item.quantity * item.combo.price;
-    }, 0);
-
-    return reservationTotal + comboTotal;
+  const handleClickOpen = () => {
+    setOpen(true);
   };
 
-  console.log(information);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const handleChangeMethod = (data) => {
     setSelectedMethod(data);
+    handleClose();
   };
+
   const handleCheckOut = async () => {
     const updatedData = {
       ...data,
@@ -44,7 +56,6 @@ const OrderSummary = ({ back, data, information }) => {
         paymentMethod: selectedMethod,
       },
     };
-    console.log(updatedData);
     const response = await callApi(
       `${OrderApi.CREATE_ORDER}`,
       "POST",
@@ -54,87 +65,196 @@ const OrderSummary = ({ back, data, information }) => {
       message.success(`Đặt thành công`);
       dispatch(clearCart());
       dispatch(clearCartReservation());
+      if (selectedMethod === 3 || selectedMethod === 2) {
+        if (response.result.paymentLink) {
+          window.location.href = response.result.paymentLink;
+          return;
+        }
+      }
+
       navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
     } else {
       showError(error);
     }
   };
+
   if (loading) {
     return <LoadingOverlay isLoading={loading} />;
   }
+  console.log("aa", selectedMethod);
+  const selectedPaymentMethodIcon = () => {
+    switch (selectedMethod) {
+      case 1:
+        return <img src={Card_Logo} alt="" className="w-10 h-10" />;
+      case 2:
+        return <img src={VNpay_Logo} alt="" className="w-10 h-10" />;
+      case 3:
+        return <img src={MoMo_Logo} alt="" className="w-10 h-10" />;
+
+      default:
+        return null;
+    }
+  };
+  const columns = [
+    {
+      title: "Sản phẩm",
+      key: "product",
+      render: (_, record) => (
+        <div className="flex items-center">
+          <img
+            src={record.dish.image}
+            alt={record.dish.name}
+            width={60}
+            height={60}
+            className="object-cover rounded-md mr-4"
+          />
+          <NavLink to={`/product/${record.dish.dishId}`}>
+            <span className="font-medium">{record.dish.name}</span>
+          </NavLink>
+        </div>
+      ),
+    },
+    {
+      title: "Kích cỡ",
+      dataIndex: "size",
+      key: "size",
+      render: (_, record) => <span>{record.size?.dishSize?.name}</span>,
+    },
+    {
+      title: "Đơn giá",
+      dataIndex: "price",
+      key: "price",
+      render: (_, record) => (
+        <span className="text-gray-600">{formatPrice(record.size?.price)}</span>
+      ),
+    },
+    {
+      title: "Số lượng",
+      key: "quantity",
+      render: (_, record) => (
+        <div className="flex items-center">
+          <InputNumber
+            min={1}
+            max={10}
+            value={record.quantity}
+            className="mx-2 w-14 text-center"
+            disabled
+          />
+        </div>
+      ),
+    },
+    {
+      title: "Thành tiền",
+      key: "total",
+      render: (_, record) => (
+        <span className="font-semibold text-red-600">
+          {formatPrice(record.size.price * record.quantity)}
+        </span>
+      ),
+    },
+  ];
+  const handleDecreaseComboQuantity = (comboId, selectedDishes) => {
+    dispatch(decreaseComboQuantity({ comboId, selectedDishes }));
+  };
+  const handleIncreaseComboQuantity = (comboId, selectedDishes) => {
+    dispatch(increaseComboQuantity({ comboId, selectedDishes }));
+  };
+  const handleRemoveCombo = (comboId, selectedDishes) => {
+    dispatch(removeCombo({ comboId, selectedDishes }));
+  };
   return (
-    <div className="grid grid-cols-2  h-[75vh] overflow-y-scroll">
-      <div>
-        <ReservationInformation reservation={information} />
-        <PaymentMethodSelector handleChange={handleChangeMethod} />
+    <div className="h-[75vh] overflow-y-scroll">
+      <Typography className="text-xl text-[#333333] text-center font-bold my-2">
+        KIỂM TRA THÔNG TIN ĐẶT BÀN VÀ TIẾN HÀNH ĐẶT CỌC
+      </Typography>
+      <div className="grid grid-cols-1 md:grid-cols-2 ">
+        <div>
+          <ReservationInformation reservation={information} />
+        </div>
+        <Card className="w-full max-w-md mx-auto shadow-none border-none">
+          <CardBody>
+            <Typography className="text-xl font-bold">
+              Thông tin đặt cọc
+            </Typography>
+            <div className="flex justify-between my-4">
+              <Typography className="text-[#333333] ">
+                Số tiền đặt cọc:
+              </Typography>{" "}
+              <Typography className="text-base">
+                {formatPrice(data.reservationOrder.deposit)}
+              </Typography>
+            </div>
+            <div className="flex justify-between items-center my-4">
+              <Typography className="text-[#333333] ">
+                Chọn phương thức thanh toán:
+              </Typography>{" "}
+              <div className="flex items-center">
+                <span className="mx-2"> {selectedPaymentMethodIcon()}</span>
+                <Button
+                  className="bg-red-800 text-white hover:bg-red-600"
+                  onClick={handleClickOpen}
+                >
+                  Chọn
+                </Button>
+              </div>
+            </div>
+            <div className="flex justify-between items-center my-4">
+              <Typography className="text-[#333333] ">Hạn đặt cọc:</Typography>
+              <Typography className="text-base"></Typography>
+            </div>
+            <p>
+              Số tiền đặt cọc sẽ được trừ vào bill thanh toán sau khi dùng bữa
+              tại nhà hàng!
+            </p>
+          </CardBody>
+        </Card>
       </div>
-      <Card className="w-full max-w-md mx-auto">
-        <CardBody>
-          <div className="space-y-4">
-            <div>
-              <Typography variant="h6" className="mb-2">
-                Món lẻ:
-              </Typography>
-              {cartReservation.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center mb-2"
-                >
-                  <Typography>
-                    {item.dish.name} (
-                    {item.size.dishSize?.vietnameseName ||
-                      item.size.dishSize?.name}
-                    ) x {item.quantity}
-                  </Typography>
-                  <Typography>
-                    {formatPrice(item.quantity * item.size.price)}
-                  </Typography>
-                </div>
-              ))}
-            </div>
-
-            <div>
-              <Typography variant="h6" className="mb-2">
-                Món combo:
-              </Typography>
-              {cartCombos.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center mb-2"
-                >
-                  <Typography>
-                    {item.combo.name} x {item.quantity}
-                  </Typography>
-                  <Typography>
-                    {formatPrice(item.quantity * item.combo.price)}
-                  </Typography>
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t pt-4">
-              <div className="flex justify-between items-center">
-                <Typography variant="h6">Tổng tiền phải cọc:</Typography>
-                <Typography variant="h6" className="font-bold">
-                  {formatPrice(data.reservationOrder.deposit)}
-                </Typography>
-              </div>
-              <div className="flex justify-between items-center">
-                <Typography variant="h6">Tổng cộng:</Typography>
-                <Typography variant="h6" className="font-bold">
-                  {formatPrice(calculateTotalPrice())}
-                </Typography>
-              </div>
-            </div>
-          </div>
-        </CardBody>
-        <div className="flex justify-end w-full mt-10">
-          <Button onClick={handleCheckOut}>Check out</Button>
-          <Button className="mx-2" onClick={back}>
-            Back
+      <div className="px-10">
+        <div className="flex justify-end">
+          <Button
+            className="bg-red-800 my-2 text-white hover:bg-red-600"
+            onClick={back}
+          >
+            Sửa đặt món
           </Button>
         </div>
-      </Card>
+        <Table
+          columns={columns}
+          dataSource={cartReservation}
+          pagination={false}
+          rowKey="dishSizeDetailId"
+          className="mb-8 shadow-md rounded-lg overflow-hidden"
+        />
+        <CartCombosTable
+          cartCombos={cartCombos}
+          formatPrice={formatPrice}
+          handleDecreaseComboQuantity={handleDecreaseComboQuantity}
+          handleIncreaseComboQuantity={handleIncreaseComboQuantity}
+          handleRemoveCombo={handleRemoveCombo}
+          isDisabled={true}
+        />
+        <div className="flex justify-center w-full mt-10">
+          <Button
+            className="bg-red-800 my-2 text-white hover:bg-red-600"
+            onClick={handleCheckOut}
+          >
+            Tiến hành thanh toán
+          </Button>
+        </div>
+      </div>
+      <div>
+        <Modal
+          open={open}
+          onCancel={handleClose}
+          footer={[
+            <Button key="cancel" onClick={handleClose}>
+              Cancel
+            </Button>,
+          ]}
+        >
+          <PaymentMethodSelector handleChange={handleChangeMethod} />
+        </Modal>
+      </div>
     </div>
   );
 };

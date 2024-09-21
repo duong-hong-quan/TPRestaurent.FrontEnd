@@ -24,7 +24,6 @@ const VerifyPayment = () => {
   const [isVNPAY, setIsVNPAY] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
   const handleUrl = async () => {
-    debugger;
     setModalIsOpen(true);
     const searchParams = new URLSearchParams(location.search);
     const vnpResponseCode = searchParams.get("vnp_ResponseCode");
