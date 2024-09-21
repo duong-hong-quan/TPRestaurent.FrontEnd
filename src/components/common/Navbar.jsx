@@ -88,7 +88,7 @@ export const Navbar = () => {
 
           <button
             onClick={toggleMenu}
-            className="md:hidden text-white focus:outline-none"
+            className="xl:hidden text-white focus:outline-none"
           >
             {isMenuOpen ? (
               <CloseOutlined className="text-2xl" />
@@ -98,7 +98,7 @@ export const Navbar = () => {
           </button>
 
           {/* Desktop menu */}
-          <ul className="hidden md:flex space-x-6">
+          <ul className="hidden xl:flex space-x-6">
             {navItems.map((item) => (
               <li key={item.name}>
                 <NavLink
@@ -112,7 +112,7 @@ export const Navbar = () => {
             ))}
           </ul>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden xl:flex items-center space-x-4">
             {icons
               .filter((i) => i.name !== "Thông báo")
               .map((item) => (
@@ -227,13 +227,13 @@ export const Navbar = () => {
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden">
+          <div className="xl:hidden">
             <ul className="pt-2 pb-4">
               {navItems.map((item) => (
                 <li key={item.name}>
                   <NavLink
                     to={item.path}
-                    className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
+                    className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
                     onClick={toggleMenu}
                   >
                     {item.name}
@@ -244,10 +244,9 @@ export const Navbar = () => {
                 <li key={item.icon}>
                   <NavLink
                     to={item.path}
-                    className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
+                    className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
                     onClick={toggleMenu}
                   >
-                    <i className={`fa-solid ${item.icon} mr-2`}></i>
                     {item.name}
                   </NavLink>
                 </li>
@@ -256,7 +255,7 @@ export const Navbar = () => {
                 <li>
                   <NavLink
                     to="/login"
-                    className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
+                    className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
                     onClick={toggleMenu}
                   >
                     Đăng nhập
@@ -266,13 +265,13 @@ export const Navbar = () => {
                 <>
                   <NavLink
                     to="/user/"
-                    className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
+                    className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
                   >
                     Hồ sơ của tôi
                   </NavLink>
                   <button
                     onClick={handleLogout}
-                    className="block py-2 px-4 text-sm hover:bg-red-700 transition duration-300 ease-in-out"
+                    className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
                   >
                     Đăng xuất
                   </button>

@@ -1,3 +1,5 @@
+import { message } from "antd";
+import moment from "moment-timezone";
 function formatPrice(gia) {
   /**
    * Định dạng giá tiền Việt Nam từ số nguyên thành chuỗi có dấu phân cách và ký tự đồng.
@@ -106,8 +108,6 @@ function getTimePeriod(dateTimeString) {
 function isEmptyObject(obj) {
   return Object.keys(obj).length === 0;
 }
-import { message } from "antd";
-import moment from "moment-timezone";
 
 function formatDateToISOString(date) {
   return moment(date).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
@@ -204,20 +204,6 @@ export const getKeyByValue = (obj, value) => {
   return Object.keys(obj).find((key) => obj[key] === value);
 };
 
-const convertToISOString = (dateArray) => {
-  const [dateString, startTime, endTime] = dateArray;
-  const date = new Date(dateString);
-  console.log(date);
-  const startDateTime = new Date(date);
-  const [startHour, startMinute] = startTime.split(":");
-  startDateTime.setUTCHours(startHour, startMinute);
-
-  const endDateTime = new Date(date);
-  const [endHour, endMinute] = endTime.split(":");
-  endDateTime.setUTCHours(endHour, endMinute);
-
-  return [startDateTime.toISOString(), endDateTime.toISOString()];
-};
 function formatPhoneNumber(phoneNumber) {
   // Remove any non-digit characters
   const cleaned = ("" + phoneNumber).replace(/\D/g, "");
@@ -276,7 +262,6 @@ export {
   calculateDuration,
   mergeCartData,
   calculateTimeDifference,
-  convertToISOString,
   formatPhoneNumber,
   showError,
 };
