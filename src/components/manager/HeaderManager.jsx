@@ -25,7 +25,6 @@ const HeaderManager = ({ userName = "Admin" }) => {
   const closeMenu = () => setIsMenuOpen(false);
   const dispatch = useDispatch();
   const siderbar = useSelector((state) => state.sidebar);
-  console.log(siderbar);
   return (
     <Navbar className="mx-auto max-w-full px-4 py-6">
       <div className="flex items-center justify-between text-blue-gray-900">

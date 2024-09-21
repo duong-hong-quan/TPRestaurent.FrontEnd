@@ -9,7 +9,6 @@ const UpdateProfile = () => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    console.log("Form values:", values);
     message.success("Profile updated successfully");
   };
 

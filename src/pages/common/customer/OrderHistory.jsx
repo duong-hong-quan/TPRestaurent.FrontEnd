@@ -94,7 +94,6 @@ export function OrderHistory() {
   };
 
   const handleSubmit = async (formData) => {
-    console.log(formData);
     if (isUpdate) {
       const data = await updateCustomerInfo(formData);
       if (data?.isSuccess) {

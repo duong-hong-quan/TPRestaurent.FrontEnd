@@ -11,9 +11,7 @@ const UserLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const user = useSelector((state) => state.user?.user || {});
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const handleUpdate = (data) => {
-    console.log(data);
-  };
+  const handleUpdate = (data) => {};
 
   return (
     <div>

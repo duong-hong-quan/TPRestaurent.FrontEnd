@@ -13,7 +13,6 @@ export const DishCard = ({
   handleAddToCart,
 }) => {
   const navigate = useNavigate();
-  console.log(dish);
   return (
     <div className="mt-16">
       <div className="relative pt-20 pb-4 px-4 bg-white rounded-lg shadow-2xl my-4 mx-2 text-center">

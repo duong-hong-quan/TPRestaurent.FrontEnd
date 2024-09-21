@@ -108,7 +108,6 @@ const CartCombosTable = ({
       ),
     },
   ].filter(Boolean);
-  console.log(cartCombos.items);
   return (
     <Table
       dataSource={cartCombos.items}

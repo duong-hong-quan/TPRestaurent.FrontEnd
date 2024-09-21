@@ -31,9 +31,7 @@ function SearchResults() {
         setTotalPages(response?.result?.totalPages);
       } else {
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);

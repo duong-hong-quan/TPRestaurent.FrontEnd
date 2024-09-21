@@ -14,7 +14,6 @@ import { MapPinIcon } from "lucide-react";
 
 const ReservationDetail = ({ reservationData }) => {
   const { order, orderDishes, orderTables } = reservationData;
-  console.log(orderTables);
   return (
     <Card>
       <CardBody className="text-center">

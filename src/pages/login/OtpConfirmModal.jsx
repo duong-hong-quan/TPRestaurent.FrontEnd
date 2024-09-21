@@ -22,7 +22,6 @@ const OtpConfirmModal = ({
   const handleChange = (value, index) => {
     const newOtp = [...otp];
     newOtp[index] = value;
-    console.log(visible);
     // Move focus to the next inputß if value is entered and it's not the last input
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`).focus();
@@ -73,7 +72,6 @@ const OtpConfirmModal = ({
           handleSuccess(true);
           onClose();
         } else {
-          console.log(error);
           showError(error);
         }
         break;

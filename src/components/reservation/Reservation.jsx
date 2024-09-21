@@ -115,6 +115,7 @@ const Reservation = () => {
           endTime: combinedEndTime,
           numberOfPeople: form.getFieldValue("numberOfPeople"),
           note: form.getFieldValue("note"),
+          isPrivate: form.getFieldValue("isPrivate"),
         });
         message.success("Hệ thống chúng tôi đã tìm ra bàn phù hợp với bạn");
         setIsReservationModalVisible(true);
@@ -192,6 +193,7 @@ const Reservation = () => {
         email: form.getFieldValue("email"),
         note: form.getFieldValue("note"),
         customerId: data?.result?.customerInfo?.id,
+        isPrivate: form.getFieldValue("isPrivate"),
       });
       setIsValid(true);
       setIsValidatePhone(true);
@@ -306,6 +308,7 @@ const Reservation = () => {
               <Button
                 onClick={handleValidatePhone}
                 className="bg-red-800 text-white mb-4"
+                loading={loading}
               >
                 Xác thực số điện thoại{" "}
               </Button>
@@ -383,7 +386,9 @@ const Reservation = () => {
               </Form.Item>
             </div>
             <Form.Item name="isPrivate" valuePropName="checked">
-              <Checkbox disabled={!isValidatePhone}>Đặt bàn riêng tư</Checkbox>
+              <Checkbox disabled={!isValidatePhone} defaultChecked={false}>
+                Đặt bàn riêng tư
+              </Checkbox>
             </Form.Item>
             <Form.Item name="note" label="Ghi chú">
               <TextArea
@@ -399,6 +404,7 @@ const Reservation = () => {
                 htmlType="submit"
                 className="w-full bg-[#A31927] hover:bg-[#8B1621] text-white hover:text-white"
                 disabled={!isValidatePhone}
+                loading={loading}
               >
                 Đặt bàn
               </Button>

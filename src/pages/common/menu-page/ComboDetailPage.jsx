@@ -42,9 +42,7 @@ export function ComboDetailPage() {
       if (response?.isSuccess) {
         setComboData(response?.result);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   useEffect(() => {
     fetchData();
