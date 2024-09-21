@@ -12,10 +12,12 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   clearCart,
   decreaseQuantity,
+  getTotal,
   increaseQuantity,
   removeFromCart,
 } from "../../../redux/features/cartReservationSlice";
 import {
+  calculateTotal,
   clearCartReservation,
   decreaseComboQuantity,
   increaseComboQuantity,
@@ -162,9 +164,11 @@ const OrderSummary = ({ back, data, information }) => {
   const handleRemoveCombo = (comboId, selectedDishes) => {
     dispatch(removeCombo({ comboId, selectedDishes }));
   };
+  const total = useSelector(getTotal) + cartCombos.total;
+
   return (
-    <div className="h-[75vh] overflow-y-scroll">
-      <Typography className="text-xl text-[#333333] text-center font-bold my-2">
+    <div className="container">
+      <Typography className="text-xl text-red-900 text-center font-bold my-2">
         KIỂM TRA THÔNG TIN ĐẶT BÀN VÀ TIẾN HÀNH ĐẶT CỌC
       </Typography>
       <div className="grid grid-cols-1 md:grid-cols-2 ">
@@ -173,7 +177,7 @@ const OrderSummary = ({ back, data, information }) => {
         </div>
         <Card className="w-full max-w-md mx-auto shadow-none border-none">
           <CardBody>
-            <Typography className="text-xl font-bold">
+            <Typography className="text-xl font-semibold">
               Thông tin đặt cọc
             </Typography>
             <div className="flex justify-between my-4">
@@ -197,6 +201,12 @@ const OrderSummary = ({ back, data, information }) => {
                   Chọn
                 </Button>
               </div>
+            </div>
+            <div className="flex justify-between my-4">
+              <Typography className="text-[#333333] ">
+                Tổng tiền: {formatPrice(total)}
+              </Typography>
+              <Typography className="text-base"></Typography>
             </div>
             <div className="flex justify-between items-center my-4">
               <Typography className="text-[#333333] ">Hạn đặt cọc:</Typography>

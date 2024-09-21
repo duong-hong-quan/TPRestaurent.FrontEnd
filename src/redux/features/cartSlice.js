@@ -77,8 +77,14 @@ const cartSlice = createSlice({
   },
 });
 
-const calculateTotal = (items) => {
-  return items.reduce((acc, item) => acc + item.combo.price * item.quantity, 0);
+export const calculateTotal = (items) => {
+  debugger;
+  if (items.length > 0) {
+    return items.reduce(
+      (acc, item) => acc + item.combo.price * item.quantity,
+      0
+    );
+  }
 };
 console.log("calculateTotal", calculateTotal);
 export const {

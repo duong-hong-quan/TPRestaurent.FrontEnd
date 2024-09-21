@@ -8,14 +8,13 @@ import {
   Checkbox,
 } from "antd";
 import { UserOutlined, MailOutlined, TeamOutlined } from "@ant-design/icons";
-import { addNewCustomerInfo } from "../../api/acccountApi";
 import { useState, useEffect } from "react";
 import OtpConfirmModal from "../../pages/login/OtpConfirmModal";
 import ModalReservation from "./ModalReservation";
 import reservationImage from "../../assets/imgs/reservation.png";
 import moment from "moment";
 import {
-  convertToISOString,
+  formatDateToISOString,
   formatPhoneNumber,
   isEmptyObject,
   showError,
@@ -24,7 +23,6 @@ import { suggestTable } from "../../api/reservationApi";
 import { useSelector } from "react-redux";
 import useCallApi from "../../api/useCallApi";
 import { AccountApi } from "../../api/endpoint";
-import { toast } from "react-toastify";
 const { TextArea } = Input;
 
 const Reservation = () => {
@@ -79,30 +77,50 @@ const Reservation = () => {
     form.setFieldsValue({ phone: formattedPhone });
   };
   const onFinish = async () => {
-    const combinedDate = [
-      form.getFieldValue("date"),
-      form.getFieldValue("startTime"),
-      form.getFieldValue("endTime"),
-    ];
+    const date = form.getFieldValue("date");
+    const startTime = form.getFieldValue("startTime");
+    const endTime = form.getFieldValue("endTime");
+
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const [endHour, endMinute] = endTime.split(":").map(Number);
+    const combinedStartTime = moment(date)
+      .hour(startHour)
+      .minute(startMinute)
+      .format("YYYY-MM-DDTHH:mm:ss");
+    let combinedEndTime;
+    if (endHour === 0) {
+      combinedEndTime = moment(date)
+        .day(1)
+        .hour(endHour)
+        .minute(endMinute)
+        .format("YYYY-MM-DDTHH:mm:ss");
+    }
+    combinedEndTime = moment(date)
+      .hour(endHour)
+      .minute(endMinute)
+      .format("YYYY-MM-DDTHH:mm:ss");
+    debugger;
     const responseSuggessTable = await suggestTable({
-      startTime: convertToISOString(combinedDate)[0],
-      endTime: convertToISOString(combinedDate)[1],
+      startTime: combinedStartTime,
+      endTime: combinedEndTime,
       numOfPeople: Number(form.getFieldValue("numberOfPeople")),
       isPrivate: form.getFieldValue("isPrivate"),
     });
+
     if (responseSuggessTable?.isSuccess) {
       if (responseSuggessTable?.result?.length > 0) {
         setInformation({
           ...information,
-          date: convertToISOString(combinedDate),
+          startTime: combinedStartTime,
+          endTime: combinedEndTime,
           numberOfPeople: form.getFieldValue("numberOfPeople"),
           note: form.getFieldValue("note"),
         });
         message.success("Hệ thống chúng tôi đã tìm ra bàn phù hợp với bạn");
         setIsReservationModalVisible(true);
-      } else if (responseSuggessTable?.result === null) {
-        message.error("Hiện tại không còn bàn trống");
       }
+    } else {
+      showError(error);
     }
   };
 
