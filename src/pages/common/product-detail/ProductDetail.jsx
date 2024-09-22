@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   StarFilled,
@@ -10,8 +10,12 @@ import {
   MessageOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { getDishById } from "../../../api/dishApi";
-import { formatDate, formatPrice, isEmptyObject } from "../../../util/Utility";
+import {
+  formatDate,
+  formatPrice,
+  isEmptyObject,
+  showError,
+} from "../../../util/Utility";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import { useDispatch } from "react-redux";
 import {
@@ -19,6 +23,8 @@ import {
   increaseQuantity,
 } from "../../../redux/features/cartReservationSlice";
 import { message } from "antd";
+import useCallApi from "../../../api/useCallApi";
+import { DishApi } from "../../../api/endpoint";
 
 // Custom hooks
 const useDishData = (id) => {
@@ -27,11 +33,11 @@ const useDishData = (id) => {
   const [images, setImages] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { callApi, error, loading } = useCallApi();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getDishById(id);
+        const response = await callApi(`${DishApi.GET_BY_ID}/${id}`, "GET");
         if (response?.isSuccess) {
           const { dish, dishSizeDetails, dishImgs, ratingDish } =
             response?.result;
@@ -39,20 +45,20 @@ const useDishData = (id) => {
           setDish(dish?.dish);
           setDishSizeDetails(dish?.dishSizeDetails);
           setReviews(ratingDish);
+        } else {
+          showError(error);
         }
       } catch (error) {
         toast.error("Có lỗi xảy ra khi lấy dữ liệu");
       } finally {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 3000);
+        setIsLoading(loading);
       }
     };
 
     fetchData();
   }, [id]);
 
-  return { dish, dishSizeDetails, images, reviews };
+  return { dish, dishSizeDetails, images, reviews, isLoading };
 };
 
 // Extracted components
@@ -163,6 +169,10 @@ const ProductDetail = () => {
           (review) => review?.rating.pointId === selectedStarFilter
         )
       : reviews;
+
+    if (isLoading) {
+      return <LoadingOverlay isLoading={isLoading} />;
+    }
     return (
       <div className="mt-8">
         <div className="flex items-start mb-8">

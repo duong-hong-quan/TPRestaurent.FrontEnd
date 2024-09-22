@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { formatDate } from "../../../util/Utility";
@@ -72,7 +72,6 @@ const ComboDetail = ({ comboData, handleBack }) => {
   const flattenComboData = () => {
     return Object.values(selectedDishes).flat();
   };
-
   return (
     <div className="max-w-[1200px] mx-auto p-4">
       <button onClick={handleBack} className="text-red-700 font-bold text-lg">

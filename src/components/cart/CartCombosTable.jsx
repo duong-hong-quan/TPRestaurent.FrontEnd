@@ -1,9 +1,112 @@
 import React from "react";
-import { Table, Image, Button, Typography, Space } from "antd";
+import {
+  Table,
+  List,
+  Card,
+  Image,
+  Button,
+  Typography,
+  Space,
+  Divider,
+} from "antd";
 import { MinusOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 
 const { Text } = Typography;
+import { Link } from "react-router-dom";
+
+const MobileCartCombosView = ({
+  cartCombos,
+  handleDecreaseComboQuantity,
+  handleIncreaseComboQuantity,
+  handleRemoveCombo,
+  formatPrice,
+  isDisabled,
+}) => {
+  return (
+    <List
+      dataSource={cartCombos.items}
+      renderItem={(item) => (
+        <Card className="mb-4" key={item.comboId}>
+          <Space direction="vertical" className="w-full">
+            <Link to={`/combo/${item.comboId}`}>
+              <Text strong className="text-lg">
+                {item.combo.name}
+              </Text>
+            </Link>
+
+            <Divider className="my-2" />
+
+            <Text strong>Món:</Text>
+            {Object.values(item.selectedDishes)
+              .flat()
+              .map((dishCombo, index) => (
+                <Space key={index} align="center" className="w-full">
+                  <Image
+                    src={dishCombo.dishSizeDetail?.dish?.image}
+                    alt={dishCombo.dishSizeDetail?.dish?.name}
+                    width={40}
+                    height={40}
+                    style={{ objectFit: "cover", borderRadius: "50%" }}
+                  />
+                  <Text>{dishCombo.dishSizeDetail?.dish?.name}</Text>
+                </Space>
+              ))}
+
+            <Divider className="my-2" />
+
+            <Space className="w-full justify-between">
+              <Space>
+                <Text>Số lượng:</Text>
+                {!isDisabled && (
+                  <Button
+                    icon={<MinusOutlined size={16} />}
+                    onClick={() =>
+                      handleDecreaseComboQuantity(
+                        item.comboId,
+                        item.selectedDishes
+                      )
+                    }
+                    size="small"
+                  />
+                )}
+                <Text>{item.quantity}</Text>
+                {!isDisabled && (
+                  <Button
+                    icon={<PlusOutlined size={16} />}
+                    onClick={() =>
+                      handleIncreaseComboQuantity(
+                        item.comboId,
+                        item.selectedDishes
+                      )
+                    }
+                    size="small"
+                  />
+                )}
+              </Space>
+              <Text strong className="text-red-700">
+                {formatPrice(item.combo.price * item.quantity)}
+              </Text>
+            </Space>
+
+            {!isDisabled && (
+              <Button
+                danger
+                icon={<DeleteOutlined size={16} />}
+                onClick={() =>
+                  handleRemoveCombo(item.comboId, item.selectedDishes)
+                }
+                className="mt-2"
+              >
+                Xoá
+              </Button>
+            )}
+          </Space>
+        </Card>
+      )}
+    />
+  );
+};
 
 const CartCombosTable = ({
   cartCombos,
@@ -19,12 +122,9 @@ const CartCombosTable = ({
       dataIndex: ["combo", "name"],
       key: "name",
       render: (text, record) => (
-        <Space direction="vertical">
-          <NavLink to={`/combo/${record.comboId}`}>
-            <Text strong>{text}</Text>
-          </NavLink>
-          <Text type="secondary">{formatPrice(record.price)}</Text>
-        </Space>
+        <NavLink to={`/combo/${record.comboId}`}>
+          <Text strong>{text}</Text>
+        </NavLink>
       ),
     },
     {
@@ -109,13 +209,27 @@ const CartCombosTable = ({
     },
   ].filter(Boolean);
   return (
-    <Table
-      dataSource={cartCombos.items}
-      columns={columns}
-      rowKey="comboId"
-      pagination={false}
-      bordered
-    />
+    <div>
+      <div className="hidden lg:block">
+        <Table
+          dataSource={cartCombos.items}
+          columns={columns}
+          rowKey="comboId"
+          pagination={false}
+          className="mb-8 bg-white shadow-md rounded-lg overflow-hidden"
+        />
+      </div>
+      <div className="block lg:hidden">
+        <MobileCartCombosView
+          cartCombos={cartCombos}
+          formatPrice={formatPrice}
+          handleDecreaseComboQuantity={handleDecreaseComboQuantity}
+          handleIncreaseComboQuantity={handleIncreaseComboQuantity}
+          handleRemoveCombo={handleRemoveCombo}
+          isDisabled={isDisabled}
+        />
+      </div>
+    </div>
   );
 };
 

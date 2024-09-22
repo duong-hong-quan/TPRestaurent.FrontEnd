@@ -47,6 +47,9 @@ function SearchResults() {
   const handleAddItem = () => {
     setPageSize(pageSize + 3);
   };
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <div>
       <MenuDish dishes={dishes} handleAddItem={handleAddItem} />

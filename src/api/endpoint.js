@@ -64,4 +64,5 @@ export const TransactionApi = {
 export const DishApi = {
   GET_ALL: "/dish/get-all-dish/",
   GET_ALL_DISH_TYPE: "/dish/get-all-dish-type",
+  GET_BY_ID: "/dish/get-dish-by-id",
 };

@@ -43,10 +43,10 @@ const PaymentMethodSelector = ({ handleChange }) => {
         {Object.entries(PaymentMethod).map(([key, value]) => (
           <div
             key={key}
-            className="flex justify-start items-center bg-[#F3F3F3] py-2 px-4 rounded-md"
+            className="flex items-center bg-[#F3F3F3] py-2 px-4 rounded-md"
           >
             <div>{getMethodIcon(key)}</div>
-            <div className="flex mx-8">
+            <div className="flex-1 flex justify-between px-4">
               <div>
                 <Typography className="ml-2 font-bold uppercase">
                   {mapLanguage(key).name}
