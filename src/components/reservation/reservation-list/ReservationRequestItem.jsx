@@ -13,19 +13,36 @@ import {
   formatDate,
   formatDateTime,
   getKeyByValue,
+  showError,
 } from "../../../util/Utility";
 import ReservationDetail from "../reservation-detail/ReservationDetail";
 import { ReservationStatus } from "../../../util/GlobalType";
 import { createPayment } from "../../../api/transactionApi";
 import useCallApi from "../../../api/useCallApi";
-import { OrderApi } from "../../../api/endpoint";
+import { OrderApi, TransactionApi } from "../../../api/endpoint";
 import moment from "moment/moment";
 import LoadingOverlay from "../../loading/LoadingOverlay";
+import { Button, message, Modal } from "antd";
+import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
+import { toast } from "react-toastify";
 
 const ReservationRequestItem = ({ reservation }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [reservationId, setCurrentReservationId] = useState(null);
-  // Format reservationDate and endTime
+  const [open, setOpen] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState(2);
+  const { callApi, error, loading } = useCallApi();
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleChangeMethod = (data) => {
+    setSelectedMethod(data);
+  };
   const formattedDate = moment(reservation.reservationDate).format(
     "DD/MM/YYYY"
   );
@@ -40,7 +57,6 @@ const ReservationRequestItem = ({ reservation }) => {
       <span className="text-red-900 mx-1">{formattedEndTime}</span>
     </span>
   );
-  const { callApi, error, loading } = useCallApi();
   // Format the time difference for display
   const [reservationData, setReservationData] = useState({});
   const handleChange = async (id) => {
@@ -57,12 +73,19 @@ const ReservationRequestItem = ({ reservation }) => {
   }, [showDetails, reservationId]);
   const statusKey = getKeyByValue(ReservationStatus, reservation.statusId);
   const handlePayment = async () => {
-    const data = await createPayment({
-      reservationId: reservation.reservationId,
-      paymentMethod: 2,
+    const data = await callApi(`${TransactionApi.CREATE_PAYMENT}`, "POST", {
+      orderId: reservation.orderId,
+      paymentMethod: selectedMethod,
     });
-    if (data?.isSuccess) {
-      window.location.href = data?.result;
+    if (data.isSuccess) {
+      message.success(
+        "Chúng tôi sẽ tự động chuyển bạn đến trang cổng thanh toán"
+      );
+      setTimeout(() => {
+        window.location.href = data.result;
+      }, 2000);
+    } else {
+      showError(error);
     }
   };
   function getBadgeColor(status) {
@@ -127,7 +150,7 @@ const ReservationRequestItem = ({ reservation }) => {
         <div className="flex justify-end">
           {reservation?.statusId === 1 && (
             <button
-              onClick={() => handlePayment(reservation)}
+              onClick={() => handleClickOpen()}
               className=" text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
             >
               Thanh toán ngay
@@ -149,6 +172,16 @@ const ReservationRequestItem = ({ reservation }) => {
       {!loading && showDetails && (
         <ReservationDetail reservationData={reservationData} />
       )}
+      <div>
+        <Modal open={open} onCancel={handleClose} footer={null}>
+          <PaymentMethodSelector handleChange={handleChangeMethod} />
+          <div className="flex justify-center">
+            <Button className="bg-red-900 text-white" onClick={handlePayment}>
+              Thanh toán
+            </Button>
+          </div>
+        </Modal>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
-import { Table, InputNumber, Button, Input, message, Typography } from "antd";
+import {
+  Table,
+  InputNumber,
+  Button,
+  Input,
+  message,
+  Typography,
+  List,
+  Card,
+  Space,
+  Image,
+} from "antd";
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,7 +30,7 @@ import {
   decreaseComboQuantity,
 } from "../../../redux/features/cartSlice";
 import CartCombosTable from "../../../components/cart/CartCombosTable";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import InfoModal from "../../../components/user/InfoModal.jsx";
 import {
   addNewCustomerInfo,
@@ -29,40 +40,100 @@ import {
 import UserInfo from "../../../components/user/UserInfo.jsx";
 import { createOrder } from "../../../api/orderApi.js";
 import PaymentMethodSelector from "../../../components/cart/PaymentMethodSelector.jsx";
+import { Minus, Plus, Trash2 } from "lucide-react";
 
 const { TextArea } = Input;
+const { Text } = Typography;
+
+const MobileCartView = ({ cartItems, formatPrice }) => {
+  const dispatch = useDispatch();
+
+  return (
+    <List
+      dataSource={cartItems}
+      renderItem={(item) => (
+        <Card key={item.dishSizeDetailId} className="mb-4 shadow-sm">
+          <Space direction="vertical" className="w-full">
+            <Space align="start" className="w-full">
+              <Image
+                src={item.dish.image}
+                alt={item.dish.name}
+                width={80}
+                height={80}
+                className="object-cover rounded-md"
+              />
+              <Space direction="vertical">
+                <Link to={`/product/${item.dish.dishId}`}>
+                  <Text strong>{item.dish.name}</Text>
+                </Link>
+                <Text type="secondary">
+                  Kích cỡ: {item.size?.dishSize?.name}
+                </Text>
+                <Text type="secondary">
+                  Đơn giá: {formatPrice(item.size?.price)}
+                </Text>
+              </Space>
+            </Space>
+
+            <Space className="w-full justify-between mt-4">
+              <Space>
+                <Button
+                  icon={<Minus size={16} />}
+                  onClick={() =>
+                    dispatch(
+                      decreaseQuantity({ dish: item.dish, size: item.size })
+                    )
+                  }
+                  disabled={item.quantity <= 1}
+                  className="border-gray-300"
+                />
+                <InputNumber
+                  min={1}
+                  max={10}
+                  value={item.quantity}
+                  className="w-12 text-center"
+                  disabled
+                />
+                <Button
+                  icon={<Plus size={16} />}
+                  onClick={() =>
+                    dispatch(
+                      increaseQuantity({ dish: item.dish, size: item.size })
+                    )
+                  }
+                  disabled={item.quantity >= 10}
+                  className="border-gray-300"
+                />
+              </Space>
+              <Text strong className="text-red-600">
+                {formatPrice(item.size.price * item.quantity)}
+              </Text>
+            </Space>
+
+            <Button
+              type="text"
+              danger
+              icon={<Trash2 size={16} />}
+              onClick={() =>
+                dispatch(removeFromCart({ dish: item.dish, size: item.size }))
+              }
+              className="mt-2"
+            >
+              Xóa
+            </Button>
+          </Space>
+        </Card>
+      )}
+    />
+  );
+};
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const cartReservation = useSelector((state) => state.cartReservation);
   const [phoneNumber, setPhoneNumber] = useState("");
   const cart = useSelector((state) => state.cart);
-  const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [note, setNote] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
-  const [initialData, setInitialData] = useState({});
-  const [selectedMethod, setSelectedMethod] = useState(2);
 
-  const handleSubmit = async (formData) => {
-    if (isUpdate) {
-      const data = await updateCustomerInfo(formData);
-      if (data?.isSuccess) {
-        await handlePhone(formData.phoneNumber);
-        message.success("Cập nhật thông tin thành công!");
-      } else {
-        message.error("Cập nhật thông tin thất bại!");
-      }
-    } else {
-      const data = await addNewCustomerInfo(formData);
-      if (data?.isSuccess) {
-        message.success("Thêm mới thông tin thành công!");
-      } else {
-        message.success("Thêm mới thông tin thất bại!");
-      }
-    }
-  };
   const dispatch = useDispatch();
   useEffect(() => {
     setCartItems(cartReservation);
@@ -162,16 +233,6 @@ const CartPage = () => {
     },
   ];
 
-  const handleApplyCoupon = () => {
-    if (coupon === "DISCOUNT10") {
-      setDiscount(10);
-      message.success("Mã giảm giá đã được áp dụng!");
-    } else {
-      setDiscount(0);
-      message.error("Mã giảm giá không hợp lệ!");
-    }
-  };
-
   const cartTotal = useSelector(getTotal);
 
   const handleDecreaseComboQuantity = (comboId, selectedDishes) => {
@@ -183,84 +244,34 @@ const CartPage = () => {
   const handleRemoveCombo = (comboId, selectedDishes) => {
     dispatch(removeCombo({ comboId, selectedDishes }));
   };
-  const handlePhone = async () => {
-    const data = await getCustomerInfoByPhoneNumber(phoneNumber);
-    if (data?.isSuccess) {
-      if (data.result) {
-        setIsUpdate(true);
-        window.scrollTo(0, 0);
-        setInitialData(data.result);
-      }
-    } else {
-      setIsUpdate(false);
-      setIsModalOpen(true);
-    }
-  };
+
   const handleChangeMethod = (data) => {
     setSelectedMethod(data);
   };
-  const checkOut = async () => {
-    if (phoneNumber === "" || phoneNumber === null) {
-      message.error("Vui lòng nhập số điện thoại");
-    }
-    const data = {
-      customerId: initialData?.customerInfo?.customerId,
-      paymentMethodId: selectedMethod,
-      reservationId: null,
-      couponId: null,
-      note: null,
-      isDelivering: true,
-      orderDetailsDtos: mergeCartData(cartReservation, cart)
-        .reservationDishDtos,
-      loyalPointsToUse: 0,
-      tableId: null,
-    };
-    const response = await createOrder(data);
-    if (response?.isSuccess) {
-      message.success(
-        "Đặt hàng thành công! Chúng tôi đang tiến hành chuyển đến cổng thanh toán"
-      );
-      window.location.href = response?.result?.paymentLink;
-      // const responsePayment = await createPayment({
-      //   orderId: response.result?.order?.orderId,
-      //   paymentMethodId: selectedMethod,
-      // });
-      // if (responsePayment?.isSuccess) {
-      //   //     dispatch(clearCart());
-      //   //    dispatch(clearCartReservation());
-      // }
 
-      // window.location.href = "/";
-    } else {
-      response.messages.forEach((item) => {
-        message.error(item);
-      });
-    }
-  };
   return (
     <div className="container mx-auto px-4 py-8">
-      {!isEmptyObject(initialData) && (
-        <>
-          <UserInfo
-            userData={initialData.customerInfo}
-            handleOpenUpdate={() => setIsModalOpen(true)}
-          />
-        </>
-      )}
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
         Giỏ hàng của bạn
       </h1>
       <>
-        <Table
-          columns={columns}
-          dataSource={cartItems}
-          pagination={false}
-          rowKey="dishSizeDetailId"
-          className="mb-8 shadow-md rounded-lg overflow-hidden"
-        />
-
+        <div className="hidden lg:block">
+          <Table
+            columns={columns}
+            dataSource={cartItems}
+            pagination={false}
+            rowKey="dishSizeDetailId"
+            className="mb-8 shadow-md rounded-lg overflow-hidden"
+          />
+        </div>
+        <div className="block lg:hidden">
+          <MobileCartView
+            cartItems={cartItems}
+            formatPrice={formatPrice}
+            key={`view-cart`}
+          />
+        </div>
         <div>
-          <h4 className="text-center font-bold text-2xl my-10">Combo</h4>
           <CartCombosTable
             cartCombos={cart}
             formatPrice={formatPrice}
@@ -270,56 +281,6 @@ const CartPage = () => {
           />
         </div>
 
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Số điện thoại</h2>
-
-            <div className="flex items-center">
-              <Input
-                prefix={"+84"}
-                placeholder="Nhập số điện thoại"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="mr-2 flex-grow"
-              />
-              <Button
-                type="primary"
-                className="bg-red-700 hover:bg-red-600"
-                onClick={handlePhone}
-              >
-                Xác nhận
-              </Button>
-            </div>
-            <PaymentMethodSelector handleChange={handleChangeMethod} />
-
-            <h2 className="mt-4 text-xl font-semibold mb-4">Mã giảm giá</h2>
-            <div className="flex items-center">
-              <Input
-                placeholder="Nhập mã giảm giá"
-                value={coupon}
-                onChange={(e) => setCoupon(e.target.value)}
-                className="mr-2 flex-grow"
-              />
-              <Button
-                onClick={handleApplyCoupon}
-                type="primary"
-                className="bg-red-700 hover:bg-red-600"
-              >
-                Áp dụng
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Ghi chú</h2>
-            <TextArea
-              rows={4}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Nhập ghi chú cho đơn hàng của bạn"
-            />
-          </div>
-        </div>
         <div className="bg-gray-100 p-6 rounded-lg shadow-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-lg">Tạm tính:</span>
@@ -330,35 +291,8 @@ const CartPage = () => {
               {formatPrice(cartTotal + cart.total)}
             </Typography>{" "}
           </div>
-          {discount > 0 && (
-            <div className="flex justify-between items-center mb-4 text-green-600">
-              <span className="text-lg">Giảm giá ({discount}%):</span>
-              <span className="text-lg font-medium">
-                -{((subtotal * discount) / 100).toLocaleString("vi-VN")}đ
-              </span>
-            </div>
-          )}
-          <div className="flex justify-between items-center text-xl font-bold text-red-600">
-            <span>Tổng cộng:</span>
-            <span></span>
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <button
-            className="bg-red-800 hover:bg-red-400 text-lg h-12 px-8 mt-4 text-white "
-            onClick={checkOut}
-          >
-            Đặt ngay
-          </button>
         </div>
       </>
-      <InfoModal
-        initialData={initialData}
-        isOpen={isModalOpen}
-        isUpdate={isUpdate}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmit}
-      />
     </div>
   );
 };

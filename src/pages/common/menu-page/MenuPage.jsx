@@ -63,7 +63,9 @@ const MenuPage = () => {
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
-
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <div className="my-16">
       <h1 className="uppercase font-bold text-center text-3xl mb-8">
