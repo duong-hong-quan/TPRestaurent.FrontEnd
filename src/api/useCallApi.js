@@ -25,7 +25,6 @@ const useCallApi = () => {
         default:
           throw new Error(`Unsupported method: ${method}`);
       }
-      debugger;
       if (result.data.isSuccess === false) {
         setError(result.data.messages);
       }
