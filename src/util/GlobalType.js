@@ -51,10 +51,9 @@ export const OTPType = {
 };
 // enums/PaymentMethod.js
 export const PaymentMethod = {
-  CASH: 0,
-  VNPAY: 1,
-  MOMO: 2,
-  ZALOPAY: 3,
+  CASH: 1,
+  VNPAY: 2,
+  MOMO: 3,
 };
 // enums/RatingPoint.js
 export const RatingPoint = {

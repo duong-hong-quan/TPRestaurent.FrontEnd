@@ -4,30 +4,44 @@ import {
   FaIdCard,
   FaClock,
   FaUsers,
+  FaAngleDown,
+  FaAngleUp,
   FaInfoCircle,
 } from "react-icons/fa";
 import {
   calculateTimeDifference,
   formatDate,
+  formatDateTime,
   getKeyByValue,
 } from "../../../util/Utility";
 import ReservationDetail from "../reservation-detail/ReservationDetail";
-import { getReservationById } from "../../../api/reservationApi";
 import { ReservationStatus } from "../../../util/GlobalType";
 import { createPayment } from "../../../api/transactionApi";
 import useCallApi from "../../../api/useCallApi";
 import { OrderApi } from "../../../api/endpoint";
+import moment from "moment/moment";
+import LoadingOverlay from "../../loading/LoadingOverlay";
 
 const ReservationRequestItem = ({ reservation }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [reservationId, setCurrentReservationId] = useState(null);
-  const timeDifference = calculateTimeDifference(
-    reservation.reservationDate,
-    reservation.endTime
+  // Format reservationDate and endTime
+  const formattedDate = moment(reservation.reservationDate).format(
+    "DD/MM/YYYY"
+  );
+  const formattedStartTime = moment(reservation.reservationDate).format(
+    "HH:mm"
+  );
+  const formattedEndTime = moment(reservation.endTime).format("HH:mm");
+  const formattedDateTime = (
+    <span>
+      <span className="text-red-900">{formattedDate}</span> lúc
+      <span className="text-red-900 mx-1">{formattedStartTime}</span> -
+      <span className="text-red-900 mx-1">{formattedEndTime}</span>
+    </span>
   );
   const { callApi, error, loading } = useCallApi();
   // Format the time difference for display
-  const timeDifferenceString = `${timeDifference.hours} giờ ${timeDifference.minutes} phút`;
   const [reservationData, setReservationData] = useState({});
   const handleChange = async (id) => {
     setShowDetails(!showDetails);
@@ -64,75 +78,57 @@ const ReservationRequestItem = ({ reservation }) => {
       case ReservationStatus.CANCELLED:
         return "red";
       default:
-        return "gray"; // Default color for unknown status
+        return "gray";
     }
+  }
+
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
   }
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-4">
       <div className="flex flex-col md:flex-row justify-between items-center mb-4">
         <div className="flex items-center mb-2 md:mb-0">
-          <FaCalendar className="text-gray-500 mr-2" />
-          <p className="text-gray-600 mr-2">
-            Ngày đặt: {formatDate(reservation.reservationDate)}
-          </p>
-          <span className="text-gray-400">|</span>
-          <FaIdCard className="text-gray-500 mx-2" />
-          <p className="text-gray-600 ml-2">
+          <p className=" text-sm font-bold ml-2">
             ID: {reservation.orderId.substring(0, 8)}
+          </p>
+          <p className="text-gray-600 text-xs ml-2">
+            {formatDateTime(reservation.reservationDate)}
           </p>
         </div>
         <p
-          className={`text-yellow-600 font-semibold px-3 py-1 rounded-full text-${getBadgeColor(
+          className={`text-yellow-600 text-lg  font-semibold px-3 py-1 rounded-full text-${getBadgeColor(
             statusKey
           )}-700`}
         >
-          {reservation.status.vietnameseName}
+          {reservation.status.vietnameseName.toUpperCase()}
         </p>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-4">
         <div className="flex items-center mb-2 md:mb-0">
-          {/* <img
-            src="/path/to/default-avatar.png"
-            alt="User Avatar"
-            className="w-16 h-16 object-cover rounded-full mr-4"
-          /> */}
-          <div>
-            <p className="font-semibold">
-              Tên:{" "}
-              {`${reservation?.account?.firstName} ${reservation.account.lastName}`}
+          <div className="flex text-lg">
+            <p className="font-semibold uppercase">
+              {`${reservation.account.lastName} ${reservation?.account?.firstName} `}
             </p>
-            <p className="text-gray-600">
-              {`${reservation?.account?.phoneNumber} `}
-            </p>
-            <p className="text-gray-600">
-              {reservation?.account?.gender ? "Nam" : "Nữ"}
+            <p className="font-bold mx-2">
+              {`- 0${reservation?.account?.phoneNumber} `}
             </p>
           </div>
         </div>
-        <div className="text-right">
-          <p className="font-medium flex items-center justify-end">
-            <FaClock className="mr-2 text-gray-500" />
-            Thời gian: {timeDifferenceString}
-          </p>
-          <p className="text-gray-600 flex items-center justify-end">
-            <FaUsers className="mr-2 text-gray-500" />
-            Số người: {reservation.numOfPeople}
-          </p>
-        </div>
       </div>
-
-      <div className="flex flex-col md:flex-row justify-between items-center">
-        <p className="text-lg font-semibold flex items-center mb-2 md:mb-0">
-          <FaInfoCircle className="mr-2 text-gray-500" />
-          Ghi chú:{" "}
-          <span className="text-gray-700 ml-2">{reservation.note}</span>
+      <div className="">
+        <p className="font-medium flex items-center justify-start">
+          <FaCalendar className="mr-2 text-gray-500" />
+          {formattedDateTime} dành cho {reservation.numOfPeople} người
         </p>
-        <div className="flex">
+      </div>
+      <div className="flex flex-col md:flex-row justify-end items-center">
+        <div className="flex justify-end">
           {reservation?.statusId === 1 && (
             <button
               onClick={() => handlePayment(reservation)}
-              className="bg-red-600 mx-2 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+              className=" text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
             >
               Thanh toán ngay
             </button>
@@ -140,16 +136,19 @@ const ReservationRequestItem = ({ reservation }) => {
 
           <button
             onClick={() => handleChange(reservation.orderId)}
-            className="bg-gray-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+            className="flex items-center mx-2 text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
           >
             {showDetails
               ? "Ẩn thông tin chi tiết"
               : "Chi tiết thông tin đặt bàn"}
+            {showDetails ? <FaAngleUp /> : <FaAngleDown />}
           </button>
         </div>
       </div>
 
-      {showDetails && <ReservationDetail reservationData={reservationData} />}
+      {!loading && showDetails && (
+        <ReservationDetail reservationData={reservationData} />
+      )}
     </div>
   );
 };

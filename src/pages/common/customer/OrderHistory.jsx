@@ -30,6 +30,7 @@ import InfoModal from "../../../components/user/InfoModal";
 import { Search } from "lucide-react";
 import useCallApi from "../../../api/useCallApi";
 import { AccountApi, OrderApi } from "../../../api/endpoint";
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -63,17 +64,6 @@ export function OrderHistory() {
       message.error("Vui lòng nhập số điện thoại");
       return;
     }
-    // setLoading(true);
-
-    // const [responseReservation, responseInfo] = await Promise.all([
-    //   getAllReservationByPhoneNumber(
-    //     searchPhoneNumber,
-    //     reservationStatus,
-    //     1,
-    //     10
-    //   ),
-    //   getCustomerInfoByPhoneNumber(searchPhoneNumber),
-    // ]);
     const responseReservation = await callApi(
       `${OrderApi.GET_BY_PHONE}/1/10?phoneNumber=${searchPhoneNumber}`,
       "GET"
@@ -175,33 +165,6 @@ export function OrderHistory() {
     },
   ];
 
-  const fetchDataReservation = async () => {
-    try {
-      const response = await getAllReservationByPhoneNumber(
-        phoneNumber,
-        reservationStatus,
-        1,
-        10
-      );
-      if (response?.isSuccess) {
-        setReservations(response?.result?.items);
-      }
-    } catch (error) {
-      message.error("Đã xảy ra lỗi khi tìm kiếm");
-    }
-  };
-
-  const fetchDataOrder = async () => {
-    try {
-      const response = await getAllOrderByPhoneNumber(phoneNumber, 1, 10);
-      if (response?.isSuccess) {
-        setOrders(response?.result?.items);
-      }
-    } catch (error) {
-      message.error("Đã xảy ra lỗi khi tìm kiếm");
-    }
-  };
-
   useEffect(() => {
     if (phoneNumber) {
       // fetchDataReservation();
@@ -214,7 +177,9 @@ export function OrderHistory() {
     searchParams.set("phoneNumber", phone);
     navigate({ search: searchParams.toString() });
   };
-
+  if (loading) {
+    <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <div className="container mx-auto p-4">
       <Card className="w-full shadow-xl mb-4">
@@ -248,15 +213,7 @@ export function OrderHistory() {
       </Card>
 
       {!isEmptyObject(customer) && (
-        <Card className="mb-4">
-          <UserInfo
-            userData={customer?.customerInfo}
-            handleOpenUpdate={() => setIsModalOpen(true)}
-          />
-        </Card>
-      )}
-      {!isEmptyObject(customer) && (
-        <Card>
+        <Card className="shadow-none border-none">
           <Tabs defaultActiveKey="1">
             <TabPane tab="Lịch sử đặt chỗ" key="1">
               <Space className="mb-4">
