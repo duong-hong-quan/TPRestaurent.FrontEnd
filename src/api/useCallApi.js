@@ -2,7 +2,7 @@ import { useState } from "react";
 import api from "./config/axios";
 
 const useCallApi = () => {
-  const [error, setError] = useState(null);
+  const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const callApi = async (endpoint, method, data) => {

@@ -163,7 +163,6 @@ const ProductDetail = () => {
           (review) => review?.rating.pointId === selectedStarFilter
         )
       : reviews;
-    console.log(dish);
     return (
       <div className="mt-8">
         <div className="flex items-start mb-8">

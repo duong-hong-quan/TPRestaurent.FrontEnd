@@ -11,13 +11,9 @@ import { OrderApi } from "../../../api/endpoint";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   clearCart,
-  decreaseQuantity,
   getTotal,
-  increaseQuantity,
-  removeFromCart,
 } from "../../../redux/features/cartReservationSlice";
 import {
-  calculateTotal,
   clearCartReservation,
   decreaseComboQuantity,
   increaseComboQuantity,
@@ -27,7 +23,6 @@ import Card_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import CartCombosTable from "../../cart/CartCombosTable";
-import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 const OrderSummary = ({ back, data, information }) => {
   const cartReservation = useSelector((state) => state.cartReservation);
   const cartCombos = useSelector((state) => state.cart);
@@ -51,6 +46,7 @@ const OrderSummary = ({ back, data, information }) => {
   };
 
   const handleCheckOut = async () => {
+    debugger;
     const updatedData = {
       ...data,
       reservationOrder: {
@@ -83,7 +79,6 @@ const OrderSummary = ({ back, data, information }) => {
   if (loading) {
     return <LoadingOverlay isLoading={loading} />;
   }
-  console.log("aa", selectedMethod);
   const selectedPaymentMethodIcon = () => {
     switch (selectedMethod) {
       case 1:

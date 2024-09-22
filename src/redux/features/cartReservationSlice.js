@@ -30,7 +30,6 @@ const cartReservationSlice = createSlice({
     },
     increaseQuantity: (state, action) => {
       const { dish, size, quantity } = action.payload;
-      console.log(quantity);
       const item = state.find(
         (item) =>
           item.dish.dishId === dish.dishId &&

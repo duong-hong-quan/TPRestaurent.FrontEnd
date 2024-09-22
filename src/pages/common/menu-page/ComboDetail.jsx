@@ -63,7 +63,6 @@ const ComboDetail = ({ comboData, handleBack }) => {
 
     if (isValid) {
       const data = flattenComboData();
-      console.log("Data to add to cart:", data);
       dispatch(addCombo({ combo, selectedDishes: data }));
       message.success("Đã thêm combo vào giỏ hàng");
     } else {
@@ -73,9 +72,6 @@ const ComboDetail = ({ comboData, handleBack }) => {
   const flattenComboData = () => {
     return Object.values(selectedDishes).flat();
   };
-  useEffect(() => {
-    console.log("Lựa chọn hiện tại:", selectedDishes);
-  }, [selectedDishes]);
 
   return (
     <div className="max-w-[1200px] mx-auto p-4">

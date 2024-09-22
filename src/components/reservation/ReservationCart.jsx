@@ -72,7 +72,7 @@ export function ReservationCart() {
 
       {/* Reservation Cart Section */}
       <div className="w-full">
-        <div className="p-2 max-h-[300px] overflow-auto">
+        <div className="p-2 h-[90vh] overflow-auto">
           {cartReservation.length === 0 ? (
             <Typography color="blue-gray" className="text-center my-4">
               Giỏ hàng trống
@@ -250,8 +250,6 @@ export function ReservationCart() {
           )}
         </div>
       </div>
-
-      {/* Combo Cart Section */}
     </div>
   );
 }

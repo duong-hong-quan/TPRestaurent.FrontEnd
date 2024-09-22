@@ -10,7 +10,6 @@ import {
 } from "@material-tailwind/react";
 
 const InfoModal = ({ isOpen, onClose, onSubmit, isUpdate, initialData }) => {
-  console.log(initialData);
   const [formData, setFormData] = useState({
     addressId:
       initialData?.customerAddresses?.[0]?.customerInfoAddressId || "new",
@@ -76,7 +75,6 @@ const InfoModal = ({ isOpen, onClose, onSubmit, isUpdate, initialData }) => {
       dataToSubmit.address = null;
     }
 
-    console.log(dataToSubmit);
     onSubmit(dataToSubmit);
     onClose();
     window.scrollTo(0, 0);

@@ -35,11 +35,8 @@ const TableSuggestionModal = ({
   };
 
   const handleConfirm = async () => {
-    console.log(selectedReservation);
     // onClose();
-    console.log(selectedTables);
     const data = selectedTables.map((item) => item.tableId);
-    console.log(data);
     const response = await addTableToReservation(
       selectedReservation.reservationId,
       data

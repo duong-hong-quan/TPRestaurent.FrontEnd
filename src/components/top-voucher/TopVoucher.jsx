@@ -16,7 +16,6 @@ const TopVoucher = () => {
   const fetchData = async () => {
     const response = await getAllAvailibleCoupon(1, 10);
     if (response?.isSuccess) {
-      console.log(response?.result?.items);
       setCoupons(response?.result?.items);
     }
   };

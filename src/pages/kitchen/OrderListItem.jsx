@@ -14,7 +14,6 @@ const CustomBadge = ({ color, content }) => (
 );
 
 const OrderListItem = ({ order, isSelected, onCheckboxChange, status }) => {
-  console.log(status);
   const renderColor = (status) => {
     switch (status) {
       case "Mới":

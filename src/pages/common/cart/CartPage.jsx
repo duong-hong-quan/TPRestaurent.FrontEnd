@@ -46,7 +46,6 @@ const CartPage = () => {
   const [selectedMethod, setSelectedMethod] = useState(2);
 
   const handleSubmit = async (formData) => {
-    console.log(formData);
     if (isUpdate) {
       const data = await updateCustomerInfo(formData);
       if (data?.isSuccess) {
@@ -201,7 +200,6 @@ const CartPage = () => {
     setSelectedMethod(data);
   };
   const checkOut = async () => {
-    // console.log(mergeCartData(cartReservation, cart));
     if (phoneNumber === "" || phoneNumber === null) {
       message.error("Vui lòng nhập số điện thoại");
     }
@@ -217,7 +215,6 @@ const CartPage = () => {
       loyalPointsToUse: 0,
       tableId: null,
     };
-    console.log(data);
     const response = await createOrder(data);
     if (response?.isSuccess) {
       message.success(
@@ -229,20 +226,17 @@ const CartPage = () => {
       //   paymentMethodId: selectedMethod,
       // });
       // if (responsePayment?.isSuccess) {
-      //   console.log(responsePayment);
       //   //     dispatch(clearCart());
       //   //    dispatch(clearCartReservation());
       // }
 
       // window.location.href = "/";
-      console.log(response);
     } else {
       response.messages.forEach((item) => {
         message.error(item);
       });
     }
   };
-  console.log(cartItems.length);
   return (
     <div className="container mx-auto px-4 py-8">
       {!isEmptyObject(initialData) && (

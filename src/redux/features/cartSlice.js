@@ -86,7 +86,6 @@ export const calculateTotal = (items) => {
     );
   }
 };
-console.log("calculateTotal", calculateTotal);
 export const {
   addCombo,
   removeCombo,

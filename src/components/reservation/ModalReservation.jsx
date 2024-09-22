@@ -59,7 +59,6 @@ const ModalReservation = ({
   const [isSummary, setIsSummary] = useState(false);
   const [dataSend, setDataSend] = useState({});
 
-  console.log(cart);
   const caculatorItems = () => {
     let total = 0;
     total += cart?.items?.length;
@@ -69,27 +68,24 @@ const ModalReservation = ({
   useEffect(() => {
     setTotalItems(caculatorItems());
   }, [cart, cartReservation]);
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     try {
       const dishesData = await callApi(`${DishApi.GET_ALL}/${1}/${10}`, "GET");
       const combosData = await callApi(`${ComboApi.GET_ALL}/${1}/${10}`, "GET");
       if (dishesData?.result?.items && combosData?.result) {
-        setDishes(dishesData.result.items);
-        setCombos(combosData.result);
-      } else {
-        throw new Error("Failed to load products");
+        setDishes(dishesData?.result?.items);
+        setCombos(combosData?.result);
       }
     } catch (error) {
       message.error("Failed to load products: " + error.message);
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (visible) {
       fetchData();
     }
-    handleDeposit();
-  }, [visible, fetchData]);
+  }, [visible]);
 
   useEffect(() => {
     if (selectedCombos) {
@@ -164,7 +160,6 @@ const ModalReservation = ({
         deposit: deposit,
       },
     });
-    console.log(dataSend);
   };
 
   const handleDeposit = async () => {
@@ -213,41 +208,33 @@ const ModalReservation = ({
     />
   );
   return (
-    <div className="mt-10">
+    <div className="mt-10 p-4">
       {visible && (
         <>
           {!isSummary && (
-            <div className="grid grid-cols-1 md:grid-cols-12 rounded-2xl pl-6">
-              <div className="col-span-9">
+            <div className="grid grid-cols-1  md:grid-cols-12  rounded-2xl">
+              <div className=" md:col-span-12 lg:col-span-9">
                 <Tabs activeKey={activeTab} onChange={handleTabChange}>
-                  <TabPane
-                    tab="Món ăn"
-                    key="0"
-                    style={{ overflow: "auto", maxHeight: "600px" }}
-                  >
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 mt-2">
+                  <TabPane tab="Món ăn" key="0">
+                    <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4 mb-6 mt-2 h-[85vh] overflow-scroll">
                       {dishes.map(renderDishCard)}
                     </div>
                   </TabPane>
-                  <TabPane
-                    tab="Combo món"
-                    key="1"
-                    style={{ overflow: "auto", maxHeight: "600px" }}
-                  >
+                  <TabPane tab="Combo món" key="1">
                     {isOpenComboDetail ? (
                       <ComboDetail2
                         comboData={combo}
                         handleBack={() => setIsOpenComboDetail(false)}
                       />
                     ) : (
-                      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                         {combos?.map(renderComboCard)}
                       </div>
                     )}
                   </TabPane>
                 </Tabs>
               </div>
-              <div className="col-span-3">
+              <div className=" md:col-span-12 lg:col-span-3">
                 <ReservationInformation reservation={information} />
                 <ReservationCart />
                 {cart.length > 0 && (

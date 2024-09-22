@@ -9,12 +9,11 @@ import {
 } from "@material-tailwind/react";
 import { HomePage } from "../home-page/HomePage";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
-import { updateReservationStatus } from "../../../api/reservationApi";
-import { changeOrderStatus } from "../../../api/orderApi";
-import { addToStoreCredit } from "../../../api/storeCreditApi";
 import { decodeHashing } from "../../../api/hashingApi";
 import { formatPrice } from "../../../util/Utility";
-import { updateTransactionStatus } from "../../../api/transactionApi";
+import useCallApi from "../../../api/useCallApi";
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import { OrderApi, TransactionApi } from "../../../api/endpoint";
 
 const VerifyPayment = () => {
   const location = useLocation();
@@ -23,19 +22,22 @@ const VerifyPayment = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isVNPAY, setIsVNPAY] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
+  const { callApi, error, loading } = useCallApi();
   const handleUrl = async () => {
-    setModalIsOpen(true);
     const searchParams = new URLSearchParams(location.search);
     const vnpResponseCode = searchParams.get("vnp_ResponseCode");
     const partnerCode = searchParams.get("partnerCode");
     const resultCode = searchParams.get("resultCode");
     const orderInfo = searchParams.get("vnp_OrderInfo");
     const id = searchParams.get("vnp_TxnRef");
-    setTotalAmount(searchParams.get("vnp_Amount"));
-    const typeData = await decodeHashing(
-      orderInfo,
-      import.meta.env.VITE_KEY_HASH
+
+    setTotalAmount(
+      searchParams.get("vnp_Amount") || searchParams.get("amount") * 100
     );
+    // const typeData = await decodeHashing(
+    //   orderInfo,
+    //   import.meta.env.VITE_KEY_HASH
+    // );
 
     if (vnpResponseCode) {
       setIsVNPAY(true);
@@ -43,62 +45,52 @@ const VerifyPayment = () => {
         searchParams.get("vnp_OrderInfo")
       );
       if (vnpResponseCode === "00") {
-        if (typeData.includes("CR")) {
-          const parts = typeData.split("_");
-          const id = parts[1];
-          const updateData = await updateTransactionStatus(id, 2);
-          if (updateData?.isSuccess) {
-            const data = await addToStoreCredit(id);
-            if (data?.isSuccess) {
-              setModalMessage("Nạp tiền vào ví thành công");
-            } else {
-              data?.messages.forEach((message) => {
-                setModalMessage(message);
-              });
-            }
-          }
-        } else {
-          switch (typeData) {
-            case "RE":
-              const data = await updateReservationStatus(id, 2);
-              if (data?.isSuccess) {
-                setModalMessage("Thanh toán thành công");
-              } else {
-                setModalMessage("Thanh toán thất bại");
-              }
-              break;
-            case "OR":
-              const dataOr = await changeOrderStatus(id, true);
-              if (dataOr?.isSuccess) {
-                setModalMessage("Thanh toán thành công");
-              } else {
-                setModalMessage("Thanh toán thất bại");
-              }
-              break;
-          }
+        const data = await callApi(
+          `${TransactionApi.UPDATE_STATUS}/${id}/2`,
+          "PUT"
+        );
+        if (data.isSuccess) {
+          setIsSuccess(true);
         }
-
-        setIsSuccess(true);
       } else {
-        setModalMessage(
-          `Thanh toán VNPay thất bại cho đơn hàng: ${vnpOrderInfo}. Vui lòng thanh toán lại`
+        const data = await callApi(
+          `${TransactionApi.UPDATE_STATUS}/${id}/1`,
+          "PUT"
         );
+        if (data.isSuccess) {
+          setIsSuccess(true);
+        }
+        setModalMessage(`Thanh toán VNPay thất bại . Vui lòng thanh toán lại`);
         setIsSuccess(false);
       }
-      setModalIsOpen(true);
     } else if (partnerCode === "MOMO") {
-      const orderInfo = decodeURIComponent(searchParams.get("orderInfo"));
+      debugger;
+      const orderInfo = decodeURIComponent(searchParams.get("orderId"));
       if (resultCode === "0") {
-        setModalMessage(`${orderInfo}`);
-        setIsSuccess(true);
-      } else {
-        setModalMessage(
-          `Thanh toán Momo thất bại cho đơn hàng: ${orderInfo}. Vui lòng thanh toán lại`
+        const data = await callApi(
+          `${TransactionApi.UPDATE_STATUS}/${orderInfo}/2`,
+          "PUT"
         );
-        setIsSuccess(false);
+        if (data.isSuccess) {
+          setModalMessage(
+            `Thanh toán Momo thành công cho đơn hàng: ${orderInfo}.`
+          );
+          setIsSuccess(true);
+        }
+      } else {
+        const data = await callApi(
+          `${TransactionApi.UPDATE_STATUS}/${orderInfo}/1`,
+          "PUT"
+        );
+        if (data.isSuccess) {
+          setIsSuccess(false);
+          setModalMessage(
+            `Thanh toán Momo thất bại cho đơn hàng: ${orderInfo}. Vui lòng thanh toán lại`
+          );
+        }
       }
-      setModalIsOpen(true);
     }
+    setModalIsOpen(true);
   };
   useEffect(() => {
     handleUrl();
@@ -107,7 +99,9 @@ const VerifyPayment = () => {
   const closeModal = () => {
     setModalIsOpen(false);
   };
-
+  if (loading) {
+    <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <>
       <HomePage />
