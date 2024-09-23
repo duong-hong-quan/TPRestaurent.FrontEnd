@@ -1,19 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Tabs, message, Button, Modal } from "antd";
+import { Tabs, message, Button } from "antd";
 import { Typography } from "@material-tailwind/react";
 
 import { getComboById } from "../../api/comboApi";
-import { createReservation } from "../../api/reservationApi";
 import { sendCustomerInfoOtp } from "../../api/acccountApi";
 
-import {
-  addToCart,
-  clearCart,
-  getTotal,
-} from "../../redux/features/cartReservationSlice";
-import { clearCartReservation } from "../../redux/features/cartSlice";
+import { addToCart, getTotal } from "../../redux/features/cartReservationSlice";
 
 import ReservationInformation from "./ReservationInformation";
 import { ReservationCart } from "./ReservationCart";
@@ -58,7 +52,12 @@ const ModalReservation = ({
   const { callApi, error, loading } = useCallApi();
   const [isSummary, setIsSummary] = useState(false);
   const [dataSend, setDataSend] = useState({});
+  const [activeStep, setActiveStep] = useState(0);
+  const [isLastStep, setIsLastStep] = useState(false);
+  const [isFirstStep, setIsFirstStep] = useState(false);
 
+  const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1);
+  const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1);
   const caculatorItems = () => {
     let total = 0;
     total += cart?.items?.length;
@@ -82,10 +81,8 @@ const ModalReservation = ({
   };
 
   useEffect(() => {
-    if (visible) {
-      fetchData();
-    }
-  }, [visible]);
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (selectedCombos) {
@@ -207,57 +204,76 @@ const ModalReservation = ({
       key={"cardcombo"}
     />
   );
+
   return (
-    <div className="mt-10 p-4">
+    <div className="mt-10 p-4 bg-gray-50 min-h-screen">
       {visible && (
-        <>
-          {!isSummary && (
-            <div className="grid grid-cols-1  md:grid-cols-12  rounded-2xl">
-              <div className=" md:col-span-12 lg:col-span-9">
-                <Tabs activeKey={activeTab} onChange={handleTabChange}>
-                  <TabPane tab="Món ăn" key="0">
-                    <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4 mb-6 mt-2 h-[85vh] overflow-scroll">
+        <div className="mx-10">
+          {!isSummary ? (
+            <div className="  grid grid-cols-1 lg:grid-cols-12 gap-8 mt-10">
+              <div className=" col-span-1 lg:col-span-9 bg-white rounded-lg shadow-md p-6">
+                <Tabs
+                  activeKey={activeTab}
+                  onChange={handleTabChange}
+                  className="mb-6"
+                >
+                  <TabPane
+                    tab="Món ăn"
+                    key="0"
+                    className="max-h-[800px] overflow-y-auto "
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
                       {dishes.map(renderDishCard)}
                     </div>
                   </TabPane>
-                  <TabPane tab="Combo món" key="1">
+                  <TabPane
+                    tab="Combo món"
+                    key="1"
+                    className="max-h-[800px] overflow-y-auto "
+                  >
                     {isOpenComboDetail ? (
                       <ComboDetail2
                         comboData={combo}
                         handleBack={() => setIsOpenComboDetail(false)}
                       />
                     ) : (
-                      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
                         {combos?.map(renderComboCard)}
                       </div>
                     )}
                   </TabPane>
                 </Tabs>
               </div>
-              <div className=" md:col-span-12 lg:col-span-3">
-                <ReservationInformation reservation={information} />
-                <ReservationCart />
-                {cart.length > 0 && (
-                  <div className=" w-full flex justify-center items-center flex-col">
-                    <Typography
-                      variant="h5"
-                      className="font-bold text-red-700 text-center"
-                    >
-                      Tổng cộng: {formatPrice(cartTotal + cartCombo.total)}
-                    </Typography>
-                    <p>Số tiền cọc dự kiến: {formatPrice(deposit)}</p>
-                  </div>
-                )}
+              <div className=" col-span-1 lg:col-span-3 space-y-6">
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <ReservationInformation reservation={information} />
+                </div>
+                <div className="max-h-[800px] overflow-auto bg-white rounded-lg shadow-md p-6">
+                  <ReservationCart />
+                  {cart.length > 0 && (
+                    <div className="mt-4 text-center">
+                      <Typography
+                        variant="h5"
+                        className="font-bold text-red-700"
+                      >
+                        Tổng cộng: {formatPrice(cartTotal + cartCombo.total)}
+                      </Typography>
+                      <p className="text-gray-600">
+                        Số tiền cọc dự kiến: {formatPrice(deposit)}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex justify-end col-span-12 gap-2 m-3">
+              <div className="col-span-1 lg:col-span-12 flex justify-end ">
                 <Button
-                  className="bg-red-800 rounded-md text-white mt-10"
+                  className="bg-gray-300 text-gray-800 rounded-md px-6 py-2 hover:bg-gray-400 transition-colors"
                   onClick={onCancel}
                 >
-                  Back
+                  Quay lại
                 </Button>
                 <Button
-                  className="bg-red-800 rounded-md text-white mt-10"
+                  className="bg-red-800 text-white rounded-md px-6 py-2 hover:bg-red-900 transition-colors"
                   onClick={() => {
                     setIsSummary(true);
                     handleCheckout();
@@ -267,15 +283,14 @@ const ModalReservation = ({
                 </Button>
               </div>
             </div>
-          )}
-          {isSummary && (
+          ) : (
             <OrderSummary
               data={dataSend}
               information={information}
               back={() => setIsSummary(false)}
             />
           )}
-        </>
+        </div>
       )}
     </div>
   );
