@@ -23,6 +23,7 @@ import Card_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import CartCombosTable from "../../cart/CartCombosTable";
+import { CartSingleTable } from "../../cart/CartSingleTable";
 const OrderSummary = ({ back, data, information }) => {
   const cartReservation = useSelector((state) => state.cartReservation);
   const cartCombos = useSelector((state) => state.cart);
@@ -223,12 +224,10 @@ const OrderSummary = ({ back, data, information }) => {
             Sửa đặt món
           </Button>
         </div>
-        <Table
-          columns={columns}
-          dataSource={cartReservation}
-          pagination={false}
-          rowKey="dishSizeDetailId"
-          className="mb-8 shadow-md rounded-lg overflow-hidden"
+        <CartSingleTable
+          cartItems={cartReservation}
+          isDisabled={true}
+          key={cartReservation.length}
         />
         <CartCombosTable
           cartCombos={cartCombos}

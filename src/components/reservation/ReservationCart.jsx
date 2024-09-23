@@ -71,8 +71,8 @@ export function ReservationCart() {
       </Typography>
 
       {/* Reservation Cart Section */}
-      <div className="w-full">
-        <div className="p-2 h-[90vh] overflow-auto">
+      <div className="w-full ">
+        <div className="p-2 ">
           {cartReservation.length === 0 ? (
             <Typography color="blue-gray" className="text-center my-4">
               Giỏ hàng trống
