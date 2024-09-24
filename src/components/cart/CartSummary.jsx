@@ -13,16 +13,18 @@ import CartCombosTable from "./CartCombosTable";
 import { CartSingleTable } from "./CartSingleTable";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  clearCartReservation,
   decreaseComboQuantity,
   increaseComboQuantity,
   removeCombo,
 } from "../../redux/features/cartSlice";
-import { formatPrice } from "../../util/Utility";
+import { formatPrice, mergeCartData } from "../../util/Utility";
 
 import Card_Logo from "../../assets/imgs/payment-icon/Cash_Logo.png";
 import MoMo_Logo from "../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../assets/imgs/payment-icon/VNpay_Logo.png";
 import PaymentMethodSelector from "./PaymentMethodSelector";
+import { clearCart } from "../../redux/features/cartReservationSlice";
 const { Title, Text } = Typography;
 
 const InfoItem = ({ icon, label, value }) => (
@@ -49,6 +51,8 @@ const ActionItem = ({ icon, label, children }) => (
 
 const CartSummary = ({ handleClose }) => {
   const cartReservation = useSelector((state) => state.cartReservation);
+  const user = useSelector((state) => state.user.user || {});
+
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [selectedMethod, setSelectedMethod] = useState(2);
@@ -87,6 +91,39 @@ const CartSummary = ({ handleClose }) => {
   const handleRemoveCombo = (comboId, selectedDishes) => {
     dispatch(removeCombo({ comboId, selectedDishes }));
   };
+
+  const handleCheckOut = async () => {
+    const { reservationDishDtos } = mergeCartData(cartReservation, cart);
+    const updatedData = {
+      customerId: user.id,
+      orderType: 2,
+      note: "string",
+      orderDetailsDtos: reservationDishDtos,
+
+      deliveryOrder: {
+        paymentMethod: selectedMethod,
+      },
+    };
+    const response = await callApi(
+      `${OrderApi.CREATE_ORDER}`,
+      "POST",
+      updatedData
+    );
+    if (response.isSuccess) {
+      message.success(`Đặt thành công`);
+      dispatch(clearCart());
+      dispatch(clearCartReservation());
+      if (selectedMethod === 3 || selectedMethod === 2) {
+        if (response.result.paymentLink) {
+          window.location.href = response.result.paymentLink;
+        }
+      } else {
+        navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
+      }
+    } else {
+      showError(error);
+    }
+  };
   return (
     <div className="container my-4 p-6 bg-white">
       <Title level={3} className="uppercase text-center mb-6">
@@ -100,12 +137,12 @@ const CartSummary = ({ handleClose }) => {
           <InfoItem
             icon={<UserOutlined />}
             label="Họ tên"
-            value="Nguyễn Văn A"
+            value={`${user.firstName} ${user.lastName}`}
           />
           <InfoItem
             icon={<PhoneOutlined />}
             label="Số điện thoại"
-            value="0123456789"
+            value={`0${user.phoneNumber}`}
           />
           <InfoItem
             icon={<HomeOutlined />}
@@ -131,12 +168,28 @@ const CartSummary = ({ handleClose }) => {
               </button>
             </div>
           </ActionItem>
-          <ActionItem icon={<StarOutlined />} label="Tích điểm">
-            <Switch />
-          </ActionItem>
-          <ActionItem icon={<DollarOutlined />} label="Sử dụng điểm">
-            <Switch />
-          </ActionItem>
+
+          {user.loyalPoint > 0 && (
+            <ActionItem icon={<StarOutlined />} label="Tích điểm">
+              <div className="flex">
+                <Typography className="text-[#333333] mx-2">
+                  {user.loyalPoint} điểm
+                </Typography>
+                <Switch />
+              </div>
+            </ActionItem>
+          )}
+
+          {user.storeCredit > 0 && (
+            <ActionItem icon={<DollarOutlined />} label="Sử dụng số dư">
+              <div className="flex">
+                <Typography className="text-[#333333] mx-2">
+                  {user.storeCredit} coin
+                </Typography>
+                <Switch />
+              </div>
+            </ActionItem>
+          )}
           <ActionItem icon={<FileTextOutlined />} label="Ghi chú">
             <Input className="w-[25vw]" placeholder="Nhập ghi chú" />
           </ActionItem>
@@ -174,6 +227,11 @@ const CartSummary = ({ handleClose }) => {
         handleRemoveCombo={handleRemoveCombo}
         isDisabled={true}
       />
+      <div className="flex justify-center">
+        <Button className="bg-red-900 text-white" onClick={handleCheckOut}>
+          Xác nhận thanh toán
+        </Button>
+      </div>
       <div>
         <Modal open={open} onCancel={handleModalClose} footer={null}>
           <PaymentMethodSelector handleChange={handleChangeMethod} />
