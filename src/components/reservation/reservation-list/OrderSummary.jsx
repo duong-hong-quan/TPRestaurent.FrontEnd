@@ -2,13 +2,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Card, CardBody } from "@material-tailwind/react";
 import { formatPrice, showError } from "../../../util/Utility";
 import ReservationInformation from "../ReservationInformation";
-import { Button, InputNumber, message, Modal, Table, Typography } from "antd";
+import { Button, message, Modal, Typography } from "antd";
 import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
 import { useState } from "react";
 import useCallApi from "../../../api/useCallApi";
 import LoadingOverlay from "../../loading/LoadingOverlay";
 import { OrderApi } from "../../../api/endpoint";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   clearCart,
   getTotal,
@@ -47,7 +47,6 @@ const OrderSummary = ({ back, data, information }) => {
   };
 
   const handleCheckOut = async () => {
-    debugger;
     const updatedData = {
       ...data,
       reservationOrder: {
@@ -67,11 +66,10 @@ const OrderSummary = ({ back, data, information }) => {
       if (selectedMethod === 3 || selectedMethod === 2) {
         if (response.result.paymentLink) {
           window.location.href = response.result.paymentLink;
-          return;
         }
+      } else {
+        navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
       }
-
-      navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
     } else {
       showError(error);
     }
@@ -93,64 +91,7 @@ const OrderSummary = ({ back, data, information }) => {
         return null;
     }
   };
-  const columns = [
-    {
-      title: "Sản phẩm",
-      key: "product",
-      render: (_, record) => (
-        <div className="flex items-center">
-          <img
-            src={record.dish.image}
-            alt={record.dish.name}
-            width={60}
-            height={60}
-            className="object-cover rounded-md mr-4"
-          />
-          <NavLink to={`/product/${record.dish.dishId}`}>
-            <span className="font-medium">{record.dish.name}</span>
-          </NavLink>
-        </div>
-      ),
-    },
-    {
-      title: "Kích cỡ",
-      dataIndex: "size",
-      key: "size",
-      render: (_, record) => <span>{record.size?.dishSize?.name}</span>,
-    },
-    {
-      title: "Đơn giá",
-      dataIndex: "price",
-      key: "price",
-      render: (_, record) => (
-        <span className="text-gray-600">{formatPrice(record.size?.price)}</span>
-      ),
-    },
-    {
-      title: "Số lượng",
-      key: "quantity",
-      render: (_, record) => (
-        <div className="flex items-center">
-          <InputNumber
-            min={1}
-            max={10}
-            value={record.quantity}
-            className="mx-2 w-14 text-center"
-            disabled
-          />
-        </div>
-      ),
-    },
-    {
-      title: "Thành tiền",
-      key: "total",
-      render: (_, record) => (
-        <span className="font-semibold text-red-600">
-          {formatPrice(record.size.price * record.quantity)}
-        </span>
-      ),
-    },
-  ];
+
   const handleDecreaseComboQuantity = (comboId, selectedDishes) => {
     dispatch(decreaseComboQuantity({ comboId, selectedDishes }));
   };
@@ -167,11 +108,9 @@ const OrderSummary = ({ back, data, information }) => {
       <Typography className="text-xl text-red-900 text-center font-bold my-2">
         KIỂM TRA THÔNG TIN ĐẶT BÀN VÀ TIẾN HÀNH ĐẶT CỌC
       </Typography>
-      <div className="grid grid-cols-1 md:grid-cols-2 ">
-        <div>
-          <ReservationInformation reservation={information} />
-        </div>
-        <Card className="w-full max-w-md mx-auto shadow-none border-none">
+      <div className="px-10 my-2 gap-4 grid grid-cols-1 md:grid-cols-2 ">
+        <ReservationInformation reservation={information} />
+        <Card className="w-full  shadow-none border-none">
           <CardBody>
             <Typography className="text-xl font-semibold">
               Thông tin đặt cọc
@@ -179,7 +118,7 @@ const OrderSummary = ({ back, data, information }) => {
             <div className="flex justify-between my-4">
               <Typography className="text-[#333333] ">
                 Số tiền đặt cọc:
-              </Typography>{" "}
+              </Typography>
               <Typography className="text-base">
                 {formatPrice(data.reservationOrder.deposit)}
               </Typography>
@@ -187,7 +126,7 @@ const OrderSummary = ({ back, data, information }) => {
             <div className="flex justify-between items-center my-4">
               <Typography className="text-[#333333] ">
                 Chọn phương thức thanh toán:
-              </Typography>{" "}
+              </Typography>
               <div className="flex items-center">
                 <span className="mx-2"> {selectedPaymentMethodIcon()}</span>
                 <Button
@@ -209,8 +148,8 @@ const OrderSummary = ({ back, data, information }) => {
               <Typography className="text-base"></Typography>
             </div>
             <p>
-              Số tiền đặt cọc sẽ được trừ vào bill thanh toán sau khi dùng bữa
-              tại nhà hàng!
+              <i className="fas fa-exclamation-circle"></i> Số tiền đặt cọc sẽ
+              được trừ vào bill thanh toán sau khi dùng bữa tại nhà hàng!
             </p>
           </CardBody>
         </Card>

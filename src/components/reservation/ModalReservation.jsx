@@ -206,7 +206,7 @@ const ModalReservation = ({
   );
 
   return (
-    <div className="mt-10 p-4 bg-gray-50 min-h-screen">
+    <div className=" p-4 bg-gray-50 min-h-screen">
       {visible && (
         <div className="mx-10">
           {!isSummary ? (
