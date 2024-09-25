@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick-theme.css";
 import slider1 from "../../assets/imgs/slider/slider1.png";
 import slider2 from "../../assets/imgs/slider/slider2.png";
 import slider3 from "../../assets/imgs/slider/slider3.png";
+import banner from "../../assets/imgs/banner.png";
 
 const SliderHome = () => {
   const settings = {
@@ -21,7 +22,7 @@ const SliderHome = () => {
   const slides = [
     {
       id: 1,
-      image: slider1,
+      image: banner,
       alt: "Món ăn BBQ ngon",
       title: "Ăn BBQ Thịnh Soạn",
       description:
@@ -29,7 +30,7 @@ const SliderHome = () => {
     },
     {
       id: 2,
-      image: slider2,
+      image: banner,
       alt: "Món ăn đặc sắc",
       title: "Món Ăn Đặc Biệt 2",
       description:
@@ -37,7 +38,7 @@ const SliderHome = () => {
     },
     {
       id: 3,
-      image: slider3,
+      image: banner,
       alt: "Món ăn tuyệt vời",
       title: "Món Ăn Đặc Biệt 3",
       description:
@@ -46,7 +47,7 @@ const SliderHome = () => {
   ];
 
   return (
-    <div className=" min-w-full">
+    <div className="">
       <Slider {...settings} className="h-full relative">
         {slides.map((slide) => (
           <div key={slide.id} className="relative h-screen">
@@ -55,14 +56,14 @@ const SliderHome = () => {
               alt={slide.alt}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white px-4">
+            {/* <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white px-4">
               <h2 className="text-4xl md:text-6xl font-bold mb-4 text-center">
                 {slide.title}
               </h2>
               <p className="text-xl md:text-2xl text-center max-w-2xl">
                 {slide.description}
               </p>
-            </div>
+            </div> */}
           </div>
         ))}
       </Slider>
