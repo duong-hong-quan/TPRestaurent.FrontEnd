@@ -125,6 +125,8 @@ const ProductDetail = () => {
   const [price, setPrice] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const [selectedStarFilter, setSelectedStarFilter] = useState(null);
+  const [note, setNote] = useState("");
+
   useEffect(() => {
     if (dishSizeDetails && dishSizeDetails.length > 0 && !selectedSize) {
       setSelectedSize(dishSizeDetails[0]);
@@ -152,10 +154,15 @@ const ProductDetail = () => {
   const handleAddToCart = (dish, size) => {
     if (quantity > 1) {
       dispatch(
-        increaseQuantity({ dish: dish, size: size, quantity: quantity })
+        increaseQuantity({
+          dish: dish,
+          size: size,
+          quantity: quantity,
+          note: note,
+        })
       );
     } else {
-      dispatch(addToCart({ dish: dish, size: size }));
+      dispatch(addToCart({ dish: dish, size: size, note: note }));
     }
   };
   const renderRatingTab = () => {
@@ -306,7 +313,7 @@ const ProductDetail = () => {
       <LoadingOverlay isLoading={isLoading} />
       {!isEmptyObject(dish) && (
         <div className=" container p-10 mx-auto px-4 py-8 max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             <ImageGallery
               images={images}
               currentImageIndex={currentImageIndex}
@@ -326,16 +333,29 @@ const ProductDetail = () => {
                   {dish?.dish?.averageRating}
                 </span>
               </div>
-              <div className="border-t-2  my-2 pt-4">
+              <div className="border-t-2 border-gray-500 my-2 pt-4">
                 <div className="inline-flex items-center px-4 py-2 rounded-full bg-white  border border-red-800 text-sm">
-                  <ThermometerSun className="mx-2 text-red-700" />{" "}
-                  {dish?.dishItemType?.name}
+                  <ThermometerSun className="mx-2 text-red-700 " />{" "}
+                  <span className="uppercase font-bold">
+                    {" "}
+                    {dish?.dishItemType?.vietnameseName}
+                  </span>
                 </div>
                 <p className="text-red-800 text-4xl  m-4">
                   {formatPrice(price)}
                 </p>
+                <div>
+                  <p className="text-gray-800 text-lg m-4">Ghi chú của bạn</p>
+                  <input
+                    type="text"
+                    placeholder="Nhập nội dung của bạn"
+                    className="w-full p-4 border bg-[#F6F6F7] border-gray-200 rounded-xl"
+                    onChange={(e) => setNote(e.target.value)}
+                    value={note}
+                  />
+                </div>
               </div>
-              <div className="flex md:flex-row flex-col">
+              <div className="flex lg:flex-row flex-col">
                 {dishSizeDetails?.map((size) => (
                   <button
                     key={size.dishSizeDetailId}

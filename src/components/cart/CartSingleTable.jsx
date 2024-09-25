@@ -3,6 +3,7 @@ import {
   decreaseQuantity,
   increaseQuantity,
   removeFromCart,
+  editNote,
 } from "../../redux/features/cartReservationSlice";
 import { formatPrice } from "../../util/Utility";
 import {
@@ -14,14 +15,33 @@ import {
   Space,
   Table,
   Typography,
+  Input,
 } from "antd";
 import { Link, NavLink } from "react-router-dom";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  MinusOutlined,
+  PlusOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
+import { useState } from "react";
 const { Text } = Typography;
 
 const MobileCartView = ({ cartItems, formatPrice, isDisabled }) => {
   const dispatch = useDispatch();
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [noteValue, setNoteValue] = useState("");
+
+  const handleEditNote = (item) => {
+    setEditingNoteId(item.dishSizeDetailId);
+    setNoteValue(item.note || "");
+  };
+
+  const handleSaveNote = (item) => {
+    dispatch(editNote({ dish: item.dish, size: item.size, note: noteValue }));
+    setEditingNoteId(null);
+  };
 
   return (
     <List
@@ -47,6 +67,25 @@ const MobileCartView = ({ cartItems, formatPrice, isDisabled }) => {
                 <Text type="secondary">
                   Đơn giá: {formatPrice(item.size?.price)}
                 </Text>
+                {editingNoteId === item.dishSizeDetailId ? (
+                  <Input
+                    value={noteValue}
+                    onChange={(e) => setNoteValue(e.target.value)}
+                    onBlur={() => handleSaveNote(item)}
+                    onPressEnter={() => handleSaveNote(item)}
+                  />
+                ) : (
+                  <Text type="secondary">
+                    Ghi chú: {item.note}
+                    {!isDisabled && (
+                      <Button
+                        type="link"
+                        icon={<EditOutlined />}
+                        onClick={() => handleEditNote(item)}
+                      />
+                    )}
+                  </Text>
+                )}
               </Space>
             </Space>
 
@@ -111,6 +150,20 @@ const MobileCartView = ({ cartItems, formatPrice, isDisabled }) => {
 
 export const CartSingleTable = ({ cartItems, isDisabled }) => {
   const dispatch = useDispatch();
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [noteValue, setNoteValue] = useState("");
+
+  const handleEditNote = (record) => {
+    setEditingNoteId(record.dishSizeDetailId);
+    setNoteValue(record.note || "");
+  };
+
+  const handleSaveNote = (record) => {
+    dispatch(
+      editNote({ dish: record.dish, size: record.size, note: noteValue })
+    );
+    setEditingNoteId(null);
+  };
 
   const columns = [
     {
@@ -191,6 +244,33 @@ export const CartSingleTable = ({ cartItems, isDisabled }) => {
         <span className="font-semibold text-red-600">
           {formatPrice(record.size.price * record.quantity)}
         </span>
+      ),
+    },
+    {
+      title: "Ghi chú",
+      key: "note",
+      render: (_, record) => (
+        <div className="flex items-center">
+          {editingNoteId === record.dishSizeDetailId ? (
+            <Input
+              value={noteValue}
+              onChange={(e) => setNoteValue(e.target.value)}
+              onBlur={() => handleSaveNote(record)}
+              onPressEnter={() => handleSaveNote(record)}
+            />
+          ) : (
+            <span>
+              {record.note ? record.note : "Không có"}
+              {!isDisabled && (
+                <Button
+                  type="link"
+                  icon={<EditOutlined />}
+                  onClick={() => handleEditNote(record)}
+                />
+              )}
+            </span>
+          )}
+        </div>
       ),
     },
     !isDisabled && {

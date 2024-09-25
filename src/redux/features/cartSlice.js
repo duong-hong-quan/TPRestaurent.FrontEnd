@@ -74,6 +74,18 @@ const cartSlice = createSlice({
       state.items = [];
       state.total = 0;
     },
+    editComboNote: (state, action) => {
+      const { comboId, selectedDishes, note } = action.payload;
+      const combo = state.items.find(
+        (item) =>
+          item.comboId === comboId &&
+          JSON.stringify(item.selectedDishes) === JSON.stringify(selectedDishes)
+      );
+
+      if (combo) {
+        combo.note = note;
+      }
+    },
   },
 });
 
@@ -92,5 +104,6 @@ export const {
   clearCartReservation,
   increaseComboQuantity,
   decreaseComboQuantity,
+  editComboNote,
 } = cartSlice.actions;
 export default cartSlice.reducer;

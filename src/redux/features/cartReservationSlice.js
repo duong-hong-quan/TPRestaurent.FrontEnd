@@ -6,7 +6,7 @@ const cartReservationSlice = createSlice({
   initialState: [],
   reducers: {
     addToCart: (state, action) => {
-      const { dish, size } = action.payload;
+      const { dish, size, note } = action.payload;
       const existingItem = state.find(
         (item) =>
           item.dish.dishId === dish.dishId &&
@@ -15,7 +15,7 @@ const cartReservationSlice = createSlice({
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
-        state.push({ dish, size, quantity: 1 });
+        state.push({ dish, size, quantity: 1, note });
       }
     },
     removeFromCart: (state, action) => {
@@ -57,6 +57,17 @@ const cartReservationSlice = createSlice({
     clearCart: () => {
       return [];
     },
+    editNote: (state, action) => {
+      const { dish, size, note } = action.payload;
+      const item = state.find(
+        (item) =>
+          item.dish.dishId === dish.dishId &&
+          item.size.dishSizeDetailId === size.dishSizeDetailId
+      );
+      if (item) {
+        item.note = note;
+      }
+    },
   },
 });
 
@@ -74,6 +85,7 @@ export const {
   increaseQuantity,
   decreaseQuantity,
   clearCart,
+  editNote,
 } = cartReservationSlice.actions;
 
 export default cartReservationSlice.reducer;

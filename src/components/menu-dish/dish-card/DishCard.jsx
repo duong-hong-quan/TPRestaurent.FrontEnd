@@ -30,12 +30,16 @@ export const DishCard = ({
           >
             {dish?.dish.name}
           </h3>
-          <div className="flex justify-center items-center mb-2">
-            <StarFilled className="text-yellow-400 mr-1" />
-            <span className="text-gray-700">
-              {dish?.dish?.averageRating} ({dish?.dish?.numberOfRating})
-            </span>
-          </div>
+
+          {dish?.dish?.averageRating > 0 && (
+            <div className="flex justify-center items-center mb-2">
+              <StarFilled className="text-yellow-400 mr-1" />
+              <span className="text-gray-700">
+                {dish?.dish?.averageRating} ({dish?.dish?.numberOfRating})
+              </span>
+            </div>
+          )}
+
           <CardFooter className="pt-0 pb-4">
             <div className="flex justify-center space-x-2 mb-3">
               {dish?.dishSizeDetails?.map((size) => (

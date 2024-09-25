@@ -171,7 +171,7 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
       dishSizeDetailId: item.size.dishSizeDetailId, // Using dishId for this example
       combo: null,
       quantity: item.quantity,
-      note: `${item.dish.name} - ${item.size}`, // Combine name and size for note
+      note: item.note, // Combine name and size for note
     });
   });
   // Process cart combos data
@@ -188,6 +188,7 @@ function mergeCartData(cartReservation, cartCombos, options = {}) {
         dishComboIds,
       },
       quantity: comboOrigin.quantity,
+      note: comboOrigin.note,
     });
   });
 
