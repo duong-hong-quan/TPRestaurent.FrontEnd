@@ -18,6 +18,7 @@ import Chart from "chart.js/auto";
 Chart.register(...registerables);
 import moment from "moment-timezone";
 import Routers from "./routes/Routers";
+import ChatButton from "./components/chat/ChatButton";
 moment.tz.setDefault("Asia/Ho_Chi_Minh");
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
                   pauseOnHover
                   theme="light"
                 />
+                <ChatButton />
                 <ToastContainer />
               </AuthProvider>
             </BrowserRouter>
