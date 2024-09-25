@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import useCallApi from "../../api/useCallApi";
 import { formatDateTime, formatPrice, showError } from "../../util/Utility";
 import LoadingOverlay from "../loading/LoadingOverlay";
+import ReservationDetail from "../reservation/reservation-detail/ReservationDetail";
+import { OrderApi } from "../../api/endpoint";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const OrderHistoryItem = ({ order }) => {
   const { callApi, error, loading } = useCallApi();
   const [orderDetail, setOrderDetail] = useState({});
-
+  const [showDetails, setShowDetails] = useState(false);
+  const [reservationData, setReservationData] = useState({});
   const fetchData = async () => {
     const res = await callApi(`order/get-order-detail/${order.orderId}`, "GET");
     if (res.isSuccess) {
@@ -18,8 +22,23 @@ const OrderHistoryItem = ({ order }) => {
   useEffect(() => {
     fetchData();
   }, []);
+  const handleChange = async () => {
+    const response = await callApi(
+      `${OrderApi.GET_DETAIL}/${order.orderId}`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+      setReservationData(response?.result);
+      setCurrentReservationId(id);
+    }
+  };
+  useEffect(() => {
+    if (showDetails) {
+      handleChange(order.orderId);
+    }
+  }, [showDetails]);
   const Spinner = () => (
-    <div className="flex justify-start items-start">
+    <div className="flex justify-center items-start">
       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-900"></div>
     </div>
   );
@@ -81,10 +100,17 @@ const OrderHistoryItem = ({ order }) => {
                 {formatPrice(orderDetail.totalAmount)}
               </span>
             </p>
-            <button className="bg-red-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded">
+            <button
+              onClick={() => setShowDetails(!showDetails)}
+              className="flex items-center mx-2 text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              {showDetails ? <FaAngleUp /> : <FaAngleDown />}
               Xem chi tiết
             </button>
           </div>
+          {!loading && showDetails && (
+            <ReservationDetail reservationData={reservationData} />
+          )}
         </>
       )}
     </div>
