@@ -9,7 +9,6 @@ import UserLayout from "../layouts/common/UserLayout";
 import PersonalInformation from "../pages/common/personal-information/PersonalInformation";
 import PersonalOrder from "../pages/common/personal-information/PersonalOrder";
 import PersonalTransaction from "../pages/common/personal-information/PersonalTransaction";
-import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
 import ManagerLayout from "../layouts/common/ManagerLayout";
 import CommonLayout from "../layouts/common/CommonLayout";
 import { AdminOrderHistoryPage } from "../pages/admin/AdminOrderHistoryPage";
@@ -108,10 +107,7 @@ function Routers() {
           path: "order",
           element: <PersonalOrder />,
         },
-        {
-          path: "reservation-history",
-          element: <PersonalReservation />,
-        },
+
         {
           path: "transaction-history",
           element: <PersonalTransaction />,

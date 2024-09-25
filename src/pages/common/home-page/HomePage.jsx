@@ -70,8 +70,9 @@ export const HomePage = () => {
 
       {!loading && (
         <>
+          <SliderHome />
+
           <div className="container">
-            <SliderHome />
             <TopVoucher />
             <IntroHome />
             <BestSeller />

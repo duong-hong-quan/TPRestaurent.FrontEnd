@@ -3,11 +3,7 @@ import { NavLink } from "react-router-dom";
 const sidebarItems = [
   { icon: "fa-user", text: "Thông tin của tôi", href: "/user/info" },
   { icon: "fa-shopping-bag", text: "Đơn hàng của tôi", href: "/user/order" },
-  {
-    icon: "fa-calendar-alt",
-    text: "Lịch sử đặt bàn",
-    href: "/user/reservation-history",
-  },
+
   { icon: "fa-wallet", text: "Ví xu", href: "transaction-history" },
 ];
 
