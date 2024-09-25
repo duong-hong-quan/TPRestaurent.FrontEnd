@@ -1,30 +1,18 @@
 import { useEffect, useState } from "react";
+import { FaCalendar, FaAngleDown, FaAngleUp } from "react-icons/fa";
 import {
-  FaCalendar,
-  FaIdCard,
-  FaClock,
-  FaUsers,
-  FaAngleDown,
-  FaAngleUp,
-  FaInfoCircle,
-} from "react-icons/fa";
-import {
-  calculateTimeDifference,
-  formatDate,
   formatDateTime,
   getKeyByValue,
   showError,
 } from "../../../util/Utility";
 import ReservationDetail from "../reservation-detail/ReservationDetail";
 import { ReservationStatus } from "../../../util/GlobalType";
-import { createPayment } from "../../../api/transactionApi";
 import useCallApi from "../../../api/useCallApi";
 import { OrderApi, TransactionApi } from "../../../api/endpoint";
 import moment from "moment/moment";
 import LoadingOverlay from "../../loading/LoadingOverlay";
 import { Button, message, Modal } from "antd";
 import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
-import { toast } from "react-toastify";
 
 const ReservationRequestItem = ({ reservation }) => {
   const [showDetails, setShowDetails] = useState(false);

@@ -23,7 +23,6 @@ import {
 } from "../../../api/acccountApi";
 import { formatPrice, isEmptyObject, showError } from "../../../util/Utility";
 import ReservationList from "../../../components/reservation/reservation-list/ReservationList";
-import InfoModal from "../../../components/user/InfoModal";
 import { Search } from "lucide-react";
 import useCallApi from "../../../api/useCallApi";
 import { AccountApi, OrderApi } from "../../../api/endpoint";
@@ -253,14 +252,6 @@ export function OrderHistory() {
           </Tabs>
         </Card>
       )}
-
-      <InfoModal
-        initialData={customer}
-        isOpen={isModalOpen}
-        isUpdate={isUpdate}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmit}
-      />
     </div>
   );
 }
