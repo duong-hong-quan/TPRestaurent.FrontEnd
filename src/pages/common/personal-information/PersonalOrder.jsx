@@ -1,7 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OrderHistoryList from "../../../components/order-history/OrderHistoryList";
+import useCallApi from "../../../api/useCallApi";
+import { useSelector } from "react-redux";
 
 const PersonalOrder = () => {
+  const { callApi, error, loading } = useCallApi();
+  const user = useSelector((state) => state.user.user || {});
+  const [orders, setOrders] = useState([]);
+  const fetchData = async () => {
+    const res = await callApi(
+      `order/get-all-order-by-phone-number/1/10?phoneNumber=${user.phoneNumber}`,
+      "GET"
+    );
+    setOrders(res.result?.items || []);
+  };
+  useEffect(() => {
+    fetchData();
+  }, [user]);
   const tabs = [
     { id: "all", label: "Tất cả" },
     { id: "pending", label: "Chờ xác nhận" },
@@ -14,7 +29,7 @@ const PersonalOrder = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "all":
-        return <OrderHistoryList />;
+        return <OrderHistoryList orders={orders} />;
       case "pending":
         return <p>Nội dung cài đặt tài khoản ở đây.</p>;
       case "delivering":
