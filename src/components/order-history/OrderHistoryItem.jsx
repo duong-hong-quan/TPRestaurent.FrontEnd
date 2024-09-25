@@ -18,6 +18,9 @@ const OrderHistoryItem = ({ order }) => {
   useEffect(() => {
     fetchData();
   }, []);
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-4">
       <div className="flex flex-col md:flex-row justify-between items-center mb-4">
@@ -30,7 +33,7 @@ const OrderHistoryItem = ({ order }) => {
             ID: {order.orderId.substring(0, 8)}
           </p>
         </div>
-        <p className="text-green-600 font-semibold">
+        <p className="text-green-600 font-semibold uppercase">
           {order.status?.vietnameseName}
         </p>
       </div>

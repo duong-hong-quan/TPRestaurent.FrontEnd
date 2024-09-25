@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import OrderHistoryList from "../../../components/order-history/OrderHistoryList";
 import useCallApi from "../../../api/useCallApi";
 import { useSelector } from "react-redux";
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 
 const PersonalOrder = () => {
   const { callApi, error, loading } = useCallApi();
@@ -40,7 +41,9 @@ const PersonalOrder = () => {
         return null;
     }
   };
-
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <div className="w-full max-w-3xl mx-auto">
       <h1 className="uppercase text-red-700 font-bold text-2xl mb-6">
