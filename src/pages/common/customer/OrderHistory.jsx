@@ -17,13 +17,10 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getAllReservationByPhoneNumber } from "../../../api/reservationApi";
-import { getAllOrderByPhoneNumber } from "../../../api/orderApi";
 import {
   getCustomerInfoByPhoneNumber,
   updateCustomerInfo,
 } from "../../../api/acccountApi";
-import UserInfo from "../../../components/user/UserInfo";
 import { formatPrice, isEmptyObject, showError } from "../../../util/Utility";
 import ReservationList from "../../../components/reservation/reservation-list/ReservationList";
 import InfoModal from "../../../components/user/InfoModal";

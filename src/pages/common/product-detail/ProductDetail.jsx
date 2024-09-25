@@ -25,8 +25,8 @@ import {
 import { message } from "antd";
 import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
+import { ThermometerSun } from "lucide-react";
 
-// Custom hooks
 const useDishData = (id) => {
   const [dish, setDish] = useState({});
   const [dishSizeDetails, setDishSizeDetails] = useState([]);
@@ -61,7 +61,6 @@ const useDishData = (id) => {
   return { dish, dishSizeDetails, images, reviews, isLoading };
 };
 
-// Extracted components
 const ImageGallery = React.memo(
   ({ images, currentImageIndex, setCurrentImageIndex }) => {
     const handlePrevImage = () => {
@@ -78,37 +77,39 @@ const ImageGallery = React.memo(
 
     return (
       <div className="space-y-4">
-        <img
-          src={images[currentImageIndex]}
-          alt={`Product Image ${currentImageIndex + 1}`}
-          className="w-full h-auto rounded-lg shadow-lg object-cover"
-        />
-        <div className="flex items-center justify-between">
+        <div className="relative">
+          <img
+            src={images[currentImageIndex]}
+            alt={`Product Image ${currentImageIndex + 1}`}
+            className="w-full h-96 object-cover rounded-lg shadow-lg"
+          />
           <button
             onClick={handlePrevImage}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-l"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition duration-300"
           >
-            <LeftOutlined />
+            <LeftOutlined className="text-2xl text-gray-800" />
           </button>
-          <div className="flex space-x-2 overflow-x-auto">
-            {images?.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`Thumbnail ${index + 1}`}
-                className={`w-16 h-16 object-cover rounded cursor-pointer ${
-                  index === currentImageIndex ? "border-2 border-red-500" : ""
-                }`}
-                onClick={() => setCurrentImageIndex(index)}
-              />
-            ))}
-          </div>
           <button
             onClick={handleNextImage}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-r"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition duration-300"
           >
-            <RightOutlined />
+            <RightOutlined className="text-2xl text-gray-800" />
           </button>
+        </div>
+        <div className="flex space-x-2 overflow-x-auto">
+          {images?.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className={`w-20 h-20 object-cover rounded-md cursor-pointer transition duration-300 ${
+                index === currentImageIndex
+                  ? "border-2 border-red-500"
+                  : "opacity-60 hover:opacity-100"
+              }`}
+              onClick={() => setCurrentImageIndex(index)}
+            />
+          ))}
         </div>
       </div>
     );
@@ -125,11 +126,11 @@ const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedStarFilter, setSelectedStarFilter] = useState(null);
   useEffect(() => {
-    if (dishSizeDetails?.length > 0) {
+    if (dishSizeDetails && dishSizeDetails.length > 0 && !selectedSize) {
+      setSelectedSize(dishSizeDetails[0]);
       setPrice(dishSizeDetails[0].price);
-      setSelectedSize(dishSizeDetails[0].dishSizeDetailId);
     }
-  }, [dishSizeDetails]);
+  }, [dishSizeDetails, selectedSize]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -312,32 +313,25 @@ const ProductDetail = () => {
               setCurrentImageIndex={setCurrentImageIndex}
             />
             <div className="space-y-8">
-              <h1 className="text-2xl font-bold text-gray-800">{dish?.name}</h1>
+              <div className="flex">
+                <h1 className="text-2xl font-bold text-gray-800 uppercase inline-block">
+                  {dish?.name}
+                </h1>
+              </div>
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <StarFilled key={star} className="text-yellow-400 text-md" />
+                  <StarFilled key={star} className="text-[#FF9F43] text-xl" />
                 ))}
                 <span className="ml-2 text-gray-600 text-lg">
                   {dish?.dish?.averageRating}
                 </span>
               </div>
-              <div className="border-b-2 pb-6">
-                <div className="inline-flex items-center px-4 py-2 rounded-full bg-green-100 text-green-800 text-sm">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 mr-2"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+              <div className="border-t-2  my-2 pt-4">
+                <div className="inline-flex items-center px-4 py-2 rounded-full bg-white  border border-red-800 text-sm">
+                  <ThermometerSun className="mx-2 text-red-700" />{" "}
                   {dish?.dishItemType?.name}
                 </div>
-                <p className="text-red-700 text-3xl font-bold mt-4">
+                <p className="text-red-800 text-4xl  m-4">
                   {formatPrice(price)}
                 </p>
               </div>
@@ -360,8 +354,9 @@ const ProductDetail = () => {
                   </button>
                 ))}
               </div>
+              <p className="text-lg  font-semibold"> Số lượng món:</p>
               <div className="flex items-center space-x-6">
-                <div className="flex items-center border-2  border-[#cd5a65] rounded-lg">
+                <div className="flex items-center border-2  border-[#cd5a65] rounded-3xl">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="px-4 py-2transition duration-300"
@@ -383,7 +378,7 @@ const ProductDetail = () => {
                     handleAddToCart(dish, selectedSize);
                     message.success("Đã thêm vào giỏ hàng");
                   }}
-                  className="flex-1 text-[#E45834] py-3 px-6 rounded-lg border  border-[#cd5a65] transition duration-300 flex items-center justify-center text-lg font-semibold"
+                  className="flex-1  text-[#E45834] py-3 px-6 rounded-3xl border  border-[#cd5a65] transition duration-300 flex items-center justify-center text-lg font-bold"
                 >
                   <ShoppingCartOutlined className="mr-2 text-2xl" />
                   Thêm vào giỏ hàng
@@ -426,4 +421,4 @@ const ProductDetail = () => {
   );
 };
 
-export default React.memo(ProductDetail);
+export default ProductDetail;
