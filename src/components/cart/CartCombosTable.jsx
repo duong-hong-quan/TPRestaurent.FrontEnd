@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   List,
@@ -8,12 +8,19 @@ import {
   Typography,
   Space,
   Divider,
+  Input,
 } from "antd";
-import { MinusOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import { NavLink } from "react-router-dom";
+import {
+  MinusOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
+import { NavLink, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { editComboNote } from "../../redux/features/cartSlice";
 
 const { Text } = Typography;
-import { Link } from "react-router-dom";
 
 const MobileCartCombosView = ({
   cartCombos,
@@ -23,6 +30,26 @@ const MobileCartCombosView = ({
   formatPrice,
   isDisabled,
 }) => {
+  const dispatch = useDispatch();
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [noteValue, setNoteValue] = useState("");
+
+  const handleEditNote = (item) => {
+    setEditingNoteId(item.comboId);
+    setNoteValue(item.note || "");
+  };
+
+  const handleSaveNote = (item) => {
+    dispatch(
+      editComboNote({
+        comboId: item.comboId,
+        selectedDishes: item.selectedDishes,
+        note: noteValue,
+      })
+    );
+    setEditingNoteId(null);
+  };
+
   return (
     <List
       dataSource={cartCombos.items}
@@ -54,7 +81,25 @@ const MobileCartCombosView = ({
               ))}
 
             <Divider className="my-2" />
-
+            {editingNoteId === item.comboId ? (
+              <Input
+                value={noteValue}
+                onChange={(e) => setNoteValue(e.target.value)}
+                onBlur={() => handleSaveNote(item)}
+                onPressEnter={() => handleSaveNote(item)}
+              />
+            ) : (
+              <Text strong className="text-sm">
+                Ghi chú: {item.note}
+                {!isDisabled && (
+                  <Button
+                    type="link"
+                    icon={<EditOutlined />}
+                    onClick={() => handleEditNote(item)}
+                  />
+                )}
+              </Text>
+            )}
             <Space className="w-full justify-between">
               <Space>
                 <Text>Số lượng:</Text>
@@ -116,6 +161,26 @@ const CartCombosTable = ({
   formatPrice,
   isDisabled,
 }) => {
+  const dispatch = useDispatch();
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [noteValue, setNoteValue] = useState("");
+
+  const handleEditNote = (record) => {
+    setEditingNoteId(record.comboId);
+    setNoteValue(record.note || "");
+  };
+
+  const handleSaveNote = (record) => {
+    dispatch(
+      editComboNote({
+        comboId: record.comboId,
+        selectedDishes: record.selectedDishes,
+        note: noteValue,
+      })
+    );
+    setEditingNoteId(null);
+  };
+
   const columns = [
     {
       title: "Combo",
@@ -189,6 +254,33 @@ const CartCombosTable = ({
         <Text strong className="text-red-700 font-bold">
           {formatPrice(record.combo.price * record.quantity)}
         </Text>
+      ),
+    },
+    {
+      title: "Ghi chú",
+      key: "note",
+      render: (_, record) => (
+        <div className="flex items-center">
+          {editingNoteId === record.comboId ? (
+            <Input
+              value={noteValue}
+              onChange={(e) => setNoteValue(e.target.value)}
+              onBlur={() => handleSaveNote(record)}
+              onPressEnter={() => handleSaveNote(record)}
+            />
+          ) : (
+            <span>
+              {record.note ? record.note : "Không có"}
+              {!isDisabled && (
+                <Button
+                  type="link"
+                  icon={<EditOutlined />}
+                  onClick={() => handleEditNote(record)}
+                />
+              )}
+            </span>
+          )}
+        </div>
       ),
     },
     !isDisabled && {

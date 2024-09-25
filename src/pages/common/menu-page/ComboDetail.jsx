@@ -13,6 +13,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
 
   const [selectedDishes, setSelectedDishes] = useState({});
   const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [note, setNote] = useState("");
 
   const handleImageClick = (index) => {
     setMainImageIndex(index);
@@ -63,7 +64,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
 
     if (isValid) {
       const data = flattenComboData();
-      dispatch(addCombo({ combo, selectedDishes: data }));
+      dispatch(addCombo({ combo, selectedDishes: data, note: note }));
       message.success("Đã thêm combo vào giỏ hàng");
     } else {
       message.error(errorMessage.join(`\n`), 5); // Display for 5 seconds
@@ -120,6 +121,16 @@ const ComboDetail = ({ comboData, handleBack }) => {
                 {combo?.price.toLocaleString()} VND
               </span>
             </p>
+            <div>
+              <p className="text-gray-800 text-lg mb-4">Ghi chú của bạn</p>
+              <input
+                type="text"
+                placeholder="Nhập nội dung của bạn"
+                className="w-full p-4 border bg-[#F6F6F7] border-gray-200 rounded-xl"
+                onChange={(e) => setNote(e.target.value)}
+                value={note}
+              />
+            </div>
             <Typography variant="h5" color="blue-gray" className="mb-4 mt-6">
               Chọn món ăn của bạn
             </Typography>
@@ -168,7 +179,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
               </div>
             ))}
             <Button
-              className="w-full mt-4 bg-red-800"
+              className="w-full mt-4 border border-red-500 bg-white text-red-600"
               onClick={handleAddToCart}
             >
               Thêm vào giỏ hàng
