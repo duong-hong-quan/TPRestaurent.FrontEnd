@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Input, Modal, Switch, Typography } from "antd";
+import { Button, Input, message, Modal, Switch, Typography } from "antd";
 import {
   UserOutlined,
   PhoneOutlined,
@@ -18,15 +18,16 @@ import {
   increaseComboQuantity,
   removeCombo,
 } from "../../redux/features/cartSlice";
-import { formatPrice, mergeCartData } from "../../util/Utility";
+import { formatPrice, mergeCartData, showError } from "../../util/Utility";
 
 import Card_Logo from "../../assets/imgs/payment-icon/Cash_Logo.png";
 import MoMo_Logo from "../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../assets/imgs/payment-icon/VNpay_Logo.png";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 import { clearCart } from "../../redux/features/cartReservationSlice";
+import useCallApi from "../../api/useCallApi";
 const { Title, Text } = Typography;
-
+import { OrderApi } from "../../api/endpoint";
 const InfoItem = ({ icon, label, value }) => (
   <div className="flex items-center mb-2">
     {icon}
@@ -57,7 +58,7 @@ const CartSummary = ({ handleClose }) => {
   const dispatch = useDispatch();
   const [selectedMethod, setSelectedMethod] = useState(2);
   const [open, setOpen] = useState(false);
-
+  const { callApi, error, loading } = useCallApi();
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -101,7 +102,11 @@ const CartSummary = ({ handleClose }) => {
       orderDetailsDtos: reservationDishDtos,
 
       deliveryOrder: {
+        couponIds: [],
+        loyalPointToUse: user.loyaltyPoint || 0,
         paymentMethod: selectedMethod,
+        address: user.addresses.filter((address) => address.isCurrentUsed)[0]
+          .customerInfoAddressName,
       },
     };
     const response = await callApi(
