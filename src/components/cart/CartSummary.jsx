@@ -147,12 +147,15 @@ const CartSummary = ({ handleClose }) => {
           <InfoItem
             icon={<HomeOutlined />}
             label="Địa chỉ"
-            value="123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh"
+            value={
+              user.addresses.filter((address) => address.isCurrentUsed)[[0]]
+                .customerInfoAddressName
+            }
           />
           <InfoItem
             icon={<FileTextOutlined />}
             label="Ghi chú"
-            value="Không giao vào buổi sáng"
+            value={<Input />}
           />
         </div>
 

@@ -1,6 +1,6 @@
-import { Button, Typography } from "antd";
+import { Button, message, Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { formatPrice } from "../../../util/Utility";
+import { formatPrice, isEmptyObject } from "../../../util/Utility";
 import { getTotal } from "../../../redux/features/cartReservationSlice";
 import {
   removeCombo,
@@ -15,6 +15,7 @@ import CartSummary from "../../../components/cart/CartSummary.jsx";
 
 const CartPage = () => {
   const cartReservation = useSelector((state) => state.cartReservation);
+  const user = useSelector((state) => state.user.user || {});
   const [isSummary, setIsSummary] = useState(false);
   const cart = useSelector((state) => state.cart);
 
@@ -32,6 +33,10 @@ const CartPage = () => {
     dispatch(removeCombo({ comboId, selectedDishes }));
   };
   const handleSummary = () => {
+    if (isEmptyObject(user)) {
+      message.error("Vui lòng đăng nhập để tiếp tục");
+      return;
+    }
     setIsSummary(true);
   };
   if (isSummary) {
@@ -66,7 +71,8 @@ const CartPage = () => {
               variant="h2"
               className="font-bold text-red-700 text-center"
             >
-              {formatPrice(cartTotal + cart.total)}
+              {!cart.total && formatPrice(cartTotal)}
+              {cart.total && cartTotal && formatPrice(cart.total + cartTotal)}
             </Typography>
           </div>
           <div className="flex justify-center">
