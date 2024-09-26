@@ -45,7 +45,7 @@ export const changeOrderStatus = async (orderId, isSuccessful) => {
 export const getAllOrder = async (pageNumber, pageSize, status) => {
   try {
     const response = await api.get(
-      `/order/get-all-order-by-status/${pageNumber}/${pageSize}?status=${status}`
+      `/order/get-all-order-by-status/${pageNumber}/${pageSize}?status=${status}&orderType=3`
     );
     return response.data;
   } catch (error) {

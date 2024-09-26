@@ -29,7 +29,7 @@ const cartReservationSlice = createSlice({
       );
     },
     increaseQuantity: (state, action) => {
-      const { dish, size, quantity } = action.payload;
+      const { dish, size, quantity, note } = action.payload;
       const item = state.find(
         (item) =>
           item.dish.dishId === dish.dishId &&
@@ -41,6 +41,8 @@ const cartReservationSlice = createSlice({
         } else {
           item.quantity += 1;
         }
+      } else {
+        state.push({ dish, size, quantity: quantity, note: note });
       }
     },
     decreaseQuantity: (state, action) => {

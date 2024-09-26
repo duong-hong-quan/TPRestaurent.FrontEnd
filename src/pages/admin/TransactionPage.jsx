@@ -10,7 +10,8 @@ import {
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import TransactionTable from "./transaction/TransactionTable";
-import { getAllTransactions } from "../../api/transactionApi";
+import useCallApi from "../../api/useCallApi";
+import LoadingOverlay from "../../components/loading/LoadingOverlay";
 
 const TABS = [
   {
@@ -38,9 +39,10 @@ const TABS = [
 export function TransactionPage() {
   const [activeTab, setActiveTab] = useState("");
   const [transactionData, setTransactionData] = useState([]);
+  const { callApi, error, loading } = useCallApi();
 
   const fetchData = async () => {
-    const response = await getAllTransactions(1, 10);
+    const response = await callApi(`/transaction/get-all-payment/1/100`, "GET");
     if (response?.isSuccess) {
       setTransactionData(response.result?.items);
     }
@@ -48,6 +50,7 @@ export function TransactionPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -96,7 +99,7 @@ export function TransactionPage() {
         </div>
       </CardHeader>
       <CardBody className="overflow-scroll px-0">
-        <TransactionTable data={transactionData} />
+        <TransactionTable data={transactionData} loading={loading} />
       </CardBody>
     </Card>
   );

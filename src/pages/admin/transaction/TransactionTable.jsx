@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Table, Tag, Space, Input, Button, DatePicker } from "antd";
-import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
-
+import { Table, Tag, Space, DatePicker, Button } from "antd";
+import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
+import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
+import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
+import { CreditCard, DollarSign, ShoppingCart } from "lucide-react";
 const { RangePicker } = DatePicker;
 
 const statusMap = {
@@ -11,45 +12,102 @@ const statusMap = {
   3: { text: "Đã áp dụng", color: "purple" },
 };
 
-const TransactionTable = ({ data }) => {
+const transactionTypeMap = {
+  0: { text: "Đặt cọc", color: "yellow", icon: <DollarSign /> },
+  1: { text: "Đặt hàng", color: "red", icon: <ShoppingCart /> },
+  2: { text: "Nạp số dư", color: "green", icon: <CreditCard /> },
+};
+
+const getMethodIcon = (method) => {
+  switch (method) {
+    case 1:
+      return <img src={Cash_Logo} alt="" className="w-12 h-12" />;
+    case 2:
+      return <img src={VNpay_Logo} alt="" className="w-12 h-12" />;
+    case 3:
+      return <img src={MoMo_Logo} alt="" className="w-12 h-12" />;
+
+    default:
+      return null;
+  }
+};
+const TransactionTable = ({ data, loading }) => {
   const columns = [
     {
       title: "Mã giao dịch",
       dataIndex: "id",
       key: "id",
+      align: "center",
+
       render: (text) => <a>{text.substring(0, 8)}</a>,
-    },
-    {
-      title: "Số tiền",
-      dataIndex: "amount",
-      key: "amount",
-      render: (amount) => `${amount.toLocaleString()} VND`,
     },
     {
       title: "Ngày",
       dataIndex: "date",
       key: "date",
+      align: "center",
+
       render: (date) => new Date(date).toLocaleString("vi-VN"),
     },
     {
-      title: "Phương thức thanh toán",
-      dataIndex: ["paymentMethod", "vietnameseName"],
-      key: "paymentMethod",
+      title: "Số tiền",
+      dataIndex: "amount",
+      key: "amount",
+      align: "center",
+
+      render: (amount) => `${amount.toLocaleString()} VND`,
     },
+
     {
       title: "Trạng thái",
-      key: "status",
-      dataIndex: ["transationStatus", "id"],
-      render: (statusId) => (
-        <Tag color={statusMap[statusId].color}>{statusMap[statusId].text}</Tag>
+      key: "transationStatusId",
+      dataIndex: ["transationStatusId"],
+      align: "center",
+
+      render: (_, record) =>
+        statusMap[record.transationStatusId] ? (
+          <Tag color={statusMap[record.transationStatusId].color}>
+            {statusMap[record.transationStatusId].text}
+          </Tag>
+        ) : null,
+    },
+
+    {
+      title: "Phương thức thanh toán",
+      dataIndex: ["paymentMethodId"],
+      key: "paymentMethod",
+
+      render: (paymentMethod) => (
+        <div className="flex justify-center">
+          {getMethodIcon(paymentMethod)}
+        </div>
       ),
+      align: "center",
+    },
+    {
+      title: "Loại giao dịch",
+      key: "transactionType",
+      dataIndex: ["transactionTypeId"],
+      align: "center",
+      render: (transactionTypeId) =>
+        transactionTypeMap[transactionTypeId] ? (
+          <Tag
+            color={transactionTypeMap[transactionTypeId].color}
+            className="flex items-center  justify-center border-none "
+          >
+            {transactionTypeMap[transactionTypeId].icon}
+            {transactionTypeMap[transactionTypeId].text}
+          </Tag>
+        ) : null,
     },
     {
       title: "Thao tác",
       key: "action",
+      align: "center",
+
       render: (_, record) => (
         <Space size="middle">
-          <a>Xem chi tiết</a>
+          <Button>Xem chi tiết</Button>
         </Space>
       ),
     },
@@ -57,7 +115,12 @@ const TransactionTable = ({ data }) => {
 
   return (
     <div>
-      <Table columns={columns} dataSource={data} rowKey="id" />
+      <Table
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        rowKey="id"
+      />
     </div>
   );
 };
