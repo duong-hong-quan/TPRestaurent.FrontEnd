@@ -12,11 +12,12 @@ import {
   Chip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { message, Table } from "antd";
-import { getAllOrder, getOrderDetailById } from "../../api/orderApi";
+import { message, Select, Table } from "antd";
+import { getOrderDetailById } from "../../api/orderApi";
 import { formatDateTime } from "../../util/Utility";
 import OrderDetailModal from "./order-detail/OrderDetailModal";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
+import useCallApi from "../../api/useCallApi";
 
 const TABS = [
   {
@@ -45,9 +46,10 @@ export function AdminOrderHistoryPage() {
   const [activeTab, setActiveTab] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
+  const [selectedOrderType, setSelectedOrderType] = useState(1);
+  const { callApi, error, loading } = useCallApi();
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -59,11 +61,9 @@ export function AdminOrderHistoryPage() {
       title: "Khách hàng",
       dataIndex: "customerInfo",
       key: "customerInfo",
-      render: (customerInfo) => (
+      render: (_, record) => (
         <Typography>
-          {customerInfo
-            ? `${customerInfo.name} - 0${customerInfo.phoneNumber}`
-            : "N/A"}
+          {`${record.account?.firstName} ${record.account?.lastName}`}
         </Typography>
       ),
     },
@@ -71,8 +71,8 @@ export function AdminOrderHistoryPage() {
       title: "Tổng tiền",
       dataIndex: "totalAmount",
       key: "totalAmount",
-      render: (totalAmount) => (
-        <Typography>{totalAmount.toLocaleString()} VND</Typography>
+      render: (_, record) => (
+        <Typography>{record.totalAmount.toLocaleString()} VND</Typography>
       ),
     },
     {
@@ -99,16 +99,10 @@ export function AdminOrderHistoryPage() {
       title: "Ngày đặt hàng",
       dataIndex: "orderDate",
       key: "orderDate",
-      render: (orderDate) => (
-        <Typography>{formatDateTime(orderDate)}</Typography>
-      ),
-    },
-    {
-      title: "Ngày đặt hàng",
-      dataIndex: "orderDate",
-      key: "orderDate",
-      render: (orderDate) => (
-        <Typography>{formatDateTime(orderDate)}</Typography>
+      render: (_, record) => (
+        <Typography>
+          {formatDateTime(record.reservationDate || record.mealTime)}
+        </Typography>
       ),
     },
     {
@@ -131,22 +125,18 @@ export function AdminOrderHistoryPage() {
   ];
 
   const fetchOrder = async () => {
-    setIsLoading(true);
-    try {
-      const response = await getAllOrder(1, 10, activeTab);
-      if (response?.isSuccess) {
-        setData(response?.result?.items);
-      }
-    } catch (error) {
-      message.error(error);
-    } finally {
-      setIsLoading(false);
+    const response = await callApi(
+      `order/get-all-order-by-status/1/10?status=${activeTab}&orderType=${selectedOrderType}`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+      setData(response?.result?.items);
     }
   };
 
   useEffect(() => {
     fetchOrder();
-  }, [activeTab]);
+  }, [activeTab, selectedOrderType]);
 
   const filteredData = data.filter((item) => {
     const customerInfo = item.customerInfo || {};
@@ -171,6 +161,15 @@ export function AdminOrderHistoryPage() {
     }
   };
 
+  const OrderType = [
+    { label: "Tất cả", value: 0 },
+    { label: "Đặt chỗ trước", value: 1 },
+    { label: "Đặt hàng online", value: 2 },
+    { label: "Đặt món tại bàn", value: 3 },
+  ];
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <>
       <Card className="h-full w-full">
@@ -199,6 +198,17 @@ export function AdminOrderHistoryPage() {
           </div>
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="mb-4">
+              <Select
+                defaultValue={selectedOrderType}
+                className="min-w-fit"
+                onChange={(value) => setSelectedOrderType(value)}
+              >
+                {OrderType.map((item) => (
+                  <Select.Option key={item.value} value={item.value}>
+                    {item.label}
+                  </Select.Option>
+                ))}
+              </Select>
               <div className="flex border-b border-gray-200">
                 {TABS.map((tab) => (
                   <button
@@ -226,7 +236,7 @@ export function AdminOrderHistoryPage() {
           </div>
         </CardHeader>
         <CardBody className="overflow-auto h-[550px]">
-          <Table columns={columns} dataSource={filteredData} rowKey="orderId" />
+          <Table columns={columns} dataSource={data} rowKey="orderId" />
         </CardBody>
       </Card>
       <OrderDetailModal
@@ -234,7 +244,6 @@ export function AdminOrderHistoryPage() {
         handleOpen={handleOpen}
         open={open}
       />
-      <LoadingOverlay isLoading={isLoading} />
     </>
   );
 }

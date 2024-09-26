@@ -6,6 +6,7 @@ import UserInfo from "../../components/user/UserInfo";
 import UserSidebar from "../../components/user/UserSidebar";
 import { useSelector } from "react-redux";
 import InfoModal from "../../components/user/InfoModal";
+import ChatButton from "../../components/chat/ChatButton";
 
 const UserLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -33,6 +34,7 @@ const UserLayout = () => {
             <div className={` ${sidebarOpen ? "block" : "hidden"} xl:block`}>
               <UserSidebar />
             </div>
+
             <Outlet />
           </div>
         </div>

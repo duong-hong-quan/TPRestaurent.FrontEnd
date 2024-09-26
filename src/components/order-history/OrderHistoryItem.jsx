@@ -37,14 +37,13 @@ const OrderHistoryItem = ({ order }) => {
       handleChange(order.orderId);
     }
   }, [showDetails]);
-  const Spinner = () => (
-    <div className="flex justify-center items-start">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-900"></div>
-    </div>
-  );
+
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-4">
-      {loading && <Spinner />}
       {!loading && (
         <>
           <div className="flex flex-col md:flex-row justify-between items-center mb-4">

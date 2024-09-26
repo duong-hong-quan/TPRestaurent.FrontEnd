@@ -6,6 +6,7 @@ import { addToCart } from "../../redux/features/cartReservationSlice";
 import { getAllDishTypes } from "../../api/dishApi";
 import useCallApi from "../../api/useCallApi";
 import { DishApi } from "../../api/endpoint";
+import { NavLink } from "react-router-dom";
 
 const MenuDish = ({
   dishes,
@@ -68,9 +69,12 @@ const MenuDish = ({
           KHÁM PHÁ THỰC ĐƠN
         </h1>
         <div className="flex justify-end mb-4">
-          <a className="text-[#F2D2D5] text-md hover:underline" href="#">
+          <NavLink
+            className="text-[#F2D2D5] text-md hover:underline"
+            to={`/search`}
+          >
             Xem tất cả
-          </a>
+          </NavLink>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
           {menuCategoriesWithIcons.map((category, index) => (
