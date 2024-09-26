@@ -207,13 +207,13 @@ export const Navbar = () => {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
                       <NavLink
                         to="/user/"
-                        className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                        className="block px-4 py-2 text-center text-gray-800 hover:bg-gray-200"
                       >
                         Hồ sơ của tôi
                       </NavLink>
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
+                        className="block w-full text-center px-4 py-2 text-gray-800 hover:bg-gray-200"
                       >
                         Đăng xuất
                       </button>
@@ -269,12 +269,12 @@ export const Navbar = () => {
                   >
                     Hồ sơ của tôi
                   </NavLink>
-                  <button
+                  <NavLink
                     onClick={handleLogout}
                     className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
                   >
                     Đăng xuất
-                  </button>
+                  </NavLink>
                 </>
               )}
             </ul>
