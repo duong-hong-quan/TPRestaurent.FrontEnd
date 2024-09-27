@@ -3,21 +3,31 @@ import OrderHistoryList from "../../../components/order-history/OrderHistoryList
 import useCallApi from "../../../api/useCallApi";
 import { useSelector } from "react-redux";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import Pagination from "../../../components/pagination/Pagination";
 
 const PersonalOrder = () => {
   const { callApi, error, loading } = useCallApi();
   const user = useSelector((state) => state.user.user || {});
   const [orders, setOrders] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const totalItems = 10;
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+  };
   const fetchData = async () => {
     const res = await callApi(
-      `order/get-all-order-by-phone-number/1/10?phoneNumber=${user.phoneNumber}`,
+      `order/get-all-order-by-phone-number/${currentPage}/${totalItems}?phoneNumber=${user.phoneNumber}`,
       "GET"
     );
-    setOrders(res.result?.items || []);
+    if (res.isSuccess) {
+      setOrders(res.result.items);
+      setTotalPages(res.result.totalPages);
+    }
   };
   useEffect(() => {
     fetchData();
-  }, [user]);
+  }, [user, currentPage]);
   const tabs = [
     { id: "all", label: "Tất cả" },
     { id: "pending", label: "Chờ xác nhận" },
@@ -30,7 +40,16 @@ const PersonalOrder = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "all":
-        return <OrderHistoryList orders={orders} />;
+        return (
+          <div>
+            <OrderHistoryList orders={orders} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handleCurrentPageChange}
+            />
+          </div>
+        );
       case "pending":
         return <p>Nội dung cài đặt tài khoản ở đây.</p>;
       case "delivering":

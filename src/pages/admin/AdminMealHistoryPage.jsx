@@ -12,27 +12,16 @@ import {
   Chip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { message, Select, Table } from "antd";
-import { getOrderDetailById } from "../../api/orderApi";
+import { Table } from "antd";
 import { formatDateTime } from "../../util/Utility";
-import OrderDetailModal from "./order-detail/OrderDetailModal";
-import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import useCallApi from "../../api/useCallApi";
 import Pagination from "../../components/pagination/Pagination";
 import TabMananger from "../../components/tab/TabManager";
 
 const TABS = [
   {
-    label: "Đang chờ thanh toán",
-    value: "4",
-  },
-  {
-    label: "Đang xử lý",
-    value: "5",
-  },
-  {
-    label: "Đang giao hàng",
-    value: "6",
+    label: "Đang dùng bữa",
+    value: "3",
   },
   {
     label: "Hoàn thành",
@@ -44,7 +33,7 @@ const TABS = [
   },
 ];
 
-export function AdminOrderHistoryPage() {
+export function AdminMealHistoryPage() {
   const [activeTab, setActiveTab] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
@@ -97,11 +86,11 @@ export function AdminOrderHistoryPage() {
       ),
     },
     {
-      title: "Ngày đặt hàng",
-      dataIndex: "orderDate",
-      key: "orderDate",
+      title: "Ngày dùng bữa",
+      dataIndex: "mealTime",
+      key: "mealTime",
       render: (_, record) => (
-        <Typography>{formatDateTime(record.orderDate)}</Typography>
+        <Typography>{formatDateTime(record.mealTime)}</Typography>
       ),
     },
     {
@@ -110,12 +99,7 @@ export function AdminOrderHistoryPage() {
       dataIndex: "orderId",
       render: (text) => (
         <Tooltip content="Xem chi tiết">
-          <IconButton
-            variant="text"
-            onClick={async () => {
-              await fetchOrderDetail(text);
-            }}
-          >
+          <IconButton variant="text">
             <EyeIcon className="h-4 w-4" />
           </IconButton>
         </Tooltip>
@@ -125,7 +109,7 @@ export function AdminOrderHistoryPage() {
 
   const fetchOrder = async () => {
     const response = await callApi(
-      `order/get-all-order-by-status/${currentPage}/${totalItems}?status=${activeTab}&orderType=${2}`,
+      `order/get-all-order-by-status/${currentPage}/${totalItems}?status=${activeTab}&orderType=${3}`,
       "GET"
     );
     if (response?.isSuccess) {
@@ -137,22 +121,6 @@ export function AdminOrderHistoryPage() {
   useEffect(() => {
     fetchOrder();
   }, [activeTab, selectedOrderType, currentPage]);
-
-  const [orderSelected, setOrderSelected] = useState({});
-  const fetchOrderDetail = async (orderId) => {
-    try {
-      setIsLoading(true);
-      const response = await getOrderDetailById(orderId);
-      if (response?.isSuccess) {
-        setOrderSelected(response?.result);
-        handleOpen();
-      }
-    } catch (error) {
-      message.error("Đã xảy ra lỗi khi tìm kiếm");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <>
@@ -213,11 +181,6 @@ export function AdminOrderHistoryPage() {
           onPageChange={handleCurrentPageChange}
         />
       </Card>
-      <OrderDetailModal
-        order={orderSelected}
-        handleOpen={handleOpen}
-        open={open}
-      />
     </>
   );
 }

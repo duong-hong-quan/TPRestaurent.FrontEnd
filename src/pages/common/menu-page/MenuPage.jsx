@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@material-tailwind/react";
 import ComboCard from "../../../components/menu-dish/ComboCard";
-import { Pagination } from "../../../components/pagination/Pagination";
+import Pagination from "../../../components/pagination/Pagination";
 import { getAllCombo } from "../../../api/comboApi";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import { toast } from "react-toastify";

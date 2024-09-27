@@ -31,6 +31,7 @@ import KitchenLayout from "../layouts/common/KitchenLayout";
 import OrderManagement from "../pages/kitchen/order-management/OrderManagement";
 import DishManagement from "../pages/kitchen/dish-management/DishManagement";
 import OptimizeProcess from "../pages/kitchen/optimize-process/OptimizeProcess";
+import { AdminMealHistoryPage } from "../pages/admin/AdminMealHistoryPage";
 function Routers() {
   const routing = useRoutes([
     {
@@ -141,6 +142,10 @@ function Routers() {
         {
           path: "reservation-history",
           element: <AdminReservationPage />,
+        },
+        {
+          path: "meal-history",
+          element: <AdminMealHistoryPage />,
         },
         {
           path: "messages",

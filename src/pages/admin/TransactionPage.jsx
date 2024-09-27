@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import TransactionTable from "./transaction/TransactionTable";
 import useCallApi from "../../api/useCallApi";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
+import TabMananger from "../../components/tab/TabManager";
+import Pagination from "../../components/pagination/Pagination";
 
 const TABS = [
   {
@@ -40,16 +42,25 @@ export function TransactionPage() {
   const [activeTab, setActiveTab] = useState("");
   const [transactionData, setTransactionData] = useState([]);
   const { callApi, error, loading } = useCallApi();
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const totalItems = 10;
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+  };
   const fetchData = async () => {
-    const response = await callApi(`/transaction/get-all-payment/1/100`, "GET");
+    const response = await callApi(
+      `/transaction/get-all-payment/${currentPage}/${totalItems}?transationStatus=${activeTab}`,
+      "GET"
+    );
     if (response?.isSuccess) {
       setTransactionData(response.result?.items);
+      setTotalPages(response.result.totalPages);
     }
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage, activeTab]);
 
   return (
     <Card className="h-full w-full">
@@ -74,21 +85,11 @@ export function TransactionPage() {
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="mb-4">
-            <div className="flex border-b border-gray-200">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.value}
-                  className={`py-2 px-4 font-medium text-sm focus:outline-none ${
-                    activeTab === tab.value
-                      ? "border-b-2 border-red-700 text-red-700"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                  onClick={() => setActiveTab(tab.value)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+            <TabMananger
+              items={TABS}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
           </div>
           <div className="w-full md:w-72">
             <Input
@@ -98,9 +99,14 @@ export function TransactionPage() {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="overflow-scroll px-0">
+      <CardBody className="overflow-scroll max-h-[500px] px-0">
         <TransactionTable data={transactionData} loading={loading} />
       </CardBody>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handleCurrentPageChange}
+      />
     </Card>
   );
 }

@@ -42,6 +42,20 @@ const TransactionTable = ({ data, loading }) => {
       render: (text) => <a>{text.substring(0, 8)}</a>,
     },
     {
+      title: "Khách hàng",
+      dataIndex: "customerName",
+      key: "customerName",
+      align: "center",
+
+      render: (_, record) => (
+        <span>
+          {record.order
+            ? `${record.order?.account?.lastName} ${record.order?.account?.firstName}`
+            : `${record.storeCredit?.account?.lastName} ${record.storeCredit?.account?.firstName}`}
+        </span>
+      ),
+    },
+    {
       title: "Ngày",
       dataIndex: "date",
       key: "date",
@@ -120,6 +134,7 @@ const TransactionTable = ({ data, loading }) => {
         dataSource={data}
         loading={loading}
         rowKey="id"
+        pagination={false}
       />
     </div>
   );

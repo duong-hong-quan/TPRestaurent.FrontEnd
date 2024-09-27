@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Typography,
   List,
@@ -22,7 +22,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { close } from "../../redux/features/sidebarSlice";
 
-const AccordionItem = ({ item, open, handleOpen, index }) => (
+const AccordionItem = ({ item, open, handleOpen, index, navigate }) => (
   <Accordion
     open={open === index}
     icon={
@@ -35,12 +35,16 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
       )
     }
   >
-    <ListItem className="p-0" selected={open === index}>
+    <ListItem
+      className="p-0"
+      selected={open === index}
+      onClick={() => navigate(item.path)}
+    >
       <AccordionHeader
         onClick={() => handleOpen(index)}
         className="border-b-0 px-4 py-4 cursor-pointer"
       >
-        <NavLink to={item.path} className="flex items-center w-full text-white">
+        <NavLink className="flex items-center w-full text-white">
           <ListItemPrefix>{item.icon}</ListItemPrefix>
           <Typography className="mr-auto text-white font-bold text-nowrap">
             {item.title}
@@ -52,11 +56,13 @@ const AccordionItem = ({ item, open, handleOpen, index }) => (
       <AccordionBody className="py-1">
         <List className="p-0">
           {item.subItems.map((subItem, subIndex) => (
-            <ListItem key={subIndex}>
-              <NavLink
-                to={subItem.path}
-                className="flex items-center w-full text-white"
-              >
+            <ListItem
+              key={subIndex}
+              onClick={() => {
+                navigate(subItem.path);
+              }}
+            >
+              <NavLink className="flex items-center w-full text-white">
                 <ListItemPrefix>
                   <FaChevronRight className="h-3 w-3" />
                 </ListItemPrefix>
@@ -79,6 +85,7 @@ export function MultiLevelSidebar({ menuItems }) {
   const dispatch = useDispatch();
   const location = useLocation();
   const sidebarRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -127,6 +134,7 @@ export function MultiLevelSidebar({ menuItems }) {
               open={open}
               handleOpen={handleOpen}
               index={index + 1}
+              navigate={navigate}
             />
           ))}
         </List>
