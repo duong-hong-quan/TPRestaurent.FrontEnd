@@ -21,12 +21,16 @@ import SearchResults from "../components/search/SearchResult";
 import AboutUs from "../pages/common/about-us/AboutUs";
 import { ComboDetailPage } from "../pages/common/menu-page/ComboDetailPage";
 import { OrderHistory } from "../pages/common/customer/OrderHistory";
-import TableView from "../pages/kitchen/TableView";
 import OrderDetailView from "../pages/common/customer/OrderDetailView";
 import VerifyPayment from "../pages/common/verify-payment/VerifyPayment";
 import { AdminDevicePage } from "../pages/admin/AdminDevicePage";
 import RestaurantCheckout from "../pages/common/customer/RestaurentCheckout";
 import { TransactionPage } from "../pages/admin/TransactionPage";
+import ChatButton from "../components/chat/ChatButton";
+import KitchenLayout from "../layouts/common/KitchenLayout";
+import OrderManagement from "../pages/kitchen/order-management/OrderManagement";
+import DishManagement from "../pages/kitchen/dish-management/DishManagement";
+import OptimizeProcess from "../pages/kitchen/optimize-process/OptimizeProcess";
 function Routers() {
   const routing = useRoutes([
     {
@@ -39,7 +43,11 @@ function Routers() {
     },
     {
       path: "/",
-      element: <CommonLayout />,
+      element: (
+        <CommonLayout>
+          <ChatButton />
+        </CommonLayout>
+      ),
       children: [
         {
           index: true,
@@ -154,11 +162,23 @@ function Routers() {
     },
     {
       path: "kitchen",
-      element: <ManagerLayout />,
+      element: <KitchenLayout />,
       children: [
         {
           index: true,
-          element: <TableView />,
+          element: <OrderManagement />,
+        },
+        {
+          path: "order-management",
+          element: <OrderManagement />,
+        },
+        {
+          path: "optimize-process",
+          element: <OptimizeProcess />,
+        },
+        {
+          path: "dish-management",
+          element: <DishManagement />,
         },
       ],
     },
