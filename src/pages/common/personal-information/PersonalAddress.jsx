@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Table, Button, Switch, Modal, Form, Input } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import { render } from "react-dom";
 
 const PersonalAddress = () => {
-  const [addresses, setAddresses] = useState([
-    { id: 1, address: "123 Main St", city: "New York", isPrimary: true },
-    { id: 2, address: "456 Elm St", city: "Los Angeles", isPrimary: false },
-  ]);
+  const user = useSelector((state) => state.user.user || {});
+  const [addresses, setAddresses] = useState(user.addresses || []);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [form] = Form.useForm();
@@ -16,20 +16,21 @@ const PersonalAddress = () => {
       title: "Địa chỉ",
       dataIndex: "address",
       key: "address",
+      render(_, record) {
+        return <span>{record.customerInfoAddressName}</span>;
+      },
     },
-    {
-      title: "Thành phố",
-      dataIndex: "city",
-      key: "city",
-    },
+
     {
       title: "Địa chỉ mặc định",
       dataIndex: "isPrimary",
       key: "isPrimary",
-      render: (isPrimary, record) => (
+      render: (_, record) => (
         <Switch
-          checked={isPrimary}
-          onChange={(checked) => handlePrimaryChange(record.id, checked)}
+          checked={record.isCurrentUsed}
+          onChange={(checked) =>
+            handlePrimaryChange(record.customerInfoAddressId, checked)
+          }
           className="bg-red-900"
         />
       ),
@@ -58,7 +59,7 @@ const PersonalAddress = () => {
     setAddresses(
       addresses.map((address) => ({
         ...address,
-        isPrimary: address.id === id ? isPrimary : false,
+        isCurrentUsed: address.customerInfoAddressId === id ? isPrimary : false,
       }))
     );
   };

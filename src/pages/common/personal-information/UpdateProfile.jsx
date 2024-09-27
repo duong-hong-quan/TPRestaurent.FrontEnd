@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, DatePicker, Select, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 
 const UpdateProfile = () => {
   const [form] = Form.useForm();
-
+  const user = useSelector((state) => state.user.user || {});
   const onFinish = (values) => {
     message.success("Profile updated successfully");
   };
@@ -18,7 +19,16 @@ const UpdateProfile = () => {
     }
     return e && e.fileList;
   };
-
+  useEffect(() => {
+    form.setFieldsValue({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phoneNumber,
+      birthday: moment(user.dob),
+      gender: user.gender,
+      email: user.email,
+    });
+  }, []);
   return (
     <div className=" min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden">
@@ -35,16 +45,29 @@ const UpdateProfile = () => {
                 }}
                 className="space-y-6"
               >
-                <Form.Item
-                  name="fullName"
-                  label="Họ và tên"
-                  rules={[
-                    { required: true, message: "Please input your full name!" },
-                  ]}
-                >
-                  <Input className="w-full rounded-md" />
-                </Form.Item>
-
+                <div className="flex gap-1">
+                  <Form.Item
+                    name="lastName"
+                    label="Họ"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input your last name!",
+                      },
+                    ]}
+                  >
+                    <Input className="w-full rounded-md" />
+                  </Form.Item>
+                  <Form.Item
+                    name="firstName"
+                    label="Tên"
+                    rules={[
+                      { required: true, message: "Please input your name!" },
+                    ]}
+                  >
+                    <Input className="w-full rounded-md" />
+                  </Form.Item>
+                </div>
                 <Form.Item
                   name="phone"
                   label="Điện thoại"
@@ -59,19 +82,6 @@ const UpdateProfile = () => {
                 </Form.Item>
 
                 <Form.Item
-                  name="birthday"
-                  label="Ngày sinh"
-                  rules={[
-                    { required: true, message: "Please select your birthday!" },
-                  ]}
-                >
-                  <DatePicker
-                    className="w-full rounded-md"
-                    format={"DD/MM/YYYY"}
-                  />
-                </Form.Item>
-
-                <Form.Item
                   name="gender"
                   label="Giới tính"
                   rules={[
@@ -79,8 +89,8 @@ const UpdateProfile = () => {
                   ]}
                 >
                   <Select className="w-full rounded-md">
-                    <Option value="male">Nam</Option>
-                    <Option value="female">Nữ</Option>
+                    <Option value={true}>Nam</Option>
+                    <Option value={false}>Nữ</Option>
                   </Select>
                 </Form.Item>
 
@@ -93,16 +103,6 @@ const UpdateProfile = () => {
                   ]}
                 >
                   <Input className="w-full rounded-md" />
-                </Form.Item>
-
-                <Form.Item
-                  name="address"
-                  label="Địa chỉ"
-                  rules={[
-                    { required: true, message: "Please input your address!" },
-                  ]}
-                >
-                  <Input.TextArea className="w-full rounded-md" rows={4} />
                 </Form.Item>
 
                 <Form.Item>
