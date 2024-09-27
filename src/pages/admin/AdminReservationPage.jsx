@@ -12,11 +12,11 @@ import {
   Tooltip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { getAllReservations, suggestTable } from "../../api/reservationApi";
-import LoadingOverlay from "../../components/loading/LoadingOverlay";
-import { formatDateTime, formatPrice } from "../../util/Utility";
-import TableSuggestionModal from "./reservation/TableSuggestionModal";
+import { formatDateTime } from "../../util/Utility";
 import { Table } from "antd";
+import Pagination from "../../components/pagination/Pagination";
+import useCallApi from "../../api/useCallApi";
+import TabMananger from "../../components/tab/TabManager";
 
 const TABS = [
   {
@@ -24,178 +24,115 @@ const TABS = [
     value: "",
   },
   {
-    label: "Đã chọn bàn",
+    label: "Chờ xác nhận",
     value: "1",
   },
   {
-    label: "Đã thanh toán",
+    label: "Đã thanh toán cọc",
     value: "2",
   },
+
   {
-    label: "Đang dùng bữa",
-    value: "3",
-  },
-  {
-    label: "Đã hủy",
-    value: "4",
+    label: "Huỷ đơn",
+    value: "8",
   },
 ];
-
-const getStatusColor = (status) => {
-  switch (status) {
-    case 0:
-      return "green";
-    case 1:
-      return "amber";
-    case 2:
-      return "blue";
-    default:
-      return "blue-gray";
-  }
-};
-
-const getStatusText = (status) => {
-  switch (status) {
-    case 1:
-      return "Đã chọn bàn";
-    case 2:
-      return "Đã thanh toán";
-    case 3:
-      return "Đang dùng bữa";
-    case 4:
-      return "Đã hủy";
-    default:
-      return "Không xác định";
-  }
-};
 
 export function AdminReservationPage() {
   const [activeTab, setActiveTab] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [reservations, setReservations] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tables, setTables] = useState([]);
   const [selectedReservation, setSelectedReservation] = useState(null);
-
-  const fetchReservations = async (time, pageNumber, pageSize) => {
-    try {
-      setLoading(true);
-      const response = await getAllReservations(
-        time,
-        pageNumber,
-        pageSize,
-        activeTab
-      );
-      if (response?.isSuccess) {
-        setReservations(response?.result?.items);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+  const { callApi, error, loading } = useCallApi();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const totalItems = 10;
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const fetchReservations = async () => {
+    const response = await callApi(
+      `order/get-all-order-by-status/${currentPage}/${totalItems}?status=${activeTab}&orderType=${1}`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+      setReservations(response?.result?.items);
+      setTotalPages(response?.result?.totalPages);
     }
   };
 
   useEffect(() => {
-    fetchReservations(1, 1, 10);
-  }, [activeTab]);
+    fetchReservations();
+  }, [activeTab, currentPage]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleSuggestTable = async (
-    startDate,
-    endDate,
-    people,
-    reservationId
-  ) => {
-    setSelectedReservation({
-      startDate: startDate,
-      endDate: endDate,
-      people: people,
-      isPrivate: false,
-      reservationId: reservationId,
-    });
-    openModal();
-    try {
-      const response = await suggestTable({
-        startTime: startDate,
-        endTime: endDate,
-        numOfPeople: people,
-        isPrivate: false,
-      });
-      if (response?.isSuccess) {
-        setTables(response?.result);
-      }
-    } catch (error) {
-    } finally {
-    }
-  };
-
   const columns = [
     {
-      title: "Mã đặt bàn",
-      dataIndex: "reservationId",
-      key: "reservationId",
+      title: "Mã đơn hàng",
+      dataIndex: "orderId",
+      key: "orderId",
       render: (text) => <Typography>{text.substring(0, 8)}</Typography>,
     },
     {
       title: "Khách hàng",
       dataIndex: "customerInfo",
       key: "customerInfo",
-      render: (customerInfo) => (
-        <Typography>{`${customerInfo?.name} - 0${customerInfo?.phoneNumber}`}</Typography>
+      render: (_, record) => (
+        <Typography>
+          {`${record.account?.firstName} ${record.account?.lastName}`}
+        </Typography>
       ),
     },
     {
-      title: "Số người",
-      dataIndex: "numberOfPeople",
-      key: "numberOfPeople",
-      render: (numberOfPeople) => <Typography>{numberOfPeople}</Typography>,
-    },
-    {
-      title: "Ngày - Giờ",
-      dataIndex: "endTime",
-      key: "endTime",
-      render: (endTime) => <Typography>{formatDateTime(endTime)}</Typography>,
-    },
-    {
-      title: "Tiền cọc",
-      dataIndex: "deposit",
-      key: "deposit",
-      render: (deposit) => <Typography>{formatPrice(deposit)}</Typography>,
+      title: "Tổng tiền",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
+      render: (_, record) => (
+        <Typography>{record.totalAmount.toLocaleString()} VND</Typography>
+      ),
     },
     {
       title: "Trạng thái",
-      dataIndex: "statusId",
-      key: "statusId",
-      render: (statusId) => (
+      dataIndex: "status",
+      key: "status",
+      render: (_, record) => (
         <Chip
           variant="ghost"
           size="sm"
           className="text-center"
-          value={getStatusText(statusId)}
-          color={getStatusColor(statusId)}
+          value={`${record.status.vietnameseName} - ${record.orderType.name}`}
         />
+      ),
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "orderDate",
+      key: "orderDate",
+      render: (_, record) => (
+        <Typography>{formatDateTime(record.reservationDate)}</Typography>
+      ),
+    },
+    {
+      title: "Ngày dùng bữa",
+      dataIndex: "mealTime",
+      key: "mealTime",
+      render: (_, record) => (
+        <Typography>{`${formatDateTime(record.mealTime)} ${formatDateTime(
+          record.endTime
+        )}`}</Typography>
       ),
     },
     {
       title: "Hành động",
       key: "action",
-      render: (record) => (
+      dataIndex: "orderId",
+      render: (text) => (
         <Tooltip content="Xem chi tiết">
-          <IconButton
-            variant="text"
-            onClick={() =>
-              handleSuggestTable(
-                record.reservationDate,
-                record.endTime,
-                record.numberOfPeople,
-                record.reservationId
-              )
-            }
-          >
+          <IconButton variant="text">
             <EyeIcon className="h-4 w-4" />
           </IconButton>
         </Tooltip>
@@ -203,17 +140,8 @@ export function AdminReservationPage() {
     },
   ];
 
-  const filteredReservations = reservations?.filter((item) => {
-    const customerInfo = item.customerInfo || {};
-    const searchString = `${customerInfo.name || ""} ${
-      customerInfo.phoneNumber || ""
-    }`.toLowerCase();
-    return searchString.includes(searchQuery.toLowerCase());
-  });
-
   return (
     <Card className="h-full w-full">
-      <LoadingOverlay isLoading={loading} />
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
@@ -239,21 +167,11 @@ export function AdminReservationPage() {
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="mb-4">
-            <div className="flex border-b border-gray-200">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.value}
-                  className={`py-2 px-4 font-medium text-sm focus:outline-none ${
-                    activeTab === tab.value
-                      ? "border-b-2 border-red-700 text-red-700"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                  onClick={() => setActiveTab(tab.value)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+            <TabMananger
+              items={TABS}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
           </div>
           <div className="w-full md:w-72">
             <Input
@@ -268,15 +186,16 @@ export function AdminReservationPage() {
       <CardBody className="overflow-auto h-[550px]">
         <Table
           columns={columns}
-          dataSource={filteredReservations}
+          dataSource={reservations}
           rowKey="reservationId"
+          pagination={false}
+          loading={loading}
         />
       </CardBody>
-      <TableSuggestionModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        tables={tables}
-        selectedReservation={selectedReservation}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handleCurrentPageChange}
       />
     </Card>
   );

@@ -1,52 +1,40 @@
 import React from "react";
-import { Button, IconButton } from "@material-tailwind/react";
-import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function Pagination({ page, currentPage, onPageChange }) {
-  const getItemProps = (index) => ({
-    variant: currentPage === index ? "filled" : "text",
-    color: "red",
-    onClick: () => onPageChange(index),
-  });
-
-  const next = () => {
-    if (currentPage === page) return;
-    onPageChange(currentPage + 1);
-  };
-
-  const prev = () => {
-    if (currentPage === 1) return;
-    onPageChange(currentPage - 1);
-  };
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="flex justify-center">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="text"
-          className="flex items-center gap-2"
-          onClick={prev}
-          disabled={currentPage === 1}
+    <nav className=" flex items-center justify-center py-4 space-x-2">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="p-2 rounded-full text-red-900 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <ChevronLeft size={20} />
+      </button>
+      {pages.map((page) => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
+            currentPage === page
+              ? "bg-red-900 text-white"
+              : "text-red-900 hover:bg-red-100"
+          }`}
         >
-          <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" /> Prev
-        </Button>
-        <div className="flex items-center gap-2">
-          {Array.from({ length: page }, (_, index) => (
-            <IconButton key={index + 1} {...getItemProps(index + 1)}>
-              {index + 1}
-            </IconButton>
-          ))}
-        </div>
-        <Button
-          variant="text"
-          className="flex items-center gap-2"
-          onClick={next}
-          disabled={currentPage === page}
-        >
-          Next
-          <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+          {page}
+        </button>
+      ))}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="p-2 rounded-full text-red-900 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <ChevronRight size={20} />
+      </button>
+    </nav>
   );
-}
+};
+
+export default Pagination;
