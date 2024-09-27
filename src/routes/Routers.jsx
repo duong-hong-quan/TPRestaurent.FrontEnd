@@ -46,11 +46,7 @@ function Routers() {
     },
     {
       path: "/",
-      element: (
-        <CommonLayout>
-          <ChatButton />
-        </CommonLayout>
-      ),
+      element: <CommonLayout></CommonLayout>,
       children: [
         {
           index: true,
@@ -122,7 +118,10 @@ function Routers() {
           path: "order",
           element: <PersonalOrder />,
         },
-
+        {
+          path: "reservation-history",
+          element: <PersonalTransaction />,
+        },
         {
           path: "transaction-history",
           element: <PersonalTransaction />,

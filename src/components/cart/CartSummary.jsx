@@ -24,10 +24,11 @@ import Card_Logo from "../../assets/imgs/payment-icon/Cash_Logo.png";
 import MoMo_Logo from "../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../assets/imgs/payment-icon/VNpay_Logo.png";
 import PaymentMethodSelector from "./PaymentMethodSelector";
-import { clearCart } from "../../redux/features/cartReservationSlice";
+import { clearCart, getTotal } from "../../redux/features/cartReservationSlice";
 import useCallApi from "../../api/useCallApi";
 const { Title, Text } = Typography;
 import { OrderApi } from "../../api/endpoint";
+import LoadingOverlay from "../loading/LoadingOverlay";
 const InfoItem = ({ icon, label, value }) => (
   <div className="flex items-center mb-2">
     {icon}
@@ -53,12 +54,18 @@ const ActionItem = ({ icon, label, children }) => (
 const CartSummary = ({ handleClose }) => {
   const cartReservation = useSelector((state) => state.cartReservation);
   const user = useSelector((state) => state.user.user || {});
+  const cartTotal = useSelector(getTotal);
 
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [selectedMethod, setSelectedMethod] = useState(2);
   const [open, setOpen] = useState(false);
   const { callApi, error, loading } = useCallApi();
+  const [isLoyaltyEnabled, setIsLoyaltyEnabled] = useState(false);
+
+  const handleSwitchChange = (event) => {
+    setIsLoyaltyEnabled(event);
+  };
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -103,7 +110,7 @@ const CartSummary = ({ handleClose }) => {
 
       deliveryOrder: {
         couponIds: [],
-        loyalPointToUse: user.loyaltyPoint || 0,
+        loyalPointToUse: isLoyaltyEnabled ? user.loyaltyPoint : 0,
         paymentMethod: selectedMethod,
         address: user.addresses.filter((address) => address.isCurrentUsed)[0]
           .customerInfoAddressName,
@@ -129,6 +136,13 @@ const CartSummary = ({ handleClose }) => {
       showError(error);
     }
   };
+  const totalPrice = cart.total ? cart.total + (cartTotal || 0) : cartTotal;
+  const afterPrice = cart.total
+    ? cart.total + (cartTotal || 0) - user.loyalPoint
+    : cartTotal - user.loyalPoint;
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <div className="container my-4 p-6 bg-white">
       <Title level={3} className="uppercase text-center mb-6">
@@ -183,7 +197,10 @@ const CartSummary = ({ handleClose }) => {
                 <Typography className="text-[#333333] mx-2">
                   {user.loyalPoint} điểm
                 </Typography>
-                <Switch />
+                <Switch
+                  checked={isLoyaltyEnabled}
+                  onChange={(e) => handleSwitchChange(e)}
+                />
               </div>
             </ActionItem>
           )}
@@ -235,6 +252,40 @@ const CartSummary = ({ handleClose }) => {
         handleRemoveCombo={handleRemoveCombo}
         isDisabled={true}
       />
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-lg">Tạm tính:</span>
+          <Typography
+            variant="h2"
+            className="font-bold text-red-700 text-center"
+          >
+            {formatPrice(totalPrice)}
+          </Typography>
+        </div>
+
+        {isLoyaltyEnabled && (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-lg">Điểm thành viên:</span>
+              <Typography
+                variant="h2"
+                className="font-bold text-red-700 text-center"
+              >
+                {`- ${formatPrice(user.loyalPoint)}`}
+              </Typography>
+            </div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-lg">Tổng cộng:</span>
+              <Typography
+                variant="h2"
+                className="font-bold text-red-700 text-center"
+              >
+                {`${formatPrice(afterPrice)}`}
+              </Typography>
+            </div>
+          </>
+        )}
+      </div>
       <div className="flex justify-center">
         <Button className="bg-red-900 text-white" onClick={handleCheckOut}>
           Xác nhận thanh toán
