@@ -12,7 +12,7 @@ import {
   X,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatDateTime } from "../../../util/Utility";
 const menuItems = [
   { key: "all", label: "Tất cả" },
@@ -24,11 +24,11 @@ const menuItems = [
 
 const TabStatusKitchen = ({ selected }) => {
   return (
-    <div className="flex justify-start mb-4">
+    <div className="flex flex-wrap justify-start mb-4">
       {menuItems.map((item) => (
         <Button
           key={item.key}
-          className={`bg-white text-gray-800 px-4 py-2 rounded-tl-md rounded-tr-md  font-semibold text-base rounded-bl-none rounded-br-none mr-1 min-h-10 min-w-56 shadow-md ${
+          className={`bg-white text-gray-800 px-4 py-2 rounded-tl-md rounded-tr-md  font-semibold text-base rounded-bl-none rounded-br-none mr-1 min-h-10 min-w-fit shadow-md ${
             selected === item.key ? "text-red-900" : ""
           }`}
         >
@@ -43,7 +43,7 @@ const OrderTag = ({ status, index }) => {
   const [textColor, setTextColor] = useState("");
 
   const baseClass =
-    "flex items-center rounded-md border-2 text-sm font-bold shadow-md w-fit px-8 py-2 transition-all duration-300 ease-in-out ";
+    "flex items-center rounded-md border text-sm font-bold shadow-md w-fit px-4 py-2 transition-all duration-300 ease-in-out ";
 
   const statusColors = {
     waiting: "#C01D2E",
@@ -185,24 +185,45 @@ const fakeData = [
   { status: "cancelled", index: 4 },
   { status: "waiting", index: 5 },
   { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
+  { status: "preparing", index: 6 },
 ];
+
 const OrderManagement = () => {
   return (
-    <div className="container">
-      <div className="flex justify-between">
-        <Typography variant="h5" className="uppercase text-red-900">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <Typography
+          variant="h5"
+          className="uppercase text-red-900 mb-4 sm:mb-0"
+        >
           DANH SÁCH ĐẶT MÓN TẠI BÀN HÔM NAY
         </Typography>
-        <Input className="p-2 max-w-56" placeholder="Tìm đơn đặt món" />
+        <Input className="p-2 w-full sm:w-56" placeholder="Tìm đơn đặt món" />
       </div>
-      <div className="mt-5">
-        <TabStatusKitchen selected={"all"} />
-        <div className="flex gap-1 my-2">
-          {fakeData.map((order, idx) => (
-            <OrderTag key={idx} status={order.status} index={order.index} />
-          ))}
+      <div className="mt-5 w-full">
+        <TabStatusKitchen selected="all" />
+        <div className="mb-6">
+          <div className=" flex flex-wrap  w-full pb-2">
+            {fakeData.map((order, idx) => (
+              <div className="mx-1 my-1">
+                <OrderTag key={idx} status={order.status} index={order.index} />
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="flex items-center justify-start  ">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-300px)]">
           <OrderCard
             orderNumber={orderData.orderNumber}
             date={orderData.date}
@@ -215,6 +236,7 @@ const OrderManagement = () => {
             tableNumber={orderData.tableNumber}
             items={orderData.items}
           />
+          {/* Add more OrderCard components as needed */}
         </div>
       </div>
     </div>

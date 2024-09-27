@@ -26,7 +26,7 @@ const HeaderManager = ({ userName = "Admin" }) => {
   const dispatch = useDispatch();
   const siderbar = useSelector((state) => state.sidebar);
   return (
-    <Navbar className="mx-auto max-w-full px-4 py-6">
+    <Navbar className="mx-auto min-w-full px-4 py-6">
       <div className="flex items-center justify-between text-blue-gray-900">
         <button
           onClick={() => {
