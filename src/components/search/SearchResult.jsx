@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MenuDish from "../menu-dish/MenuDish";
-import { getAllDishes } from "../../api/dishApi";
 import LoadingOverlay from "../loading/LoadingOverlay";
-import { Pagination } from "../pagination/Pagination";
 import useCallApi from "../../api/useCallApi";
 import { DishApi } from "../../api/endpoint";
 

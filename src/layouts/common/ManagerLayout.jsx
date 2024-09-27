@@ -6,28 +6,33 @@ import {
   FaChartBar,
   FaCog,
   FaEnvelope,
+  FaGooglePlay,
   FaNewspaper,
+  FaShoppingBag,
   FaSignOutAlt,
 } from "react-icons/fa";
 const menuItems = [
   {
     title: "Tổng quan",
     icon: <FaChartBar className="h-5 w-5 text-white" />,
-    path: "/admin/overviews",
     subItems: [
       { title: "Bảng điều khiển", path: "/overview/dashboard" },
       { title: "Báo cáo", path: "/overview/reports" },
     ],
   },
   {
-    title: "Quản lý giao dịch",
-    icon: <FaNewspaper className="h-5 w-5 text-white" />,
-    path: "/admin",
+    title: "Quản lý đơn hàng",
+    icon: <FaShoppingBag className="h-5 w-5 text-white" />,
     subItems: [
-      { title: "Giao dịch", path: "/admin/transaction-history" },
       { title: "Yêu cầu đặt bàn", path: "/admin/reservation-history" },
-      { title: "Đơn hàng", path: "/admin/order-history" },
+      { title: "Đơn hàng online", path: "/admin/order-history" },
+      { title: "Đặt món tại quán", path: "/admin/meal-history" },
     ],
+  },
+  {
+    title: "Quản lý giao dịch",
+    icon: <FaGooglePlay className="h-5 w-5 text-white" />,
+    path: "/admin/transaction-history",
   },
   {
     title: "Tin nhắn",
