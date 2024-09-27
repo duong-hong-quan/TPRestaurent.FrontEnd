@@ -33,7 +33,7 @@ const KitchenLayout = () => {
       <MultiLevelSidebar menuItems={menuItems} />
       <div className=" flex-1 w-full min-h-dvh bg-blue-gray-50">
         <HeaderManager />
-        <div className="m-2 mt-8">
+        <div className="m-2 mt-8 ">
           <Outlet />
         </div>
       </div>
