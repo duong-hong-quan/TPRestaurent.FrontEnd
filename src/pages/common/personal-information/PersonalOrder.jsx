@@ -4,6 +4,7 @@ import useCallApi from "../../../api/useCallApi";
 import { useSelector } from "react-redux";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import Pagination from "../../../components/pagination/Pagination";
+import TabMananger from "../../../components/tab/TabManager";
 
 const PersonalOrder = () => {
   const { callApi, error, loading } = useCallApi();
@@ -12,6 +13,8 @@ const PersonalOrder = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
+  const [activeTab, setActiveTab] = useState(4);
+
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
@@ -27,39 +30,15 @@ const PersonalOrder = () => {
   };
   useEffect(() => {
     fetchData();
-  }, [user, currentPage]);
+  }, [user, currentPage, activeTab]);
   const tabs = [
-    { id: "all", label: "Tất cả" },
-    { id: "pending", label: "Chờ xác nhận" },
-    { id: "verified", label: "Đã xác nhận" },
-    { id: "delivering", label: "Đang giao" },
-    { id: "received", label: "Đã nhận hàng" },
-    { id: "canceled", label: "Đã huỷ" },
+    { value: 4, label: "Chờ xác nhận" },
+    { value: 5, label: "Chưa thanh toán" },
+    { ivalued: 6, label: "Đang giao" },
+    { value: 7, label: "Đã nhận hàng" },
+    { value: 8, label: "Đã huỷ" },
   ];
-  const [activeTab, setActiveTab] = useState("all");
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "all":
-        return (
-          <div>
-            <OrderHistoryList orders={orders} />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handleCurrentPageChange}
-            />
-          </div>
-        );
-      case "pending":
-        return <p>Nội dung cài đặt tài khoản ở đây.</p>;
-      case "delivering":
-        return <p>Nội dung cài đặt tài khoản ở đây.</p>;
-      case "canceled":
-        return <p>Nội dung cài đặt tài khoản ở đây.</p>;
-      default:
-        return null;
-    }
-  };
+
   if (loading) {
     return <LoadingOverlay isLoading={loading} />;
   }
@@ -70,24 +49,24 @@ const PersonalOrder = () => {
       </h1>
 
       <div className="mb-4">
-        <div className="flex border-b border-gray-200">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`py-2 px-4 font-medium text-sm focus:outline-none ${
-                activeTab === tab.id
-                  ? "border-b-2 border-red-700 text-red-700"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <TabMananger
+          items={tabs}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       </div>
 
-      <div className="mt-4">{renderTabContent()}</div>
+      <div className="mt-4">
+        {" "}
+        <div>
+          <OrderHistoryList orders={orders} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handleCurrentPageChange}
+          />
+        </div>
+      </div>
     </div>
   );
 };

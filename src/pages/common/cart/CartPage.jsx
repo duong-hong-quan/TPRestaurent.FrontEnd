@@ -42,6 +42,8 @@ const CartPage = () => {
   if (isSummary) {
     return <CartSummary handleClose={() => setIsSummary(false)} />;
   }
+  const totalPrice = cart.total ? cart.total + (cartTotal || 0) : cartTotal;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
@@ -71,8 +73,7 @@ const CartPage = () => {
               variant="h2"
               className="font-bold text-red-700 text-center"
             >
-              {!cart.total && formatPrice(cartTotal)}
-              {cart.total && cartTotal && formatPrice(cart.total + cartTotal)}
+              {formatPrice(totalPrice)}
             </Typography>
           </div>
           <div className="flex justify-center">
