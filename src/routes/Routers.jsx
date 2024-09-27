@@ -32,6 +32,8 @@ import OrderManagement from "../pages/kitchen/order-management/OrderManagement";
 import DishManagement from "../pages/kitchen/dish-management/DishManagement";
 import OptimizeProcess from "../pages/kitchen/optimize-process/OptimizeProcess";
 import { AdminMealHistoryPage } from "../pages/admin/AdminMealHistoryPage";
+import { ProtectedRoute } from "./ProtectedRoute";
+
 function Routers() {
   const routing = useRoutes([
     {
@@ -102,7 +104,11 @@ function Routers() {
     },
     {
       path: "/user",
-      element: <UserLayout />,
+      element: (
+        <ProtectedRoute role="user">
+          <UserLayout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           index: true,
@@ -125,7 +131,11 @@ function Routers() {
     },
     {
       path: "admin",
-      element: <ManagerLayout />,
+      element: (
+        <ProtectedRoute role="admin">
+          <ManagerLayout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           index: true,
@@ -167,7 +177,11 @@ function Routers() {
     },
     {
       path: "kitchen",
-      element: <KitchenLayout />,
+      element: (
+        <ProtectedRoute role={"kitchen"}>
+          <KitchenLayout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           index: true,
