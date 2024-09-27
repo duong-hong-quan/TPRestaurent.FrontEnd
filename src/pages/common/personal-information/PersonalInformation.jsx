@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import UpdateProfile from "./UpdateProfile";
 import PersonalAddress from "./PersonalAddress";
+import TabMananger from "../../../components/tab/TabManager";
 
 const PersonalInformation = () => {
   const [activeTab, setActiveTab] = useState("personal");
 
   const tabs = [
-    { id: "personal", label: "Thông tin cá nhân" },
-    { id: "address", label: "Địa chỉ giao hàng" },
-    { id: "settings", label: "Cài đặt tài khoản" },
+    { value: "personal", label: "Thông tin cá nhân" },
+    { value: "address", label: "Địa chỉ giao hàng" },
+    { value: "settings", label: "Cài đặt tài khoản" },
   ];
 
   const renderTabContent = () => {
@@ -31,21 +32,11 @@ const PersonalInformation = () => {
       </h1>
 
       <div className="mb-4">
-        <div className="flex border-b border-gray-200">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`py-2 px-4 font-medium text-sm focus:outline-none ${
-                activeTab === tab.id
-                  ? "border-b-2 border-red-700 text-red-700"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <TabMananger
+          items={tabs}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       </div>
 
       <div className="mt-4">{renderTabContent()}</div>

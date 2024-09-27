@@ -7,7 +7,7 @@ const UserInfo = ({ userData, handleOpenUpdate }) => {
         <div className="md:col-span-1"></div>
         <div className="ml-10 md:col-span-5 space-y-2">
           <h3 className="text-2xl font-bold text-gray-800 uppercase">
-            {userData?.name || "N/A"}
+            {`${userData?.firstName} ${userData.lastName}` || "N/A"}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="flex items-center space-x-2 text-red-700">
@@ -16,7 +16,10 @@ const UserInfo = ({ userData, handleOpenUpdate }) => {
             </div>
             <div className="flex items-center space-x-2 text-red-700">
               <i className="fas fa-map-marker-alt"></i>
-              <p>{userData?.address || "Chưa cung cấp"}</p>
+              <p>
+                {userData?.addresses.filter((i) => i.isCurrentUsed)[0]
+                  .customerInfoAddressName || "Chưa cung cấp"}
+              </p>
             </div>
             <div className="flex items-center space-x-2 text-red-700">
               <i className="fas fa-phone"></i>
@@ -48,14 +51,6 @@ const UserInfo = ({ userData, handleOpenUpdate }) => {
                   : "Tài khoản chưa được xác thực"}
               </p>
             </div>
-          </div>
-          <div className="flex justify-end">
-            <button
-              className="mt-4 bg-red-800 text-white font-bold py-2 px-4 rounded"
-              onClick={handleOpenUpdate}
-            >
-              Cập nhật thông tin
-            </button>
           </div>
         </div>
       </div>
