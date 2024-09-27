@@ -41,6 +41,7 @@ function App() {
                   pauseOnHover
                   theme="light"
                 />
+                {/* <ChatButton /> */}
                 <ToastContainer />
               </AuthProvider>
             </BrowserRouter>

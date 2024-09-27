@@ -34,6 +34,7 @@ const UserLayout = () => {
             <div className={` ${sidebarOpen ? "block" : "hidden"} xl:block`}>
               <UserSidebar />
             </div>
+            <ChatButton />
 
             <Outlet />
           </div>

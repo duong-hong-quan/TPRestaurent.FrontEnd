@@ -142,8 +142,8 @@ const ComboDetail = ({ comboData, handleBack }) => {
                   color="blue-gray"
                   className="mb-2 uppercase"
                 >
-                  Món {dishOptionSet.dishItemType?.vietnameseName} (Chọn
-                  {dishOptionSet.numOfChoice})
+                  {`Món ${dishOptionSet.dishItemType?.vietnameseName} (Chọn
+                  ${dishOptionSet.numOfChoice})`}
                 </Typography>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {dishOptionSet?.dishCombo?.map((dish, dishIndex) => (
