@@ -14,7 +14,6 @@ import ModalReservation from "./ModalReservation";
 import reservationImage from "../../assets/imgs/reservation.png";
 import moment from "moment";
 import {
-  formatDateToISOString,
   formatPhoneNumber,
   isEmptyObject,
   showError,

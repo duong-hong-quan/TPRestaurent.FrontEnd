@@ -4,9 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Tabs, message, Button } from "antd";
 import { Typography } from "@material-tailwind/react";
 
-import { getComboById } from "../../api/comboApi";
-import { sendCustomerInfoOtp } from "../../api/acccountApi";
-
 import { addToCart, getTotal } from "../../redux/features/cartReservationSlice";
 
 import ReservationInformation from "./ReservationInformation";
@@ -120,14 +117,22 @@ const ModalReservation = ({
   };
 
   const fetchComboDetail = async () => {
-    const response = await getComboById(selectedCombos);
+    const response = await callApi(
+      `${ComboApi.GET_BY_ID}/${selectedCombos}`,
+      "GET"
+    );
     if (response.isSuccess) {
       setCombo(response.result);
     }
   };
   const handleCheckout = async () => {
     if (!information.customerId || information.isVerified === false) {
-      const response = await sendCustomerInfoOtp(information.phone, 1);
+      const response = await callApi(
+        `/api/account/send-customer-info-otp?phoneNumber=${
+          information.phone
+        }&otpType=${1}`,
+        "POST"
+      );
       if (response?.isSuccess) {
         handleOpenOtp();
         return;

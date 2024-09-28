@@ -57,15 +57,14 @@ const PersonalOrder = () => {
       </div>
 
       <div className="mt-4">
-        {" "}
-        <div>
+        <div className="h-[38rem] overflow-auto">
           <OrderHistoryList orders={orders} />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handleCurrentPageChange}
-          />
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handleCurrentPageChange}
+        />
       </div>
     </div>
   );

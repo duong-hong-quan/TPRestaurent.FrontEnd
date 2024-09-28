@@ -7,13 +7,16 @@ import {
   Chip,
 } from "@material-tailwind/react";
 import { useParams } from "react-router-dom";
-import { getOrderDetailById } from "../../../api/orderApi";
+import useCallApi from "../../../api/useCallApi";
+import { OrderApi } from "../../../api/endpoint";
 
 const OrderDetailView = () => {
   const [orderData, setOrderData] = useState({});
   const { id } = useParams();
+  const { callApi, error, loading } = useCallApi();
   const fetchData = async () => {
-    const data = await getOrderDetailById(id);
+    const data = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
+
     if (data?.isSuccess) {
       setOrderData(data.result);
     }
