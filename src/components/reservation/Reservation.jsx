@@ -39,10 +39,14 @@ const Reservation = () => {
   const { loading, callApi, error } = useCallApi();
   const initData = () => {
     if (!isEmptyObject(user)) {
-      form.setFieldValue("name", user.firstName);
+      form.setFieldValue("firstName", user.firstName);
+      form.setFieldValue("lastName", user.lastName);
+      form.setFieldValue("email", user.email);
+      form.setFieldValue("phone", user.phoneNumber);
     }
   };
   useEffect(() => {
+    initData();
     const now = moment();
     const roundedStartTime = now
       .clone()

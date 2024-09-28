@@ -33,6 +33,7 @@ import DishManagement from "../pages/kitchen/dish-management/DishManagement";
 import OptimizeProcess from "../pages/kitchen/optimize-process/OptimizeProcess";
 import { AdminMealHistoryPage } from "../pages/admin/AdminMealHistoryPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import PolicyPage from "../pages/common/policy/PolicyPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -55,6 +56,10 @@ function Routers() {
         {
           path: "login",
           element: <LoginPage />,
+        },
+        {
+          path: "policy",
+          element: <PolicyPage />,
         },
         {
           path: "cart",
