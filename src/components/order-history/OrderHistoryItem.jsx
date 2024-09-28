@@ -8,20 +8,20 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const OrderHistoryItem = ({ order }) => {
   const { callApi, error, loading } = useCallApi();
-  const [orderDetail, setOrderDetail] = useState({});
+  const { orderDetail } = order;
   const [showDetails, setShowDetails] = useState(false);
   const [reservationData, setReservationData] = useState({});
-  const fetchData = async () => {
-    const res = await callApi(`order/get-order-detail/${order.orderId}`, "GET");
-    if (res.isSuccess) {
-      setOrderDetail(res.result);
-    } else {
-      showError(error);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // const fetchData = async () => {
+  //   const res = await callApi(`order/get-order-detail/${order.orderId}`, "GET");
+  //   if (res.isSuccess) {
+  //     setOrderDetail(res.result);
+  //   } else {
+  //     showError(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
   const handleChange = async () => {
     const response = await callApi(
       `${OrderApi.GET_DETAIL}/${order.orderId}`,
@@ -65,38 +65,38 @@ const OrderHistoryItem = ({ order }) => {
             <div className="flex items-center mb-2 md:mb-0">
               <img
                 src={
-                  orderDetail?.orderDishes?.[0]?.dishSizeDetail?.dish?.image ||
-                  orderDetail.orderDishes?.[0]?.comboDish?.combo?.image
+                  orderDetail?.dishSizeDetail?.dish?.image ||
+                  orderDetail.comboDish?.combo?.image
                 }
                 alt=""
                 className="w-16 h-16 object-cover rounded-md mr-4"
               />
               <div>
                 <p className="font-semibold">
-                  {orderDetail?.orderDishes?.[0]?.dishSizeDetail?.dish?.name ||
-                    orderDetail.orderDishes?.[0]?.comboDish?.combo?.name}
+                  {orderDetail?.dishSizeDetail?.dish?.name ||
+                    orderDetail?.comboDish?.combo?.name}
                 </p>
                 <p className="text-gray-600">
-                  {`Số lượng: ${orderDetail?.orderDishes?.[0]?.quantity}`}
+                  {`Số lượng: ${orderDetail?.quantity}`}
                 </p>
                 <p className="text-gray-800 font-medium">
                   {formatPrice(
-                    orderDetail?.orderDishes?.[0]?.dishSizeDetail?.price ||
-                      orderDetail.orderDishes?.[0]?.comboDish?.combo?.price
+                    orderDetail?.dishSizeDetail?.price ||
+                      orderDetail.comboDish?.combo?.price
                   )}
                 </p>
               </div>
             </div>
-            <p className="text-red-600">{`+${
+            {/* <p className="text-red-600">{`+${
               orderDetail?.orderDishes?.length - 1
-            } món khác`}</p>
+            } món khác`}</p> */}
           </div>
 
           <div className="flex justify-between items-center">
             <p className="text-lg font-semibold">
               Thành tiền:{" "}
               <span className="text-red-700">
-                {formatPrice(orderDetail.totalAmount)}
+                {formatPrice(order.totalAmount)}
               </span>
             </p>
             <button
