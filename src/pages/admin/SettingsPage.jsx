@@ -10,8 +10,10 @@ import {
   DatePicker,
   TimePicker,
 } from "antd";
-import { getAllConfig } from "../../api/configApi";
 import moment from "moment";
+import useCallApi from "../../api/useCallApi";
+import { ConfigurationApi } from "../../api/endpoint";
+import Pagination from "../../components/pagination/Pagination";
 
 const { Title } = Typography;
 
@@ -19,12 +21,22 @@ const SettingsPage = () => {
   const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const { callApi, error, loading } = useCallApi();
   const [form] = Form.useForm();
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const totalItems = 10;
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+  };
   const fetchData = async () => {
-    const response = await getAllConfig(1, 100);
+    const response = await callApi(
+      `${ConfigurationApi.GET_ALL}/${currentPage}/${totalItems}`,
+      "GET"
+    );
     if (response?.isSuccess) {
       setData(response.result?.items);
+      setTotalPages(response.result.totalPages);
     }
   };
 
@@ -119,6 +131,12 @@ const SettingsPage = () => {
       }
     >
       <Table columns={columns} dataSource={data} pagination={false} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        key={currentPage}
+        onPageChange={handleCurrentPageChange}
+      />
       <Modal
         title="Chỉnh sửa cấu hình"
         visible={isModalVisible}

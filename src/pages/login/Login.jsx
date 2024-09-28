@@ -1,42 +1,25 @@
-import { PhoneOutlined } from "@ant-design/icons";
 import { Button, Input } from "antd";
 import { useState, useEffect } from "react";
 import OtpConfirmModal from "./OtpConfirmModal";
-import { toast } from "react-toastify";
-import LoadingOverlay from "../../components/loading/LoadingOverlay";
-import { sendOtp } from "../../api/acccountApi";
 import loginImage from "../../assets/imgs/login.png";
+import useCallApi from "../../api/useCallApi";
 const LoginPage = () => {
-  const [phone, setPhone] = useState("+84");
+  const [phone, setPhone] = useState("");
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
   const [countdown, setCountdown] = useState(60);
-  const [isLoading, setIsLoading] = useState(false);
   const [resOtp, setResOtp] = useState(null);
-
-  const validatePhoneNumber = (phoneNumber) => {
-    const phoneRegex = /^\+84\d{9}$/;
-    return phoneRegex.test(phoneNumber);
-  };
+  const { callApi, error, loading } = useCallApi();
 
   const handleLogin = async (e) => {
-    try {
-      e.preventDefault();
-      if (!validatePhoneNumber(phone)) {
-        toast.error("Số điện thoại không hợp lệ. Vui lòng nhập lại.");
-        return;
-      }
-      setIsLoading(true);
-      const phoneNumberWithoutPrefix = phone.replace(/^\+84/, "");
-      const data = await sendOtp(phoneNumberWithoutPrefix, 0);
-      if (data?.isSuccess) {
-        setResOtp(data?.result);
-        setIsOtpModalVisible(true);
-        setCountdown(60);
-      }
-    } catch (error) {
-      toast.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
-    } finally {
-      setIsLoading(false);
+    e.preventDefault();
+    const data = await callApi(
+      `/api/account/send-otp?phoneNumber=${phone}&otp=${0}`,
+      "POST"
+    );
+    if (data?.isSuccess) {
+      setResOtp(data?.result);
+      setIsOtpModalVisible(true);
+      setCountdown(60);
     }
   };
 
@@ -54,9 +37,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <LoadingOverlay isLoading={isLoading} />
       <div className="flex flex-col md:flex-row max-w-6xl bg-white rounded-lg shadow-lg w-full">
-        {/* Image section */}
         <div className="w-full md:w-1/2 p-6">
           <img
             src={loginImage}
@@ -65,7 +46,6 @@ const LoginPage = () => {
           />
         </div>
 
-        {/* Form section */}
         <div className="w-full md:w-1/2 p-6 flex flex-col justify-center">
           <h1 className="text-2xl font-bold text-center text-red-700 mb-4">
             Đăng nhập
@@ -77,7 +57,7 @@ const LoginPage = () => {
             <Input
               id="phone"
               placeholder="Nhập số điện thoại"
-              prefix={<PhoneOutlined />}
+              prefix={"+84"}
               className="border border-gray-300 rounded"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -86,6 +66,7 @@ const LoginPage = () => {
               type="primary"
               className="bg-red-700 hover:bg-red-800 w-full"
               htmlType="submit"
+              loading={loading}
             >
               Đăng nhập ngay
             </Button>
@@ -97,7 +78,7 @@ const LoginPage = () => {
         countdown={countdown}
         onClose={() => setIsOtpModalVisible(false)}
         resOtp={resOtp}
-        phoneNumber={`${phone.replace(/^\+84/, "")}`}
+        phoneNumber={phone}
         otpType={0}
       />
     </div>

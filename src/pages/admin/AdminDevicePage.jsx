@@ -8,15 +8,26 @@ import {
 } from "@material-tailwind/react";
 import { Table } from "antd";
 import { ArrowPathIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import { getAllDevices } from "../../api/deviceApi";
 import { useEffect, useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { MdEditNote } from "react-icons/md";
+import useCallApi from "../../api/useCallApi";
+import Pagination from "../../components/pagination/Pagination";
 
 export function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
+  const { callApi, error, loading } = useCallApi();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const totalItems = 10;
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+  };
   const fetchData = async () => {
-    const response = await getAllDevices(1, 10);
+    const response = await callApi(
+      `/device/get-all-device?pageNumber=${currentPage}&pageSize=${totalItems}`,
+      "GET"
+    );
     if (response?.isSuccess) {
       setDevices(response?.result?.items);
     }
@@ -116,14 +127,17 @@ export function AdminDevicePage() {
             <Input
               label="Tìm kiếm"
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              //   value={searchQuery}
-              //   onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
       </CardHeader>
       <CardBody className="overflow-auto h-[550px]">
         <Table dataSource={devices} columns={columns} rowKey="deviceId" />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handleCurrentPageChange}
+        />
       </CardBody>
     </Card>
   );

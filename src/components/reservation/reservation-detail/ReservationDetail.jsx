@@ -5,7 +5,7 @@ import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import { PaymentMethod } from "../../../util/GlobalType";
-import { formatPrice } from "../../../util/Utility";
+import { formatDateTime, formatPrice } from "../../../util/Utility";
 
 const ReservationDetail = ({ reservationData }) => {
   const { order, orderDishes, orderTables } = reservationData;
@@ -30,7 +30,17 @@ const ReservationDetail = ({ reservationData }) => {
         return <span className="text-gray-600">Không xác định</span>;
     }
   };
-
+  console.log(reservationData);
+  const renderOrderTime = () => {
+    switch (order?.orderTypeId) {
+      case 1:
+        return formatDateTime(order.reservationDate);
+      case 2:
+        return formatDateTime(order.orderDate);
+      case 3:
+        return formatDateTime(order.mealTime);
+    }
+  };
   const columns = [
     {
       title: "Tên món",
@@ -153,10 +163,7 @@ const ReservationDetail = ({ reservationData }) => {
               label="Mã đơn đặt hàng"
               value={order?.orderId.substring(0, 8)}
             />
-            <InfoItem
-              label="Thời gian tạo"
-              value={moment(order?.reservationDate).format("DD/MM/YYYY HH:mm")}
-            />
+            <InfoItem label="Thời gian tạo" value={renderOrderTime()} />
             <InfoItem
               label="Họ và tên"
               value={`${order?.account?.lastName} ${order?.account?.firstName}`}
@@ -188,7 +195,7 @@ const ReservationDetail = ({ reservationData }) => {
             />
             <InfoItem
               label="Tổng giá trị đơn hàng"
-              value={formatPrice(calculateTotalOrder())}
+              value={formatPrice(order?.totalAmount)}
             />
           </div>
           <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
