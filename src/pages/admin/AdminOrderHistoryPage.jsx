@@ -12,14 +12,13 @@ import {
   Chip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { message, Select, Table } from "antd";
-import { getOrderDetailById } from "../../api/orderApi";
+import { message, Table } from "antd";
 import { formatDateTime } from "../../util/Utility";
 import OrderDetailModal from "./order-detail/OrderDetailModal";
-import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import useCallApi from "../../api/useCallApi";
 import Pagination from "../../components/pagination/Pagination";
 import TabMananger from "../../components/tab/TabManager";
+import { OrderApi } from "../../api/endpoint";
 
 const TABS = [
   {
@@ -142,7 +141,10 @@ export function AdminOrderHistoryPage() {
   const fetchOrderDetail = async (orderId) => {
     try {
       setIsLoading(true);
-      const response = await getOrderDetailById(orderId);
+      const response = await callApi(
+        `${OrderApi.GET_DETAIL}/${orderId}`,
+        "GET"
+      );
       if (response?.isSuccess) {
         setOrderSelected(response?.result);
         handleOpen();

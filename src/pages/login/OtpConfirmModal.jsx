@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Modal, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { loginWithOtp, verifyCustomerInfoOTP } from "../../api/acccountApi";
 import { useDispatch } from "react-redux";
 import { author, login } from "../../redux/features/authSlice";
 import useCallApi from "../../api/useCallApi";
@@ -44,7 +43,7 @@ const OtpConfirmModal = ({
     const otpString = otp.join("");
     switch (otpType) {
       case 0:
-        const resposne = await loginWithOtp({
+        const resposne = await callApi(`/api/account/login`, "POST", {
           phoneNumber: phoneNumber,
           otpCode: otpString,
         });
@@ -61,7 +60,6 @@ const OtpConfirmModal = ({
         }
         break;
       case 1:
-        // const data = await verifyCustomerInfoOTP(phoneNumber, otpString, 1);
         const data = await callApi(
           `${
             AccountApi.VERIFY_ACCOUNT_OTP

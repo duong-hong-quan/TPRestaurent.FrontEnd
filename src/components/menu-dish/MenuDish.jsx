@@ -3,7 +3,6 @@ import { formatPrice } from "../../util/Utility";
 import DishCard from "./dish-card/DishCard";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cartReservationSlice";
-import { getAllDishTypes } from "../../api/dishApi";
 import useCallApi from "../../api/useCallApi";
 import { DishApi } from "../../api/endpoint";
 import { NavLink } from "react-router-dom";

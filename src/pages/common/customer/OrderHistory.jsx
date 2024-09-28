@@ -17,10 +17,6 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  getCustomerInfoByPhoneNumber,
-  updateCustomerInfo,
-} from "../../../api/acccountApi";
 import { formatPrice, isEmptyObject, showError } from "../../../util/Utility";
 import ReservationList from "../../../components/reservation/reservation-list/ReservationList";
 import { Search } from "lucide-react";
@@ -40,7 +36,6 @@ export function OrderHistory() {
   const [orderStatus, setOrderStatus] = useState("all");
   const [reservations, setReservations] = useState([]);
   const [orders, setOrders] = useState([]);
-  // const [loading, setLoading] = useState(false);
   const [customer, setCustomer] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
@@ -76,25 +71,6 @@ export function OrderHistory() {
       setIsUpdate(false);
       setIsModalOpen(true);
       showError(error);
-    }
-  };
-
-  const handleSubmit = async (formData) => {
-    if (isUpdate) {
-      const data = await updateCustomerInfo(formData);
-      if (data?.isSuccess) {
-        await getCustomerInfoByPhoneNumber(formData.phoneNumber);
-        message.success("Cập nhật thông tin thành công!");
-      } else {
-        message.error("Cập nhật thông tin thất bại!");
-      }
-    } else {
-      const data = await addNewCustomerInfo(formData);
-      if (data?.isSuccess) {
-        message.success("Thêm mới thông tin thành công!");
-      } else {
-        message.success("Thêm mới thông tin thất bại!");
-      }
     }
   };
 
