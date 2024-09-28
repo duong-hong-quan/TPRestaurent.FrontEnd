@@ -18,7 +18,7 @@ export const ProtectedRoute = ({ children, role }) => {
           }
           break;
         case "user":
-          if (user.mainRole !== "CUSTOMER") {
+          if (localStorage.getItem("token") === null) {
             navigate("/");
           }
           break;
@@ -36,7 +36,6 @@ export const ProtectedRoute = ({ children, role }) => {
   if (
     isEmptyObject(user) ||
     (role === "admin" && user.mainRole !== "ADMIN") ||
-    (role === "user" && user.mainRole !== "CUSTOMER") ||
     (role === "kitchen" && user.mainRole !== "CHEF")
   ) {
     return null; // or a loading spinner, or a redirect component

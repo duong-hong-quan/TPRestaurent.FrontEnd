@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Button, Input, message, Modal, Switch, Typography } from "antd";
+import {
+  Button,
+  Checkbox,
+  Input,
+  message,
+  Modal,
+  Switch,
+  Typography,
+} from "antd";
 import {
   UserOutlined,
   PhoneOutlined,
@@ -29,6 +37,9 @@ import useCallApi from "../../api/useCallApi";
 const { Title, Text } = Typography;
 import { OrderApi } from "../../api/endpoint";
 import LoadingOverlay from "../loading/LoadingOverlay";
+import AddressModal from "../user/AddressModal";
+import PolicyOrder from "../policy/PolicyOrder";
+import { IconButton } from "@material-tailwind/react";
 const InfoItem = ({ icon, label, value }) => (
   <div className="flex items-center mb-2">
     {icon}
@@ -62,7 +73,12 @@ const CartSummary = ({ handleClose }) => {
   const [open, setOpen] = useState(false);
   const { callApi, error, loading } = useCallApi();
   const [isLoyaltyEnabled, setIsLoyaltyEnabled] = useState(false);
-
+  const [isAgree, setIsAgree] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [note, setNote] = useState("");
   const handleSwitchChange = (event) => {
     setIsLoyaltyEnabled(event);
   };
@@ -99,9 +115,13 @@ const CartSummary = ({ handleClose }) => {
   const handleRemoveCombo = (comboId, selectedDishes) => {
     dispatch(removeCombo({ comboId, selectedDishes }));
   };
-
+  const currentAddress = user.addresses?.filter(
+    (address) => address.isCurrentUsed
+  )[0];
+  const customerInfoAddressName = currentAddress?.customerInfoAddressName || "";
   const handleCheckOut = async () => {
     const { reservationDishDtos } = mergeCartData(cartReservation, cart);
+
     const updatedData = {
       customerId: user.id,
       orderType: 2,
@@ -112,8 +132,7 @@ const CartSummary = ({ handleClose }) => {
         couponIds: [],
         loyalPointToUse: isLoyaltyEnabled ? user.loyaltyPoint : 0,
         paymentMethod: selectedMethod,
-        address: user.addresses.filter((address) => address.isCurrentUsed)[0]
-          .customerInfoAddressName,
+        address: customerInfoAddressName,
       },
     };
     const response = await callApi(
@@ -148,88 +167,123 @@ const CartSummary = ({ handleClose }) => {
       <Title level={3} className="uppercase text-center mb-6">
         Xác nhận đơn hàng
       </Title>
-      <Title level={4} className="text-start mb-4">
-        Thông tin giao hàng
-      </Title>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="shadow-md rounded-md border border-collapse p-4">
-          <InfoItem
-            icon={<UserOutlined />}
-            label="Họ tên"
-            value={`${user.firstName} ${user.lastName}`}
-          />
-          <InfoItem
-            icon={<PhoneOutlined />}
-            label="Số điện thoại"
-            value={`0${user.phoneNumber}`}
-          />
-          <InfoItem
-            icon={<HomeOutlined />}
-            label="Địa chỉ"
-            value={
-              user.addresses.filter((address) => address.isCurrentUsed)[[0]]
-                .customerInfoAddressName
-            }
-          />
-          <InfoItem
-            icon={<FileTextOutlined />}
-            label="Ghi chú"
-            value={<Input />}
-          />
-        </div>
+      <div>
+        <Title level={4} className="text-start mb-4">
+          Thông tin giao hàng
+        </Title>
 
-        <div>
-          <Title level={4} className="text-start mb-4">
-            Ưu đãi và điểm thưởng
-          </Title>
-          <ActionItem icon={<TagOutlined />} label="Voucher">
-            <div className="flex items-center">
-              <Text className="mr-2">Giảm 10% hóa đơn</Text>
-              <button className="bg-red-800 hover:bg-red-800 text-white px-4 py-1 rounded-md transition duration-300">
-                Chọn
-              </button>
-            </div>
-          </ActionItem>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
+          <div className="shadow-md rounded-md border border-collapse p-4 relative">
+            <Button
+              className="bg-red-800 text-white ml-auto absolute top-2 right-2"
+              onClick={() => setIsModalVisible(!isModalVisible)}
+            >
+              Chỉnh sửa
+            </Button>
+            <InfoItem
+              icon={<UserOutlined />}
+              label="Họ tên"
+              value={`${user.firstName} ${user.lastName}`}
+            />
+            <InfoItem
+              icon={<PhoneOutlined />}
+              label="Số điện thoại"
+              value={`0${user.phoneNumber}`}
+            />
+            <InfoItem
+              icon={<HomeOutlined />}
+              label="Địa chỉ"
+              value={customerInfoAddressName}
+            />
+            <InfoItem
+              icon={<FileTextOutlined />}
+              label="Ghi chú"
+              value={note}
+            />
+          </div>
 
-          {user.loyalPoint > 0 && (
-            <ActionItem icon={<StarOutlined />} label="Tích điểm">
-              <div className="flex">
-                <Typography className="text-[#333333] mx-2">
-                  {user.loyalPoint} điểm
-                </Typography>
-                <Switch
-                  checked={isLoyaltyEnabled}
-                  onChange={(e) => handleSwitchChange(e)}
-                />
+          <div>
+            <Title level={4} className="text-start mb-4">
+              Ưu đãi và điểm thưởng
+            </Title>
+            <ActionItem icon={<TagOutlined />} label="Voucher">
+              <div className="flex items-center">
+                <Text className="mr-2">Giảm 10% hóa đơn</Text>
+                <button className="bg-red-800 hover:bg-red-800 text-white px-4 py-1 rounded-md transition duration-300">
+                  Chọn
+                </button>
               </div>
             </ActionItem>
-          )}
 
-          {user.storeCredit > 0 && (
-            <ActionItem icon={<DollarOutlined />} label="Sử dụng số dư">
-              <div className="flex">
-                <Typography className="text-[#333333] mx-2">
-                  {user.storeCredit} coin
-                </Typography>
-                <Switch />
-              </div>
+            {user.loyalPoint > 0 && (
+              <ActionItem icon={<StarOutlined />} label="Tích điểm">
+                <div className="flex">
+                  <Typography className="text-[#333333] mx-2">
+                    {user.loyalPoint} điểm
+                  </Typography>
+                  <Switch
+                    checked={isLoyaltyEnabled}
+                    onChange={(e) => handleSwitchChange(e)}
+                  />
+                </div>
+              </ActionItem>
+            )}
+
+            {user.storeCredit > 0 && (
+              <ActionItem icon={<DollarOutlined />} label="Sử dụng số dư">
+                <div className="flex">
+                  <Typography className="text-[#333333] mx-2">
+                    {user.storeCredit} coin
+                  </Typography>
+                  <Switch />
+                </div>
+              </ActionItem>
+            )}
+            <ActionItem icon={<FileTextOutlined />} label="Ghi chú">
+              {isEditing ? (
+                <div className="flex">
+                  <Input
+                    className="w-[25vw]"
+                    placeholder="Nhập ghi chú"
+                    onChange={(e) => setNote(e.target.value)}
+                    value={note}
+                  />
+                  <IconButton
+                    className="bg-white text-red-900 shadow-none text-2xl"
+                    onClick={() => {
+                      setIsEditing(!isEditing);
+                    }}
+                  >
+                    <i className="fas fa-save"></i>
+                  </IconButton>
+                </div>
+              ) : (
+                <div>
+                  <span>{note}</span>
+                  <IconButton
+                    className="bg-white text-red-900 shadow-none"
+                    onClick={() => {
+                      setIsEditing(!isEditing);
+                    }}
+                  >
+                    <i className="fas fa-edit"></i>
+                  </IconButton>
+                </div>
+              )}
             </ActionItem>
-          )}
-          <ActionItem icon={<FileTextOutlined />} label="Ghi chú">
-            <Input className="w-[25vw]" placeholder="Nhập ghi chú" />
-          </ActionItem>
-          <div className="flex justify-between items-center my-4">
-            <Typography className="text-[#333333] ">
-              Chọn phương thức thanh toán:
-            </Typography>{" "}
-            <div className="flex items-center">
-              <span className="mx-2"> {selectedPaymentMethodIcon()}</span>
-              <Button
-                className="bg-red-800 text-white hover:bg-red-600"
-                onClick={handleClickOpen}
-              >
-                Chọn
-              </Button>
+            <div className="flex justify-between items-center my-4">
+              <Typography className="text-[#333333] ">
+                Chọn phương thức thanh toán:
+              </Typography>{" "}
+              <div className="flex items-center">
+                <span className="mx-2"> {selectedPaymentMethodIcon()}</span>
+                <Button
+                  className="bg-red-800 text-white hover:bg-red-600"
+                  onClick={handleClickOpen}
+                >
+                  Chọn
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -252,9 +306,18 @@ const CartSummary = ({ handleClose }) => {
         handleRemoveCombo={handleRemoveCombo}
         isDisabled={true}
       />
+      <PolicyOrder />
+      <Checkbox
+        onChange={() => {
+          setIsAgree(!isAgree);
+        }}
+        className="font-bold text-lg my-2"
+      >
+        Tôi đồng ý các điều khoản và chính sách mua hàng tại nhà hàng Thiên Phú
+      </Checkbox>
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-lg">Tạm tính:</span>
+        <div className="flex justify-between items-center mb-4 bg-gray-100 shadow-md py-6 px-4">
+          <span className="text-lg text-black">Tạm tính:</span>
           <Typography
             variant="h2"
             className="font-bold text-red-700 text-center"
@@ -286,10 +349,15 @@ const CartSummary = ({ handleClose }) => {
           </>
         )}
       </div>
+
       <div className="flex justify-center">
-        <Button className="bg-red-900 text-white" onClick={handleCheckOut}>
-          Xác nhận thanh toán
-        </Button>
+        {isAgree && (
+          <>
+            <Button className="bg-red-900 text-white" onClick={handleCheckOut}>
+              Xác nhận thanh toán
+            </Button>
+          </>
+        )}
       </div>
       <div>
         <Modal open={open} onCancel={handleModalClose} footer={null}>
@@ -304,6 +372,16 @@ const CartSummary = ({ handleClose }) => {
           </div>
         </Modal>
       </div>
+
+      <AddressModal
+        editingAddress={editingAddress}
+        isModalVisible={isModalVisible}
+        setEditingAddress={setEditingAddress}
+        setIsModalVisible={setIsModalVisible}
+        isAdding={isAdding}
+        setIsAdding={setIsAdding}
+        key={"address"}
+      />
     </div>
   );
 };

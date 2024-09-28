@@ -33,20 +33,19 @@ const OptimizeProcess = () => {
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
-        <Space>
+        <div className="flex">
           <img
             src="https://s3-alpha-sig.figma.com/img/c817/e458/5e24a4313f974e4003568eac783fb722?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=FpTXIzyP1-CCLe7~zWawnzhpkM0lVavAiY0kxVqDRxiHZi6zH7ckBAM37xxN2W~TYMoSulOb7WOZa0llcpk0Z08MnNUq96MDBh-esp-lH5-decgVFn5ue1roVC3~DhrUv7Lsvzqlp5jk3Buoghh2HaUj8f4OKVPROzqEdt1-rWar23WcFrkRLdT9dlCRZL0ZoVRpT7pejoaqcpwGD9CUoB-5plyhFYDNWOpv76JXbjxejOOMYeawjY1dXofQWvPBF7L-MrNCwAbdCNnBEW7D3nvYEvxbEL2Lc6BLaiTcsHSTawmdAGKe8oAEP3UsE7i-zf7iThlueurJaAleYOS3-g__"
             alt={text}
-            style={{ width: 40, height: 40, borderRadius: 4 }}
-            className="object-cover"
+            className="object-cover w-14 h-14"
           />
-          <Space direction="vertical" size={0}>
-            <Text>{text}</Text>
+          <div className="ml-4 flex flex-col">
+            <Text className="">{text}</Text>
             <Text type="secondary" style={{ fontSize: 12 }}>
               <ClockCircleOutlined /> {record.cookTime}
             </Text>
-          </Space>
-        </Space>
+          </div>
+        </div>
       ),
     },
     { title: "SỐ LƯỢNG", dataIndex: "quantity", key: "quantity" },
@@ -131,7 +130,7 @@ const OptimizeProcess = () => {
             <Card
               title="MÓN LẺ ĐƠN ORDER"
               headStyle={{
-                background: "#ff4d4f",
+                background: "#C01D2E",
                 color: "#fff",
                 textAlign: "center",
               }}

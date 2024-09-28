@@ -1,6 +1,10 @@
 import { formatDate } from "../../util/Utility";
 
 const UserInfo = ({ userData, handleOpenUpdate }) => {
+  const currentAddress = userData?.addresses?.filter(
+    (address) => address.isCurrentUsed
+  )[0];
+  const customerInfoAddressName = currentAddress?.customerInfoAddressName || "";
   return (
     <div className="bg-[#fff6e7] rounded-lg shadow-md p-4 max-w-7xl mx-auto my-10">
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
@@ -16,10 +20,7 @@ const UserInfo = ({ userData, handleOpenUpdate }) => {
             </div>
             <div className="flex items-center space-x-2 text-red-700">
               <i className="fas fa-map-marker-alt"></i>
-              <p>
-                {userData?.addresses.filter((i) => i.isCurrentUsed)[0]
-                  .customerInfoAddressName || "Chưa cung cấp"}
-              </p>
+              <p>{customerInfoAddressName || "Chưa cung cấp"}</p>
             </div>
             <div className="flex items-center space-x-2 text-red-700">
               <i className="fas fa-phone"></i>
