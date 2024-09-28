@@ -2,16 +2,16 @@ import React from "react";
 
 const PolicyBooking = () => {
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-      <div className="px-6 py-4 bg-gray-100">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
+    <div className="max-w-2xl">
+      <div className="py-4">
+        <h2 className="text-2xl font-bold text-red-800 uppercase">
           Chính sách đặt bàn
         </h2>
       </div>
-      <div className="p-6 space-y-6">
+      <div className=" space-y-6">
         <section>
-          <h3 className="text-xl font-semibold mb-2 text-gray-700">
-            1. Đặt chỗ
+          <h3 className="text-xl font-semibold mb-2 text-gray-700 uppercase ">
+            Đặt chỗ
           </h3>
           <ul className="list-disc list-inside space-y-2 text-gray-600">
             <li>Thanh toán cọc trước 100% giá trị đặt chỗ</li>
@@ -20,16 +20,13 @@ const PolicyBooking = () => {
         </section>
 
         <section>
-          <h3 className="text-xl font-semibold mb-2 text-gray-700">
-            2. Đặt kèm đồ ăn
+          <h3 className="text-xl font-semibold mb-2 text-gray-700 uppercase">
+            Đặt kèm đồ ăn
           </h3>
-          <ul className="list-disc list-inside space-y-2 text-gray-600">
+          <ul className="list-disc list-inside space-y-2 text-gray-600 ">
             <li>
-              Thanh toán tiền cọc bằng tổng của:
-              <ul className="list-circle list-inside ml-4 mt-2">
-                <li>Phần trăm giá trị đơn đặt đồ ăn</li>
-                <li>Tiền giữ chỗ</li>
-              </ul>
+              Thanh toán tiền cọc = Phần trăm giá trị đơn đặt đồ ăn + Tiền giữ
+              chỗ
             </li>
           </ul>
         </section>

@@ -8,12 +8,16 @@ const config = {
 const api = axios.create(config);
 api.defaults.baseURL = baseUrl;
 const handleBefore = (config) => {
-  const token = localStorage.getItem("accessToken")?.replaceAll('"', "");
+  const token = localStorage.getItem("token")?.replaceAll('"', "");
   config.headers["Authorization"] = `Bearer ${token}`;
   return config;
 };
 const handleError = (error) => {
-  return;
+  if (error.response && error.response.status === 401) {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  }
+  return Promise.reject(error);
 };
 api.interceptors.request.use(handleBefore, handleError);
 // api.interceptors.response.use(null, handleError);
