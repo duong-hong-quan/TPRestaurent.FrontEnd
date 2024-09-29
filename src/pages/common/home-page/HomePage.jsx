@@ -74,7 +74,7 @@ export const HomePage = () => {
             <SliderHome />
           </div>
 
-          <div className="container">
+          <div className="xl:container">
             <TopVoucher />
             <IntroHome />
             <BestSeller />

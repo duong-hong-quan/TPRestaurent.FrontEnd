@@ -1,9 +1,6 @@
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import slider1 from "../../assets/imgs/slider/slider1.png";
-import slider2 from "../../assets/imgs/slider/slider2.png";
-import slider3 from "../../assets/imgs/slider/slider3.png";
 import banner from "../../assets/imgs/banner.png";
 
 const SliderHome = () => {

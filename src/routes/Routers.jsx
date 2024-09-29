@@ -34,6 +34,7 @@ import OptimizeProcess from "../pages/kitchen/optimize-process/OptimizeProcess";
 import { AdminMealHistoryPage } from "../pages/admin/AdminMealHistoryPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import PolicyPage from "../pages/common/policy/PolicyPage";
+import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
 
 function Routers() {
   const routing = useRoutes([
@@ -125,7 +126,7 @@ function Routers() {
         },
         {
           path: "reservation-history",
-          element: <PersonalTransaction />,
+          element: <PersonalReservation />,
         },
         {
           path: "transaction-history",

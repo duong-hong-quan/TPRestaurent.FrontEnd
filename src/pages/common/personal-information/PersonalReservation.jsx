@@ -1,27 +1,27 @@
 import { useEffect, useState } from "react";
-import OrderHistoryList from "../../../components/order-history/OrderHistoryList";
 import useCallApi from "../../../api/useCallApi";
 import { useSelector } from "react-redux";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import Pagination from "../../../components/pagination/Pagination";
 import TabMananger from "../../../components/tab/TabManager";
+import ReservationList from "../../../components/reservation/reservation-list/ReservationList";
 import { OrderApi } from "../../../api/endpoint";
 
-const PersonalOrder = () => {
+const PersonalReservation = () => {
   const { callApi, error, loading } = useCallApi();
   const user = useSelector((state) => state.user.user || {});
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
-  const [activeTab, setActiveTab] = useState(4);
+  const [activeTab, setActiveTab] = useState(1);
 
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
   const fetchData = async () => {
     const res = await callApi(
-      `${OrderApi.GET_BY_PHONE}/${currentPage}/${totalItems}?phoneNumber=${user.phoneNumber}&status=${activeTab}&orderType=2`,
+      `${OrderApi.GET_BY_PHONE}/${currentPage}/${totalItems}?phoneNumber=${user.phoneNumber}&status=${activeTab}&orderType=1`,
       "GET"
     );
     if (res.isSuccess) {
@@ -29,15 +29,13 @@ const PersonalOrder = () => {
       setTotalPages(res.result.totalPages);
     }
   };
-  console.log(activeTab);
   useEffect(() => {
     fetchData();
   }, [user, currentPage, activeTab]);
   const tabs = [
-    { value: 4, label: "Chờ xác nhận" },
-    { value: 5, label: "Chưa thanh toán" },
-    { value: 6, label: "Đang giao" },
-    { value: 7, label: "Đã nhận hàng" },
+    { value: 1, label: "Đã xếp bàn" },
+    { value: 2, label: "Đã thanh toán cọc" },
+    { value: 3, label: "Đang dùng bữa" },
     { value: 8, label: "Đã huỷ" },
   ];
 
@@ -60,7 +58,7 @@ const PersonalOrder = () => {
 
       <div className="mt-4">
         <div className="h-[38rem] overflow-auto">
-          <OrderHistoryList orders={orders} />
+          <ReservationList reservations={orders} />
         </div>
         <Pagination
           currentPage={currentPage}
@@ -71,4 +69,4 @@ const PersonalOrder = () => {
     </div>
   );
 };
-export default PersonalOrder;
+export default PersonalReservation;
