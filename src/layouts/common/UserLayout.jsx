@@ -34,9 +34,11 @@ const UserLayout = () => {
             <div className={` ${sidebarOpen ? "block" : "hidden"} xl:block`}>
               <UserSidebar />
             </div>
-            <ChatButton />
+            <div className="flex-1">
+              <ChatButton />
 
-            <Outlet />
+              <Outlet />
+            </div>
           </div>
         </div>
       </div>

@@ -172,23 +172,28 @@ const ReservationDetail = ({ reservationData }) => {
               label="Điện thoại"
               value={`0${order?.account?.phoneNumber}`}
             />
-            <InfoItem
-              label="Số lượng khách"
-              value={`${order?.numOfPeople} người`}
-            />
-            <InfoItem
-              label="Loại bàn"
-              value={
-                orderTables && orderTables.length > 0
-                  ? orderTables
-                      .map(
-                        (item, index) =>
-                          `Bàn ${item.table?.tableSizeId} người - ${item.table?.room?.name}`
-                      )
-                      .join(", ")
-                  : "Chưa có thông tin"
-              }
-            />
+            {order?.orderTypeId != 2 && (
+              <InfoItem
+                label="Số lượng khách"
+                value={`${order?.numOfPeople} người`}
+              />
+            )}
+            {order?.orderTypeId != 2 && (
+              <InfoItem
+                label="Loại bàn"
+                value={
+                  orderTables && orderTables.length > 0
+                    ? orderTables
+                        .map(
+                          (item, index) =>
+                            `Bàn ${item.table?.tableSizeId} người - ${item.table?.room?.name}`
+                        )
+                        .join(", ")
+                    : "Chưa có thông tin"
+                }
+              />
+            )}
+
             <InfoItem
               label="Ghi chú"
               value={order?.note || "Không có ghi chú"}
@@ -207,8 +212,14 @@ const ReservationDetail = ({ reservationData }) => {
               Thông Tin Đặt Cọc
             </Typography>
             <InfoItem
-              label="Số tiền đặt cọc"
-              value={`${order?.deposit?.toLocaleString()} VND`}
+              label={
+                order?.orderTypeId != 2 ? "Số tiền cọc" : "Tổng tiền thanh toán"
+              }
+              value={
+                order?.orderTypeId != 2
+                  ? `${order?.deposit?.toLocaleString()} VND`
+                  : `${calculateTotalOrder().toLocaleString()} VND`
+              }
             />
             <InfoItem
               label="Phương thức thanh toán"
@@ -216,7 +227,9 @@ const ReservationDetail = ({ reservationData }) => {
               isComponent
             />
             <InfoItem
-              label="Đã đặt cọc lúc"
+              label={
+                order?.orderTypeId != 2 ? "Đã đặt cọc lúc" : "Đã thanh toán lúc"
+              }
               value={moment(order?.depositDate).format("DD/MM/YYYY HH:mm")}
             />
           </div>

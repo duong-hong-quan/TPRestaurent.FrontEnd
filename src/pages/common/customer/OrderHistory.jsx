@@ -23,6 +23,7 @@ import { Search } from "lucide-react";
 import useCallApi from "../../../api/useCallApi";
 import { AccountApi, OrderApi } from "../../../api/endpoint";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import OrderHistoryList from "../../../components/order-history/OrderHistoryList";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -33,12 +34,11 @@ export function OrderHistory() {
   const navigate = useNavigate();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [reservationStatus, setReservationStatus] = useState("");
-  const [orderStatus, setOrderStatus] = useState("all");
+  const [orderStatus, setOrderStatus] = useState("");
   const [reservations, setReservations] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [customer, setCustomer] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
+
+  const [tabSelected, setTabSelected] = useState(1);
   const { callApi, error, loading } = useCallApi();
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -56,93 +56,27 @@ export function OrderHistory() {
       return;
     }
     const responseReservation = await callApi(
-      `${OrderApi.GET_BY_PHONE}/1/10?phoneNumber=${searchPhoneNumber}`,
+      `${OrderApi.GET_BY_PHONE}/1/10?phoneNumber=${searchPhoneNumber}&status=${reservationStatus}&orderType=1`,
       "GET"
     );
-    const responseInfo = await callApi(
-      `${AccountApi.GET_BY_PHONE}?phoneNumber=${searchPhoneNumber}`,
+    const orderResponse = await callApi(
+      `${OrderApi.GET_BY_PHONE}/1/10?phoneNumber=${searchPhoneNumber}&status=${orderStatus}&orderType=2`,
       "GET"
     );
-    if (responseReservation?.isSuccess && responseInfo?.isSuccess) {
+
+    if (responseReservation?.isSuccess && orderResponse?.isSuccess) {
       setReservations(responseReservation?.result?.items);
-      setCustomer(responseInfo?.result);
-      setIsUpdate(true);
+      setOrders(orderResponse?.result?.items);
     } else {
-      setIsUpdate(false);
-      setIsModalOpen(true);
       showError(error);
     }
   };
 
-  const columns = [
-    {
-      title: "Mã đơn hàng",
-      dataIndex: "orderId",
-      key: "orderId",
-      render: (text) => <a>{text.substring(0, 8)}</a>,
-    },
-    {
-      title: "Ngày đặt hàng",
-      dataIndex: "orderDate",
-      key: "orderDate",
-      render: (text) => new Date(text).toLocaleString(),
-    },
-    {
-      title: "Tổng tiền",
-      dataIndex: "totalAmount",
-      key: "totalAmount",
-      render: (amount) => `${formatPrice(amount)}`,
-    },
-    {
-      title: "Trạng thái",
-      key: "status",
-      dataIndex: "status",
-      render: (status) => (
-        <Tag
-          color={status.id === 2 ? "blue" : "green"}
-          icon={
-            status.id === 2 ? <SyncOutlined spin /> : <CheckCircleOutlined />
-          }
-        >
-          {status.vietnameseName}
-        </Tag>
-      ),
-    },
-    {
-      title: "Khách hàng",
-      dataIndex: "customerInfo",
-      key: "customer",
-      render: (customerInfo) => customerInfo.name,
-    },
-    {
-      title: "Phương thức thanh toán",
-      dataIndex: "paymentMethod",
-      key: "paymentMethod",
-      render: (paymentMethod) => paymentMethod.name,
-    },
-    {
-      title: "Delivering",
-      dataIndex: "isDelivering",
-      key: "isDelivering",
-      render: (isDelivering) =>
-        isDelivering ? (
-          <Tag color="green" icon={<CheckCircleOutlined />}>
-            Yes
-          </Tag>
-        ) : (
-          <Tag color="red" icon={<CloseCircleOutlined />}>
-            No
-          </Tag>
-        ),
-    },
-  ];
-
   useEffect(() => {
     if (phoneNumber) {
-      // fetchDataReservation();
-      // fetchDataOrder();
+      handleSearch(phoneNumber);
     }
-  }, [reservationStatus, orderStatus]);
+  }, [reservationStatus, orderStatus, tabSelected]);
 
   const updateUrlWithPhoneNumber = (phone) => {
     const searchParams = new URLSearchParams(location.search);
@@ -184,50 +118,51 @@ export function OrderHistory() {
         </div>
       </Card>
 
-      {!isEmptyObject(customer) && (
-        <Card className="shadow-none border-none">
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="Lịch sử đặt chỗ" key="1">
-              <Space className="mb-4">
-                <Select
-                  value={reservationStatus}
-                  style={{ width: 200 }}
-                  onChange={(value) => setReservationStatus(value)}
-                >
-                  <Option value="">Tất cả</Option>
-                  <Option value="1">Đang chờ thanh toán</Option>
-                  <Option value="2">Đã thanh toán</Option>
-                  <Option value="3">Đã hủy</Option>
-                </Select>
-              </Space>
-              {reservations.length > 0 ? (
-                <ReservationList reservations={reservations} />
-              ) : (
-                <p>Không có dữ liệu đặt chỗ</p>
-              )}
-            </TabPane>
-            <TabPane tab="Lịch sử đơn hàng" key="2">
-              <Space className="mb-4">
-                <Select
-                  value={orderStatus}
-                  style={{ width: 200 }}
-                  onChange={(value) => setOrderStatus(value)}
-                >
-                  <Option value="all">Tất cả</Option>
-                  <Option value="1">Đang xử lý</Option>
-                  <Option value="2">Đã hoàn thành</Option>
-                  <Option value="3">Đã hủy</Option>
-                </Select>
-              </Space>
-              {orders.length > 0 ? (
-                <Table columns={columns} dataSource={orders} />
-              ) : (
-                <p>Không có dữ liệu đơn hàng</p>
-              )}
-            </TabPane>
-          </Tabs>
-        </Card>
-      )}
+      <Card className="shadow-none border-none">
+        <Tabs
+          defaultActiveKey="1"
+          onChange={(e) => setTabSelected(e)}
+          value={tabSelected}
+        >
+          <TabPane tab="Lịch sử đặt chỗ" key="1">
+            <Space className="mb-4">
+              <Select
+                value={reservationStatus}
+                style={{ width: 200 }}
+                onChange={(value) => setReservationStatus(value)}
+              >
+                <Option value="">Tất cả</Option>
+                <Option value="1">Đã xếp bàn</Option>
+                <Option value="2">Đã thanh toán cọc</Option>
+                <Option value="3">Đang dùng bữa</Option>
+                <Option value="8">Đã hủy</Option>
+              </Select>
+            </Space>
+            {reservations.length > 0 ? (
+              <ReservationList reservations={reservations} />
+            ) : (
+              <p>Không có dữ liệu đặt chỗ</p>
+            )}
+          </TabPane>
+          <TabPane tab="Lịch sử đơn hàng" key="2">
+            <Space className="mb-4">
+              <Select
+                value={orderStatus}
+                style={{ width: 200 }}
+                onChange={(value) => setOrderStatus(value)}
+              >
+                <Option value="">Tất cả</Option>
+                <Option value="4">Chờ xác nhận</Option>
+                <Option value="5">Chưa thanh toán</Option>
+                <Option value="6">Đang giao</Option>
+                <Option value="7">Đã nhận hàng</Option>
+                <Option value="8">Đã hủy</Option>
+              </Select>
+            </Space>
+            <OrderHistoryList orders={orders} key={"orderlist"} />
+          </TabPane>
+        </Tabs>
+      </Card>
     </div>
   );
 }

@@ -35,13 +35,10 @@ const IntroHome = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <div
-              key={index}
-              className=" rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105"
-            >
-              <div className="h-48 overflow-hidden">
+            <div key={index} className=" rounded-xl overflow-hidden">
+              <div className="flex justify-center">
                 <img
-                  className="w-full h-full object-fill   transition-transform duration-300 hover:scale-110"
+                  className="w-44 h-44 object-cover  "
                   src={feature.img}
                   alt={`Feature ${index + 1}`}
                 />
