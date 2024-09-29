@@ -158,7 +158,7 @@ const Reservation = () => {
     const responseSuggessTable = await suggestTable({
       startTime: combinedStartTime,
       endTime: combinedEndTime,
-      numberOfPeople: Number(form.getFieldValue("numberOfPeople")),
+      numOfPeople: Number(form.getFieldValue("numberOfPeople")),
       isPrivate: form.getFieldValue("isPrivate"),
     });
 
