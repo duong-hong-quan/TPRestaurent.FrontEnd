@@ -45,7 +45,6 @@ const ReservationRequestItem = ({ reservation }) => {
       <span className="text-red-900 mx-1">{formattedEndTime}</span>
     </span>
   );
-  // Format the time difference for display
   const [reservationData, setReservationData] = useState({});
   const handleChange = async (id) => {
     setShowDetails(!showDetails);
@@ -136,7 +135,7 @@ const ReservationRequestItem = ({ reservation }) => {
       </div>
       <div className="flex flex-col md:flex-row justify-end items-center">
         <div className="flex justify-end">
-          {reservation?.statusId === 1 && (
+          {reservation?.transaction?.transationStatusId === 1 && (
             <button
               onClick={() => handleClickOpen()}
               className=" text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"

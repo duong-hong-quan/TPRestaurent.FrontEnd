@@ -4,27 +4,30 @@ import { useNavigate } from "react-router-dom";
 import { Tabs, message, Button } from "antd";
 import { Typography } from "@material-tailwind/react";
 
-import { addToCart, getTotal } from "../../redux/features/cartReservationSlice";
+import {
+  addToCart,
+  getTotal,
+} from "../../../redux/features/cartReservationSlice";
 
-import ReservationInformation from "./ReservationInformation";
-import { ReservationCart } from "./ReservationCart";
-import ComboDetail2 from "../../pages/common/menu-page/ComboDetail";
+import ReservationInformation from "../ReservationInformation";
+import { ReservationCart } from "../ReservationCart";
+import ComboDetail2 from "../../../pages/common/menu-page/ComboDetail";
 
 import {
   formatDate,
   formatPrice,
   mergeCartData,
   showError,
-} from "../../util/Utility";
-import useCallApi from "../../api/useCallApi";
-import { ComboApi, DishApi, OrderApi } from "../../api/endpoint";
-import DishCard from "../dish/DishCard";
-import ComboCard from "../combo/ComboCard";
-import OrderSummary from "./reservation-list/OrderSummary";
+} from "../../../util/Utility";
+import useCallApi from "../../../api/useCallApi";
+import { ComboApi, DishApi, OrderApi } from "../../../api/endpoint";
+import DishCard from "../../dish/DishCard";
+import ComboCard from "../../combo/ComboCard";
+import OrderSummary from "../reservation-list/OrderSummary";
 
 const { TabPane } = Tabs;
 
-const ModalReservation = ({
+const ModalReservationWithDish = ({
   visible,
   onCancel,
   information,
@@ -301,4 +304,4 @@ const ModalReservation = ({
   );
 };
 
-export default ModalReservation;
+export default ModalReservationWithDish;
