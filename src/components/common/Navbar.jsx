@@ -51,8 +51,7 @@ export const Navbar = () => {
     { name: "Combo", path: "/combo" },
     { name: "Đặt bàn", path: "/booking" },
     { name: "Giới thiệu", path: "/about" },
-    { name: "Khuyến mãi", path: "/promotions" },
-    { name: "Liên hệ", path: "/contact" },
+    { name: "Chính sách", path: "/policy" },
     { name: "Tra cứu đơn hàng", path: "/order-history" },
   ];
 
@@ -211,6 +210,22 @@ export const Navbar = () => {
                       >
                         Hồ sơ của tôi
                       </NavLink>
+                      {user.mainRole === "ADMIN" && (
+                        <NavLink
+                          to="/admin"
+                          className="block px-4 py-2 text-center text-gray-800 hover:bg-gray-200"
+                        >
+                          Quản trị
+                        </NavLink>
+                      )}
+                      {user.mainRole === "CHEF" && (
+                        <NavLink
+                          to="/kitchen"
+                          className="block px-4 py-2 text-center text-gray-800 hover:bg-gray-200"
+                        >
+                          Quản trị
+                        </NavLink>
+                      )}
                       <button
                         onClick={handleLogout}
                         className="block w-full text-center px-4 py-2 text-gray-800 hover:bg-gray-200"
@@ -269,6 +284,23 @@ export const Navbar = () => {
                   >
                     Hồ sơ của tôi
                   </NavLink>
+                  {user.mainRole === "ADMIN" && (
+                    <NavLink
+                      to="/admin"
+                      className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
+                    >
+                      Quản trị
+                    </NavLink>
+                  )}
+                  {user.mainRole === "CHEF" && (
+                    <NavLink
+                      to="/kitchen"
+                      className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
+                    >
+                      Quản trị
+                    </NavLink>
+                  )}
+
                   <NavLink
                     onClick={handleLogout}
                     className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"

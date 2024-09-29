@@ -1,9 +1,6 @@
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import slider1 from "../../assets/imgs/slider/slider1.png";
-import slider2 from "../../assets/imgs/slider/slider2.png";
-import slider3 from "../../assets/imgs/slider/slider3.png";
 import banner from "../../assets/imgs/banner.png";
 
 const SliderHome = () => {
@@ -14,9 +11,8 @@ const SliderHome = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 2600,
-    fade: true,
-    cssEase: "linear",
+    autoplaySpeed: 3000, // Auto-scroll every 3 seconds
+    pauseOnHover: true, // Pause auto-scroll on hover
   };
 
   const slides = [
@@ -50,20 +46,8 @@ const SliderHome = () => {
     <div className="">
       <Slider {...settings} className="h-full relative">
         {slides.map((slide) => (
-          <div key={slide.id} className="relative h-screen">
-            <img
-              src={slide.image}
-              alt={slide.alt}
-              className="w-full h-full object-cover"
-            />
-            {/* <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white px-4">
-              <h2 className="text-4xl md:text-6xl font-bold mb-4 text-center">
-                {slide.title}
-              </h2>
-              <p className="text-xl md:text-2xl text-center max-w-2xl">
-                {slide.description}
-              </p>
-            </div> */}
+          <div key={slide.id} className="relative lg:h-screen">
+            <img src={slide.image} alt={slide.alt} className="object-cover" />
           </div>
         ))}
       </Slider>
