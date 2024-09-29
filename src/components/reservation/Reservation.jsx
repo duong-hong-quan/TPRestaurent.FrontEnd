@@ -10,7 +10,7 @@ import {
 import { UserOutlined, MailOutlined, TeamOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import OtpConfirmModal from "../../pages/login/OtpConfirmModal";
-import ModalReservation from "./ModalReservation";
+import ModalReservationWithDish from "./modal/ModalReservationWithDish";
 import reservationImage from "../../assets/imgs/reservation.png";
 import moment from "moment";
 import {
@@ -22,6 +22,8 @@ import { suggestTable } from "../../api/reservationApi";
 import { useSelector } from "react-redux";
 import useCallApi from "../../api/useCallApi";
 import { AccountApi } from "../../api/endpoint";
+import ModalPolicy from "../policy/PolicyModal";
+import ModalReservationWithoutDish from "./modal/ModalReservationWithoutDish";
 const { TextArea } = Input;
 
 const Reservation = () => {
@@ -37,6 +39,14 @@ const Reservation = () => {
   const [isValidatePhone, setIsValidatePhone] = useState(false);
   const user = useSelector((state) => state.user.user || {});
   const { loading, callApi, error } = useCallApi();
+  const [show, setShow] = useState(false);
+  const [showModalWithoutDish, setShowModalWithoutDish] = useState(false);
+  const handleCloseModalWithoutDish = () => {
+    setShowModalWithoutDish(false);
+  };
+  const handleClose = () => {
+    setShow(false);
+  };
   const initData = () => {
     if (!isEmptyObject(user)) {
       form.setFieldValue("firstName", user.firstName);
@@ -79,6 +89,48 @@ const Reservation = () => {
     const formattedPhone = formatPhoneNumber(e.target.value);
     form.setFieldsValue({ phone: formattedPhone });
   };
+
+  const onChoosePolicy = () => {
+    const startTime = form.getFieldValue("startTime");
+    const endTime = form.getFieldValue("endTime");
+    const date = form.getFieldValue("date");
+
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const [endHour, endMinute] = endTime.split(":").map(Number);
+    let combinedStartTime = moment(date)
+      .hour(startHour)
+      .minute(startMinute)
+      .format("YYYY-MM-DDTHH:mm:ss");
+    let combinedEndTime;
+    if (endHour === 0) {
+      combinedEndTime = moment(date)
+        .day(1)
+        .hour(endHour)
+        .minute(endMinute)
+        .format("YYYY-MM-DDTHH:mm:ss");
+    }
+    combinedEndTime = moment(date)
+      .hour(endHour)
+      .minute(endMinute)
+      .format("YYYY-MM-DDTHH:mm:ss");
+    setInformation({
+      ...information,
+      numberOfPeople: form.getFieldValue("numberOfPeople"),
+      startTime: combinedStartTime,
+      endTime: combinedEndTime,
+      note: form.getFieldValue("note"),
+      isPrivate: form.getFieldValue("isPrivate"),
+    });
+    setShow(true);
+  };
+  const onChoose = (data) => {
+    if (data === 1) {
+      setShowModalWithoutDish(true);
+    } else {
+      onFinish();
+    }
+  };
+
   const onFinish = async () => {
     const date = form.getFieldValue("date");
     const startTime = form.getFieldValue("startTime");
@@ -106,7 +158,7 @@ const Reservation = () => {
     const responseSuggessTable = await suggestTable({
       startTime: combinedStartTime,
       endTime: combinedEndTime,
-      numOfPeople: Number(form.getFieldValue("numberOfPeople")),
+      numberOfPeople: Number(form.getFieldValue("numberOfPeople")),
       isPrivate: form.getFieldValue("isPrivate"),
     });
 
@@ -223,7 +275,7 @@ const Reservation = () => {
   if (isReservationModalVisible) {
     return (
       <>
-        <ModalReservation
+        <ModalReservationWithDish
           visible={isReservationModalVisible}
           onCancel={() => setIsReservationModalVisible(false)}
           information={information}
@@ -242,6 +294,7 @@ const Reservation = () => {
       </>
     );
   }
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 rounded-2xl shadow-2xl">
       <h1 className="text-2xl font-bold uppercase mb-6 text-center">Đặt bàn</h1>
@@ -265,7 +318,7 @@ const Reservation = () => {
             form={form}
             name="basic"
             initialValues={{ remember: true }}
-            onFinish={onFinish}
+            onFinish={onChoosePolicy}
           >
             <div className="flex justify-between">
               <Form.Item
@@ -415,6 +468,12 @@ const Reservation = () => {
           </Form>
         </div>
       </div>
+      <ModalPolicy handleClose={handleClose} show={show} setChoose={onChoose} />
+      <ModalReservationWithoutDish
+        handleClose={handleCloseModalWithoutDish}
+        show={showModalWithoutDish}
+        information={information}
+      />
       <OtpConfirmModal
         visible={isOtpModalVisible}
         onClose={() => setIsOtpModalVisible(false)}

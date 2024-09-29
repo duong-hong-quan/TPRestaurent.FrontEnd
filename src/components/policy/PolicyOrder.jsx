@@ -1,8 +1,8 @@
 const PolicyOrder = () => {
   return (
     <div class="max-w-2xl bg-white my-2">
-      <h2 class="text-2xl font-bold mb-6 text-red-800  uppercase pb-2">
-        Chính Sách Mua Hàng tại nhà hàng Thiên Phú
+      <h2 class="text-lg font-bold mb-6 text-red-800  uppercase pb-2">
+        Chính Sách Mua Hàng
       </h2>
 
       <div class="mb-6">

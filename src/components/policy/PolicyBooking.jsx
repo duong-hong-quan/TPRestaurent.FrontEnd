@@ -4,13 +4,13 @@ const PolicyBooking = () => {
   return (
     <div className="max-w-2xl">
       <div className="py-4">
-        <h2 className="text-2xl font-bold text-red-800 uppercase">
+        <h2 className="text-lg font-bold text-red-800 uppercase">
           Chính sách đặt bàn
         </h2>
       </div>
       <div className=" space-y-6">
         <section>
-          <h3 className="text-xl font-semibold mb-2 text-gray-700 uppercase ">
+          <h3 className="text-lg font-semibold mb-2 text-gray-700 uppercase ">
             Đặt chỗ
           </h3>
           <ul className="list-disc list-inside space-y-2 text-gray-600">
@@ -20,7 +20,7 @@ const PolicyBooking = () => {
         </section>
 
         <section>
-          <h3 className="text-xl font-semibold mb-2 text-gray-700 uppercase">
+          <h3 className="text-lg font-semibold mb-2 text-gray-700 uppercase">
             Đặt kèm đồ ăn
           </h3>
           <ul className="list-disc list-inside space-y-2 text-gray-600 ">
