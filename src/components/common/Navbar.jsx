@@ -52,7 +52,6 @@ export const Navbar = () => {
     { name: "Đặt bàn", path: "/booking" },
     { name: "Giới thiệu", path: "/about" },
     { name: "Chính sách", path: "/policy" },
-    { name: "Liên hệ", path: "/contact" },
     { name: "Tra cứu đơn hàng", path: "/order-history" },
   ];
 
