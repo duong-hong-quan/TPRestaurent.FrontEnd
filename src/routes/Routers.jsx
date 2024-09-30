@@ -35,6 +35,7 @@ import { AdminMealHistoryPage } from "../pages/admin/AdminMealHistoryPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import PolicyPage from "../pages/common/policy/PolicyPage";
 import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
+import AdminDishPage from "../pages/admin/AdminDishPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -149,6 +150,10 @@ function Routers() {
         {
           path: "order-history",
           element: <AdminOrderHistoryPage />,
+        },
+        {
+          path: "dish-management",
+          element: <AdminDishPage />,
         },
         {
           path: "transaction-history",

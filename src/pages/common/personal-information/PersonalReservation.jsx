@@ -14,7 +14,7 @@ const PersonalReservation = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState("");
 
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
@@ -33,6 +33,7 @@ const PersonalReservation = () => {
     fetchData();
   }, [user, currentPage, activeTab]);
   const tabs = [
+    { value: "", label: "Tất cả" },
     { value: 1, label: "Đã xếp bàn" },
     { value: 2, label: "Đã thanh toán cọc" },
     { value: 3, label: "Đang dùng bữa" },

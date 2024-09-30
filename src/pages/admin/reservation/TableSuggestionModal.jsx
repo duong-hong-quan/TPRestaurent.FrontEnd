@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Button,
   Dialog,
@@ -11,8 +11,9 @@ import {
   CardFooter,
 } from "@material-tailwind/react";
 import { formatDate } from "../../../util/Utility";
-import { addTableToReservation } from "../../../api/reservationApi";
 import { message } from "antd";
+import useCallApi from "../../../api/useCallApi";
+import { OrderApi } from "../../../api/endpoint";
 
 const TableSuggestionModal = ({
   tables,
@@ -21,7 +22,7 @@ const TableSuggestionModal = ({
   selectedReservation,
 }) => {
   const [selectedTables, setSelectedTables] = useState([]);
-
+  const { callApi, error, loading } = useCallApi();
   const handleTableSelect = (table) => {
     setSelectedTables((prevSelectedTables) => {
       if (prevSelectedTables.some((t) => t.tableId === table.tableId)) {
@@ -37,8 +38,9 @@ const TableSuggestionModal = ({
   const handleConfirm = async () => {
     // onClose();
     const data = selectedTables.map((item) => item.tableId);
-    const response = await addTableToReservation(
-      selectedReservation.reservationId,
+    const response = await callApi(
+      `${OrderApi.ADD_TABLE_TO_RESEVATION}?reservationId=${selectedReservation.reservationId}`,
+      "POST",
       data
     );
     if (response?.isSuccess) {

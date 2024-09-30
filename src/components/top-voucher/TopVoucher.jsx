@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { getAllAvailibleCoupon } from "../../api/couponApi";
 import TopVoucherDetail from "./top-voucher-detail/TopVoucherDetail";
 import Slider from "react-slick";
-import { faL } from "@fortawesome/free-solid-svg-icons";
+import useCallApi from "../../api/useCallApi";
+import { CouponApi } from "../../api/endpoint";
 
 const TopVoucher = () => {
   const settings = {
@@ -16,8 +16,9 @@ const TopVoucher = () => {
     pauseOnHover: true, // Pause auto-scroll on hover
   };
   const [coupons, setCoupons] = useState([]);
+  const { callApi, error, loading } = useCallApi();
   const fetchData = async () => {
-    const response = await getAllAvailibleCoupon(1, 10);
+    const response = await callApi(`${CouponApi.GET_ALL}/1/100`, "GET");
     if (response?.isSuccess) {
       setCoupons(response?.result?.items);
     }

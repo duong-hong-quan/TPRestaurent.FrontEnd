@@ -1,13 +1,13 @@
 const PolicyOrder = () => {
   return (
-    <div class="max-w-2xl bg-white my-2">
-      <h2 class="text-lg font-bold mb-6 text-red-800  uppercase pb-2">
+    <div className="max-w-2xl bg-white my-2">
+      <h2 className="text-lg font-bold mb-6 text-red-800  uppercase pb-2">
         Chính Sách Mua Hàng
       </h2>
 
-      <div class="mb-6">
-        <h3 class="text-xl font-semibold mb-3 text-gray-700">ĐƠN HÀNG:</h3>
-        <ul class="list-disc pl-5 space-y-2 text-gray-600">
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold mb-3 text-gray-700">ĐƠN HÀNG:</h3>
+        <ul className="list-disc pl-5 space-y-2 text-gray-600">
           <li>Đồ ăn đã mua không được đổi trả.</li>
           <li>Vui lòng kiểm tra kỹ trước khi nhận hàng.</li>
           <li>
@@ -19,8 +19,10 @@ const PolicyOrder = () => {
       </div>
 
       <div>
-        <h3 class="text-xl font-semibold mb-3 text-gray-700">PHÍ GIAO HÀNG:</h3>
-        <ul class="list-disc pl-5 space-y-2 text-gray-600">
+        <h3 className="text-xl font-semibold mb-3 text-gray-700">
+          PHÍ GIAO HÀNG:
+        </h3>
+        <ul className="list-disc pl-5 space-y-2 text-gray-600">
           <li>
             Phí giao hàng sẽ được tính dựa trên khoảng cách và thời gian giao
             hàng.

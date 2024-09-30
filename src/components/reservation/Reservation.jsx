@@ -18,10 +18,9 @@ import {
   isEmptyObject,
   showError,
 } from "../../util/Utility";
-import { suggestTable } from "../../api/reservationApi";
 import { useSelector } from "react-redux";
 import useCallApi from "../../api/useCallApi";
-import { AccountApi } from "../../api/endpoint";
+import { AccountApi, OrderApi } from "../../api/endpoint";
 import ModalPolicy from "../policy/PolicyModal";
 import ModalReservationWithoutDish from "./modal/ModalReservationWithoutDish";
 const { TextArea } = Input;
@@ -155,12 +154,16 @@ const Reservation = () => {
       .minute(endMinute)
       .format("YYYY-MM-DDTHH:mm:ss");
     debugger;
-    const responseSuggessTable = await suggestTable({
-      startTime: combinedStartTime,
-      endTime: combinedEndTime,
-      numberOfPeople: Number(form.getFieldValue("numberOfPeople")),
-      isPrivate: form.getFieldValue("isPrivate"),
-    });
+    const responseSuggessTable = await callApi(
+      `${OrderApi.SUGGEST_TABLE}`,
+      "POST",
+      {
+        startTime: combinedStartTime,
+        endTime: combinedEndTime,
+        numOfPeople: Number(form.getFieldValue("numberOfPeople")),
+        isPrivate: form.getFieldValue("isPrivate"),
+      }
+    );
 
     if (responseSuggessTable?.isSuccess) {
       if (responseSuggessTable?.result?.length > 0) {

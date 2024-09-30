@@ -1,33 +1,138 @@
-import { Modal, Form, Input, Switch, Grid } from "antd";
+import { Modal, Form, Switch, AutoComplete, Table } from "antd";
 import { Button, IconButton, Typography } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
 import { Edit2, Trash2, Plus, MapPin } from "lucide-react";
-
-const { Row, Col } = Grid;
+import { useCallback, useState, useEffect } from "react";
+import useCallApi from "../../api/useCallApi";
+import { AccountApi, MapApi } from "../../api/endpoint";
+import _, { debounce } from "lodash";
+import { toast } from "react-toastify";
+import { showError } from "../../util/Utility";
 
 const AddressModal = ({
   isModalVisible,
   setIsModalVisible,
-  editingAddress,
   isAdding,
   setIsAdding,
-  setEditingAddress,
+  isEditing,
+  setIsEditing,
+  editData,
+  setEditData,
+  fetchData,
 }) => {
   const user = useSelector((state) => state.user.user || {});
   const addresses = user.addresses || [];
-
+  const [options, setOptions] = useState([]);
+  const { callApi, error } = useCallApi();
   const [form] = Form.useForm();
+  const [location, setLocation] = useState({ lat: "", lng: "" });
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  console.log(editData);
+  const handleSearch = async (value) => {
+    getLocation();
+    const response = await callApi(`${MapApi.AUTO_COMPLETE}`, "POST", {
+      address: value,
+      destination: [location.lat, location.lng],
+    });
+    if (response.isSuccess) {
+      setOptions(
+        response.result?.map((address) => ({
+          label: address.description,
+          value: address.description,
+          item: address,
+        }))
+      );
+    } else {
+      showError(error);
+    }
+  };
+
+  const debouncedHandleSearch = useCallback(debounce(handleSearch, 1000), []);
 
   const handleOk = () => {
     setIsModalVisible(false);
     setIsAdding(false);
-    setEditingAddress(null);
+    setIsEditing(false);
   };
+
   const handleCancel = handleOk;
 
-  const handleEdit = (address) => {};
-  const handleDelete = (id) => {};
-  const handleAddNew = () => {};
+  const handleSelect = (value, option) => {
+    console.log("Selected address item:", option.item);
+    setSelectedAddress(option.item);
+    form.setFieldsValue({ address: value });
+  };
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
+
+  useEffect(() => {
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: "geolocation" }).then((result) => {
+        if (result.state === "granted") {
+          getLocation();
+        } else if (result.state === "prompt") {
+          getLocation();
+        } else {
+          console.log("Geolocation permission denied");
+        }
+      });
+    } else {
+      getLocation();
+    }
+    form.setFieldValue("address", editData?.customerInfoAddressName);
+    form.setFieldValue("isPrimary", editData?.isCurrentUsed);
+  }, [isModalVisible, editData]);
+
+  const onsubmit = async () => {
+    form.validateFields().then(async (values) => {
+      console.log("Form values:", values);
+      console.log("Selected address:", selectedAddress);
+      let response = null;
+      if (isEditing) {
+        response = await callApi(`${AccountApi.UPDATE_ADDRESS}`, "PUT", {
+          customerInfoAddressId: editData?.customerInfoAddressId,
+          customerInfoAddressName: form.getFieldValue("address"),
+          isCurrentUsed: form.getFieldValue("isPrimary"),
+          accountId: user.id,
+          lat: editData?.lat || "",
+          lng: editData?.lng || "",
+        });
+      } else {
+        response = await callApi(`${AccountApi.CREATE_ADDRESS}`, "POST", {
+          customerInfoAddressName: form.getFieldValue("address"),
+          isCurrentUsed: form.getFieldValue("isPrimary"),
+          accountId: user.id,
+          lat: selectedAddress?.lat || "",
+          lng: selectedAddress?.lng || "",
+        });
+      }
+
+      if (response.isSuccess) {
+        toast.success("Thêm địa chỉ thành công!");
+        setIsAdding(false);
+        setIsModalVisible(false);
+        fetchData();
+      } else {
+        showError(error);
+      }
+    });
+  };
 
   const renderAddressForm = () => (
     <Form form={form} layout="vertical" className="mt-4 space-y-4">
@@ -36,9 +141,12 @@ const AddressModal = ({
         label="Địa chỉ của bạn"
         rules={[{ required: true, message: "Vui lòng nhập địa chỉ của bạn!" }]}
       >
-        <Input
-          className="w-full px-3 py-2 border rounded-md"
-          placeholder="Nhập địa chỉ..."
+        <AutoComplete
+          onSearch={(e) => debouncedHandleSearch(e)}
+          placeholder="Nhập đỉa chỉ của bạn"
+          options={options}
+          className="w-fit"
+          onSelect={handleSelect}
         />
       </Form.Item>
 
@@ -48,10 +156,16 @@ const AddressModal = ({
 
       <Form.Item>
         <div>
-          <Button className="bg-red-800 text-white mr-2" onClick={handleAddNew}>
-            Thêm địa chỉ
+          <Button className="bg-red-800 text-white mr-2" onClick={onsubmit}>
+            {isAdding ? "Thêm" : "Chỉnh sửa"} địa chỉ
           </Button>
-          <Button className="bg-gray-500" onClick={() => setIsAdding(false)}>
+          <Button
+            className="bg-gray-500"
+            onClick={() => {
+              setIsAdding(false);
+              setIsEditing(false);
+            }}
+          >
             Huỷ
           </Button>
         </div>
@@ -72,61 +186,73 @@ const AddressModal = ({
         </Typography>
       );
     } else {
-      return (
-        <div className="space-y-4 mt-4">
-          {addresses.map((address) => (
-            <div
-              key={address.customerInfoAddressId}
-              className="bg-white p-4 shadow-lg border border-red-50 rounded-xl "
-            >
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Typography variant="h6" className="text-red-900">
-                    {address.customerInfoAddressName}
-                  </Typography>
-                  {!address.isCurrentUsed && (
-                    <div className="flex items-center">
-                      <Typography
-                        variant="small"
-                        className="mr-2 font-semibold"
-                      >
-                        Chuyển thành địa chỉ mặc định
-                      </Typography>
-                      <Switch />
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <IconButton
-                    size="sm"
-                    onClick={() => handleEdit(address)}
-                    className="bg-white"
-                  >
-                    <Edit2 size={16} className="text-blue-800" />
-                  </IconButton>
-                  <IconButton
-                    color="red"
-                    size="sm"
-                    onClick={() => handleDelete(address.customerInfoAddressId)}
-                  >
-                    <Trash2 size={16} />
-                  </IconButton>
-                </div>
-              </div>
-              <Typography variant="small" className="mt-2">
-                {address.address}
-              </Typography>
-              {address.isCurrentUsed && (
-                <Typography
-                  variant="small"
-                  className="mt-2 flex items-center text-red-800"
-                >
-                  <MapPin size={16} className="mr-1" /> Địa chỉ mặc định
-                </Typography>
-              )}
+      const columns = [
+        {
+          title: "Tên địa chỉ",
+          dataIndex: "customerInfoAddressName",
+          key: "customerInfoAddressName",
+        },
+        {
+          title: "Địa chỉ",
+          dataIndex: "address",
+          key: "address",
+        },
+        {
+          title: "Địa chỉ chính",
+          dataIndex: "addressPrimary",
+          key: "addressPrimary",
+          render: (_, record) => <Switch checked={record.isCurrentUsed} />,
+        },
+        {
+          title: "Hành động",
+          key: "action",
+          render: (text, record) => (
+            <div className="flex gap-2">
+              <IconButton
+                size="sm"
+                onClick={() => {
+                  setIsEditing(true);
+                  setEditData(record);
+                }}
+                className="bg-white"
+              >
+                <Edit2 size={16} className="text-blue-800" />
+              </IconButton>
+              <IconButton
+                color="red"
+                size="sm"
+                onClick={async () => {
+                  console.log(
+                    "Delete address with ID:",
+                    record.customerInfoAddressId
+                  );
+
+                  const response = await callApi(
+                    `${AccountApi.DELETE_ADDRESS}?customerInfoAddressId=${record.customerInfoAddressId}`,
+                    "DELETE"
+                  );
+                  if (response.isSuccess) {
+                    toast.success("Xóa địa chỉ thành công!");
+                    fetchData();
+                  } else {
+                    showError(error);
+                  }
+                }}
+              >
+                <Trash2 size={16} />
+              </IconButton>
             </div>
-          ))}
-        </div>
+          ),
+        },
+      ];
+
+      return (
+        <Table
+          columns={columns}
+          dataSource={addresses}
+          rowKey="customerInfoAddressId"
+          pagination={false}
+        />
       );
     }
   };
@@ -144,7 +270,7 @@ const AddressModal = ({
         <Typography variant="h4" className="text-center text-red-800 mb-4">
           ĐỊA CHỈ GIAO HÀNG
         </Typography>
-        {isAdding ? (
+        {isAdding || isEditing ? (
           renderAddressForm()
         ) : (
           <>
