@@ -9,11 +9,10 @@ import {
 } from "@material-tailwind/react";
 import { HomePage } from "../home-page/HomePage";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
-import { decodeHashing } from "../../../api/hashingApi";
 import { formatPrice } from "../../../util/Utility";
 import useCallApi from "../../../api/useCallApi";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
-import { OrderApi, TransactionApi } from "../../../api/endpoint";
+import { TransactionApi } from "../../../api/endpoint";
 
 const VerifyPayment = () => {
   const location = useLocation();
@@ -34,10 +33,6 @@ const VerifyPayment = () => {
     setTotalAmount(
       searchParams.get("vnp_Amount") || searchParams.get("amount") * 100
     );
-    // const typeData = await decodeHashing(
-    //   orderInfo,
-    //   import.meta.env.VITE_KEY_HASH
-    // );
 
     if (vnpResponseCode) {
       setIsVNPAY(true);

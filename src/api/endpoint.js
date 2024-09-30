@@ -5,6 +5,10 @@ export const AccountApi = {
   GET_BY_PHONE: "/api/account/get-account-by-phone-number",
   CREATE_ACCOUNT: "/api/account/create-account",
   VERIFY_ACCOUNT_OTP: "/api/account/verify-account-otp",
+  CREATE_ADDRESS: "/api/account/create-customer-info-address",
+  UPDATE_ADDRESS: "/api/account/update-customer-info-address",
+  DELETE_ADDRESS: "/api/account/delete-customer-info-address",
+  GET_ADDRESS: "/api/account/get-customer-info-address",
 };
 
 export const ComboApi = {
@@ -65,4 +69,7 @@ export const DishApi = {
   GET_ALL: "/dish/get-all-dish/",
   GET_ALL_DISH_TYPE: "/dish/get-all-dish-type",
   GET_BY_ID: "/dish/get-dish-by-id",
+};
+export const MapApi = {
+  AUTO_COMPLETE: "/map/auto-complete",
 };

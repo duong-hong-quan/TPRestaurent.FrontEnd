@@ -11,7 +11,7 @@ const ReservationDetail = ({ reservationData }) => {
   const { order, orderDishes, orderTables } = reservationData;
 
   const renderPaymentMethod = () => {
-    switch (order?.paymentMethodId) {
+    switch (order?.transaction?.paymentMethodId) {
       case PaymentMethod.MOMO:
         return (
           <div className="flex items-center">

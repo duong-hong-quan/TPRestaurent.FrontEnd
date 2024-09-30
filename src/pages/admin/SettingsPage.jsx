@@ -37,49 +37,14 @@ const SettingsPage = () => {
     if (response?.isSuccess) {
       setData(response.result?.items);
       setTotalPages(response.result.totalPages);
+    } else {
+      console.log("error", response);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
-
-  const handleEdit = (record) => {
-    setSelectedRecord(record);
-    const { activeDate } = record;
-    const date = activeDate ? moment(activeDate) : null;
-    const time = activeDate ? moment(activeDate) : null;
-    form.setFieldsValue({ ...record, activeDate: date, activeTime: time });
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    form.resetFields();
-  };
-
-  const handleOk = () => {
-    form.validateFields().then((values) => {
-      const { activeDate, activeTime, ...rest } = values;
-      const activeDateTime =
-        activeDate && activeTime
-          ? activeDate.clone().set({
-              hour: activeTime.hour(),
-              minute: activeTime.minute(),
-            })
-          : null;
-
-      // Update the data with the new values
-      const updatedData = data.map((item) =>
-        item.key === selectedRecord.key
-          ? { ...item, ...rest, activeDate: activeDateTime }
-          : item
-      );
-      setData(updatedData);
-      setIsModalVisible(false);
-      form.resetFields();
-    });
-  };
+  }, [currentPage]);
 
   const columns = [
     {
@@ -87,27 +52,15 @@ const SettingsPage = () => {
       dataIndex: "name",
       key: "name",
       render(_, record) {
-        return <span>{record.vietnameseName}</span>;
+        return <span>{`${record.vietnameseName}  (${record.unit})`}</span>;
       },
     },
     {
       title: "Giá trị hiện tại",
-      dataIndex: "preValue",
-      key: "preValue",
+      dataIndex: "currentValue",
+      key: "currentValue",
     },
-    {
-      title: "Giá trị sẽ cấu hình",
-      dataIndex: "activeValue",
-      key: "activeValue",
-      render: (text) => text || "N/A",
-    },
-    {
-      title: "Ngày cấu hình",
-      dataIndex: "activeDate",
-      key: "activeDate",
-      render: (text) =>
-        text ? moment(text).format("YYYY-MM-DD HH:mm") : "N/A",
-    },
+
     {
       title: "Hành động",
       key: "action",
@@ -130,52 +83,20 @@ const SettingsPage = () => {
         </div>
       }
     >
-      <Table columns={columns} dataSource={data} pagination={false} />
+      <div className="overflow-y-scroll h-[550px]">
+        <Table
+          columns={columns}
+          dataSource={data}
+          pagination={false}
+          loading={loading}
+        />
+      </div>
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         key={currentPage}
         onPageChange={handleCurrentPageChange}
       />
-      <Modal
-        title="Chỉnh sửa cấu hình"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item name="vietnameseName" label="Tên cấu hình">
-            <Input disabled />
-          </Form.Item>
-          <Form.Item name="preValue" label="Giá trị hiện tại">
-            <Input />
-          </Form.Item>
-          <Form.Item name="activeValue" label="Giá trị sẽ cấu hình">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Ngày cấu hình">
-            <div className="flex">
-              <Form.Item
-                name="activeDate"
-                noStyle
-                rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
-              >
-                <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-              <Form.Item
-                name="activeTime"
-                noStyle
-                rules={[{ required: true, message: "Vui lòng chọn giờ" }]}
-              >
-                <TimePicker
-                  format="HH:mm"
-                  style={{ width: "100%", marginLeft: "2px" }}
-                />
-              </Form.Item>
-            </div>
-          </Form.Item>
-        </Form>
-      </Modal>
     </Card>
   );
 };
