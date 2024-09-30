@@ -35,11 +35,12 @@ import PaymentMethodSelector from "./PaymentMethodSelector";
 import { clearCart, getTotal } from "../../redux/features/cartReservationSlice";
 import useCallApi from "../../api/useCallApi";
 const { Title, Text } = Typography;
-import { OrderApi } from "../../api/endpoint";
+import { AccountApi, OrderApi } from "../../api/endpoint";
 import LoadingOverlay from "../loading/LoadingOverlay";
 import AddressModal from "../user/AddressModal";
 import PolicyOrder from "../policy/PolicyOrder";
 import { IconButton } from "@material-tailwind/react";
+import { login } from "../../redux/features/authSlice";
 const InfoItem = ({ icon, label, value }) => (
   <div className="flex items-center mb-2">
     {icon}
@@ -78,6 +79,8 @@ const CartSummary = ({ handleClose }) => {
   const [editingAddress, setEditingAddress] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [editData, setEditData] = useState(null);
   const [note, setNote] = useState("");
   const handleSwitchChange = (event) => {
     setIsLoyaltyEnabled(event);
@@ -119,6 +122,17 @@ const CartSummary = ({ handleClose }) => {
     (address) => address.isCurrentUsed
   )[0];
   const customerInfoAddressName = currentAddress?.customerInfoAddressName || "";
+  const fetchData = async () => {
+    const response = await callApi(
+      `${AccountApi.GET_BY_PHONE}?phoneNumber=${user.phoneNumber}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      dispatch(login(response.result));
+    } else {
+      showError(error);
+    }
+  };
   const handleCheckOut = async () => {
     const { reservationDishDtos } = mergeCartData(cartReservation, cart);
 
@@ -376,10 +390,14 @@ const CartSummary = ({ handleClose }) => {
       <AddressModal
         editingAddress={editingAddress}
         isModalVisible={isModalVisible}
-        setEditingAddress={setEditingAddress}
         setIsModalVisible={setIsModalVisible}
+        isEditing={isEditingAddress}
+        setIsEditing={setIsEditingAddress}
         isAdding={isAdding}
         setIsAdding={setIsAdding}
+        editData={editData}
+        setEditData={setEditData}
+        fetchData={fetchData}
         key={"address"}
       />
     </div>
