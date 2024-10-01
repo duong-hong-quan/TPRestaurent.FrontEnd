@@ -25,7 +25,7 @@ const SettingsPage = () => {
   const [form] = Form.useForm();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const totalItems = 10;
+  const totalItems = 20;
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };

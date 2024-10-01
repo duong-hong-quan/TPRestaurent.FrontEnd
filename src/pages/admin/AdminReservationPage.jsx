@@ -17,6 +17,7 @@ import { Table } from "antd";
 import Pagination from "../../components/pagination/Pagination";
 import useCallApi from "../../api/useCallApi";
 import TabMananger from "../../components/tab/TabManager";
+import OrderTag from "../../components/tag/OrderTag";
 
 const TABS = [
   {
@@ -99,14 +100,7 @@ export function AdminReservationPage() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (_, record) => (
-        <Chip
-          variant="ghost"
-          size="sm"
-          className="text-center"
-          value={`${record.status.vietnameseName} - ${record.orderType.name}`}
-        />
-      ),
+      render: (_, record) => <OrderTag orderStatusId={record.statusId} />,
     },
     {
       title: "Ngày tạo",

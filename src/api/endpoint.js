@@ -39,6 +39,7 @@ export const OrderApi = {
   ADD_TABLE_TO_RESEVATION: "/reservation/add-table-to-reservation",
   UPDATE_RESERVATION: "/reservation/update-reservation-status",
   CALCULATE_RESERVATION: "/order/calculate-reservation",
+  GET_ALL_TABLE_DETAIL: "/order/get-all-table-details",
 };
 
 export const ReservationApi = {
@@ -69,6 +70,9 @@ export const DishApi = {
   GET_ALL: "/dish/get-all-dish/",
   GET_ALL_DISH_TYPE: "/dish/get-all-dish-type",
   GET_BY_ID: "/dish/get-dish-by-id",
+  GET_ALL_DISH_SIZE: "/dish/get-all-dish-size",
+  GET_ALL_DISH_TAG: "/dish/get-all-dish-tag",
+  CREATE_DISH: "/dish/create-dish",
 };
 export const MapApi = {
   AUTO_COMPLETE: "/map/auto-complete",
