@@ -27,11 +27,11 @@ const TABS = [
   },
   {
     label: "Hoàn thành",
-    value: "7",
+    value: "8",
   },
   {
     label: "Huỷ đơn",
-    value: "8",
+    value: "9",
   },
 ];
 

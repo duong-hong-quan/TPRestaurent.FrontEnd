@@ -31,16 +31,20 @@ const TABS = [
     value: "5",
   },
   {
-    label: "Đang giao hàng",
+    label: "Chuẩn bị giao hàng",
     value: "6",
   },
   {
-    label: "Hoàn thành",
+    label: "Đang giao hàng",
     value: "7",
   },
   {
-    label: "Huỷ đơn",
+    label: "Hoàn thành",
     value: "8",
+  },
+  {
+    label: "Huỷ đơn",
+    value: "9",
   },
 ];
 
