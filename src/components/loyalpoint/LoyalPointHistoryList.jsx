@@ -1,11 +1,15 @@
 import React from "react";
 import { FaArrowUp, FaArrowDown, FaMoneyBillWave } from "react-icons/fa";
 
-const TransactionItem = ({ transaction }) => {
+const LoyalPointHistoryItem = ({ transaction }) => {
   const isReceived = transaction.type === "received";
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-3 flex items-center justify-between">
+    <div
+      className={`${
+        isReceived ? "bg-green-50" : "bg-red-100"
+      } p-4 mb-3 flex items-center justify-between rounded-xl`}
+    >
       <div className="flex items-center">
         <div
           className={`p-3 rounded-full mr-4 ${
@@ -19,7 +23,13 @@ const TransactionItem = ({ transaction }) => {
           )}
         </div>
         <div>
-          <p className="font-semibold">{transaction.description}</p>
+          <p
+            className={`font-semibold ${
+              isReceived ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {transaction.description}
+          </p>
           <p className="text-gray-500 text-sm">{transaction.date}</p>
         </div>
       </div>
@@ -40,35 +50,17 @@ const TransactionItem = ({ transaction }) => {
   );
 };
 
-const TransactionList = ({ transactions }) => {
+const LoyalPointHistoryList = ({ transactions }) => {
   const currentBalance =
     transactions.length > 0 ? transactions[0].balanceAfter : 0;
 
   return (
-    <div className=" p-6 rounded-lg">
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <FaMoneyBillWave className="text-green-600 text-3xl mr-4" />
-            <div>
-              <p className="text-gray-600">Số dư hiện tại</p>
-              <p className="text-2xl font-bold">
-                {currentBalance.toLocaleString()} đ
-              </p>
-            </div>
-          </div>
-          <button className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
-            Xem chi tiết
-          </button>
-        </div>
-      </div>
-
-      <h2 className="text-xl font-semibold mb-4">Lịch sử giao dịch</h2>
+    <div className=" p-6 bg-gray-50 border border-gray-100 rounded-md">
       {transactions.map((transaction, index) => (
-        <TransactionItem key={index} transaction={transaction} />
+        <LoyalPointHistoryItem key={index} transaction={transaction} />
       ))}
     </div>
   );
 };
 
-export default TransactionList;
+export default LoyalPointHistoryList;
