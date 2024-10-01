@@ -36,6 +36,9 @@ const CartPage = () => {
     if (isEmptyObject(user)) {
       message.error("Vui lòng đăng nhập để tiếp tục");
       return;
+    } else if (cartReservation.length === 0 && cart.items.length === 0) {
+      message.error("Vui lòng chọn món ăn hoặc combo");
+      return;
     }
     setIsSummary(true);
   };
