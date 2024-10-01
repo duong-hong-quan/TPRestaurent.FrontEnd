@@ -41,7 +41,7 @@ const ChatButton = () => {
   };
 
   return (
-    <div className="fixed z-50 bottom-4 right-4">
+    <div className="fixed z-50 bottom-[0.5rem] right-[0.5rem]">
       {isOpen ? (
         <div className="bg-white rounded-lg shadow-lg w-80 h-96 flex flex-col">
           <div

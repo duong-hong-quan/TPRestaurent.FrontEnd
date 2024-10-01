@@ -18,6 +18,8 @@ import Pagination from "../../components/pagination/Pagination";
 import useCallApi from "../../api/useCallApi";
 import TabMananger from "../../components/tab/TabManager";
 import OrderTag from "../../components/tag/OrderTag";
+import { OrderApi } from "../../api/endpoint";
+import ModalReservationDetail from "../../components/reservation/modal/ModalReservationDetail";
 
 const TABS = [
   {
@@ -43,19 +45,22 @@ export function AdminReservationPage() {
   const [activeTab, setActiveTab] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [reservations, setReservations] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tables, setTables] = useState([]);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const { callApi, error, loading } = useCallApi();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
+  const [orderDetail, setOrderDetail] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
   const fetchReservations = async () => {
     const response = await callApi(
-      `order/get-all-order-by-status/${currentPage}/${totalItems}?status=${activeTab}&orderType=${1}`,
+      `${
+        OrderApi.GET_ALL
+      }/${currentPage}/${totalItems}?status=${activeTab}&orderType=${1}`,
       "GET"
     );
     if (response?.isSuccess) {
@@ -68,8 +73,13 @@ export function AdminReservationPage() {
     fetchReservations();
   }, [activeTab, currentPage]);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const fetchOrderDetail = async (id) => {
+    const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
+    if (response?.isSuccess) {
+      setOrderDetail(response?.result);
+      setIsModalOpen(true);
+    }
+  };
 
   const columns = [
     {
@@ -124,9 +134,12 @@ export function AdminReservationPage() {
       title: "Hành động",
       key: "action",
       dataIndex: "orderId",
-      render: (text) => (
+      render: (_, record) => (
         <Tooltip content="Xem chi tiết">
-          <IconButton variant="text">
+          <IconButton
+            variant="text"
+            onClick={() => fetchOrderDetail(record.orderId)}
+          >
             <EyeIcon className="h-4 w-4" />
           </IconButton>
         </Tooltip>
@@ -190,6 +203,13 @@ export function AdminReservationPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handleCurrentPageChange}
+      />
+      <ModalReservationDetail
+        visible={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(!isModalOpen);
+        }}
+        reservation={orderDetail}
       />
     </Card>
   );

@@ -9,17 +9,16 @@ import {
   CardBody,
   IconButton,
   Tooltip,
-  Chip,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { message, Table } from "antd";
+import { Table } from "antd";
 import { formatDateTime } from "../../util/Utility";
-import OrderDetailModal from "./order-detail/OrderDetailModal";
 import useCallApi from "../../api/useCallApi";
 import Pagination from "../../components/pagination/Pagination";
 import TabMananger from "../../components/tab/TabManager";
 import { OrderApi } from "../../api/endpoint";
 import OrderTag from "../../components/tag/OrderTag";
+import ModalReservationDetail from "../../components/reservation/modal/ModalReservationDetail";
 
 const TABS = [
   {
@@ -54,11 +53,12 @@ export function AdminOrderHistoryPage() {
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
-  const [selectedOrderType, setSelectedOrderType] = useState(1);
   const { callApi, error, loading } = useCallApi();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
+  const [orderSelected, setOrderSelected] = useState({});
+
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
@@ -104,14 +104,12 @@ export function AdminOrderHistoryPage() {
     {
       title: "Hành động",
       key: "action",
-      dataIndex: "orderId",
-      render: (text) => (
+      dataIndex: "action",
+      render: (_, record) => (
         <Tooltip content="Xem chi tiết">
           <IconButton
             variant="text"
-            onClick={async () => {
-              await fetchOrderDetail(text);
-            }}
+            onClick={() => fetchOrderDetail(record.orderId)}
           >
             <EyeIcon className="h-4 w-4" />
           </IconButton>
@@ -133,24 +131,14 @@ export function AdminOrderHistoryPage() {
 
   useEffect(() => {
     fetchOrder();
-  }, [activeTab, selectedOrderType, currentPage]);
+  }, [activeTab, currentPage]);
 
-  const [orderSelected, setOrderSelected] = useState({});
   const fetchOrderDetail = async (orderId) => {
-    try {
-      setIsLoading(true);
-      const response = await callApi(
-        `${OrderApi.GET_DETAIL}/${orderId}`,
-        "GET"
-      );
-      if (response?.isSuccess) {
-        setOrderSelected(response?.result);
-        handleOpen();
-      }
-    } catch (error) {
-      message.error("Đã xảy ra lỗi khi tìm kiếm");
-    } finally {
-      setIsLoading(false);
+    debugger;
+    const response = await callApi(`${OrderApi.GET_DETAIL}/${orderId}`, "GET");
+    if (response?.isSuccess) {
+      setOrderSelected(response?.result);
+      handleOpen();
     }
   };
 
@@ -213,10 +201,15 @@ export function AdminOrderHistoryPage() {
           onPageChange={handleCurrentPageChange}
         />
       </Card>
-      <OrderDetailModal
+      {/* <OrderDetailModal
         order={orderSelected}
         handleOpen={handleOpen}
         open={open}
+      /> */}
+      <ModalReservationDetail
+        visible={open}
+        onClose={() => setOpen(!open)}
+        reservation={orderSelected}
       />
     </>
   );
