@@ -5,22 +5,22 @@ const useCallApi = () => {
   const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const callApi = async (endpoint, method, data) => {
+  const callApi = async (endpoint, method, data, config = {}) => {
     setLoading(true);
     try {
       let result;
       switch (method) {
         case "GET":
-          result = await api.get(endpoint);
+          result = await api.get(endpoint, config);
           break;
         case "POST":
-          result = await api.post(endpoint, data);
+          result = await api.post(endpoint, data, config);
           break;
         case "PUT":
-          result = await api.put(endpoint, data);
+          result = await api.put(endpoint, data, config);
           break;
         case "DELETE":
-          result = await api.delete(endpoint);
+          (result = await api.delete(endpoint)), config;
           break;
         default:
           throw new Error(`Unsupported method: ${method}`);

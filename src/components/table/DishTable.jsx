@@ -1,10 +1,65 @@
-import { Button, Image, Table } from "antd";
+import { Button, Image, Table, Tag } from "antd";
+import { render } from "react-dom";
 import { FaEdit, FaLock, FaTrash } from "react-icons/fa";
 import { MdEditNote } from "react-icons/md";
+import { Tooltip } from "antd";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 
 const DishTable = ({ dishes, loading }) => {
-  const renderTag = (dishSizeDetail) => {};
+  const renderTag = (dishSizeDetails, dish) => {
+    return dishSizeDetails.map((dishSizeDetail, index) => {
+      let statusConfig = {
+        color: "",
+        text: "",
+        icon: null,
+      };
 
+      if (
+        dish.isAvailable &&
+        (dishSizeDetail.quantityLeft > 0 ||
+          dishSizeDetail.quantityLeft === null)
+      ) {
+        statusConfig = {
+          color: "success",
+          text: "Còn món",
+          icon: <CheckCircleOutlined />,
+        };
+      } else if (dish.isAvailable && dishSizeDetail.quantityLeft === 0) {
+        statusConfig = {
+          color: "error",
+          text: "Hết món",
+          icon: <CloseCircleOutlined />,
+        };
+      } else {
+        statusConfig = {
+          color: "warning",
+          text: "Ngưng bán",
+          icon: <ExclamationCircleOutlined />,
+        };
+      }
+
+      return (
+        <div key={index} className="flex items-center space-x-2 my-2">
+          <span className="font-medium">
+            {dishSizeDetail.dishSize.vietnameseName}:
+          </span>
+          <Tooltip title={`Trạng thái: ${statusConfig.text}`}>
+            <Tag
+              color={statusConfig.color}
+              icon={statusConfig.icon}
+              className="px-2 py-1 rounded-full text-sm font-semibold"
+            >
+              {statusConfig.text}
+            </Tag>
+          </Tooltip>
+        </div>
+      );
+    });
+  };
   const columns = [
     {
       title: "STT",
@@ -79,6 +134,7 @@ const DishTable = ({ dishes, loading }) => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      render: (_, record) => renderTag(record.dishSizeDetails, record.dish),
     },
     {
       title: "Hành động",
