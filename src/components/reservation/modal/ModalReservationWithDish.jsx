@@ -16,6 +16,7 @@ import ComboDetail2 from "../../../pages/common/menu-page/ComboDetail";
 import {
   formatDate,
   formatPrice,
+  isEmptyObject,
   mergeCartData,
   showError,
 } from "../../../util/Utility";
@@ -24,6 +25,7 @@ import { ComboApi, DishApi, OrderApi } from "../../../api/endpoint";
 import DishCard from "../../dish/DishCard";
 import ComboCard from "../../combo/ComboCard";
 import OrderSummary from "../reservation-list/OrderSummary";
+import LoadingOverlay from "../../loading/LoadingOverlay";
 
 const { TabPane } = Tabs;
 
@@ -47,7 +49,7 @@ const ModalReservationWithDish = ({
   const cart = useSelector((state) => state.cartReservation);
   const cartCombo = useSelector((state) => state.cart);
   const cartTotal = useSelector(getTotal);
-  const cartReservation = useSelector((state) => state.cartReservation);
+  const user = useSelector((state) => state.user.user || {});
   const [totalItems, setTotalItems] = useState(0);
   const { callApi, error, loading } = useCallApi();
   const [isSummary, setIsSummary] = useState(false);
@@ -60,20 +62,31 @@ const ModalReservationWithDish = ({
   const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1);
   const caculatorItems = () => {
     let total = 0;
-    total += cart?.items?.length;
-    total += cartReservation?.length;
+    total += cart?.length;
+    total += cartCombo?.items.length;
     return total;
   };
   useEffect(() => {
     setTotalItems(caculatorItems());
-  }, [cart, cartReservation]);
+  }, [cart, cartCombo]);
   const fetchData = async () => {
     try {
-      const dishesData = await callApi(`${DishApi.GET_ALL}/${1}/${10}`, "GET");
-      const combosData = await callApi(`${ComboApi.GET_ALL}/${1}/${10}`, "GET");
-      if (dishesData?.result?.items && combosData?.result) {
-        setDishes(dishesData?.result?.items);
-        setCombos(combosData?.result);
+      if (activeTab === "0") {
+        const dishesData = await callApi(
+          `${DishApi.GET_ALL}/${1}/${10}`,
+          "GET"
+        );
+        if (dishesData?.result?.items) {
+          setDishes(dishesData?.result?.items);
+        }
+      } else {
+        const combosData = await callApi(
+          `${ComboApi.GET_ALL}/${1}/${10}`,
+          "GET"
+        );
+        if (combosData?.result) {
+          setCombos(combosData?.result);
+        }
       }
     } catch (error) {
       message.error("Failed to load products: " + error.message);
@@ -82,7 +95,7 @@ const ModalReservationWithDish = ({
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [activeTab]);
 
   useEffect(() => {
     if (selectedCombos) {
@@ -230,9 +243,12 @@ const ModalReservationWithDish = ({
                     key="0"
                     className="max-h-[800px] overflow-y-auto "
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
-                      {dishes.map(renderDishCard)}
-                    </div>
+                    {loading && <LoadingOverlay isLoading={loading} />}
+                    {!loading && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+                        {dishes.map(renderDishCard)}
+                      </div>
+                    )}
                   </TabPane>
                   <TabPane
                     tab="Combo món"
@@ -245,9 +261,14 @@ const ModalReservationWithDish = ({
                         handleBack={() => setIsOpenComboDetail(false)}
                       />
                     ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
-                        {combos?.map(renderComboCard)}
-                      </div>
+                      <>
+                        {loading && <LoadingOverlay isLoading={loading} />}
+                        {!loading && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+                            {combos?.map(renderComboCard)}
+                          </div>
+                        )}
+                      </>
                     )}
                   </TabPane>
                 </Tabs>
@@ -283,6 +304,16 @@ const ModalReservationWithDish = ({
                 <Button
                   className="bg-red-800 text-white rounded-md px-6 py-2 hover:bg-red-900 transition-colors"
                   onClick={() => {
+                    if (isEmptyObject(user)) {
+                      message.error("Vui lòng đăng nhập để tiếp tục");
+                      return;
+                    } else if (
+                      cartCombo.items.length === 0 &&
+                      cart.length === 0
+                    ) {
+                      message.error("Vui lòng chọn món ăn hoặc combo");
+                      return;
+                    }
                     setIsSummary(true);
                     handleCheckout();
                   }}
