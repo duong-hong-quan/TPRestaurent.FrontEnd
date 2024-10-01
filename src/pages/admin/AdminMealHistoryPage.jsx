@@ -19,6 +19,7 @@ import Pagination from "../../components/pagination/Pagination";
 import TabMananger from "../../components/tab/TabManager";
 import { OrderApi } from "../../api/endpoint";
 import OrderTag from "../../components/tag/OrderTag";
+import ModalReservationDetail from "../../components/reservation/modal/ModalReservationDetail";
 
 const TABS = [
   {
@@ -46,6 +47,8 @@ export function AdminMealHistoryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
+  const [orderDetail, setOrderDetail] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
@@ -108,9 +111,12 @@ export function AdminMealHistoryPage() {
       title: "Hành động",
       key: "action",
       dataIndex: "orderId",
-      render: (text) => (
+      render: (_, record) => (
         <Tooltip content="Xem chi tiết">
-          <IconButton variant="text">
+          <IconButton
+            variant="text"
+            onClick={() => fetchOrderDetail(record.order.orderId)}
+          >
             <EyeIcon className="h-4 w-4" />
           </IconButton>
         </Tooltip>
@@ -132,6 +138,13 @@ export function AdminMealHistoryPage() {
     }
   };
 
+  const fetchOrderDetail = async (id) => {
+    const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
+    if (response?.isSuccess) {
+      setOrderDetail(response?.result);
+      setIsModalOpen(true);
+    }
+  };
   useEffect(() => {
     fetchOrder();
   }, [activeTab, selectedOrderType, currentPage]);
@@ -195,6 +208,13 @@ export function AdminMealHistoryPage() {
           onPageChange={handleCurrentPageChange}
         />
       </Card>
+      <ModalReservationDetail
+        visible={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(!isModalOpen);
+        }}
+        reservation={orderDetail}
+      />
     </>
   );
 }

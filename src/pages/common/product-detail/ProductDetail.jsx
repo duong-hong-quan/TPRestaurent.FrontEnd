@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   StarFilled,
@@ -33,18 +33,20 @@ const useDishData = (id) => {
   const [images, setImages] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [dishTags, setDishTags] = useState([]);
   const { callApi, error, loading } = useCallApi();
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await callApi(`${DishApi.GET_BY_ID}/${id}`, "GET");
         if (response?.isSuccess) {
-          const { dish, dishSizeDetails, dishImgs, ratingDish } =
-            response?.result;
+          const { dish, dishImgs, ratingDish, dishTags } = response?.result;
           setImages(dishImgs.map((img) => img.path));
           setDish(dish?.dish);
           setDishSizeDetails(dish?.dishSizeDetails);
           setReviews(ratingDish);
+          setDishTags(dishTags);
+          console.log(dishTags);
         } else {
           showError(error);
         }
@@ -58,7 +60,7 @@ const useDishData = (id) => {
     fetchData();
   }, [id]);
 
-  return { dish, dishSizeDetails, images, reviews, isLoading };
+  return { dish, dishSizeDetails, images, reviews, isLoading, dishTags };
 };
 
 const ImageGallery = React.memo(
@@ -116,9 +118,28 @@ const ImageGallery = React.memo(
   }
 );
 
+const DishTags = ({ dishTags }) => {
+  return (
+    <div className="my-2 ">
+      <h2 className="text-lg font-semibold mb-4">Từ khoá liên quan:</h2>
+      <div className="flex flex-wrap gap-2">
+        {dishTags.map((tag) => (
+          <span
+            key={tag.dishTagId}
+            className="px-4 text-red-900 py-2 rounded-lg border border-gray  text-base cursor-pointer block"
+          >
+            #{tag.tag.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
 const ProductDetail = () => {
   const { id } = useParams();
-  const { dish, dishSizeDetails, images, reviews, isLoading } = useDishData(id);
+  const { dish, dishSizeDetails, images, reviews, isLoading, dishTags } =
+    useDishData(id);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -126,7 +147,6 @@ const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedStarFilter, setSelectedStarFilter] = useState(null);
   const [note, setNote] = useState("");
-
   useEffect(() => {
     if (dishSizeDetails && dishSizeDetails.length > 0 && !selectedSize) {
       setSelectedSize(dishSizeDetails[0]);
@@ -314,11 +334,15 @@ const ProductDetail = () => {
       {!isEmptyObject(dish) && (
         <div className=" container p-10 mx-auto px-4 py-8 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-            <ImageGallery
-              images={images}
-              currentImageIndex={currentImageIndex}
-              setCurrentImageIndex={setCurrentImageIndex}
-            />
+            <div>
+              <ImageGallery
+                images={images}
+                currentImageIndex={currentImageIndex}
+                setCurrentImageIndex={setCurrentImageIndex}
+              />
+              <DishTags dishTags={dishTags} />
+            </div>
+
             <div className="space-y-8">
               <div className="flex">
                 <h1 className="text-2xl font-bold text-gray-800 uppercase inline-block">
@@ -333,6 +357,7 @@ const ProductDetail = () => {
                   {dish?.dish?.averageRating}
                 </span>
               </div>
+
               <div className="border-t-2 border-gray-500 my-2 pt-4">
                 <div className="inline-flex items-center px-4 py-2 rounded-full bg-white  border border-red-800 text-sm">
                   <ThermometerSun className="mx-2 text-red-700 " />{" "}
@@ -344,6 +369,7 @@ const ProductDetail = () => {
                 <p className="text-red-800 text-4xl  m-4">
                   {formatPrice(price)}
                 </p>
+
                 <div>
                   <p className="text-gray-800 text-lg m-4">Ghi chú của bạn</p>
                   <input
