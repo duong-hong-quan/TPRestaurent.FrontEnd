@@ -35,7 +35,7 @@ const TABS = [
 
   {
     label: "Huỷ đơn",
-    value: "8",
+    value: "9",
   },
 ];
 
