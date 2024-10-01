@@ -9,6 +9,7 @@ import {
   CarOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  TruckOutlined,
 } from "@ant-design/icons";
 
 const OrderTag = ({ orderStatusId }) => {
@@ -42,17 +43,23 @@ const OrderTag = ({ orderStatusId }) => {
         };
       case 6:
         return {
+          color: "green",
+          text: "Chuẩn bị giao hàng",
+          icon: <TruckOutlined />,
+        };
+      case 7:
+        return {
           color: "orange",
           text: "Đang giao hàng",
           icon: <CarOutlined />,
         };
-      case 7:
+      case 8:
         return {
           color: "success",
           text: "Hoàn thành",
           icon: <CheckCircleOutlined />,
         };
-      case 8:
+      case 9:
         return {
           color: "error",
           text: "Đã hủy",
