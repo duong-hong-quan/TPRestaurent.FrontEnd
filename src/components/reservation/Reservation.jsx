@@ -241,16 +241,16 @@ const Reservation = () => {
       "GET"
     );
     if (data.isSuccess) {
-      if (!data.result?.customerInfo?.isVerified) {
+      if (!data.result?.isVerified) {
         setIsOtpModalVisible(true);
       }
       setInformation({
-        firstName: data?.result?.customerInfo?.firstName,
-        lastName: data?.result?.customerInfo?.lastName,
-        phoneNumber: data?.result?.customerInfo?.phoneNumber,
+        firstName: data?.result?.firstName,
+        lastName: data?.result?.lastName,
+        phoneNumber: data?.result?.phoneNumber,
         email: form.getFieldValue("email"),
         note: form.getFieldValue("note"),
-        customerId: data?.result?.customerInfo?.id,
+        customerId: data?.result?.id,
         isPrivate: form.getFieldValue("isPrivate"),
       });
       setIsValid(true);
