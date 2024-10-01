@@ -17,6 +17,8 @@ import { formatDateTime } from "../../util/Utility";
 import useCallApi from "../../api/useCallApi";
 import Pagination from "../../components/pagination/Pagination";
 import TabMananger from "../../components/tab/TabManager";
+import { OrderApi } from "../../api/endpoint";
+import OrderTag from "../../components/tag/OrderTag";
 
 const TABS = [
   {
@@ -34,7 +36,7 @@ const TABS = [
 ];
 
 export function AdminMealHistoryPage() {
-  const [activeTab, setActiveTab] = useState("");
+  const [activeTab, setActiveTab] = useState("3");
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -52,45 +54,54 @@ export function AdminMealHistoryPage() {
       title: "Mã đơn hàng",
       dataIndex: "orderId",
       key: "orderId",
-      render: (text) => <Typography>{text.substring(0, 8)}</Typography>,
+      render: (_, record) => (
+        <Typography>{record.order.orderId.substring(0, 8)}</Typography>
+      ),
     },
     {
-      title: "Khách hàng",
-      dataIndex: "customerInfo",
-      key: "customerInfo",
+      title: "Mã bàn",
+      dataIndex: "tableName",
+      key: "tableName",
+      render: (_, record) => (
+        <Typography>{`${record.table.tableName} `}</Typography>
+      ),
+    },
+    {
+      title: "Loại bàn",
+      dataIndex: "tableSize",
+      key: "tableSize",
       render: (_, record) => (
         <Typography>
-          {`${record.account?.firstName} ${record.account?.lastName}`}
+          {`Bàn ${record.table.tableSize.vietnameseName} người`}
         </Typography>
       ),
+    },
+    {
+      title: "Loại phòng",
+      dataIndex: "room",
+      key: "room",
+      render: (_, record) => <Typography>{record.table.room.name}</Typography>,
     },
     {
       title: "Tổng tiền",
       dataIndex: "totalAmount",
       key: "totalAmount",
       render: (_, record) => (
-        <Typography>{record.totalAmount.toLocaleString()} VND</Typography>
+        <Typography>{record.order.totalAmount.toLocaleString()} VND</Typography>
       ),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (_, record) => (
-        <Chip
-          variant="ghost"
-          size="sm"
-          className="text-center"
-          value={`${record.status.vietnameseName} - ${record.orderType.name}`}
-        />
-      ),
+      render: (_, record) => <OrderTag orderStatusId={record.order.statusId} />,
     },
     {
       title: "Ngày dùng bữa",
       dataIndex: "mealTime",
       key: "mealTime",
       render: (_, record) => (
-        <Typography>{formatDateTime(record.mealTime)}</Typography>
+        <Typography>{formatDateTime(record.order.mealTime)}</Typography>
       ),
     },
     {
@@ -109,12 +120,15 @@ export function AdminMealHistoryPage() {
 
   const fetchOrder = async () => {
     const response = await callApi(
-      `order/get-all-order-by-status/${currentPage}/${totalItems}?status=${activeTab}&orderType=${3}`,
+      `${OrderApi.GET_ALL_TABLE_DETAIL}/${currentPage}/${totalItems}?orderStatus=${activeTab}`,
       "GET"
     );
     if (response?.isSuccess) {
       setData(response?.result?.items);
       setTotalPages(response?.result?.totalPages);
+    } else {
+      setData([]);
+      setTotalPages(0);
     }
   };
 

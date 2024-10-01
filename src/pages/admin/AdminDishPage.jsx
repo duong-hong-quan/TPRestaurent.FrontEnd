@@ -12,7 +12,9 @@ import { ArrowPathIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import useCallApi from "../../api/useCallApi";
 import DishTable from "../../components/table/DishTable";
 import Pagination from "../../components/pagination/Pagination";
-import { DishApi } from "../../api/endpoint";
+import { ComboApi, DishApi } from "../../api/endpoint";
+import CreateMenuPage from "./menu/CreateMenuPage";
+import ComboTable from "../../components/table/ComboTable";
 const AdminDishPage = () => {
   const MenuTab = [
     {
@@ -25,33 +27,17 @@ const AdminDishPage = () => {
       value: "2",
     },
   ];
-  const TABS = [
-    {
-      label: "Tất cả",
-      value: "",
-    },
-    {
-      label: "Còn món",
-      value: "7",
-    },
-    {
-      label: "Hết món",
-      value: "8",
-    },
-    {
-      label: "Ngưng bán",
-      value: "8",
-    },
-  ];
 
-  const [activeTab, setActiveTab] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [dishes, setDishes] = useState([]);
+  const [combos, setCombos] = useState([]);
   const { callApi, error, loading } = useCallApi();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [selectedMenuTab, setSelectedMenuTab] = useState("1");
   const totalItems = 10;
+  const [isCreateDishModalVisible, setIsCreateDishModalVisible] =
+    useState(false);
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
@@ -76,19 +62,33 @@ const AdminDishPage = () => {
     );
   };
   const fetchDishes = async () => {
-    const response = await callApi(
-      `${DishApi.GET_ALL}/${currentPage}/${totalItems}`,
-      "GET"
-    );
-    if (response?.isSuccess) {
-      setDishes(response.result.items);
-      setTotalPages(response.result.totalPages);
+    if (Number(selectedMenuTab) === 1) {
+      const response = await callApi(
+        `${DishApi.GET_ALL}/${currentPage}/${totalItems}`,
+        "GET"
+      );
+      if (response?.isSuccess) {
+        setDishes(response.result.items);
+        setTotalPages(response.result.totalPages);
+      }
+    } else {
+      const response = await callApi(
+        `${ComboApi.GET_ALL}/${currentPage}/${totalItems}`,
+        "GET"
+      );
+      if (response?.isSuccess) {
+        setCombos(response.result);
+        setTotalPages(response.result.totalPages);
+      }
     }
   };
   useEffect(() => {
     fetchDishes();
-  }, [currentPage]);
-  console.log(selectedMenuTab);
+  }, [currentPage, selectedMenuTab]);
+
+  if (isCreateDishModalVisible) {
+    return <CreateMenuPage back={() => setIsCreateDishModalVisible(false)} />;
+  }
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -102,23 +102,24 @@ const AdminDishPage = () => {
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button variant="outlined" size="sm">
-              Xuất báo cáo
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={() => setIsCreateDishModalVisible(true)}
+            >
+              Thêm món mới
             </Button>
-            <Button className="flex items-center bg-red-700 gap-3" size="sm">
+            <Button
+              className="flex items-center bg-red-700 gap-3"
+              size="sm"
+              onClick={fetchDishes}
+            >
               <ArrowPathIcon strokeWidth={2} className="h-4 w-4" /> Làm mới
             </Button>
           </div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="mb-4">
-            {renderMenuTab()}
-            <TabMananger
-              items={TABS}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-            />
-          </div>
+          <div className="mb-4">{renderMenuTab()}</div>
           <div className="w-full md:w-72">
             <Input
               label="Tìm kiếm"
@@ -129,8 +130,13 @@ const AdminDishPage = () => {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="overflow-y-scroll h-[550px]">
-        <DishTable dishes={dishes} key={"dishes"} loading={loading} />
+      <CardBody className="overflow-y-scroll h-[500px]">
+        {Number(selectedMenuTab) === 1 && (
+          <DishTable dishes={dishes} key={"dishes"} loading={loading} />
+        )}
+        {Number(selectedMenuTab) === 2 && (
+          <ComboTable data={combos} key={"dishes"} loading={loading} />
+        )}
       </CardBody>
       <Pagination
         currentPage={currentPage}
