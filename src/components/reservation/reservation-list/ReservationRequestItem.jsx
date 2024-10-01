@@ -135,7 +135,7 @@ const ReservationRequestItem = ({ reservation }) => {
       </div>
       <div className="flex flex-col md:flex-row justify-end items-center">
         <div className="flex justify-end">
-          {reservation?.statusId === 8 && (
+          {reservation?.statusId === 9 && (
             <button
               onClick={() => handleClickOpen()}
               className=" text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"

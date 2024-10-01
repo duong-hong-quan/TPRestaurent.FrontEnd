@@ -135,7 +135,7 @@ export function OrderHistory() {
                 <Option value="1">Đã xếp bàn</Option>
                 <Option value="2">Đã thanh toán cọc</Option>
                 <Option value="3">Đang dùng bữa</Option>
-                <Option value="8">Đã hủy</Option>
+                <Option value="9">Đã hủy</Option>
               </Select>
             </Space>
             {reservations.length > 0 ? (
@@ -154,9 +154,10 @@ export function OrderHistory() {
                 <Option value="">Tất cả</Option>
                 <Option value="4">Chờ xác nhận</Option>
                 <Option value="5">Chưa thanh toán</Option>
-                <Option value="6">Đang giao</Option>
-                <Option value="7">Đã nhận hàng</Option>
-                <Option value="8">Đã hủy</Option>
+                <Option value="6">Chuẩn bị giao hàng</Option>
+                <Option value="7">Đang giao</Option>
+                <Option value="8">Đã nhận hàng</Option>
+                <Option value="9">Đã hủy</Option>
               </Select>
             </Space>
             <OrderHistoryList orders={orders} key={"orderlist"} />
