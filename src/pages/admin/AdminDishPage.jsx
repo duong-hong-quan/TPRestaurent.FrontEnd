@@ -88,8 +88,9 @@ const AdminDishPage = () => {
   }, [currentPage, selectedMenuTab]);
 
   if (isCreateDishModalVisible) {
-    return <NavigateCreateMenu />;
-    // return <CreateMenuPage back={() => setIsCreateDishModalVisible(false)} />;
+    return (
+      <NavigateCreateMenu back={() => setIsCreateDishModalVisible(false)} />
+    );
   }
   return (
     <Card className="h-full w-full">
