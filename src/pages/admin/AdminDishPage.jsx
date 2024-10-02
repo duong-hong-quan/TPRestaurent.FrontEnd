@@ -15,6 +15,7 @@ import Pagination from "../../components/pagination/Pagination";
 import { ComboApi, DishApi } from "../../api/endpoint";
 import CreateMenuPage from "./menu/CreateMenuPage";
 import ComboTable from "../../components/table/ComboTable";
+import NavigateCreateMenu from "./menu/NavigateCreateMenu";
 const AdminDishPage = () => {
   const MenuTab = [
     {
@@ -87,7 +88,8 @@ const AdminDishPage = () => {
   }, [currentPage, selectedMenuTab]);
 
   if (isCreateDishModalVisible) {
-    return <CreateMenuPage back={() => setIsCreateDishModalVisible(false)} />;
+    return <NavigateCreateMenu />;
+    // return <CreateMenuPage back={() => setIsCreateDishModalVisible(false)} />;
   }
   return (
     <Card className="h-full w-full">
