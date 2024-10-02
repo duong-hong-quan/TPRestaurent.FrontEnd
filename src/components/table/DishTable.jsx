@@ -109,8 +109,8 @@ const DishTable = ({ dishes, loading }) => {
       key: "small",
       render: (sizes) =>
         `${sizes
-          .find((s) => s.dishSize.name === "SMALL")
-          .price.toLocaleString()} VND`,
+          .find((s) => s.dishSize?.name === "SMALL")
+          ?.price?.toLocaleString()} VND`,
     },
     {
       title: "Size vừa",
@@ -118,8 +118,8 @@ const DishTable = ({ dishes, loading }) => {
       key: "medium",
       render: (sizes) =>
         `${sizes
-          .find((s) => s.dishSize.name === "MEDIUM")
-          .price.toLocaleString()} VND`,
+          .find((s) => s.dishSize?.name === "MEDIUM")
+          ?.price?.toLocaleString()} VND`,
     },
     {
       title: "Size lớn",
@@ -127,8 +127,8 @@ const DishTable = ({ dishes, loading }) => {
       key: "large",
       render: (sizes) =>
         `${sizes
-          .find((s) => s.dishSize.name === "LARGE")
-          .price.toLocaleString()} VND`,
+          .find((s) => s.dishSize?.name === "LARGE")
+          ?.price?.toLocaleString()} VND`,
     },
     {
       title: "Trạng thái",
