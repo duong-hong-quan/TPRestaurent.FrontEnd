@@ -9,6 +9,7 @@ const PolicyOrder = () => {
         <h3 className="text-xl font-semibold mb-3 text-gray-700">ĐƠN HÀNG:</h3>
         <ul className="list-disc pl-5 space-y-2 text-gray-600">
           <li>Đồ ăn đã mua không được đổi trả.</li>
+          <li>Chỉ giao hàng trong thành phố Đà Lạt.</li>
           <li>Vui lòng kiểm tra kỹ trước khi nhận hàng.</li>
           <li>
             Khách hàng vui lòng thanh toán 100% online qua các cổng thanh toán

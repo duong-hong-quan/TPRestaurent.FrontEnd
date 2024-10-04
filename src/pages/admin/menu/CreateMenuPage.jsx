@@ -133,12 +133,18 @@ const CreateMenuPage = ({ back }) => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <Card className="p-6 shadow-lg">
+    <div className="">
+      <div className="p-6 shadow-none border-none rounded-none">
         <Typography className="text-red-800 mb-6 text-xl font-bold uppercase text-center">
           Thêm món ăn
         </Typography>
-        <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          className="border-none"
+          style={{ border: "none !important" }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <Form.Item
               name="Name"
@@ -298,7 +304,7 @@ const CreateMenuPage = ({ back }) => {
             </Button>
           </Form.Item>
         </Form>
-      </Card>
+      </div>
       <Modal
         visible={previewOpen}
         title="Preview Image"

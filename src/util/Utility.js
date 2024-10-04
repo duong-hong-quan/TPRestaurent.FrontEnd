@@ -53,106 +53,11 @@ function formatDate(ngayGio) {
 
   return `${ngay}/${thang}/${nam}`;
 }
-function differenceInDays(ngayGio1, ngayGio2) {
-  var date1 = new Date(ngayGio1);
-  var date2 = new Date(ngayGio2);
-
-  // Lấy số mili giây của mỗi ngày
-  var oneDay = 24 * 60 * 60 * 1000;
-
-  // Chuyển đổi thời điểm thành số mili giây
-  var time1 = date1.getTime();
-  var time2 = date2.getTime();
-
-  // Tính hiệu số ngày giữa hai thời điểm và làm tròn kết quả
-  var difference = Math.round(Math.abs((time1 - time2) / oneDay));
-
-  return difference;
-}
-function secondsToHours(seconds) {
-  if (isNaN(seconds) || seconds < 0) {
-    return "Vui lòng nhập số giây hợp lệ (lớn hơn hoặc bằng 0)";
-  }
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.round((seconds % 3600) / 60);
-  const roundedSeconds = Math.round(seconds % 60);
-
-  return `${hours.toString().padStart(2, "0")}:${minutes
-    .toString()
-    .padStart(2, "0")}:${roundedSeconds.toString().padStart(2, "0")}`;
-}
-function metersToKilometers(meters) {
-  if (isNaN(meters) || meters < 0) {
-    return "Vui lòng nhập số mét hợp lệ (lớn hơn hoặc bằng 0)";
-  }
-
-  const kilometers = Math.round(meters / 1000);
-
-  return `${kilometers} km`;
-}
-function getTimePeriod(dateTimeString) {
-  const dateTime = new Date(dateTimeString);
-  const hours = dateTime.getHours();
-  if (hours < 10) {
-    return "Sáng";
-  } else if (hours >= 10 && hours < 14) {
-    return "Trưa";
-  } else if (hours >= 14) {
-    return "Tối";
-  } else {
-    return "";
-  }
-}
 
 function isEmptyObject(obj) {
   return Object.keys(obj).length === 0;
 }
 
-function formatDateToISOString(date) {
-  return moment(date).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-}
-function calculateDuration(startDate, endDate) {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  const days = differenceInDays(end, start) + 1;
-  const nights = days - 1;
-
-  return `${days} ngày ${nights} đêm`;
-}
-function calculateTimeDifference(startDateString, endDateString) {
-  // Tạo đối tượng Date từ các chuỗi đầu vào
-  const startDate = new Date(startDateString);
-  const endDate = new Date(endDateString);
-
-  // Tính khoảng cách giữa hai ngày (trong mili giây)
-  const differenceInMilliseconds = endDate - startDate;
-
-  // Chuyển đổi khoảng cách từ mili giây sang các đơn vị khác
-  const millisecondsInSecond = 1000;
-  const secondsInMinute = 60;
-  const minutesInHour = 60;
-  const hoursInDay = 24;
-
-  const totalSeconds = Math.floor(
-    differenceInMilliseconds / millisecondsInSecond
-  );
-  const totalMinutes = Math.floor(totalSeconds / secondsInMinute);
-  const totalHours = Math.floor(totalMinutes / minutesInHour);
-  const totalDays = Math.floor(totalHours / hoursInDay);
-
-  const remainingSeconds = totalSeconds % secondsInMinute;
-  const remainingMinutes = totalMinutes % minutesInHour;
-  const remainingHours = totalHours % hoursInDay;
-
-  return {
-    days: totalDays,
-    hours: remainingHours,
-    minutes: remainingMinutes,
-    seconds: remainingSeconds,
-  };
-}
 function mergeCartData(cartReservation, cartCombos, options = {}) {
   // Default values or from options
   const {
@@ -232,7 +137,18 @@ function showError(errors) {
     message.error(errorMessage);
   }
 }
-const padZero = (num) => (num < 10 ? `0${num}` : num);
+const padZero = (num) => (num < 10 ? "0" + num : num);
+
+export const formatLocalDateTime = (date) => {
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1);
+  const day = padZero(date.getDate());
+  const hours = padZero(date.getHours());
+  const minutes = padZero(date.getMinutes());
+  const seconds = padZero(date.getSeconds());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
 
 export const formatDateRange = (start, end) => {
   const startDate = new Date(start);
@@ -254,15 +170,8 @@ export {
   formatPrice,
   formatDateTime,
   formatDate,
-  differenceInDays,
-  secondsToHours,
-  metersToKilometers,
-  getTimePeriod,
   isEmptyObject,
-  formatDateToISOString,
-  calculateDuration,
   mergeCartData,
-  calculateTimeDifference,
   formatPhoneNumber,
   showError,
 };
