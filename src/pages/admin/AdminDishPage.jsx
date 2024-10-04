@@ -137,7 +137,7 @@ const AdminDishPage = ({ initData, tab }) => {
         </div>
       </CardHeader>
       <CardBody key={uniqueId()} className="overflow-y-scroll h-[500px]">
-        {Number(selectedMenuTab) === 1 && !initData ? (
+        {Number(selectedMenuTab) === 1 ? (
           <DishTable key={uniqueId()} dishes={dishes} loading={loading} />
         ) : (
           Number(selectedMenuTab) === 2 && (
