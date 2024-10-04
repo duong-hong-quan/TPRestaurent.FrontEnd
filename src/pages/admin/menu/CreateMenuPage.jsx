@@ -191,19 +191,24 @@ const CreateMenuPage = ({ back }) => {
       onSuccess("ok");
     }, 0);
   };
-  const handleUpdateImage = (file, image) => {
+  const handleUpdateImage = async (file, image) => {
     const formData = new FormData();
     formData.append("DishId", id);
     formData.append("Image", file);
     formData.append("OldImageLink", image.path);
-    const response = callApi(`${DishApi.UPDATE_DISH_IMAGE}`, "PUT", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await callApi(
+      `${DishApi.UPDATE_DISH_IMAGE}`,
+      "PUT",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     if (response?.isSuccess) {
       message.success("Cập nhật ảnh thành công");
-      fetchDataById(id);
+      await fetchDataById(id);
     } else {
       showError(error);
     }
@@ -375,16 +380,24 @@ const CreateMenuPage = ({ back }) => {
               </Upload>
             )}
             {initData && (
-              <div className="grid grid-cols-8">
+              <div className="flex items-center">
                 {initData?.dishImgs?.map((image) => (
-                  <div className="relative" key={image.id}>
+                  <div
+                    className="relative w-32 h-32 mr-4 shadow-md cursor-pointer"
+                    key={image.id}
+                  >
                     <Upload
                       showUploadList={false}
                       beforeUpload={(file) => {
                         handleUpdateImage(file, image);
+                        return false;
                       }}
                     >
-                      <img src={image.path} alt="avatar" />
+                      <img
+                        src={image.path}
+                        alt="avatar"
+                        className=" w-32 h-32 object-cover border border-gray-100"
+                      />
                     </Upload>
                   </div>
                 ))}

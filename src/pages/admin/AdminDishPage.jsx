@@ -140,8 +140,7 @@ const AdminDishPage = ({ initData, tab }) => {
         {Number(selectedMenuTab) === 1 && !initData ? (
           <DishTable key={uniqueId()} dishes={dishes} loading={loading} />
         ) : (
-          Number(selectedMenuTab) === 2 &&
-          !initData(
+          Number(selectedMenuTab) === 2 && (
             <ComboTable key={uniqueId()} data={combos} loading={loading} />
           )
         )}
