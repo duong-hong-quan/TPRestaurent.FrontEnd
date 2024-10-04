@@ -16,7 +16,8 @@ import { ComboApi, DishApi } from "../../api/endpoint";
 import CreateMenuPage from "./menu/CreateMenuPage";
 import ComboTable from "../../components/table/ComboTable";
 import NavigateCreateMenu from "./menu/NavigateCreateMenu";
-const AdminDishPage = () => {
+import { uniqueId } from "lodash";
+const AdminDishPage = ({ initData, tab }) => {
   const MenuTab = [
     {
       label: "Món lẻ",
@@ -47,7 +48,7 @@ const AdminDishPage = () => {
       <div className="flex gap-1 my-1">
         {MenuTab.map((tab) => (
           <Button
-            key={tab.value}
+            key={uniqueId()}
             className={`${
               Number(selectedMenuTab) === Number(tab.value)
                 ? "bg-red-800 text-white"
@@ -86,7 +87,9 @@ const AdminDishPage = () => {
   useEffect(() => {
     fetchDishes();
   }, [currentPage, selectedMenuTab]);
-
+  if (tab === "tab1" && initData) {
+    return <NavigateCreateMenu initData={initData} tab={tab} />;
+  }
   if (isCreateDishModalVisible) {
     return (
       <NavigateCreateMenu back={() => setIsCreateDishModalVisible(false)} />
@@ -133,12 +136,14 @@ const AdminDishPage = () => {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="overflow-y-scroll h-[500px]">
-        {Number(selectedMenuTab) === 1 && (
-          <DishTable dishes={dishes} key={"dishes"} loading={loading} />
-        )}
-        {Number(selectedMenuTab) === 2 && (
-          <ComboTable data={combos} key={"dishes"} loading={loading} />
+      <CardBody key={uniqueId()} className="overflow-y-scroll h-[500px]">
+        {Number(selectedMenuTab) === 1 && !initData ? (
+          <DishTable key={uniqueId()} dishes={dishes} loading={loading} />
+        ) : (
+          Number(selectedMenuTab) === 2 &&
+          !initData(
+            <ComboTable key={uniqueId()} data={combos} loading={loading} />
+          )
         )}
       </CardBody>
       <Pagination

@@ -10,12 +10,13 @@ import {
   Space,
   message,
   Modal,
+  Image,
 } from "antd";
 import { Typography } from "@material-tailwind/react";
 import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
 import { showError } from "../../../util/Utility";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const { TextArea } = Input;
 
@@ -28,6 +29,9 @@ const getBase64 = (file) =>
   });
 
 const CreateMenuPage = ({ back }) => {
+  const { id } = useParams();
+  const [initData, setInitData] = useState(null);
+
   const [form] = Form.useForm();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -37,7 +41,18 @@ const CreateMenuPage = ({ back }) => {
   const [tags, setTags] = useState([]);
   const [dishSizes, setDishSizes] = useState([]);
   const navigate = useNavigate();
-
+  const fetchDataById = async (id) => {
+    const response = await callApi(`${DishApi.GET_BY_ID}/${id}`, "GET");
+    if (response?.isSuccess) {
+      setInitData(response.result);
+      console.log(response.result);
+    }
+  };
+  useEffect(() => {
+    if (id) {
+      fetchDataById(id);
+    }
+  }, [id]);
   const fetchData = async () => {
     const dishTypeResponse = await callApi(
       `${DishApi.GET_ALL_DISH_TYPE}/1/100`,
@@ -65,6 +80,7 @@ const CreateMenuPage = ({ back }) => {
   useEffect(() => {
     fetchData();
   }, []);
+
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -78,65 +94,125 @@ const CreateMenuPage = ({ back }) => {
   };
 
   const onFinish = async () => {
-    const formData = new FormData();
-    const data = form.getFieldsValue();
-    form.setFieldValue("MainImageFile", fileList[0]);
-    formData.append("MainImageFile", fileList[0].originFileObj);
-    formData.append("Name", data.Name);
-    formData.append("DishItemType", data.DishItemType);
-    formData.append("Description", data.Description);
-    for (let i = 0; i < fileList.length; i++) {
-      formData.append("ImageFiles", fileList[i].originFileObj);
-    }
-    if (Array.isArray(data.TagIds)) {
-      data.TagIds.forEach((tagId, index) => {
-        formData.append(`TagIds[${index}]`, tagId);
+    if (initData) {
+      const data = form.getFieldsValue();
+      console.log(data);
+      const response = await callApi(`${DishApi.UPDATE_DISH}`, "PUT", {
+        dishId: initData.dish?.dish?.dishId,
+        name: data.Name,
+        isAvailable: true,
+        description: data.Description,
+        updateDishSizeDetailDtos: data.DishSizeDetailDtos,
+        dishItemType: data.DishItemType,
       });
-    }
-    if (Array.isArray(data.DishSizeDetailDtos)) {
-      data.DishSizeDetailDtos.forEach((item, index) => {
-        formData.append(`DishSizeDetailDtos[${index}][price]`, item.price);
-        formData.append(
-          `DishSizeDetailDtos[${index}][discount]`,
-          item.discount
-        );
-        formData.append(
-          `DishSizeDetailDtos[${index}][dishSize]`,
-          item.dishSize
-        );
-      });
-    }
-
-    const response = await callApi(`${DishApi.CREATE_DISH}`, "POST", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    if (response?.isSuccess) {
-      message.success("Tạo món ăn thành công");
-      back();
+      if (response?.isSuccess) {
+        message.success("Cập nhật món ăn thành công");
+      } else {
+        showError(error);
+      }
     } else {
-      showError(error);
+      const formData = new FormData();
+      const data = form.getFieldsValue();
+      form.setFieldValue("MainImageFile", fileList[0]);
+      formData.append("MainImageFile", fileList[0].originFileObj);
+      formData.append("Name", data.Name);
+      formData.append("DishItemType", data.DishItemType);
+      formData.append("Description", data.Description);
+      for (let i = 0; i < fileList.length; i++) {
+        formData.append("ImageFiles", fileList[i].originFileObj);
+      }
+      if (Array.isArray(data.TagIds)) {
+        data.TagIds.forEach((tagId, index) => {
+          formData.append(`TagIds[${index}]`, tagId);
+        });
+      }
+      if (Array.isArray(data.DishSizeDetailDtos)) {
+        data.DishSizeDetailDtos.forEach((item, index) => {
+          formData.append(`DishSizeDetailDtos[${index}][price]`, item.price);
+          formData.append(
+            `DishSizeDetailDtos[${index}][discount]`,
+            item.discount
+          );
+          formData.append(
+            `DishSizeDetailDtos[${index}][dishSize]`,
+            item.dishSize
+          );
+        });
+      }
+
+      const response = await callApi(
+        `${DishApi.CREATE_DISH}`,
+        "POST",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response?.isSuccess) {
+        message.success("Tạo món ăn thành công");
+        back();
+      } else {
+        showError(error);
+      }
     }
   };
+  useEffect(() => {
+    if (initData) {
+      console.log(initData);
+      form.setFieldsValue({
+        Name: initData?.dish?.dish?.name,
+        DishItemType: initData?.dish?.dish?.dishItemTypeId,
+        Description: initData?.dish?.dish?.description,
+        TagIds: initData?.dishTags?.map((tag) => tag.tag.tagId),
+        DishSizeDetailDtos: initData?.dish?.dishSizeDetails?.map((size) => ({
+          dishSizeDetailId: size.dishSizeDetailId,
+          dishSize: size.dishSize.id,
+          price: size.price,
+          discount: size.discount,
+        })),
+      });
+    }
+  }, [initData]);
+  const uploadButton = () => {
+    if (initData) {
+    }
 
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Tải lên</div>
-    </div>
-  );
+    return (
+      <div>
+        <PlusOutlined />
+        <div style={{ marginTop: 8 }}>Tải lên</div>
+      </div>
+    );
+  };
   const dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
       onSuccess("ok");
     }, 0);
   };
-
+  const handleUpdateImage = (file, image) => {
+    const formData = new FormData();
+    formData.append("DishId", id);
+    formData.append("Image", file);
+    formData.append("OldImageLink", image.path);
+    const response = callApi(`${DishApi.UPDATE_DISH_IMAGE}`, "PUT", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    if (response?.isSuccess) {
+      message.success("Cập nhật ảnh thành công");
+      fetchDataById(id);
+    } else {
+      showError(error);
+    }
+  };
   return (
-    <div className="">
-      <div className="p-6 shadow-none border-none rounded-none">
+    <div className="container">
+      <div className="p-6 shadow-xl border-none  bg-white rounded-xl h-[700px] overflow-auto">
         <Typography className="text-red-800 mb-6 text-xl font-bold uppercase text-center">
-          Thêm món ăn
+          {id ? "Chỉnh sửa" : "Thêm "} món ăn
         </Typography>
         <Form
           form={form}
@@ -248,6 +324,17 @@ const CreateMenuPage = ({ back }) => {
                     </Form.Item>
                     <Form.Item
                       {...restField}
+                      name={[name, "dishSizeDetailId"]}
+                      hidden
+                    >
+                      <Input
+                        placeholder="Nhập giá"
+                        style={{ width: 120 }}
+                        name={`dishSizeDetailDtos[${name}].dishSizeDetailId`}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
                       name={[name, "discount"]}
                       rules={[{ required: true, message: "Vui lòng nhập giá" }]}
                       label="Giảm (%)"
@@ -276,15 +363,33 @@ const CreateMenuPage = ({ back }) => {
             valuePropName="fileList"
             getValueFromEvent={(e) => e.fileList}
           >
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={handlePreview}
-              onChange={handleChange}
-              customRequest={dummyRequest}
-            >
-              {fileList.length >= 8 ? null : uploadButton}
-            </Upload>
+            {!initData && (
+              <Upload
+                listType="picture-card"
+                fileList={fileList}
+                onPreview={handlePreview}
+                onChange={handleChange}
+                customRequest={dummyRequest}
+              >
+                {fileList.length >= 8 ? null : uploadButton()}
+              </Upload>
+            )}
+            {initData && (
+              <div className="grid grid-cols-8">
+                {initData?.dishImgs?.map((image) => (
+                  <div className="relative" key={image.id}>
+                    <Upload
+                      showUploadList={false}
+                      beforeUpload={(file) => {
+                        handleUpdateImage(file, image);
+                      }}
+                    >
+                      <img src={image.path} alt="avatar" />
+                    </Upload>
+                  </div>
+                ))}
+              </div>
+            )}
           </Form.Item>
           <Form.Item name="MainImageFile" label="Hình ảnh món ăn" hidden>
             <Upload
@@ -300,7 +405,7 @@ const CreateMenuPage = ({ back }) => {
               className="w-full bg-red-800 hover:bg-red-700"
               loading={loading}
             >
-              Tạo món ăn
+              {id ? "Chỉnh sửa" : "Thêm "} món ăn
             </Button>
           </Form.Item>
         </Form>

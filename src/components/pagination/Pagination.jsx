@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { uniqueId } from "lodash";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -15,7 +16,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       </button>
       {pages.map((page) => (
         <button
-          key={page}
+          key={uniqueId()}
           onClick={() => onPageChange(page)}
           className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
             currentPage === page
