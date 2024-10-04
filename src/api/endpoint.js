@@ -74,6 +74,8 @@ export const DishApi = {
   GET_ALL_DISH_SIZE: "/dish/get-all-dish-size",
   GET_ALL_DISH_TAG: "/dish/get-all-dish-tag",
   CREATE_DISH: "/dish/create-dish",
+  UPDATE_DISH: "/dish/update-dish",
+  UPDATE_DISH_IMAGE: "/dish/update-dish-image",
 };
 export const MapApi = {
   AUTO_COMPLETE: "/map/auto-complete",

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Radio, Card } from "antd";
 import CreateMenuPage from "./CreateMenuPage";
 import CreateComboPage from "./CreateComboPage";
+import { uniqueId } from "lodash";
 
 const NavigateCreateMenu = ({ back }) => {
   const [selectedTab, setSelectedTab] = useState("tab1");
@@ -22,8 +23,12 @@ const NavigateCreateMenu = ({ back }) => {
         Tạo thực đơn
       </h1>
       <Radio.Group onChange={handleTabChange} value={selectedTab}>
-        <Radio value="tab1">Món ăn</Radio>
-        <Radio value="tab2">Combo</Radio>
+        <Radio key={uniqueId()} value="tab1">
+          Món ăn
+        </Radio>
+        <Radio key={uniqueId()} value="tab2">
+          Combo
+        </Radio>
       </Radio.Group>
       <div className="" style={{ marginTop: 16 }}>
         {selectedTab === "tab1" && (

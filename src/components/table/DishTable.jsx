@@ -8,8 +8,16 @@ import {
   CloseCircleOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
+import { DishApi } from "../../api/endpoint";
+import { useState } from "react";
+import useCallApi from "../../api/useCallApi";
+import { uniqueId } from "lodash";
+import NavigateCreateMenu from "../../pages/admin/menu/NavigateCreateMenu";
+import AdminDishPage from "../../pages/admin/AdminDishPage";
+import { useNavigate } from "react-router-dom";
 
 const DishTable = ({ dishes, loading }) => {
+  const navigate = useNavigate();
   const renderTag = (dishSizeDetails, dish) => {
     return dishSizeDetails.map((dishSizeDetail, index) => {
       let statusConfig = {
@@ -64,7 +72,7 @@ const DishTable = ({ dishes, loading }) => {
     {
       title: "STT",
       dataIndex: "index",
-      key: "index",
+      key: uniqueId(),
       render: (_, record) => <span>{record.dish.dishId.substring(0, 8)}</span>,
     },
     {
@@ -140,9 +148,15 @@ const DishTable = ({ dishes, loading }) => {
       title: "Hành động",
       dataIndex: "",
       key: "action",
-      render: () => (
+      render: (_, record) => (
         <div className="flex gap-4">
-          <Button size="sm" className="bg-white text-blue-800">
+          <Button
+            size="sm"
+            className="bg-white text-blue-800"
+            onClick={() => {
+              navigate(`/admin/create-menu/${record.dish.dishId}`);
+            }}
+          >
             <FaEdit />
           </Button>
           <Button size="sm" className="bg-white text-red-800">
@@ -152,12 +166,14 @@ const DishTable = ({ dishes, loading }) => {
       ),
     },
   ];
+
   return (
     <Table
       columns={columns}
       dataSource={dishes}
       pagination={false}
       loading={loading}
+      key={uniqueId()}
     />
   );
 };

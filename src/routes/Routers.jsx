@@ -36,6 +36,9 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import PolicyPage from "../pages/common/policy/PolicyPage";
 import PersonalReservation from "../pages/common/personal-information/PersonalReservation";
 import AdminDishPage from "../pages/admin/AdminDishPage";
+import NavigateCreateMenu from "../pages/admin/menu/NavigateCreateMenu";
+import CreateMenuPage from "../pages/admin/menu/CreateMenuPage";
+import CreateComboPage from "../pages/admin/menu/CreateComboPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -154,6 +157,18 @@ function Routers() {
         {
           path: "dish-management",
           element: <AdminDishPage />,
+        },
+        {
+          path: "action-management",
+          element: <NavigateCreateMenu />,
+        },
+        {
+          path: "create-menu/:id",
+          element: <CreateMenuPage />,
+        },
+        {
+          path: "create-combo/:id",
+          element: <CreateComboPage />,
         },
         {
           path: "transaction-history",
