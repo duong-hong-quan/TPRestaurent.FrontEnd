@@ -10,12 +10,16 @@ import {
   Card,
   Typography,
   Divider,
+  Image,
+  Upload,
+  message,
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
-import { DishApi } from "../../../api/endpoint";
+import { ComboApi, DishApi } from "../../../api/endpoint";
 import { uniqueId } from "lodash";
 import { formatLocalDateTime } from "../../../util/Utility";
+import CreateOptionSetModal from "../../../components/modal/CreateOptionSetModal";
 
 const { RangePicker } = DatePicker;
 const { Title, Text } = Typography;
@@ -25,6 +29,24 @@ const CreateComboPage = () => {
   const { callApi, error, loading } = useCallApi();
   const [dishItemTypes, setDishItemTypes] = useState([]);
   const [dishTags, setDishTags] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [optionSets, setOptionSets] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [fileList, setFileList] = useState([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const dummyRequest = ({ file, onSuccess }) => {
+    setTimeout(() => {
+      onSuccess("ok");
+    }, 0);
+  };
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
   const fetchData = async () => {
     const response = await callApi(`${DishApi.GET_ALL_DISH_TAG}/1/100`, "GET");
     dishItemTypes;
@@ -65,7 +87,6 @@ const CreateComboPage = () => {
   };
   const onFinish = (values) => {
     const [startDate, endDate] = values.dateRange || [];
-
     const transformedData = {
       name: values.name,
       price: values.price,
@@ -73,20 +94,90 @@ const CreateComboPage = () => {
       tagIds: values.tagIds,
       startDate: formatLocalDateTime(new Date(startDate)),
       endDate: formatLocalDateTime(new Date(endDate)),
-      dishComboDtos: values.dishComboDtos?.map((combo, index) => ({
-        ...combo,
+      dishComboDtos: optionSets.map((combo, index) => ({
         optionSetNumber: index + 1,
-        listDishId: combo.listDishId?.map((dish) => ({
-          dishSizeDetailId: dish.dishSizeDetailId,
+        dishItemType: combo.values.dishItemType,
+        quantity: combo.values.quantity,
+        numOfChoice: combo.values.numberOfChoices,
+        listDishId: combo.values?.dishSizeDetails.map((dish) => ({
+          dishSizeDetailId: dish.dishSizeDetail,
           quantity: dish.quantity,
         })),
       })),
     };
 
-    console.log("Received values of form: ", transformedData);
+    const formData = new FormData();
+
+    formData.append("name", transformedData.name);
+    formData.append("price", transformedData.price);
+    formData.append("description", transformedData.description);
+    formData.append("tagIds", JSON.stringify(transformedData.tagIds));
+    formData.append("startDate", transformedData.startDate);
+    formData.append("endDate", transformedData.endDate);
+    for (let i = 0; i < fileList.length; i++) {
+      formData.append("imgs", fileList[i].originFileObj);
+    }
+    transformedData.dishComboDtos.forEach((combo, index) => {
+      formData.append(
+        `dishComboDtos[${index}][optionSetNumber]`,
+        combo.optionSetNumber
+      );
+      formData.append(
+        `dishComboDtos[${index}][dishItemType]`,
+        combo.dishItemType
+      );
+      formData.append(`dishComboDtos[${index}][quantity]`, combo.quantity);
+      formData.append(
+        `dishComboDtos[${index}][numOfChoice]`,
+        combo.numOfChoice
+      );
+      combo.listDishId.forEach((dish, dishIndex) => {
+        formData.append(
+          `dishComboDtos[${index}][listDishId][${dishIndex}][dishSizeDetailId]`,
+          dish.dishSizeDetailId
+        );
+        formData.append(
+          `dishComboDtos[${index}][listDishId][${dishIndex}][quantity]`,
+          dish.quantity
+        );
+      });
+    });
+    const response = callApi(ComboApi.CREATE_COMBO, "POST", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    if (response.isSuccess) {
+      message.success("Tạo combo thành công");
+    } else {
+      message.error("Tạo combo thất bại");
+    }
+  };
+  const handleChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
   };
 
-  console.log(form.getFieldsValue());
+  const handleOptionSetSubmit = (index, values, selectedDish) => {
+    const newOptionSet = { index, values, selectedDish };
+    let newOptionSets = [...optionSets];
+
+    const existingIndex = newOptionSets.findIndex(
+      (item) => item.index === index
+    );
+    if (existingIndex !== -1) {
+      newOptionSets[existingIndex] = newOptionSet;
+    } else {
+      newOptionSets.push(newOptionSet);
+    }
+
+    setOptionSets(newOptionSets);
+  };
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Tải lên</div>
+    </div>
+  );
   return (
     <div className="max-w-4xl mx-auto my-8 ">
       <Typography className="text-xl font-bold text-center mb-6 uppercase text-red-800">
@@ -97,6 +188,7 @@ const CreateComboPage = () => {
         onFinish={onFinish}
         layout="vertical"
         className="space-y-6"
+        name="createCombo"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Form.Item name="name" label="Tên combo" rules={[{ required: true }]}>
@@ -150,114 +242,62 @@ const CreateComboPage = () => {
         <Form.List name="dishComboDtos">
           {(fields, { add, remove }) => (
             <div className="space-y-4">
-              {fields.map(({ key, name, ...restField }, index) => (
-                <Card key={uniqueId()} className="bg-gray-50">
-                  <Space direction="vertical" className="w-full" size="large">
-                    <div className="flex justify-between items-center">
-                      <Text strong>Bộ {index + 1}</Text>
+              {fields.map(({ key, name }, index) => (
+                <Card key={uniqueId()}>
+                  <div className="flex justify-between">
+                    <span className="text-lg text-red-800 font-semibold">
+                      Bộ {index + 1}
+                    </span>
+                    <span>
                       <Button
                         type="text"
+                        danger
                         icon={<MinusCircleOutlined />}
                         onClick={() => remove(name)}
-                        danger
-                      >
-                        Xoá
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Form.Item
-                        {...restField}
-                        name={[name, "dishItemType"]}
-                        label="Loại món"
-                        rules={[{ required: true, message: "Required" }]}
-                      >
-                        <Select placeholder="Select dish type">
-                          {dishItemTypes?.map((type) => (
-                            <Select.Option key={type.id} value={type.id}>
-                              {type.vietnameseName}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      <Form.Item
-                        {...restField}
-                        name={[name, "numOfChoice"]}
-                        label="Giới hạn chọn"
-                        rules={[{ required: true, message: "Required" }]}
-                      >
-                        <InputNumber placeholder="e.g., 2" className="w-full" />
-                      </Form.Item>
-                    </div>
+                      />
+                    </span>
+                  </div>
 
-                    <Form.List name={[name, "listDishId"]}>
-                      {(subFields, subOpt) => (
-                        <>
-                          <div
-                            className="space-y-2 grid grid-cols-1"
-                            key={uniqueId()}
-                          >
-                            {subFields.map((subField) => (
-                              <Space
-                                key={uniqueId()}
-                                align="center"
-                                direction="horizontal"
-                              >
-                                <Form.Item
-                                  {...subField}
-                                  key={uniqueId()}
-                                  name={[subField.name, "quantity"]}
-                                  rules={[
-                                    { required: true, message: "Required" },
-                                  ]}
-                                  label="Số lượng"
-                                >
-                                  <InputNumber placeholder="Số lượng" />
-                                </Form.Item>
-                                <Form.Item
-                                  {...subField}
-                                  key={uniqueId()}
-                                  name={[subField.name, "dishSizeDetailId"]}
-                                  rules={[
-                                    { required: true, message: "Required" },
-                                  ]}
-                                  label="Món ăn"
-                                >
-                                  <Select
-                                    key={uniqueId()}
-                                    style={{ width: 200 }}
-                                    placeholder="Select size"
-                                  >
-                                    <Select.Option value="1">
-                                      Small
-                                    </Select.Option>
-                                    <Select.Option value="2">
-                                      Medium
-                                    </Select.Option>
-                                    <Select.Option value="3">
-                                      Large
-                                    </Select.Option>
-                                  </Select>
-                                </Form.Item>
-                                <Button
-                                  type="text"
-                                  icon={<MinusCircleOutlined />}
-                                  onClick={() => subOpt.remove(subField.name)}
-                                  danger
-                                />
-                              </Space>
-                            ))}
+                  {optionSets[index]?.selectedDish?.map((item, detailIdx) => (
+                    <div className="grid grid-cols-3 gap-1 my-2">
+                      <div
+                        key={detailIdx}
+                        className="shadow-md p-2 rounded-md border border-gray-50"
+                      >
+                        <div className="flex items-center">
+                          <Image
+                            src={item.dish.image}
+                            alt={item.dish.name}
+                            style={{
+                              width: "60px",
+                              height: "60px",
+                            }}
+                            className="rounded-md"
+                          />
+                          <div className="p-2 flex flex-col">
+                            <Text strong className="block">
+                              {item.dish.name}
+                            </Text>
+                            <Space className="mt-1">
+                              <Text type="secondary">
+                                Size: {item.size?.vietnameseName}
+                              </Text>
+                              <Text type="secondary">SL: {item.quantity}</Text>
+                            </Space>
                           </div>
-                          <Button
-                            type="dashed"
-                            onClick={() => subOpt.add()}
-                            icon={<PlusOutlined />}
-                          >
-                            Thêm món
-                          </Button>
-                        </>
-                      )}
-                    </Form.List>
-                  </Space>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <Button
+                    onClick={() => {
+                      setIndex(index);
+                      setIsModalOpen(true);
+                    }}
+                    className="bg-red-800 text-white"
+                  >
+                    Tạo
+                  </Button>
                 </Card>
               ))}
               <Button
@@ -271,7 +311,22 @@ const CreateComboPage = () => {
             </div>
           )}
         </Form.List>
-
+        <Form.Item
+          name="Imgs"
+          label="Hình ảnh món ăn"
+          valuePropName="fileList"
+          getValueFromEvent={(e) => e.fileList}
+        >
+          <Upload
+            listType="picture-card"
+            fileList={fileList}
+            onPreview={handlePreview}
+            onChange={handleChange}
+            customRequest={dummyRequest}
+          >
+            {fileList.length >= 8 ? null : uploadButton}
+          </Upload>
+        </Form.Item>
         <Form.Item>
           <Button
             size="large"
@@ -282,6 +337,14 @@ const CreateComboPage = () => {
           </Button>
         </Form.Item>
       </Form>
+      <CreateOptionSetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        index={index + 1}
+        dishItemTypes={dishItemTypes}
+        onSubmit={handleOptionSetSubmit}
+        initData={optionSets[index] || null}
+      />
     </div>
   );
 };

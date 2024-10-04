@@ -14,6 +14,7 @@ export const AccountApi = {
 export const ComboApi = {
   GET_ALL: "/combo/get-all-combo/",
   GET_BY_ID: "/combo/get-combo-by-id-ver-2",
+  CREATE_COMBO: "/combo/create-combo",
 };
 
 export const ConfigurationApi = {
