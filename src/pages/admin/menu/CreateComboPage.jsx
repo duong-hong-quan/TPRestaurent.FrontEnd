@@ -111,12 +111,16 @@ const CreateComboPage = () => {
     formData.append("name", transformedData.name);
     formData.append("price", transformedData.price);
     formData.append("description", transformedData.description);
-    formData.append("tagIds", JSON.stringify(transformedData.tagIds));
+    // formData.append("tagIds", JSON.stringify(transformedData.tagIds));
+    transformedData.tagIds.forEach((tagId, index) => {
+      formData.append(`tagIds[${index}]`, tagId);
+    });
     formData.append("startDate", transformedData.startDate);
     formData.append("endDate", transformedData.endDate);
     for (let i = 0; i < fileList.length; i++) {
       formData.append("imgs", fileList[i].originFileObj);
     }
+    formData.append("MainImg", fileList[0].originFileObj);
     transformedData.dishComboDtos.forEach((combo, index) => {
       formData.append(
         `dishComboDtos[${index}][optionSetNumber]`,
@@ -332,6 +336,7 @@ const CreateComboPage = () => {
             size="large"
             className="w-full bg-red-800 text-white"
             htmlType="submit"
+            loading={loading}
           >
             Create Combo
           </Button>
