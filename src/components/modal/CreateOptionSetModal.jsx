@@ -33,6 +33,7 @@ const CreateOptionSetModal = ({
   onSubmit,
   initData,
 }) => {
+  console.log(initData);
   const [form] = Form.useForm();
   const [dishs, setDishs] = useState([]);
   const { callApi } = useCallApi();

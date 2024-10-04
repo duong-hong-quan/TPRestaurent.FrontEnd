@@ -18,13 +18,16 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
 import { ComboApi, DishApi } from "../../../api/endpoint";
 import { uniqueId } from "lodash";
-import { formatLocalDateTime } from "../../../util/Utility";
+import { formatLocalDateTime, isEmptyObject } from "../../../util/Utility";
 import CreateOptionSetModal from "../../../components/modal/CreateOptionSetModal";
+import { useParams } from "react-router-dom";
+import moment from "moment";
 
 const { RangePicker } = DatePicker;
 const { Title, Text } = Typography;
 
 const CreateComboPage = () => {
+  const { id } = useParams();
   const [form] = Form.useForm();
   const { callApi, error, loading } = useCallApi();
   const [dishItemTypes, setDishItemTypes] = useState([]);
@@ -33,8 +36,8 @@ const CreateComboPage = () => {
   const [optionSets, setOptionSets] = useState([]);
   const [index, setIndex] = useState(0);
   const [fileList, setFileList] = useState([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
+  const [comboData, setComboData] = useState(null);
+
   const dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
       onSuccess("ok");
@@ -44,8 +47,12 @@ const CreateComboPage = () => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
+  };
+  const fetchDetailCombo = async () => {
+    const response = await callApi(`${ComboApi.GET_BY_ID}/${id}`, "GET");
+    if (response.isSuccess) {
+      setComboData(response.result);
+    }
   };
   const fetchData = async () => {
     const response = await callApi(`${DishApi.GET_ALL_DISH_TAG}/1/100`, "GET");
@@ -59,9 +66,69 @@ const CreateComboPage = () => {
       setDishItemTypes(responseType.result.items);
     }
   };
+  console.log(comboData);
   useEffect(() => {
     fetchData();
+    fetchDetailCombo();
   }, []);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      name: comboData?.combo?.name,
+      price: comboData?.combo?.price,
+      description: comboData?.combo?.description,
+      tagIds: [...new Set(comboData?.dishTags.map((tag) => tag.tagId))],
+      dateRange: [
+        comboData?.combo?.startDate
+          ? moment(comboData?.combo?.startDate)
+          : null,
+        comboData?.combo?.endDate ? moment(comboData.combo?.endDate) : null,
+      ],
+      dishComboDtos: [undefined],
+    });
+    setOptionSets({
+      index: 0,
+      values: {
+        dishItemType: 3,
+        quantity: 1,
+        numberOfChoices: 1,
+        dishSizeDetails: [
+          {
+            dishSelected: "b424624a-6859-4c22-98cf-ba8659a5e13c",
+            dishSizeDetail: "afdf8c00-7863-4483-81d0-b492e6ee8829",
+            quantity: 1,
+          },
+        ],
+      },
+      selectedDish: [
+        {
+          dish: {
+            dishId: "b424624a-6859-4c22-98cf-ba8659a5e13c",
+            name: "Lẩu gà lá é",
+            description: "Lẩu gà lá é.",
+            image: "https://barona.vn/storage/meo-vat/79/lau-ga-la-e.jpg",
+            dishItemTypeId: 3,
+            dishItemType: {
+              id: 3,
+              name: "HOTPOT",
+              vietnameseName: "Lẩu",
+            },
+            isAvailable: true,
+            isDeleted: false,
+            averageRating: 0,
+            numberOfRating: 0,
+          },
+          size: {
+            id: 0,
+            name: "SMALL",
+            vietnameseName: "Nhỏ",
+          },
+          quantity: 1,
+        },
+      ],
+    });
+  }, [comboData]);
+
   const disabledDate = (current) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -69,13 +136,10 @@ const CreateComboPage = () => {
   };
   const disabledTime = (_, type) => {
     if (type === "start" || type === "end") {
-      const hours = [...Array(24).keys()]; // [0,1,2,...,23]
       const disabledHours = [...Array(7).keys(), ...Array(1).fill(23)]; // [0,1,2,3,4,5,6, 23]
-
       return {
         disabledHours: () => disabledHours,
         disabledMinutes: (hour) => {
-          // If hour is 7 or 23, disable all minutes
           if (hour === 7 || hour === 23) {
             return [...Array(60).keys()];
           }
@@ -86,75 +150,99 @@ const CreateComboPage = () => {
     return {};
   };
   const onFinish = (values) => {
-    const [startDate, endDate] = values.dateRange || [];
-    const transformedData = {
-      name: values.name,
-      price: values.price,
-      description: values.description,
-      tagIds: values.tagIds,
-      startDate: formatLocalDateTime(new Date(startDate)),
-      endDate: formatLocalDateTime(new Date(endDate)),
-      dishComboDtos: optionSets.map((combo, index) => ({
-        optionSetNumber: index + 1,
-        dishItemType: combo.values.dishItemType,
-        quantity: combo.values.quantity,
-        numOfChoice: combo.values.numberOfChoices,
-        listDishId: combo.values?.dishSizeDetails.map((dish) => ({
-          dishSizeDetailId: dish.dishSizeDetail,
-          quantity: dish.quantity,
+    if (id) {
+      const [startDate, endDate] = values.dateRange || [];
+      console.log(optionSets);
+      const transformedData = {
+        name: values.name,
+        price: values.price,
+        description: values.description,
+        tagIds: values.tagIds,
+        startDate: formatLocalDateTime(new Date(startDate)),
+        endDate: formatLocalDateTime(new Date(endDate)),
+        dishComboDtos: optionSets.map((combo, index) => ({
+          optionSetNumber: index + 1,
+          dishItemType: combo.values.dishItemType,
+          quantity: combo.values.quantity,
+          numOfChoice: combo.values.numberOfChoices,
+          listDishId: combo.values?.dishSizeDetails.map((dish) => ({
+            dishSizeDetailId: dish.dishSizeDetail,
+            quantity: dish.quantity,
+          })),
         })),
-      })),
-    };
-
-    const formData = new FormData();
-
-    formData.append("name", transformedData.name);
-    formData.append("price", transformedData.price);
-    formData.append("description", transformedData.description);
-    // formData.append("tagIds", JSON.stringify(transformedData.tagIds));
-    transformedData.tagIds.forEach((tagId, index) => {
-      formData.append(`tagIds[${index}]`, tagId);
-    });
-    formData.append("startDate", transformedData.startDate);
-    formData.append("endDate", transformedData.endDate);
-    for (let i = 0; i < fileList.length; i++) {
-      formData.append("imgs", fileList[i].originFileObj);
-    }
-    formData.append("MainImg", fileList[0].originFileObj);
-    transformedData.dishComboDtos.forEach((combo, index) => {
-      formData.append(
-        `dishComboDtos[${index}][optionSetNumber]`,
-        combo.optionSetNumber
-      );
-      formData.append(
-        `dishComboDtos[${index}][dishItemType]`,
-        combo.dishItemType
-      );
-      formData.append(`dishComboDtos[${index}][quantity]`, combo.quantity);
-      formData.append(
-        `dishComboDtos[${index}][numOfChoice]`,
-        combo.numOfChoice
-      );
-      combo.listDishId.forEach((dish, dishIndex) => {
-        formData.append(
-          `dishComboDtos[${index}][listDishId][${dishIndex}][dishSizeDetailId]`,
-          dish.dishSizeDetailId
-        );
-        formData.append(
-          `dishComboDtos[${index}][listDishId][${dishIndex}][quantity]`,
-          dish.quantity
-        );
-      });
-    });
-    const response = callApi(ComboApi.CREATE_COMBO, "POST", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    if (response.isSuccess) {
-      message.success("Tạo combo thành công");
+      };
+      console.log("transformedData", transformedData);
     } else {
-      message.error("Tạo combo thất bại");
+      const [startDate, endDate] = values.dateRange || [];
+      const transformedData = {
+        name: values.name,
+        price: values.price,
+        description: values.description,
+        tagIds: values.tagIds,
+        startDate: formatLocalDateTime(new Date(startDate)),
+        endDate: formatLocalDateTime(new Date(endDate)),
+        dishComboDtos: optionSets.map((combo, index) => ({
+          optionSetNumber: index + 1,
+          dishItemType: combo.values.dishItemType,
+          quantity: combo.values.quantity,
+          numOfChoice: combo.values.numberOfChoices,
+          listDishId: combo.values?.dishSizeDetails.map((dish) => ({
+            dishSizeDetailId: dish.dishSizeDetail,
+            quantity: dish.quantity,
+          })),
+        })),
+      };
+
+      const formData = new FormData();
+
+      formData.append("name", transformedData.name);
+      formData.append("price", transformedData.price);
+      formData.append("description", transformedData.description);
+      // formData.append("tagIds", JSON.stringify(transformedData.tagIds));
+      transformedData.tagIds.forEach((tagId, index) => {
+        formData.append(`tagIds[${index}]`, tagId);
+      });
+      formData.append("startDate", transformedData.startDate);
+      formData.append("endDate", transformedData.endDate);
+      for (let i = 0; i < fileList.length; i++) {
+        formData.append("imgs", fileList[i].originFileObj);
+      }
+      formData.append("MainImg", fileList[0].originFileObj);
+      transformedData.dishComboDtos.forEach((combo, index) => {
+        formData.append(
+          `dishComboDtos[${index}][optionSetNumber]`,
+          combo.optionSetNumber
+        );
+        formData.append(
+          `dishComboDtos[${index}][dishItemType]`,
+          combo.dishItemType
+        );
+        formData.append(`dishComboDtos[${index}][quantity]`, combo.quantity);
+        formData.append(
+          `dishComboDtos[${index}][numOfChoice]`,
+          combo.numOfChoice
+        );
+        combo.listDishId.forEach((dish, dishIndex) => {
+          formData.append(
+            `dishComboDtos[${index}][listDishId][${dishIndex}][dishSizeDetailId]`,
+            dish.dishSizeDetailId
+          );
+          formData.append(
+            `dishComboDtos[${index}][listDishId][${dishIndex}][quantity]`,
+            dish.quantity
+          );
+        });
+      });
+      const response = callApi(ComboApi.CREATE_COMBO, "POST", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.isSuccess) {
+        message.success("Tạo combo thành công");
+      } else {
+        message.error("Tạo combo thất bại");
+      }
     }
   };
   const handleChange = ({ fileList: newFileList }) => {
@@ -218,9 +306,7 @@ const CreateComboPage = () => {
               placeholder="Chọn hoặc tạo từ khoá"
             >
               {dishTags?.map((tag) => (
-                <Select.Option key={tag.tagId} value={tag.tagId}>
-                  {tag.name}
-                </Select.Option>
+                <Select.Option key={tag.tagId}>{tag.name}</Select.Option>
               ))}
             </Select>
           </Form.Item>
@@ -263,9 +349,9 @@ const CreateComboPage = () => {
                   </div>
 
                   {optionSets[index]?.selectedDish?.map((item, detailIdx) => (
-                    <div className="grid grid-cols-3 gap-1 my-2">
+                    <div className="grid grid-cols-3 gap-1 my-2" key={uniqueId}>
                       <div
-                        key={detailIdx}
+                        key={uniqueId()}
                         className="shadow-md p-2 rounded-md border border-gray-50"
                       >
                         <div className="flex items-center">
@@ -342,14 +428,16 @@ const CreateComboPage = () => {
           </Button>
         </Form.Item>
       </Form>
-      <CreateOptionSetModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        index={index + 1}
-        dishItemTypes={dishItemTypes}
-        onSubmit={handleOptionSetSubmit}
-        initData={optionSets[index] || null}
-      />
+      {optionSets.length > 0 && (
+        <CreateOptionSetModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          index={index + 1}
+          dishItemTypes={dishItemTypes}
+          onSubmit={handleOptionSetSubmit}
+          initData={(optionSets?.length > 0 && optionSets[index]) || {}}
+        />
+      )}
     </div>
   );
 };
