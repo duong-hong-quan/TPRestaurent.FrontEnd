@@ -15,7 +15,7 @@ import {
 import { Typography } from "@material-tailwind/react";
 import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
-import { showError } from "../../../util/Utility";
+import { numberToWords, showError } from "../../../util/Utility";
 import { useNavigate, useParams } from "react-router-dom";
 
 const { TextArea } = Input;
@@ -41,6 +41,7 @@ const CreateMenuPage = ({ back }) => {
   const [tags, setTags] = useState([]);
   const [dishSizes, setDishSizes] = useState([]);
   const navigate = useNavigate();
+  const [priceText, setPriceText] = useState([]);
   const fetchDataById = async (id) => {
     const response = await callApi(`${DishApi.GET_BY_ID}/${id}`, "GET");
     if (response?.isSuccess) {
@@ -213,6 +214,18 @@ const CreateMenuPage = ({ back }) => {
       showError(error);
     }
   };
+  const renderPriceText = (index) => {
+    debugger;
+    let price = form.getFieldValue(`DishSizeDetailDtos`);
+    price = price[index]?.price;
+    if (price) {
+      setPriceText((prev) => {
+        prev[index] = numberToWords(price);
+        return [...prev];
+      });
+    }
+    return "";
+  };
   return (
     <div className="container">
       <div className="p-6 shadow-xl border-none  bg-white rounded-xl h-[700px] overflow-auto">
@@ -286,7 +299,7 @@ const CreateMenuPage = ({ back }) => {
                     Thêm Size
                   </Button>
                 </Form.Item>
-                {fields.map(({ key, name, ...restField }) => (
+                {fields.map(({ key, name, ...restField }, index) => (
                   <Space
                     key={key}
                     style={{ display: "flex", marginBottom: 8 }}
@@ -314,19 +327,28 @@ const CreateMenuPage = ({ back }) => {
                           ))}
                       </Select>
                     </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, "price"]}
-                      rules={[{ required: true, message: "Vui lòng nhập giá" }]}
-                      label="Giá"
-                    >
-                      <Input
-                        placeholder="Nhập giá"
-                        style={{ width: 120 }}
-                        name={`dishSizeDetailDtos[${name}].price`}
-                        type="number"
-                      />
-                    </Form.Item>
+                    <div className="flex flex-col">
+                      <Form.Item
+                        {...restField}
+                        name={[name, "price"]}
+                        rules={[
+                          { required: true, message: "Vui lòng nhập giá" },
+                        ]}
+                        label="Giá"
+                      >
+                        <Input
+                          placeholder="Nhập giá"
+                          style={{ width: 120 }}
+                          name={`dishSizeDetailDtos[${name}].price`}
+                          type="number"
+                          onChange={() => renderPriceText(index)}
+                        />
+                      </Form.Item>
+                      <span className="max-w-32 break-words">
+                        {priceText[index]}
+                      </span>
+                    </div>
+
                     <Form.Item
                       {...restField}
                       name={[name, "dishSizeDetailId"]}

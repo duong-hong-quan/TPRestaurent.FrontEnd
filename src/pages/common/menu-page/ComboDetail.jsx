@@ -83,18 +83,17 @@ const ComboDetail = ({ comboData, handleBack }) => {
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/2 relative">
             <img
-              src={imgs?.[mainImageIndex] || combo?.image}
+              src={imgs?.[mainImageIndex]?.path || combo?.image}
               alt={combo?.name}
               className="w-full rounded-lg min-h-[400px] object-cover"
             />
 
             <div className="mt-4 grid grid-cols-4 gap-2">
-              {combo?.image.length > 0 &&
-                imgs.length > 0 &&
-                [combo?.image, ...imgs].map((img, index) => (
+              {imgs?.length > 0 &&
+                [...imgs, { path: combo?.image }].map((img, index) => (
                   <img
                     key={index}
-                    src={img}
+                    src={img.path}
                     alt={`Hình ảnh ${index}`}
                     className={`w-full h-24 object-cover cursor-pointer ${
                       index === mainImageIndex ? "border-2 border-red-500" : ""
