@@ -166,6 +166,60 @@ export const formatDateRange = (start, end) => {
 
   return `${day}/${month}/${year} ${startHours}:${startMinutes} - ${endHours}:${endMinutes}`;
 };
+function numberToWords(number) {
+  const units = ["", "ngàn", "triệu", "tỷ"];
+  const digits = [
+    "không",
+    "một",
+    "hai",
+    "ba",
+    "bốn",
+    "năm",
+    "sáu",
+    "bảy",
+    "tám",
+    "chín",
+  ];
+  debugger;
+  if (number === 0) return "không đồng";
+
+  let words = [];
+  let unitIndex = 0;
+
+  while (number > 0) {
+    let part = number % 1000;
+    if (part > 0) {
+      let partWords = [];
+      if (part >= 100) {
+        partWords.push(digits[Math.floor(part / 100)]);
+        partWords.push("trăm");
+        part %= 100;
+      }
+      if (part >= 20) {
+        partWords.push(digits[Math.floor(part / 10)]);
+        partWords.push("mươi");
+        part %= 10;
+      } else if (part >= 10) {
+        if (part === 10) {
+          partWords.push("mười");
+        } else {
+          partWords.push(digits[10 + (part % 10)]);
+        }
+        part = 0;
+      }
+      if (part > 0) {
+        partWords.push(digits[part]);
+      }
+      partWords.push(units[unitIndex]);
+      words.unshift(partWords.join(" ").trim());
+    }
+    number = Math.floor(number / 1000);
+    unitIndex++;
+  }
+
+  return words.join(" ").trim() + " đồng";
+}
+
 export {
   formatPrice,
   formatDateTime,
@@ -174,4 +228,5 @@ export {
   mergeCartData,
   formatPhoneNumber,
   showError,
+  numberToWords,
 };
