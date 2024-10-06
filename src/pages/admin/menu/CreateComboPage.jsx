@@ -18,7 +18,11 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
 import { ComboApi, DishApi } from "../../../api/endpoint";
 import { uniqueId } from "lodash";
-import { formatLocalDateTime, isEmptyObject } from "../../../util/Utility";
+import {
+  formatLocalDateTime,
+  formatPrice,
+  isEmptyObject,
+} from "../../../util/Utility";
 import CreateOptionSetModal from "../../../components/modal/CreateOptionSetModal";
 import { useParams } from "react-router-dom";
 import moment from "moment";
@@ -37,7 +41,10 @@ const CreateComboPage = () => {
   const [index, setIndex] = useState(0);
   const [fileList, setFileList] = useState([]);
   const [comboData, setComboData] = useState(null);
-
+  const [selectedDish, setSelectedDish] = useState([[]]);
+  const [listDishSizeDetail, setListDishSizeDetail] = useState([[]]);
+  const [previewDishes, setPreviewDishes] = useState([[]]);
+  const [valuesOptionSet, setValuesOptionSet] = useState([]);
   const dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
       onSuccess("ok");
@@ -66,7 +73,6 @@ const CreateComboPage = () => {
       setDishItemTypes(responseType.result.items);
     }
   };
-  console.log(comboData);
   useEffect(() => {
     fetchData();
     fetchDetailCombo();
@@ -86,48 +92,31 @@ const CreateComboPage = () => {
       ],
       dishComboDtos: [undefined],
     });
-    setOptionSets({
-      index: 0,
-      values: {
-        dishItemType: 3,
-        quantity: 1,
-        numberOfChoices: 1,
-        dishSizeDetails: [
-          {
-            dishSelected: "b424624a-6859-4c22-98cf-ba8659a5e13c",
-            dishSizeDetail: "afdf8c00-7863-4483-81d0-b492e6ee8829",
-            quantity: 1,
-          },
-        ],
-      },
-      selectedDish: [
-        {
-          dish: {
-            dishId: "b424624a-6859-4c22-98cf-ba8659a5e13c",
-            name: "Lẩu gà lá é",
-            description: "Lẩu gà lá é.",
-            image: "https://barona.vn/storage/meo-vat/79/lau-ga-la-e.jpg",
-            dishItemTypeId: 3,
-            dishItemType: {
-              id: 3,
-              name: "HOTPOT",
-              vietnameseName: "Lẩu",
-            },
-            isAvailable: true,
-            isDeleted: false,
-            averageRating: 0,
-            numberOfRating: 0,
-          },
-          size: {
-            id: 0,
-            name: "SMALL",
-            vietnameseName: "Nhỏ",
-          },
-          quantity: 1,
-        },
-      ],
-    });
+    // setOptionSets(mapOptionSetToForm());
+    console.log(mapOptionSetToForm());
   }, [comboData]);
+  // console.log(optionSets);
+  const mapOptionSetToForm = () => {
+    let optionSet = comboData?.dishCombo?.map((combo, index) => ({
+      index: index,
+      values: {
+        dishItemType: combo?.dishItemTypeId,
+        quantity: combo?.quantity,
+        numberOfChoices: combo?.numOfChoice,
+        dishSizeDetails: combo.dishCombo.map((dish) => ({
+          dishSizeDetail: dish.dishSizeDetailId,
+          quantity: dish.quantity,
+          dishSelected: dish.dishSizeDetail?.dish?.dishId,
+        })),
+      },
+      selectedDish: combo.dishCombo.map((dish) => ({
+        dish: dish.dishSizeDetail?.dish,
+        size: dish.dishSizeDetail?.dishSize,
+        quantity: dish.quantity,
+      })),
+    }));
+    return optionSet;
+  };
 
   const disabledDate = (current) => {
     const today = new Date();
@@ -136,7 +125,7 @@ const CreateComboPage = () => {
   };
   const disabledTime = (_, type) => {
     if (type === "start" || type === "end") {
-      const disabledHours = [...Array(7).keys(), ...Array(1).fill(23)]; // [0,1,2,3,4,5,6, 23]
+      const disabledHours = [...Array(7).keys(), ...Array(1).fill(23)];
       return {
         disabledHours: () => disabledHours,
         disabledMinutes: (hour) => {
@@ -149,10 +138,9 @@ const CreateComboPage = () => {
     }
     return {};
   };
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     if (id) {
       const [startDate, endDate] = values.dateRange || [];
-      console.log(optionSets);
       const transformedData = {
         name: values.name,
         price: values.price,
@@ -160,18 +148,17 @@ const CreateComboPage = () => {
         tagIds: values.tagIds,
         startDate: formatLocalDateTime(new Date(startDate)),
         endDate: formatLocalDateTime(new Date(endDate)),
-        dishComboDtos: optionSets.map((combo, index) => ({
-          optionSetNumber: index + 1,
-          dishItemType: combo.values.dishItemType,
-          quantity: combo.values.quantity,
-          numOfChoice: combo.values.numberOfChoices,
-          listDishId: combo.values?.dishSizeDetails.map((dish) => ({
-            dishSizeDetailId: dish.dishSizeDetail,
-            quantity: dish.quantity,
-          })),
-        })),
+        // dishComboDtos: optionSets.map((combo, index) => ({
+        //   optionSetNumber: index + 1,
+        //   dishItemType: combo.values.dishItemType,
+        //   quantity: combo.values.quantity,
+        //   numOfChoice: combo.values.numberOfChoices,
+        //   listDishId: combo.values?.dishSizeDetails.map((dish) => ({
+        //     dishSizeDetailId: dish.dishSizeDetail,
+        //     quantity: dish.quantity,
+        //   })),
+        // })),
       };
-      console.log("transformedData", transformedData);
     } else {
       const [startDate, endDate] = values.dateRange || [];
       const transformedData = {
@@ -181,12 +168,11 @@ const CreateComboPage = () => {
         tagIds: values.tagIds,
         startDate: formatLocalDateTime(new Date(startDate)),
         endDate: formatLocalDateTime(new Date(endDate)),
-        dishComboDtos: optionSets.map((combo, index) => ({
+        dishComboDtos: valuesOptionSet.flat().map((combo, index) => ({
           optionSetNumber: index + 1,
-          dishItemType: combo.values.dishItemType,
-          quantity: combo.values.quantity,
-          numOfChoice: combo.values.numberOfChoices,
-          listDishId: combo.values?.dishSizeDetails.map((dish) => ({
+          dishItemType: combo.dishItemType,
+          numOfChoice: combo.numberOfChoices,
+          listDishId: combo?.dishSizeDetails.map((dish) => ({
             dishSizeDetailId: dish.dishSizeDetail,
             quantity: dish.quantity,
           })),
@@ -198,7 +184,6 @@ const CreateComboPage = () => {
       formData.append("name", transformedData.name);
       formData.append("price", transformedData.price);
       formData.append("description", transformedData.description);
-      // formData.append("tagIds", JSON.stringify(transformedData.tagIds));
       transformedData.tagIds.forEach((tagId, index) => {
         formData.append(`tagIds[${index}]`, tagId);
       });
@@ -233,7 +218,7 @@ const CreateComboPage = () => {
           );
         });
       });
-      const response = callApi(ComboApi.CREATE_COMBO, "POST", formData, {
+      const response = await callApi(ComboApi.CREATE_COMBO, "POST", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -249,20 +234,39 @@ const CreateComboPage = () => {
     setFileList(newFileList);
   };
 
-  const handleOptionSetSubmit = (index, values, selectedDish) => {
-    const newOptionSet = { index, values, selectedDish };
-    let newOptionSets = [...optionSets];
+  const handleOptionSetSubmit = (
+    index,
+    values,
+    selectedDish,
+    listDishSizeDetail,
+    previewDishes
+  ) => {
+    // debugger;
+    // const newOptionSet = {
+    //   index,
+    //   values,
+    //   selectedDish,
+    //   listDishSizeDetail,
+    //   previewDishes,
+    // };
+    // let newOptionSets = Array.isArray(optionSets) ? [...optionSets] : [];
+    // const existingIndex = newOptionSets.findIndex(
+    //   (item) => item.index === index
+    // );
+    // if (existingIndex !== -1) {
+    //   newOptionSets[existingIndex] = newOptionSet;
+    // } else {
+    //   newOptionSets.push(newOptionSet);
+    // }
 
-    const existingIndex = newOptionSets.findIndex(
-      (item) => item.index === index
-    );
-    if (existingIndex !== -1) {
-      newOptionSets[existingIndex] = newOptionSet;
-    } else {
-      newOptionSets.push(newOptionSet);
-    }
-
-    setOptionSets(newOptionSets);
+    // setOptionSets(newOptionSets);
+    setPreviewDishes(previewDishes);
+    setListDishSizeDetail(listDishSizeDetail);
+    setSelectedDish(selectedDish);
+    let valuesCp = [...valuesOptionSet];
+    valuesCp[index] = values;
+    setValuesOptionSet(valuesCp);
+    console.log(previewDishes);
   };
   const uploadButton = (
     <div>
@@ -270,6 +274,7 @@ const CreateComboPage = () => {
       <div style={{ marginTop: 8 }}>Tải lên</div>
     </div>
   );
+  console.log(valuesOptionSet);
   return (
     <div className="max-w-4xl mx-auto my-8 ">
       <Typography className="text-xl font-bold text-center mb-6 uppercase text-red-800">
@@ -333,7 +338,7 @@ const CreateComboPage = () => {
           {(fields, { add, remove }) => (
             <div className="space-y-4">
               {fields.map(({ key, name }, index) => (
-                <Card key={uniqueId()}>
+                <Card key={key}>
                   <div className="flex justify-between">
                     <span className="text-lg text-red-800 font-semibold">
                       Bộ {index + 1}
@@ -347,33 +352,49 @@ const CreateComboPage = () => {
                       />
                     </span>
                   </div>
-
-                  {optionSets[index]?.selectedDish?.map((item, detailIdx) => (
-                    <div className="grid grid-cols-3 gap-1 my-2" key={uniqueId}>
+                  {valuesOptionSet[index] && (
+                    <>
+                      <Typography className="text-red-800 font-semibold text-lg">
+                        Giới hạn chọn: {valuesOptionSet[index].numberOfChoices}
+                      </Typography>
+                    </>
+                  )}
+                  {previewDishes[index]?.map((item, idx) => (
+                    <div className="grid grid-cols-2 my-1">
                       <div
-                        key={uniqueId()}
-                        className="shadow-md p-2 rounded-md border border-gray-50"
+                        key={idx}
+                        className="shadow-lg p-2 border border-gray-200 rounded-xl "
                       >
-                        <div className="flex items-center">
+                        <div className=" flex items-center">
                           <Image
-                            src={item.dish.image}
-                            alt={item.dish.name}
+                            src={item.dish?.image}
+                            alt={item.dish?.name}
                             style={{
                               width: "60px",
                               height: "60px",
+                              borderRadius: "20px",
                             }}
-                            className="rounded-md"
                           />
                           <div className="p-2 flex flex-col">
                             <Text strong className="block">
-                              {item.dish.name}
+                              {item.dish?.name}
                             </Text>
-                            <Space className="mt-1">
-                              <Text type="secondary">
-                                Size: {item.size?.vietnameseName}
-                              </Text>
-                              <Text type="secondary">SL: {item.quantity}</Text>
-                            </Space>
+                            <Text type="secondary">
+                              Size:{" "}
+                              {item.dishSizeDetail?.dishSize.vietnameseName}
+                            </Text>
+                            <Text type="secondary">
+                              Số lượng: {item.quantity}
+                            </Text>
+                            <Text type="secondary">
+                              Giá : {formatPrice(item.dishSizeDetail.price)}
+                            </Text>
+                            <Text type="secondary">
+                              Giá tạm tính:{" "}
+                              {formatPrice(
+                                item.dishSizeDetail.price * item.quantity
+                              )}
+                            </Text>
                           </div>
                         </div>
                       </div>
@@ -383,6 +404,8 @@ const CreateComboPage = () => {
                     onClick={() => {
                       setIndex(index);
                       setIsModalOpen(true);
+                      console.log(index);
+                      console.log(isModalOpen);
                     }}
                     className="bg-red-800 text-white"
                   >
@@ -428,16 +451,20 @@ const CreateComboPage = () => {
           </Button>
         </Form.Item>
       </Form>
-      {optionSets.length > 0 && (
-        <CreateOptionSetModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          index={index + 1}
-          dishItemTypes={dishItemTypes}
-          onSubmit={handleOptionSetSubmit}
-          initData={(optionSets?.length > 0 && optionSets[index]) || {}}
-        />
-      )}
+      <CreateOptionSetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        index={index}
+        dishItemTypes={dishItemTypes}
+        onSubmit={handleOptionSetSubmit}
+        // initData={(optionSets?.length > 0 && optionSets[index]) || {}}
+        previewDishes={previewDishes}
+        listDishSizeDetail={listDishSizeDetail}
+        selectedDish={selectedDish}
+        setPreviewDishes={setPreviewDishes}
+        setListDishSizeDetail={setListDishSizeDetail}
+        setSelectedDish={setSelectedDish}
+      />
     </div>
   );
 };
