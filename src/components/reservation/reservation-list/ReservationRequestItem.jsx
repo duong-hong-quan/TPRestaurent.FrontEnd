@@ -34,9 +34,7 @@ const ReservationRequestItem = ({ reservation }) => {
   const formattedDate = moment(reservation.reservationDate).format(
     "DD/MM/YYYY"
   );
-  const formattedStartTime = moment(reservation.reservationDate).format(
-    "HH:mm"
-  );
+  const formattedStartTime = moment(reservation.mealTime).format("HH:mm");
   const formattedEndTime = moment(reservation.endTime).format("HH:mm");
   const formattedDateTime = (
     <span>

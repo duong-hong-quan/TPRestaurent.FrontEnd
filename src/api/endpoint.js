@@ -41,6 +41,7 @@ export const OrderApi = {
   UPDATE_RESERVATION: "/reservation/update-reservation-status",
   CALCULATE_RESERVATION: "/order/calculate-reservation",
   GET_ALL_TABLE_DETAIL: "/order/get-all-table-details",
+  CALCULATE_DELIVER_ORDER: "/order/calculate-deliver-order",
 };
 
 export const ReservationApi = {
@@ -65,6 +66,10 @@ export const TransactionApi = {
   CREATE_PAYMENT: "/transaction/create-payment",
   GET_ALL: "/transaction/get-all-payment",
   UPDATE_STATUS: "/transaction/update-transaction-status",
+  GET_LOYALTY_POINT_BY_CUSTOMER:
+    "/transaction/get-loyalty-point-history-by-customer-id",
+  GET_TRANSACTION_HISTORY_BY_CUSTOMER_ID:
+    "/transaction/get-transaction-history-by-customer-id",
 };
 
 export const DishApi = {

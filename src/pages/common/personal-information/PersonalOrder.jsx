@@ -35,7 +35,7 @@ const PersonalOrder = () => {
   }, [user, currentPage, activeTab]);
   const tabs = [
     { value: 4, label: "Chờ xác nhận" },
-    { value: 5, label: "Chưa thanh toán" },
+    { value: 5, label: "Đã thanh toán" },
     { value: 6, label: "Chuẩn bị giao hàng" },
     { value: 7, label: "Đang giao" },
     { value: 8, label: "Đã nhận hàng" },
