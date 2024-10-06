@@ -15,6 +15,8 @@ export const ComboApi = {
   GET_ALL: "/combo/get-all-combo/",
   GET_BY_ID: "/combo/get-combo-by-id-ver-2",
   CREATE_COMBO: "/combo/create-combo",
+  UPDATE_COMBO: "/combo/update-combo",
+  UPLOAD_COMBO_IMAGE: "/combo/upload-combo-image",
 };
 
 export const ConfigurationApi = {

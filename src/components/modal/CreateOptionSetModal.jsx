@@ -70,7 +70,6 @@ const CreateOptionSetModal = ({
       onClose();
     });
   };
-
   const mapData = async () => {
     await fetchDataDish();
 
@@ -154,6 +153,7 @@ const CreateOptionSetModal = ({
     previewDish[index] = previewDishIndex;
     setPreviewDishes(previewDish);
   };
+  console.log(initData);
   return (
     <Modal
       open={isOpen}
