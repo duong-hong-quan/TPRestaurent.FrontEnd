@@ -22,6 +22,7 @@ import {
   formatLocalDateTime,
   formatPrice,
   isEmptyObject,
+  showError,
 } from "../../../util/Utility";
 import CreateOptionSetModal from "../../../components/modal/CreateOptionSetModal";
 import { useParams } from "react-router-dom";
@@ -37,7 +38,6 @@ const CreateComboPage = () => {
   const [dishItemTypes, setDishItemTypes] = useState([]);
   const [dishTags, setDishTags] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [optionSets, setOptionSets] = useState([]);
   const [index, setIndex] = useState(0);
   const [fileList, setFileList] = useState([]);
   const [comboData, setComboData] = useState(null);
@@ -92,32 +92,46 @@ const CreateComboPage = () => {
       ],
       dishComboDtos: [undefined],
     });
-    // setOptionSets(mapOptionSetToForm());
-    console.log(mapOptionSetToForm());
+    mapOptionSetToForm();
   }, [comboData]);
-  // console.log(optionSets);
-  const mapOptionSetToForm = () => {
-    let optionSet = comboData?.dishCombo?.map((combo, index) => ({
-      index: index,
-      values: {
-        dishItemType: combo?.dishItemTypeId,
-        quantity: combo?.quantity,
-        numberOfChoices: combo?.numOfChoice,
-        dishSizeDetails: combo.dishCombo.map((dish) => ({
-          dishSizeDetail: dish.dishSizeDetailId,
-          quantity: dish.quantity,
-          dishSelected: dish.dishSizeDetail?.dish?.dishId,
-        })),
-      },
-      selectedDish: combo.dishCombo.map((dish) => ({
-        dish: dish.dishSizeDetail?.dish,
-        size: dish.dishSizeDetail?.dishSize,
-        quantity: dish.quantity,
-      })),
-    }));
-    return optionSet;
-  };
+  const mapOptionSetToForm = async () => {
+    console.log(comboData);
+    let selectedDishs = [...selectedDish];
+    let listDishSizeDetails = [...listDishSizeDetail];
+    let previewDishs = [...previewDishes];
+    let valuesOptionSets = [...valuesOptionSet];
 
+    comboData?.dishCombo?.forEach((combo, index) => {
+      selectedDishs[index] = combo.dishCombo.map(
+        (dish) => dish.dishSizeDetail.dishId
+      );
+      combo.dishCombo.forEach(async (dish, index) => {
+        const response = await callApi(
+          `${DishApi.GET_BY_ID}/${dish.dishSizeDetail.dish.dishId}`,
+          "GET"
+        );
+        listDishSizeDetails[index].push(response.result.dish.dishSizeDetails);
+      });
+      previewDishs[index] = combo.dishCombo.map((dish) => ({
+        dish: dish.dishSizeDetail.dish,
+        dishSizeDetail: dish.dishSizeDetail,
+        quantity: dish.quantity,
+      }));
+      valuesOptionSets[index] = {
+        dishItemType: combo?.dishItemTypeId,
+        numberOfChoices: combo.numOfChoice,
+        dishSizeDetails: combo.dishCombo.map((dish) => ({
+          dishSizeDetail: dish.dishSizeDetail.dishSizeDetailId,
+          quantity: dish.quantity,
+          dishSelected: dish.dishSizeDetail.dish.dishId,
+        })),
+      };
+    });
+    setSelectedDish(selectedDishs);
+    setListDishSizeDetail(listDishSizeDetails);
+    setPreviewDishes(previewDishs);
+    setValuesOptionSet(valuesOptionSets);
+  };
   const disabledDate = (current) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -142,23 +156,33 @@ const CreateComboPage = () => {
     if (id) {
       const [startDate, endDate] = values.dateRange || [];
       const transformedData = {
+        comboId: id,
         name: values.name,
         price: values.price,
         description: values.description,
         tagIds: values.tagIds,
         startDate: formatLocalDateTime(new Date(startDate)),
         endDate: formatLocalDateTime(new Date(endDate)),
-        // dishComboDtos: optionSets.map((combo, index) => ({
-        //   optionSetNumber: index + 1,
-        //   dishItemType: combo.values.dishItemType,
-        //   quantity: combo.values.quantity,
-        //   numOfChoice: combo.values.numberOfChoices,
-        //   listDishId: combo.values?.dishSizeDetails.map((dish) => ({
-        //     dishSizeDetailId: dish.dishSizeDetail,
-        //     quantity: dish.quantity,
-        //   })),
-        // })),
+        dishComboDtos: valuesOptionSet.flat().map((combo, index) => ({
+          optionSetNumber: index + 1,
+          dishItemType: combo.dishItemType,
+          numOfChoice: combo.numberOfChoices,
+          listDishId: combo?.dishSizeDetails.map((dish) => ({
+            dishSizeDetailId: dish.dishSizeDetail,
+            quantity: dish.quantity,
+          })),
+        })),
       };
+      const response = await callApi(
+        `${ComboApi.UPDATE_COMBO}`,
+        "PUT",
+        transformedData
+      );
+      if (response.isSuccess) {
+        message.success("Cập nhật combo thành công");
+      } else {
+        showError(error);
+      }
     } else {
       const [startDate, endDate] = values.dateRange || [];
       const transformedData = {
@@ -226,7 +250,7 @@ const CreateComboPage = () => {
       if (response.isSuccess) {
         message.success("Tạo combo thành công");
       } else {
-        message.error("Tạo combo thất bại");
+        showError(error);
       }
     }
   };
@@ -241,25 +265,6 @@ const CreateComboPage = () => {
     listDishSizeDetail,
     previewDishes
   ) => {
-    // debugger;
-    // const newOptionSet = {
-    //   index,
-    //   values,
-    //   selectedDish,
-    //   listDishSizeDetail,
-    //   previewDishes,
-    // };
-    // let newOptionSets = Array.isArray(optionSets) ? [...optionSets] : [];
-    // const existingIndex = newOptionSets.findIndex(
-    //   (item) => item.index === index
-    // );
-    // if (existingIndex !== -1) {
-    //   newOptionSets[existingIndex] = newOptionSet;
-    // } else {
-    //   newOptionSets.push(newOptionSet);
-    // }
-
-    // setOptionSets(newOptionSets);
     setPreviewDishes(previewDishes);
     setListDishSizeDetail(listDishSizeDetail);
     setSelectedDish(selectedDish);
@@ -274,7 +279,28 @@ const CreateComboPage = () => {
       <div style={{ marginTop: 8 }}>Tải lên</div>
     </div>
   );
-  console.log(valuesOptionSet);
+  const handleUpdateImage = async (file, image) => {
+    const formData = new FormData();
+    formData.append("ComboId", id);
+    formData.append("Img", file);
+    formData.append("OldImageLink", image.path);
+    const response = await callApi(
+      `${ComboApi.UPLOAD_COMBO_IMAGE}`,
+      "POST",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    if (response?.isSuccess) {
+      message.success("Cập nhật ảnh thành công");
+      await fetchDetailCombo();
+    } else {
+      showError(error);
+    }
+  };
   return (
     <div className="max-w-4xl mx-auto my-8 ">
       <Typography className="text-xl font-bold text-center mb-6 uppercase text-red-800">
@@ -424,22 +450,49 @@ const CreateComboPage = () => {
             </div>
           )}
         </Form.List>
-        <Form.Item
-          name="Imgs"
-          label="Hình ảnh món ăn"
-          valuePropName="fileList"
-          getValueFromEvent={(e) => e.fileList}
-        >
-          <Upload
-            listType="picture-card"
-            fileList={fileList}
-            onPreview={handlePreview}
-            onChange={handleChange}
-            customRequest={dummyRequest}
+        {!id && (
+          <Form.Item
+            name="Imgs"
+            label="Hình ảnh món ăn"
+            valuePropName="fileList"
+            getValueFromEvent={(e) => e.fileList}
           >
-            {fileList.length >= 8 ? null : uploadButton}
-          </Upload>
-        </Form.Item>
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+              customRequest={dummyRequest}
+            >
+              {fileList.length >= 8 ? null : uploadButton}
+            </Upload>
+          </Form.Item>
+        )}
+
+        {id && (
+          <div className="flex items-center">
+            {comboData?.imgs?.map((image) => (
+              <div
+                className="relative w-32 h-32 mr-4 shadow-md cursor-pointer"
+                key={image.id}
+              >
+                <Upload
+                  showUploadList={false}
+                  beforeUpload={(file) => {
+                    handleUpdateImage(file, image);
+                    return false;
+                  }}
+                >
+                  <img
+                    src={image.path}
+                    alt="avatar"
+                    className=" w-32 h-32 object-cover border border-gray-100"
+                  />
+                </Upload>
+              </div>
+            ))}
+          </div>
+        )}
         <Form.Item>
           <Button
             size="large"
@@ -447,7 +500,7 @@ const CreateComboPage = () => {
             htmlType="submit"
             loading={loading}
           >
-            Create Combo
+            {id ? "Cập nhật combo" : "Tạo combo"}
           </Button>
         </Form.Item>
       </Form>
