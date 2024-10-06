@@ -1,8 +1,10 @@
 import React from "react";
 import { FaArrowUp, FaArrowDown, FaMoneyBillWave } from "react-icons/fa";
+import { formatDateTime } from "../../util/Utility";
 
 const LoyalPointHistoryItem = ({ transaction }) => {
-  const isReceived = transaction.type === "received";
+  const isReceived = transaction.pointChanged > 0;
+  const balanceAfter = transaction.newBalance - transaction.pointChanged;
 
   return (
     <div
@@ -28,9 +30,12 @@ const LoyalPointHistoryItem = ({ transaction }) => {
               isReceived ? "text-green-600" : "text-red-600"
             }`}
           >
-            {transaction.description}
+            {isReceived ? "Nhận" : "Trừ"}{" "}
+            {transaction.pointChanged.toLocaleString()} điểm
           </p>
-          <p className="text-gray-500 text-sm">{transaction.date}</p>
+          <p className="text-gray-500 text-sm">
+            {formatDateTime(transaction.transactionDate)}
+          </p>
         </div>
       </div>
       <div className="text-right">
@@ -39,11 +44,11 @@ const LoyalPointHistoryItem = ({ transaction }) => {
             isReceived ? "text-green-600" : "text-red-600"
           }`}
         >
-          {isReceived ? "+" : "-"}
-          {transaction.amount.toLocaleString()} đ
+          {isReceived && "+"}
+          {transaction.pointChanged.toLocaleString()}
         </p>
         <p className="text-gray-600 text-sm">
-          Số dư: {transaction.balanceAfter.toLocaleString()} đ
+          Điểm tích luỹ: {balanceAfter.toLocaleString()}
         </p>
       </div>
     </div>
@@ -51,11 +56,8 @@ const LoyalPointHistoryItem = ({ transaction }) => {
 };
 
 const LoyalPointHistoryList = ({ transactions }) => {
-  const currentBalance =
-    transactions.length > 0 ? transactions[0].balanceAfter : 0;
-
   return (
-    <div className=" p-6 bg-gray-50 border border-gray-100 rounded-md">
+    <div className=" p-6 bg-gray-50 border border-gray-100 rounded-md h-[650px] overflow-y-scroll">
       {transactions.map((transaction, index) => (
         <LoyalPointHistoryItem key={index} transaction={transaction} />
       ))}

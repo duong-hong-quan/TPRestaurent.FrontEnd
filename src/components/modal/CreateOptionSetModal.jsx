@@ -1,26 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   Form,
   InputNumber,
   Button,
-  Input,
   Select,
   Typography,
   Card,
-  Space,
   Divider,
   Image,
   Empty,
-  AutoComplete,
 } from "antd";
-import {
-  PlusOutlined,
-  MinusCircleOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import useCallApi from "../../api/useCallApi";
 import { DishApi } from "../../api/endpoint";
+import { formatPrice } from "../../util/Utility";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -32,85 +26,134 @@ const CreateOptionSetModal = ({
   dishItemTypes,
   onSubmit,
   initData,
+  selectedDish,
+  listDishSizeDetail,
+  previewDishes,
+  setSelectedDish,
+  setListDishSizeDetail,
+  setPreviewDishes,
 }) => {
   const [form] = Form.useForm();
   const [dishs, setDishs] = useState([]);
   const { callApi } = useCallApi();
-  const [selectedDish, setSelectedDish] = useState(null);
-  const [listDishSizeDetail, setListDishSizeDetail] = useState([]);
-  const [selectedDishes, setSelectedDishes] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
   const fetchDataDish = async () => {
-    let response = await callApi(
-      `${DishApi.GET_ALL}/1/1000?type=${form.getFieldValue("dishItemType")}`,
+    const response = await callApi(
+      `${DishApi.GET_ALL}/1/1000?type=${
+        form.getFieldValue("dishItemType") || initData?.values?.dishItemType
+      }`,
       "GET"
     );
 
     if (response.isSuccess) {
       setDishs(response.result.items);
-      setSelectedDish(response.result.items[0]?.dish.dishId);
-      const dataFilter = dishs.filter(
-        (dish) => dish.dish.dishId === selectedDish
-      );
-      setListDishSizeDetail(dataFilter[0]?.dishSizeDetails || []);
     }
   };
   const handleSelect = (value) => {
     const dish = dishs.find((dish) => dish.dish.dishId === value);
-    setSelectedDish(dish);
+    // setSelectedDish(dish);
   };
   useEffect(() => {
     fetchDataDish();
   }, [selectedType]);
-  const updateSelectedDishes = (values) => {
-    if (!values?.dishSizeDetails || !dishs.length) return;
-
-    const newSelectedDishes = values.dishSizeDetails
-      .map((detail) => {
-        const dish = dishs.find((d) => d.dish.dishId === detail?.dishSelected);
-        if (!dish) return null;
-
-        const sizeDetail = dish.dishSizeDetails.find(
-          (s) => s.dishSizeDetailId === detail?.dishSizeDetail
-        );
-
-        return {
-          dish: dish.dish,
-          size: sizeDetail?.dishSize,
-          quantity: detail?.quantity,
-        };
-      })
-      .filter(Boolean);
-
-    setSelectedDishes(newSelectedDishes);
-  };
-  useEffect(() => {
-    if (selectedDish) {
-      const dataFilter = dishs.filter(
-        (dish) => dish.dish.dishId === selectedDish?.dish?.dishId
-      );
-      setListDishSizeDetail(dataFilter[0]?.dishSizeDetails || []);
-    }
-  }, [selectedDish]);
-
   const handleSubmit = () => {
     form.validateFields().then(() => {
       console.log(form.getFieldsValue());
-      onSubmit(index, form.getFieldsValue(), selectedDishes);
+      onSubmit(
+        index,
+        form.getFieldsValue(),
+        selectedDish,
+        listDishSizeDetail,
+        previewDishes
+      );
+      form.resetFields();
       onClose();
     });
   };
-  console.log(initData);
-  useEffect(() => {
-    if (initData?.values) {
-      form.setFieldsValue(initData.values);
-      setSelectedDishes(initData.selectedDish);
+
+  const mapData = async () => {
+    await fetchDataDish();
+
+    if (initData) {
+      form.setFieldsValue(initData);
     } else {
       form.resetFields();
-      setSelectedDishes([]);
     }
-  }, [isOpen]);
+  };
+  useEffect(() => {
+    mapData();
+  }, [initData]);
+  const handleSelectedDish = async (value, indexList) => {
+    debugger;
+    let selectedDishs = [...selectedDish];
+    let selecterDishIndex = selectedDishs[index] || [];
+    selecterDishIndex[indexList] = value;
+    selectedDishs[index] = selecterDishIndex;
+    setSelectedDish(selectedDishs);
+    handleSelectedDishSizeDetail(value, indexList);
+  };
 
+  const handleSelectedDishSizeDetail = (value, indexList) => {
+    let listDishSizeDetails = [...listDishSizeDetail];
+    let dishSizeDetailIndex = listDishSizeDetails[index] || [];
+    const dataFilter = dishs.filter((dish) => dish.dish.dishId === value);
+    dishSizeDetailIndex[indexList] = dataFilter[0]?.dishSizeDetails || [];
+    listDishSizeDetails[index] = dishSizeDetailIndex;
+    setListDishSizeDetail(listDishSizeDetails);
+  };
+  const getDishBaseDishDetailId = (dishSizeDetailId) => {
+    const dataFilter = dishs.filter((dish) =>
+      dish.dishSizeDetails.find(
+        (detail) => detail.dishSizeDetailId === dishSizeDetailId
+      )
+    );
+    return dataFilter[0]?.dish;
+  };
+  const getDishSizeDetail = (dishSizeDetailId) => {
+    return listDishSizeDetail[index]?.flat().filter((dishItem) => {
+      return dishItem.dishSizeDetailId === dishSizeDetailId;
+    })[0];
+  };
+
+  const handlePreview = (value, quantity) => {
+    debugger;
+    let previewDish = [...previewDishes];
+    let previewDishIndex = previewDish[index] || [];
+    const dish = previewDishIndex.find(
+      (dish) => dish.dish.dishId === getDishBaseDishDetailId(value).dishId
+    );
+    if (dish) {
+      dish.quantity = quantity;
+    } else {
+      debugger;
+      previewDishIndex.push({
+        dish: getDishBaseDishDetailId(value),
+        quantity: quantity,
+        dishSizeDetail: getDishSizeDetail(value),
+      });
+    }
+    previewDish[index] = previewDishIndex;
+    setPreviewDishes(previewDish);
+  };
+  const handleRemoveDish = (index, indexList) => {
+    let selectedDishs = [...selectedDish];
+    let selecterDishIndex = selectedDishs[index] || [];
+    selecterDishIndex.splice(indexList, 1);
+    selectedDishs[index] = selecterDishIndex;
+    setSelectedDish(selectedDishs);
+
+    let listDishSizeDetails = [...listDishSizeDetail];
+    let dishSizeDetailIndex = listDishSizeDetails[index] || [];
+    dishSizeDetailIndex.splice(indexList, 1);
+    listDishSizeDetails[index] = dishSizeDetailIndex;
+    setListDishSizeDetail(listDishSizeDetails);
+
+    let previewDish = [...previewDishes];
+    let previewDishIndex = previewDish[index] || [];
+    previewDishIndex.splice(indexList, 1);
+    previewDish[index] = previewDishIndex;
+    setPreviewDishes(previewDish);
+  };
   return (
     <Modal
       open={isOpen}
@@ -132,9 +175,9 @@ const CreateOptionSetModal = ({
       ]}
     >
       <div className="max-h-[calc(100vh-200px)] overflow-auto px-4">
-        <Title level={3} className="text-center my-4 text-red-800">
-          TẠO COMBO BỘ {index}
-        </Title>
+        <h1 className="text-center my-4 text-red-800 text-2xl font-bold">
+          TẠO COMBO BỘ {index + 1}
+        </h1>
 
         <Form
           form={form}
@@ -142,39 +185,26 @@ const CreateOptionSetModal = ({
           onFinish={handleSubmit}
           className="space-y-4"
           name="optionSetForm"
-          onValuesChange={(_, allValues) => updateSelectedDishes(allValues)}
         >
           <Card className="shadow-sm">
-            <Form.Item
-              name="dishItemType"
-              label="Loại món"
-              rules={[{ required: true, message: "Vui lòng chọn loại món" }]}
-            >
-              <Select
-                placeholder="Chọn loại món"
-                className="w-full"
-                showSearch
-                onChange={(value) => setSelectedType(value)}
-              >
-                {dishItemTypes?.map((type) => (
-                  <Option key={type.id} value={type.id}>
-                    {type.vietnameseName}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-1">
               <Form.Item
-                label="Số lượng"
-                name="quantity"
-                rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+                name="dishItemType"
+                label="Loại món"
+                rules={[{ required: true, message: "Vui lòng chọn loại món" }]}
               >
-                <InputNumber
+                <Select
+                  placeholder="Chọn loại món"
                   className="w-full"
-                  min={1}
-                  placeholder="Nhập số lượng"
-                />
+                  showSearch
+                  onChange={(value) => setSelectedType(value)}
+                >
+                  {dishItemTypes?.map((type) => (
+                    <Option key={type.id} value={type.id}>
+                      {type.vietnameseName}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
 
               <Form.Item
@@ -198,101 +228,132 @@ const CreateOptionSetModal = ({
           <Form.List name="dishSizeDetails">
             {(fields, { add, remove }) => (
               <div className="space-y-4">
-                {fields.map(({ key, name, ...restField }) => (
-                  <Card key={key} className="shadow-sm">
-                    <div className="grid grid-cols-12 gap-4">
-                      <div className="col-span-4">
-                        <Form.Item
-                          {...restField}
-                          name={[name, "dishSelected"]}
-                          rules={[
-                            { required: true, message: "Vui lòng chọn món" },
-                          ]}
-                          label="Món ăn"
-                        >
-                          <Select
-                            showSearch
-                            placeholder="Chọn món"
-                            onSelect={handleSelect}
-                            onChange={(value) => setSelectedDish(value)}
-                            onSearch={(value) => {
-                              if (value) {
-                                const dataFilter = dishs.filter((dish) =>
-                                  dish.dish.name
-                                    .toLowerCase()
-                                    .includes(value.toLowerCase())
-                                );
-                                setDishs(dataFilter);
-                              } else {
-                                fetchDataDish();
-                              }
-                            }}
+                {fields.map(
+                  ({ key, name, ...restField }, indexDishSizeDetails) => (
+                    <Card key={key} className="shadow-sm">
+                      <div className="grid grid-cols-12 gap-4">
+                        <div className="col-span-4">
+                          <Form.Item
+                            {...restField}
+                            name={[name, "dishSelected"]}
+                            rules={[
+                              { required: true, message: "Vui lòng chọn món" },
+                            ]}
+                            label="Món ăn"
                           >
-                            {dishs?.map((dish) => (
-                              <Option
-                                key={dish.dish.dishId}
-                                value={dish.dish.dishId}
-                              >
-                                {dish.dish.name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </div>
+                            <Select
+                              showSearch
+                              placeholder="Chọn món"
+                              onSelect={handleSelect}
+                              onChange={(value) =>
+                                handleSelectedDish(value, indexDishSizeDetails)
+                              }
+                              loading={!dishs.length}
+                              onSearch={(value) => {
+                                if (value) {
+                                  const dataFilter = dishs.filter((dish) =>
+                                    dish.dish.name
+                                      .toLowerCase()
+                                      .includes(value.toLowerCase())
+                                  );
+                                  setDishs(dataFilter);
+                                } else {
+                                  fetchDataDish();
+                                }
+                              }}
+                            >
+                              {dishs?.map((dish) => (
+                                <Option
+                                  key={dish.dish.dishId}
+                                  value={dish.dish.dishId}
+                                >
+                                  {dish.dish.name}
+                                </Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                        </div>
 
-                      <div className="col-span-4">
-                        <Form.Item
-                          {...restField}
-                          name={[name, "dishSizeDetail"]}
-                          rules={[
-                            { required: true, message: "Vui lòng chọn size" },
-                          ]}
-                          label="Size"
-                        >
-                          <Select placeholder="Chọn size">
-                            {listDishSizeDetail?.map((dish) => (
-                              <Option
-                                key={dish.dishSizeDetailId}
-                                value={dish.dishSizeDetailId}
-                              >
-                                {dish.dishSize.vietnameseName}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </div>
+                        <div className="col-span-4">
+                          <Form.Item
+                            {...restField}
+                            name={[name, "dishSizeDetail"]}
+                            rules={[
+                              { required: true, message: "Vui lòng chọn size" },
+                            ]}
+                            label="Size"
+                          >
+                            <Select
+                              placeholder="Chọn size"
+                              onChange={(value) => {
+                                handlePreview(
+                                  value,
+                                  form.getFieldValue([name, "quantity"]) || 1
+                                );
+                              }}
+                              loading={
+                                !listDishSizeDetail[index]?.[
+                                  indexDishSizeDetails
+                                ]
+                              }
+                            >
+                              {listDishSizeDetail[index]?.[
+                                indexDishSizeDetails
+                              ]?.map((dish) => (
+                                <Option
+                                  key={dish.dishSizeDetailId}
+                                  value={dish.dishSizeDetailId}
+                                >
+                                  {dish.dishSize.vietnameseName}
+                                </Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                        </div>
 
-                      <div className="col-span-3">
-                        <Form.Item
-                          {...restField}
-                          name={[name, "quantity"]}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng nhập số lượng",
-                            },
-                          ]}
-                          label="Số lượng"
-                        >
-                          <InputNumber
-                            placeholder="SL"
-                            min={1}
-                            className="w-full"
+                        <div className="col-span-3">
+                          <Form.Item
+                            {...restField}
+                            name={[name, "quantity"]}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng nhập số lượng",
+                              },
+                            ]}
+                            label="Số lượng"
+                          >
+                            <InputNumber
+                              placeholder="SL"
+                              min={1}
+                              className="w-full"
+                              onChange={(value) => {
+                                handlePreview(
+                                  listDishSizeDetail[index]?.[
+                                    indexDishSizeDetails
+                                  ]?.[0]?.dishSizeDetailId,
+                                  value
+                                );
+                              }}
+                            />
+                          </Form.Item>
+                        </div>
+
+                        <div className="col-span-1 flex items-center">
+                          <Button
+                            type="text"
+                            danger
+                            icon={<MinusCircleOutlined />}
+                            onClick={() => {
+                              handleRemoveDish(index, indexDishSizeDetails);
+                              remove(name);
+                            }}
                           />
-                        </Form.Item>
+                        </div>
                       </div>
-
-                      <div className="col-span-1 flex items-center">
-                        <Button
-                          type="text"
-                          danger
-                          icon={<MinusCircleOutlined />}
-                          onClick={() => remove(name)}
-                        />
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  )
+                )}
 
                 <Form.Item>
                   <Button
@@ -300,7 +361,7 @@ const CreateOptionSetModal = ({
                     onClick={() => add()}
                     icon={<PlusOutlined />}
                   >
-                    Thêm món ăn vào bộ {index}
+                    Thêm món ăn vào bộ {index + 1}
                   </Button>
                 </Form.Item>
               </div>
@@ -308,41 +369,52 @@ const CreateOptionSetModal = ({
           </Form.List>
 
           {/* Preview Section */}
-          {selectedDishes.length > 0 && (
+          {previewDishes[index]?.length > 0 && (
             <>
               <Divider>Món ăn đã chọn</Divider>
               <div className="grid grid-cols-2 gap-1">
-                {selectedDishes.map((item, idx) => (
-                  <Card key={idx}>
+                {previewDishes[index].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="shadow-lg p-2 border border-gray-200 rounded-xl"
+                  >
                     <div className=" flex items-center">
                       <Image
-                        src={item.dish.image}
-                        alt={item.dish.name}
+                        src={item.dish?.image}
+                        alt={item.dish?.name}
                         style={{
                           width: "60px",
                           height: "60px",
+                          borderRadius: "20px",
                         }}
                       />
                       <div className="p-2 flex flex-col">
                         <Text strong className="block">
-                          {item.dish.name}
+                          {item.dish?.name}
                         </Text>
-                        <Space className="mt-1">
-                          <Text type="secondary">
-                            Size: {item.size?.vietnameseName}
-                          </Text>
-                          <Text type="secondary">SL: {item.quantity}</Text>
-                        </Space>
+                        <Text type="secondary">
+                          Size: {item.dishSizeDetail?.dishSize.vietnameseName}
+                        </Text>
+                        <Text type="secondary">Số lượng: {item.quantity}</Text>
+                        <Text type="secondary">
+                          Giá : {formatPrice(item.dishSizeDetail.price)}
+                        </Text>
+                        <Text type="secondary">
+                          Giá tạm tính:{" "}
+                          {formatPrice(
+                            item.dishSizeDetail.price * item.quantity
+                          )}
+                        </Text>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             </>
           )}
 
           {form.getFieldValue("dishSizeDetails")?.length > 0 &&
-            selectedDishes.length === 0 && (
+            previewDishes[index]?.length === 0 && (
               <div className="mt-4">
                 <Empty
                   description="Chưa có món ăn nào được chọn"

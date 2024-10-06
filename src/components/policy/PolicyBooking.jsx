@@ -30,6 +30,15 @@ const PolicyBooking = () => {
             </li>
           </ul>
         </section>
+        <section>
+          <h3 className="text-lg font-semibold mb-2 text-gray-700 uppercase">
+            Thời gian giữ chỗ
+          </h3>
+          <ul className="list-disc list-inside space-y-2 text-gray-600 ">
+            <li>Đối với đặt chỗ kèm món ăn: trước 2 ngày</li>
+            <li>Đối với đặt chỗ không kèm món ăn: trước 2 tiếng dùng bữa</li>
+          </ul>
+        </section>
 
         <p className="italic text-sm text-gray-500">
           Lưu ý: Chính sách này áp dụng cho tất cả các đơn đặt bàn. Để biết thêm

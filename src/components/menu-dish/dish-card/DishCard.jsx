@@ -61,7 +61,7 @@ export const DishCard = ({
               Giá:{" "}
               <span className="text-red-800">
                 {getCurrentPrice(dish.dish.dishId) === 0
-                  ? formatPrice(dish?.dishSizeDetails?.[0].price)
+                  ? formatPrice(dish?.dishSizeDetails?.[0]?.price)
                   : formatPrice(getCurrentPrice(dish.dish.dishId))}
               </span>
             </Typography>

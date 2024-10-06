@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -82,6 +82,7 @@ const CartSummary = ({ handleClose }) => {
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [editData, setEditData] = useState(null);
   const [note, setNote] = useState("");
+  const [deliveryOrder, setDeliveryOrder] = useState(0);
   const handleSwitchChange = (event) => {
     setIsLoyaltyEnabled(event);
   };
@@ -146,7 +147,6 @@ const CartSummary = ({ handleClose }) => {
         couponIds: [],
         loyalPointToUse: isLoyaltyEnabled ? user.loyaltyPoint : 0,
         paymentMethod: selectedMethod,
-        address: customerInfoAddressName,
       },
     };
     const response = await callApi(
@@ -169,13 +169,37 @@ const CartSummary = ({ handleClose }) => {
       showError(error);
     }
   };
+
+  useEffect(() => {
+    const calculateDeliveryOrder = async () => {
+      const response = await callApi(
+        `${OrderApi.CALCULATE_DELIVER_ORDER}?customerInfoAddressId=${currentAddress.customerInfoAddressId}`,
+        "POST"
+      );
+      if (response.isSuccess) {
+        setDeliveryOrder(response.result);
+      } else {
+        showError(error);
+      }
+    };
+    if (currentAddress) {
+      calculateDeliveryOrder();
+    }
+  }, [user]);
   const totalPrice = cart.total ? cart.total + (cartTotal || 0) : cartTotal;
-  const afterPrice = cart.total
-    ? cart.total + (cartTotal || 0) - user.loyalPoint
-    : cartTotal - user.loyalPoint;
+
+  const renderAfterPrice = () => {
+    let totalBefore = cart.total + (cartTotal || 0) + deliveryOrder;
+    if (isLoyaltyEnabled) {
+      totalBefore -= user.loyalPoint;
+    }
+
+    return totalBefore;
+  };
   if (loading) {
     return <LoadingOverlay isLoading={loading} />;
   }
+  console.log("deliveryOrder", deliveryOrder);
   return (
     <div className="container my-4 p-6 bg-white">
       <Title level={3} className="uppercase text-center mb-6">
@@ -330,7 +354,7 @@ const CartSummary = ({ handleClose }) => {
         Tôi đồng ý các điều khoản và chính sách mua hàng tại nhà hàng Thiên Phú
       </Checkbox>
       <div>
-        <div className="flex justify-between items-center mb-4 bg-gray-100 shadow-md py-6 px-4">
+        <div className="flex justify-between items-center  bg-gray-100 shadow-md py-6 px-4">
           <span className="text-lg text-black">Tạm tính:</span>
           <Typography
             variant="h2"
@@ -339,29 +363,37 @@ const CartSummary = ({ handleClose }) => {
             {formatPrice(totalPrice)}
           </Typography>
         </div>
-
+        <div className="flex justify-between items-center bg-gray-100 shadow-md py-6 px-4">
+          <span className="text-lg">Phí giao hàng:</span>
+          <Typography
+            variant="h2"
+            className="font-bold text-red-700 text-center"
+          >
+            {`${formatPrice(deliveryOrder)}`}
+          </Typography>
+        </div>
         {isLoyaltyEnabled && (
-          <>
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-lg">Điểm thành viên:</span>
-              <Typography
-                variant="h2"
-                className="font-bold text-red-700 text-center"
-              >
-                {`- ${formatPrice(user.loyalPoint)}`}
-              </Typography>
-            </div>
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-lg">Tổng cộng:</span>
-              <Typography
-                variant="h2"
-                className="font-bold text-red-700 text-center"
-              >
-                {`${formatPrice(afterPrice)}`}
-              </Typography>
-            </div>
-          </>
+          <div className="flex justify-between items-center  bg-gray-100 shadow-md py-6 px-4">
+            <span className="text-lg">Điểm thành viên:</span>
+            <Typography
+              variant="h2"
+              className="font-bold text-red-700 text-center"
+            >
+              {`- ${formatPrice(user.loyalPoint)}`}
+            </Typography>
+          </div>
         )}
+        <div className="flex justify-between items-center mb-4 bg-gray-100 shadow-md py-6 px-4">
+          <span className="text-lg">Tổng cộng:</span>
+          <Typography
+            variant="h2"
+            className="font-bold text-red-700 text-center"
+          >
+            {`${formatPrice(renderAfterPrice())}`}
+          </Typography>
+        </div>
+
+        <></>
       </div>
 
       <div className="flex justify-center">

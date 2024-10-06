@@ -167,6 +167,10 @@ function Routers() {
           element: <CreateMenuPage />,
         },
         {
+          path: "create-combo",
+          element: <CreateComboPage />,
+        },
+        {
           path: "create-combo/:id",
           element: <CreateComboPage />,
         },
