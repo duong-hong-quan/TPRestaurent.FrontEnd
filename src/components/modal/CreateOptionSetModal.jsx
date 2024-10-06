@@ -36,9 +36,6 @@ const CreateOptionSetModal = ({
   const [form] = Form.useForm();
   const [dishs, setDishs] = useState([]);
   const { callApi } = useCallApi();
-  // const [selectedDish, setSelectedDish] = useState([[]]);
-  // const [listDishSizeDetail, setListDishSizeDetail] = useState([[]]);
-  // const [previewDishes, setPreviewDishes] = useState([[]]);
   const [selectedType, setSelectedType] = useState(null);
   const fetchDataDish = async () => {
     const response = await callApi(
@@ -50,11 +47,6 @@ const CreateOptionSetModal = ({
 
     if (response.isSuccess) {
       setDishs(response.result.items);
-      // setSelectedDish(response.result.items[0]?.dish.dishId);
-      // const dataFilter = dishs.filter(
-      //   (dish) => dish.dish.dishId === selectedDish
-      // );
-      // setListDishSizeDetail(dataFilter[0]?.dishSizeDetails || []);
     }
   };
   const handleSelect = (value) => {
@@ -64,35 +56,6 @@ const CreateOptionSetModal = ({
   useEffect(() => {
     fetchDataDish();
   }, [selectedType]);
-  // const updateSelectedDishes = (values) => {
-  //   if (!values?.dishSizeDetails || !dishs.length) return;
-
-  //   const newSelectedDishes = values.dishSizeDetails
-  //     .map((detail) => {
-  //       const dish = dishs.find((d) => d.dish.dishId === detail?.dishSelected);
-  //       if (!dish) return null;
-
-  //       const sizeDetail = dish.dishSizeDetails.find(
-  //         (s) => s.dishSizeDetailId === detail?.dishSizeDetail
-  //       );
-
-  //       return {
-  //         dish: dish.dish,
-  //         size: sizeDetail?.dishSize,
-  //         quantity: detail?.quantity,
-  //       };
-  //     })
-  //     .filter(Boolean);
-
-  //   setSelectedDishes(newSelectedDishes);
-  // };
-  // useEffect(() => {
-  //   const dataFilter = dishs.filter(
-  //     (dish) => dish.dish.dishId === selectedDish?.dish?.dishId
-  //   );
-  //   setListDishSizeDetail(dataFilter[0]?.dishSizeDetails || []);
-  // }, [selectedDish, initData]);
-
   const handleSubmit = () => {
     form.validateFields().then(() => {
       console.log(form.getFieldsValue());
@@ -103,8 +66,6 @@ const CreateOptionSetModal = ({
         listDishSizeDetail,
         previewDishes
       );
-      // onSubmit(index, form.getFieldsValue(), selectedDishes);
-
       form.resetFields();
       onClose();
     });
@@ -113,15 +74,11 @@ const CreateOptionSetModal = ({
   const mapData = async () => {
     await fetchDataDish();
 
-    // if (initData) {
-    //   setSelectedDishes(initData?.selectedDish);
-    //   if (initData?.values) {
-    //     form.setFieldsValue(initData.values);
-    //   } else {
-    //     form.resetFields();
-    //     // setSelectedDishes([]);
-    //   }
-    // }
+    if (initData) {
+      form.setFieldsValue(initData);
+    } else {
+      form.resetFields();
+    }
   };
   useEffect(() => {
     mapData();

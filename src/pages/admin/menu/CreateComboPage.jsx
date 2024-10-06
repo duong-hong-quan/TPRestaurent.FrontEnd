@@ -457,7 +457,7 @@ const CreateComboPage = () => {
         index={index}
         dishItemTypes={dishItemTypes}
         onSubmit={handleOptionSetSubmit}
-        // initData={(optionSets?.length > 0 && optionSets[index]) || {}}
+        initData={valuesOptionSet[index]}
         previewDishes={previewDishes}
         listDishSizeDetail={listDishSizeDetail}
         selectedDish={selectedDish}
