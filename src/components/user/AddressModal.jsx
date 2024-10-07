@@ -27,7 +27,6 @@ const AddressModal = ({
   const [form] = Form.useForm();
   const [location, setLocation] = useState({ lat: "", lng: "" });
   const [selectedAddress, setSelectedAddress] = useState(null);
-  console.log(editData);
   const handleSearch = async (value) => {
     getLocation();
     const response = await callApi(`${MapApi.AUTO_COMPLETE}`, "POST", {
@@ -58,7 +57,6 @@ const AddressModal = ({
   const handleCancel = handleOk;
 
   const handleSelect = (value, option) => {
-    console.log("Selected address item:", option.item);
     setSelectedAddress(option.item);
     form.setFieldsValue({ address: value });
   };
