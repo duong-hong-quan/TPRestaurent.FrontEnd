@@ -8,7 +8,6 @@ import { isEmptyObject } from "../../util/Utility";
 import { FaUser } from "react-icons/fa";
 import NotificationDemo from "../notification/NotificationDemo";
 import { logout } from "../../redux/features/authSlice";
-
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
