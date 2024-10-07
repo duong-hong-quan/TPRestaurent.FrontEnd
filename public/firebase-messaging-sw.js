@@ -2,20 +2,14 @@ importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js");
 importScripts(
   "https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"
 );
-const apiKey = import.meta.env.VITE_API_KEY;
-const authDomain = import.meta.env.VITE_AUTH_DOMAIN;
-const projectId = import.meta.env.VITE_PROJECT_ID;
-const storageBucket = import.meta.env.VITE_STORAGE_BUCKET;
-const messagingSenderId = import.meta.env.VITE_MESSAGING_SENDER_ID;
-const appId = import.meta.env.VITE_APP_ID;
 
 const defaultConfig = {
-  apiKey,
-  authDomain,
-  projectId,
-  storageBucket,
-  messagingSenderId,
-  appId,
+  apiKey: "AIzaSyAJKw0In21Lxcsx-eXZmvEQXn6LmmVVyNk",
+  authDomain: "thienphu-app.fxirebaseapp.com",
+  projectId: "thienphu-app",
+  storageBucket: "thienphu-app.appspot.com",
+  messagingSenderId: "94244733994",
+  appId: "1:94244733994:web:702149d32992b71c64af53",
 };
 
 firebase.initializeApp(defaultConfig);
