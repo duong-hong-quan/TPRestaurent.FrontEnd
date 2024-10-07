@@ -27,13 +27,11 @@ import { data } from "autoprefixer";
 moment.tz.setDefault("Asia/Ho_Chi_Minh");
 
 async function requestPermission() {
-  //requesting permission using Notification API
   const permission = await Notification.requestPermission();
 
   if (permission === "granted") {
     const token = await getToken(messaging, {
-      vapidKey:
-        "BL7dDy3O-wyKM9nnhcexB5Q8jhPKTG7Zq21-bEkykBkhmxM094VcL2FSzZ16nBBbj4VPloS3w4Hc8I4I1EW8oQw",
+      vapidKey: import.meta.env.VITE_VAPID_KEY,
     });
 
     //We can send token to server
@@ -61,7 +59,9 @@ export const NotificationListener = () => {
       unsubscribe && unsubscribe();
     };
   }, [addNotification]);
-
+  useEffect(() => {
+    requestPermission();
+  }, []);
   return null;
 };
 function App() {
