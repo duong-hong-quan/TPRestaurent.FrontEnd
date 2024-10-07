@@ -72,6 +72,8 @@ export const TransactionApi = {
     "/transaction/get-loyalty-point-history-by-customer-id",
   GET_TRANSACTION_HISTORY_BY_CUSTOMER_ID:
     "/transaction/get-transaction-history-by-customer-id",
+  GET_STORE_CREDIT_TRANSACTION_HISTORY_BY_CUSTOMER_ID:
+    "/transaction/get-stored-credit-transaction-history-by-customer-id",
 };
 
 export const DishApi = {

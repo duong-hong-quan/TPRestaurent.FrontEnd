@@ -28,7 +28,7 @@ const PersonalTransaction = () => {
       }
     } else {
       const res = await callApi(
-        `${TransactionApi.GET_TRANSACTION_HISTORY_BY_CUSTOMER_ID}/${user.id}`,
+        `${TransactionApi.GET_STORE_CREDIT_TRANSACTION_HISTORY_BY_CUSTOMER_ID}/${user.id}`,
         "GET"
       );
       if (res.isSuccess) {
@@ -78,7 +78,7 @@ const PersonalTransaction = () => {
               </Tooltip>
             </div>
             <div className="flex items-center space-x-2">
-              <Coins className="text-white animate-bounce" size={32} />
+              <Coins className="text-white " size={32} />
               <span className="text-white text-3xl font-bold">
                 {user.loyalPoint.toLocaleString()}
               </span>
