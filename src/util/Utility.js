@@ -180,7 +180,6 @@ function numberToWords(number) {
     "tám",
     "chín",
   ];
-  debugger;
   if (number === 0) return "không đồng";
 
   let words = [];

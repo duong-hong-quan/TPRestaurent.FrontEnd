@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Mail, Phone, DollarSign, CreditCard } from "lucide-react";
 import PaymentMethodSelector from "../cart/PaymentMethodSelector";
 import { Typography } from "@material-tailwind/react";
-import { numberToWords } from "../../util/Utility";
+import { numberToWords, showError } from "../../util/Utility";
 import useCallApi from "../../api/useCallApi";
 import { TransactionApi } from "../../api/endpoint";
 
@@ -18,12 +18,20 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
     setSelectedMethod(data);
   };
   const handleSubmit = async () => {
-    await callApi(`${TransactionApi.CREATE_PAYMENT}`, "POST", {
-      orderId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      storeCreditId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      storeCreditAmount: 0,
-      paymentMethod: 1,
+    const response = await callApi(`${TransactionApi.CREATE_PAYMENT}`, "POST", {
+      storeCreditId: user.storeCreditId,
+      storeCreditAmount: inputValue,
+      paymentMethod: selectedMethod,
     });
+    if (response.isSuccess) {
+      if (response.result) {
+        window.location.href = response.result;
+      } else {
+        showError(["Có lỗi xảy ra"]);
+      }
+    } else {
+      showError(error);
+    }
   };
   return (
     <Modal open={isOpen} onCancel={onClose} footer={null} centered>
@@ -80,11 +88,17 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
           prefix={<CreditCard style={{ marginRight: 8 }} />}
         />
         {numberToWord && (
-          <Typography className="text-sm w-full break-words text-red-800 font-bold">
+          <Typography className="text-sm w-full break-words font-bold">
             Bằng chữ: {numberToWord}
           </Typography>
         )}
-        <Button onClick={handleSubmit}>Nạp tiền</Button>
+        <Button
+          className="text-white bg-red-900"
+          onClick={handleSubmit}
+          loading={loading}
+        >
+          Nạp tiền
+        </Button>
       </div>
     </Modal>
   );
