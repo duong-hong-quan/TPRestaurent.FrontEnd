@@ -89,3 +89,7 @@ export const DishApi = {
 export const MapApi = {
   AUTO_COMPLETE: "/map/auto-complete",
 };
+
+export const OrderSessionApi = {
+  GET_GROUPED_DISH: "/order-session/get-grouped-dish",
+};

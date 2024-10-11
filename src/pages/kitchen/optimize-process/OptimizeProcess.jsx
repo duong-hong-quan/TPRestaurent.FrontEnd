@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Layout,
   Typography,
@@ -12,35 +12,37 @@ import {
   Checkbox,
 } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
+import useCallApi from "../../../api/useCallApi";
+import { OrderSessionApi } from "../../../api/endpoint";
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 
 const OptimizeProcess = () => {
   const orders = Array(8).fill("#351");
-  const menuItems = [
-    { id: 1, name: "NỘM RAU TIỀN VUA BÒ TƯƠI", quantity: 2, cookTime: "9p30s" },
-    { id: 2, name: "NỘM RAU TIỀN VUA BÒ TƯƠI", quantity: 5, cookTime: "9p30s" },
-    { id: 3, name: "NỘM RAU TIỀN VUA BÒ TƯƠI", quantity: 3, cookTime: "9p30s" },
-    { id: 4, name: "NỘM RAU TIỀN VUA BÒ TƯƠI", quantity: 6, cookTime: "9p30s" },
-    { id: 5, name: "NỘM RAU TIỀN VUA BÒ TƯƠI", quantity: 2, cookTime: "9p30s" },
-  ];
+  const [mutualOrderDishes, setMutualOrderDishes] = React.useState([]);
+  const [singleOrderDishes, setSingleOrderDishes] = React.useState([]);
+  const { callApi, error, loading } = useCallApi();
+  const fetchData = async () => {
+    const result = await callApi(`${OrderSessionApi.GET_GROUPED_DISH}`, "GET");
+    if (result.isSuccess) {
+      setMutualOrderDishes(result.result?.mutualOrderDishes);
+      setSingleOrderDishes(result.result?.singleOrderDishes);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const columns = [
-    { title: "STT", dataIndex: "id", key: "id" },
     {
       title: "MÓN ĂN",
       dataIndex: "name",
       key: "name",
-      render: (text, record) => (
+      render: (_, record) => (
         <div className="flex">
-          <img
-            src="https://s3-alpha-sig.figma.com/img/c817/e458/5e24a4313f974e4003568eac783fb722?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=FpTXIzyP1-CCLe7~zWawnzhpkM0lVavAiY0kxVqDRxiHZi6zH7ckBAM37xxN2W~TYMoSulOb7WOZa0llcpk0Z08MnNUq96MDBh-esp-lH5-decgVFn5ue1roVC3~DhrUv7Lsvzqlp5jk3Buoghh2HaUj8f4OKVPROzqEdt1-rWar23WcFrkRLdT9dlCRZL0ZoVRpT7pejoaqcpwGD9CUoB-5plyhFYDNWOpv76JXbjxejOOMYeawjY1dXofQWvPBF7L-MrNCwAbdCNnBEW7D3nvYEvxbEL2Lc6BLaiTcsHSTawmdAGKe8oAEP3UsE7i-zf7iThlueurJaAleYOS3-g__"
-            alt={text}
-            className="object-cover w-14 h-14"
-          />
           <div className="ml-4 flex flex-col">
-            <Text className="">{text}</Text>
+            <Text className="">{record.total}</Text>
             <Text type="secondary" style={{ fontSize: 12 }}>
               <ClockCircleOutlined /> {record.cookTime}
             </Text>
@@ -55,9 +57,9 @@ const OptimizeProcess = () => {
       render: () => <Checkbox size="small" />,
     },
     {
-      title: "CÒN MÓN",
-      key: "remaining",
-      render: () => <Switch defaultChecked />,
+      title: "note",
+      key: "note",
+      render: () => <span className="text-wrap break-words">Không ớt</span>,
     },
     {
       title: "TRẠNG THÁI",
@@ -108,42 +110,34 @@ const OptimizeProcess = () => {
 
         <Title level={3}>BẢNG ƯU TIÊN MÓN CẦN CHẾ BIẾN</Title>
 
-        <Row gutter={16}>
-          <Col span={12}>
-            <Card
-              title="MÓN TRÙNG ĐƠN ORDER"
-              headStyle={{
-                background: "#faad14",
-                color: "#fff",
-                textAlign: "center",
-              }}
-            >
-              <Table
-                dataSource={menuItems}
-                columns={columns}
-                pagination={false}
-                rowKey="id"
-              />
-            </Card>
-          </Col>
-          <Col span={12}>
-            <Card
-              title="MÓN LẺ ĐƠN ORDER"
-              headStyle={{
-                background: "#C01D2E",
-                color: "#fff",
-                textAlign: "center",
-              }}
-            >
-              <Table
-                dataSource={menuItems}
-                columns={columns}
-                pagination={false}
-                rowKey="id"
-              />
-            </Card>
-          </Col>
-        </Row>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <div>
+              <div className="overflow-x-scroll w-full max-h-[calc(100% - 100px)] overflow-y-scroll">
+                <Table
+                  // dataSource={mutualOrderDishes}
+                  columns={columns}
+                  pagination={false}
+                  rowKey="id"
+                  size="small"
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div>
+              <div className="overflow-x-auto w-full">
+                <Table
+                  // dataSource={menuItems}
+                  columns={columns}
+                  pagination={false}
+                  rowKey="id"
+                  size="small"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

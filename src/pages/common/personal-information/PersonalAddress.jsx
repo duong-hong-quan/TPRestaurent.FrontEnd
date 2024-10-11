@@ -49,7 +49,7 @@ const PersonalAddress = () => {
     getLocation();
     const response = await callApi(`${MapApi.AUTO_COMPLETE}`, "POST", {
       address: value,
-      destination: [location.lat, location.lng],
+      destination: location ? [location.lat, location.lng] : null,
     });
     if (response.isSuccess) {
       setOptions(
@@ -204,16 +204,36 @@ const PersonalAddress = () => {
           dataIndex: "customerInfoAddressName",
           key: "customerInfoAddressName",
         },
-        {
-          title: "Địa chỉ",
-          dataIndex: "address",
-          key: "address",
-        },
+
         {
           title: "Địa chỉ chính",
           dataIndex: "addressPrimary",
           key: "addressPrimary",
-          render: (_, record) => <Switch checked={record.isCurrentUsed} />,
+          render: (_, record) => (
+            <Switch
+              checked={record.isCurrentUsed}
+              onChange={async () => {
+                const response = await callApi(
+                  `${AccountApi.UPDATE_ADDRESS}`,
+                  "PUT",
+                  {
+                    customerInfoAddressId: record.customerInfoAddressId,
+                    customerInfoAddressName: record.customerInfoAddressName,
+                    isCurrentUsed: !record.isCurrentUsed,
+                    accountId: user.id,
+                    lat: record.lat || "",
+                    lng: record.lng || "",
+                  }
+                );
+                if (response.isSuccess) {
+                  message.success("Cập nhật địa chỉ chính thành công!");
+                  await fetchData();
+                } else {
+                  showError(error);
+                }
+              }}
+            />
+          ),
         },
         {
           title: "Hành động",
@@ -265,6 +285,7 @@ const PersonalAddress = () => {
           dataSource={addresses}
           rowKey="customerInfoAddressId"
           pagination={false}
+          size="small"
         />
       );
     }
