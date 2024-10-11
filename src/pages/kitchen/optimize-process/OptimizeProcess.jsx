@@ -10,10 +10,16 @@ import {
   Row,
   Col,
   Checkbox,
+  Modal,
 } from "antd";
-import { ClockCircleOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, StarFilled } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
 import { OrderSessionApi } from "../../../api/endpoint";
+import { IconButton } from "@material-tailwind/react";
+import { Edit2, Eye, ThermometerSun } from "lucide-react";
+import { Tabs, Statistic, Descriptions, Image } from "antd";
+import ProductDetail from "../../common/product-detail/ProductDetail";
+import { render } from "react-dom";
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -23,6 +29,7 @@ const OptimizeProcess = () => {
   const [mutualOrderDishes, setMutualOrderDishes] = React.useState([]);
   const [singleOrderDishes, setSingleOrderDishes] = React.useState([]);
   const { callApi, error, loading } = useCallApi();
+  const [selectedDish, setSelectedDish] = React.useState(null);
   const fetchData = async () => {
     const result = await callApi(`${OrderSessionApi.GET_GROUPED_DISH}`, "GET");
     if (result.isSuccess) {
@@ -39,35 +46,116 @@ const OptimizeProcess = () => {
       title: "MÓN ĂN",
       dataIndex: "name",
       key: "name",
+      render: (_, record) => <span>{record.dish?.name}</span>,
+    },
+    {
+      title: "SỐ LƯỢNG",
+      dataIndex: "quantity",
+      key: "quantity",
       render: (_, record) => (
-        <div className="flex">
-          <div className="ml-4 flex flex-col">
-            <Text className="">{record.total}</Text>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              <ClockCircleOutlined /> {record.cookTime}
-            </Text>
-          </div>
+        <div>
+          {record.total.map((item, index) => (
+            <div key={index}>
+              {item.quantity} {item.dishSize.vietnameseName}
+            </div>
+          ))}
         </div>
       ),
     },
-    { title: "SỐ LƯỢNG", dataIndex: "quantity", key: "quantity" },
     {
-      title: "DONE",
-      key: "done",
-      render: () => <Checkbox size="small" />,
-    },
-    {
-      title: "note",
-      key: "note",
-      render: () => <span className="text-wrap break-words">Không ớt</span>,
-    },
-    {
-      title: "TRẠNG THÁI",
-      key: "status",
-      render: () => <Tag color="warning">ĐANG CHẾ BIẾN</Tag>,
+      title: "Xem chi tiết",
+      dataIndex: "detail",
+      key: "detail",
+      render: (_, record) => (
+        <div>
+          <IconButton onClick={() => setSelectedDish(record)}>
+            <Eye />
+          </IconButton>
+        </div>
+      ),
     },
   ];
+  const sizeStats = selectedDish?.total?.reduce((acc, curr) => {
+    acc[curr.dishSize.name] = curr.quantity;
+    return acc;
+  }, {});
 
+  const orderColumns = [
+    {
+      title: "Phiên gọi món",
+      dataIndex: ["orderSession", "orderSessionNumber"],
+      key: "orderNumber",
+      sorter: (a, b) =>
+        a.orderSession.orderSessionNumber - b.orderSession.orderSessionNumber,
+    },
+    {
+      title: "Size",
+      dataIndex: ["quantity", "dishSize", "vietnameseName"],
+      key: "size",
+      render: (text) => <Tag>{text}</Tag>,
+      filters: [
+        { text: "Nhỏ", value: "Nhỏ" },
+        { text: "Vừa", value: "Vừa" },
+        { text: "Lớn", value: "Lớn" },
+      ],
+      onFilter: (value, record) =>
+        record.quantity.dishSize.vietnameseName === value,
+    },
+    {
+      title: "Số lượng",
+      dataIndex: ["quantity", "quantity"],
+      key: "quantity",
+      sorter: (a, b) => a.quantity.quantity - b.quantity.quantity,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: ["order", "status", "vietnameseName"],
+      key: "status",
+      render: (text, record) => {
+        const statusColors = {
+          "Đang Dùng Bữa": "processing",
+          "Đã Huỷ": "error",
+          "Chờ Xử Lý": "warning",
+          "Thành Công": "success",
+          "Sẳn sàng để giao": "default",
+        };
+        return (
+          <Tag color={statusColors[text]}>
+            {record.order?.status?.vietnameseName}
+          </Tag>
+        );
+      },
+      filters: [
+        { text: "Đang Dùng Bữa", value: "Đang Dùng Bữa" },
+        { text: "Đã Huỷ", value: "Đã Huỷ" },
+        { text: "Chờ Xử Lý", value: "Chờ Xử Lý" },
+        { text: "Thành Công", value: "Thành Công" },
+        { text: "Sẳn sàng để giao", value: "Sẳn sàng để giao" },
+      ],
+      onFilter: (value, record) =>
+        record.order.status?.vietnameseName === value,
+    },
+    {
+      title: "Đặt lúc",
+      dataIndex: ["order", "orderDate"],
+      key: "orderDate",
+      render: (text) =>
+        text !== "0001-01-01T00:00:00" ? new Date(text).toLocaleString() : "-",
+      sorter: (a, b) =>
+        new Date(a.order.orderDate) - new Date(b.order.orderDate),
+    },
+    {
+      title: "Hành động",
+      dataIndex: "action",
+      key: "action",
+      render: (_, record) => (
+        <IconButton onClick={() => console.log(record)}>
+          <Edit2 />
+        </IconButton>
+      ),
+    },
+  ];
+  console.log(selectedDish);
   return (
     <div className="container">
       <div>
@@ -113,9 +201,12 @@ const OptimizeProcess = () => {
         <div className="grid grid-cols-2 gap-2">
           <div>
             <div>
-              <div className="overflow-x-scroll w-full max-h-[calc(100% - 100px)] overflow-y-scroll">
+              <h3 className="bg-[#E3B054] text-white px-4 py-2 text-center rounded-lg shadow-lg  uppercase font-bold">
+                Món trùng đơn
+              </h3>
+              <div className="overflow-x-scroll w-full">
                 <Table
-                  // dataSource={mutualOrderDishes}
+                  dataSource={mutualOrderDishes}
                   columns={columns}
                   pagination={false}
                   rowKey="id"
@@ -126,9 +217,12 @@ const OptimizeProcess = () => {
           </div>
           <div>
             <div>
+              <h3 className="bg-[#C40519] text-white px-4 py-2 text-center rounded-lg shadow-lg  uppercase font-bold">
+                Món lẻ đơn
+              </h3>
               <div className="overflow-x-auto w-full">
                 <Table
-                  // dataSource={menuItems}
+                  dataSource={singleOrderDishes}
                   columns={columns}
                   pagination={false}
                   rowKey="id"
@@ -139,6 +233,114 @@ const OptimizeProcess = () => {
           </div>
         </div>
       </div>
+      <Modal
+        width={1000}
+        open={selectedDish}
+        onCancel={() => setSelectedDish(null)}
+        footer={null}
+      >
+        <Tabs
+          items={[
+            {
+              key: "1",
+              label: "Thông tin món ăn",
+              children: (
+                <>
+                  <div className="grid">
+                    <div className=" container p-10 mx-auto px-4 py-8 max-w-6xl">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+                        <div>
+                          <Image src={selectedDish?.dish?.image} />
+                        </div>
+
+                        <div className="space-y-8">
+                          <div className="flex">
+                            <h1 className="text-2xl font-bold text-red-800 uppercase text-center">
+                              {selectedDish?.dish.name}
+                            </h1>
+                          </div>
+                          <Card>
+                            <Descriptions column={1}>
+                              <Descriptions.Item label="Mô tả">
+                                {selectedDish?.dish?.description}
+                              </Descriptions.Item>
+                              <Descriptions.Item label="Sẵn có">
+                                <Tag
+                                  color={
+                                    selectedDish?.dish?.isAvailable
+                                      ? "success"
+                                      : "error"
+                                  }
+                                >
+                                  {selectedDish?.dish?.isAvailable
+                                    ? "Yes"
+                                    : "No"}
+                                </Tag>
+                              </Descriptions.Item>
+                              <Descriptions.Item label="Món chính">
+                                <Tag
+                                  color={
+                                    selectedDish?.dish?.isMainItem
+                                      ? "blue"
+                                      : "default"
+                                  }
+                                >
+                                  {selectedDish?.dish?.isMainItem ? "v" : "x"}
+                                </Tag>
+                              </Descriptions.Item>
+                            </Descriptions>
+                          </Card>
+                          <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+                            <Col span={8}>
+                              <Card>
+                                <Statistic
+                                  title="Size nhỏ"
+                                  value={sizeStats?.SMALL || 0}
+                                />
+                              </Card>
+                            </Col>
+                            <Col span={8}>
+                              <Card>
+                                <Statistic
+                                  title="Size vừa"
+                                  value={sizeStats?.MEDIUM || 0}
+                                />
+                              </Card>
+                            </Col>
+                            <Col span={8}>
+                              <Card>
+                                <Statistic
+                                  title="Size lớn"
+                                  value={sizeStats?.LARGE || 0}
+                                />
+                              </Card>
+                            </Col>
+                          </Row>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ),
+            },
+            {
+              key: "2",
+              label: "Đơn đặt",
+              children: (
+                <Table
+                  dataSource={selectedDish?.dishFromTableOrders}
+                  columns={orderColumns}
+                  rowKey={(record) =>
+                    `${record.orderSession.orderSessionId}-${record.quantity.dishSize.id}`
+                  }
+                  scroll={{ x: 800, y: 600 }}
+                  pagination={false}
+                />
+              ),
+            },
+          ]}
+        />
+      </Modal>
     </div>
   );
 };
