@@ -13,7 +13,10 @@ import {
   XCircle,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { formatDateTime } from "../../../util/Utility";
+import { formatDateTime, formatPrice } from "../../../util/Utility";
+import useCallApi from "../../../api/useCallApi";
+import { OrderSessionApi } from "../../../api/endpoint";
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 const menuItems = [
   { key: "all", label: "Tất cả" },
   { key: "waiting", label: "Đang chờ" },
@@ -135,19 +138,29 @@ const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
         </div>
       </div>
       <div className="pt-4">
-        {items.slice(0, 2).map((item, index) => (
+        {items.map((item, index) => (
           <div key={item.id} className="flex items-center mb-4">
             <img
-              src={item.image}
-              alt={item.name}
+              src={
+                item?.orderDetail?.dishSizeDetail?.dish.image ||
+                item?.orderDetail.combo?.image
+              }
+              alt={
+                item.dishSizeDetail?.dish.name || item?.orderDetail.combo?.image
+              }
               className="w-16 h-16 rounded-full mr-4"
             />
             <div className="flex-grow">
-              <h3 className="font-semibold">{item.name}</h3>
-              <p className="text-sm text-gray-500">{item.description}</p>
+              <h3 className="font-semibold">
+                {item.orderDetail?.combo?.name ||
+                  item.dishSizeDetail?.dish.name}
+              </h3>
+              <p className="text-sm text-gray-500">
+                {item.dishSizeDetail?.dish.description}
+              </p>
               <div className="flex justify-between mt-1">
-                <span>${item.price.toFixed(2)}</span>
-                <span>Số lượng: {item.quantity}</span>
+                <span>{formatPrice(item.orderDetail?.price)}</span>
+                <span>Số lượng: {item.orderDetail?.quantity}</span>
               </div>
             </div>
           </div>
@@ -201,6 +214,26 @@ const fakeData = [
 ];
 
 const OrderManagement = () => {
+  const [orderSession, setOrderSession] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const { callApi, error, loading } = useCallApi();
+  const fetchData = async () => {
+    const response = await callApi(
+      `${OrderSessionApi.GET_ALL_ORDER_SESSION}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setOrderSession(response.result);
+    } else {
+      console.log("error", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+  if (loading) {
+    return <LoadingOverlay isLoading={loading} />;
+  }
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
@@ -223,20 +256,19 @@ const OrderManagement = () => {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-300px)]">
-          <OrderCard
-            orderNumber={orderData.orderNumber}
-            date={orderData.date}
-            tableNumber={orderData.tableNumber}
-            items={orderData.items}
-          />
-          <OrderCard
-            orderNumber={orderData.orderNumber}
-            date={orderData.date}
-            tableNumber={orderData.tableNumber}
-            items={orderData.items}
-          />
-          {/* Add more OrderCard components as needed */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 overflow-y-auto max-h-[calc(100vh-300px)]">
+          {orderSession.map((order) => (
+            <OrderCard
+              orderNumber={order.orderSession?.orderSessionNumber}
+              date={
+                order.order?.mealTime ||
+                order.order?.reservationDate ||
+                order.order?.orderDate
+              }
+              // tableNumber={orderData.tableNumber}
+              items={order.orderDetails}
+            />
+          ))}
         </div>
       </div>
     </div>

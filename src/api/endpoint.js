@@ -44,6 +44,7 @@ export const OrderApi = {
   CALCULATE_RESERVATION: "/order/calculate-reservation",
   GET_ALL_TABLE_DETAIL: "/order/get-all-table-details",
   CALCULATE_DELIVER_ORDER: "/order/calculate-deliver-order",
+  UPDATE_ORDER_DETAIL_STATUS: "/order/update-order-detail-status",
 };
 
 export const ReservationApi = {
@@ -88,4 +89,9 @@ export const DishApi = {
 };
 export const MapApi = {
   AUTO_COMPLETE: "/map/auto-complete",
+};
+
+export const OrderSessionApi = {
+  GET_GROUPED_DISH: "/order-session/get-grouped-dish",
+  GET_ALL_ORDER_SESSION: "/order-session/get-all-order-session",
 };

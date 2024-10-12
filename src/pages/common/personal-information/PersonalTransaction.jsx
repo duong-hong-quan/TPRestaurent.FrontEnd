@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import LoyalPointHistoryList from "../../../components/loyalpoint/LoyalPointHistoryList";
-import { Tooltip } from "antd";
+import { Button, Tooltip } from "antd";
 import { Coins, Gift, HelpCircle, Wallet } from "lucide-react";
 import { useSelector } from "react-redux";
 import { MoneyCollectFilled } from "@ant-design/icons";
@@ -8,6 +8,7 @@ import useCallApi from "../../../api/useCallApi";
 import { TransactionApi } from "../../../api/endpoint";
 import { showError } from "../../../util/Utility";
 import StoreCreditHistory from "../../../components/store-credit/StoreCreditHistory";
+import CreateStoreCreditModal from "../../../components/store-credit/CreateStoreCreditModal";
 
 const PersonalTransaction = () => {
   const user = useSelector((state) => state.user.user || {});
@@ -15,6 +16,7 @@ const PersonalTransaction = () => {
   const { callApi, error, loading } = useCallApi();
   const [transactions, setTransactions] = useState([]);
   const [storeCreditTransactions, setStoreCreditTransactions] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const fetchData = async () => {
     if (activeTab === "loyalPoint") {
       const res = await callApi(
@@ -60,11 +62,11 @@ const PersonalTransaction = () => {
         TÀI KHOẢN VÀ ĐIỂM HỘI VIÊN
       </h1>
 
-      <div className="max-w-4xl mx-auto p-4">
-        <div className="flex gap-4 justify-between">
+      <div className="xl:max-w-4xl xl:mx-auto p-4">
+        <div className=" flex flex-col xl:flex-row xl:gap-4 xl:justify-between ">
           <div
             onClick={() => setActiveTab("loyalpoint")}
-            className="bg-gradient-to-r from-orange-400 to-amber-300 rounded-lg shadow-lg p-6 w-1/2 transform hover:scale-105 transition-transform duration-300"
+            className="cursor-pointer w-full bg-gradient-to-r from-orange-400 to-amber-300 rounded-lg shadow-lg p-6 xl:w-1/2 transform hover:scale-105 transition-transform duration-300"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-white text-lg font-semibold">
@@ -86,7 +88,7 @@ const PersonalTransaction = () => {
           </div>
           <div
             onClick={() => setActiveTab("storeCredit")}
-            className="bg-gradient-to-r from-red-600 to-pink-500 rounded-lg shadow-lg p-6 w-1/2 transform hover:scale-105 transition-transform duration-300"
+            className="cursor-pointer w-full my-1 xl:my-0 bg-gradient-to-r from-red-600 to-pink-500 rounded-lg shadow-lg p-6 xl:w-1/2 transform hover:scale-105 transition-transform duration-300"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-white text-lg font-semibold">
@@ -111,8 +113,20 @@ const PersonalTransaction = () => {
           </div>
         </div>
       </div>
-
+      <div className="flex justify-end">
+        <Button
+          className="bg-red-800 text-white mr-4"
+          onClick={() => setIsOpen(true)}
+        >
+          Nạp tiền ngay
+        </Button>
+      </div>
       <div className="mt-4 shadow-lg rounded-lg">{renderTabContent()}</div>
+
+      <CreateStoreCreditModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </div>
   );
 };
