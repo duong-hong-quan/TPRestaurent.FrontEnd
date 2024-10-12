@@ -96,7 +96,53 @@ const OrderTag = ({ status, index }) => {
   );
 };
 
-const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
+const OrderCard = ({ orderNumber, date, items, tableNumber, status }) => {
+  const [textColor, setTextColor] = useState("");
+
+  const statusColors = {
+    0: "#C01D2E",
+    1: "#E3B054",
+    2: "#468764",
+    3: "#545454",
+    4: "#2ecc71",
+    5: "#95a5a6",
+  };
+
+  const statusBgColors = {
+    0: "#FFE9EC",
+    1: "#FFFCD4",
+    2: "#D0FFDD",
+    3: "#DBDBDB",
+    4: "#D5F5E3",
+    5: "#EAEDED",
+  };
+  const tagStyle = {
+    backgroundColor: `${statusBgColors[status]}`,
+    borderColor: statusColors[status],
+    color: textColor,
+  };
+  useEffect(() => {
+    const color = statusColors[status];
+    setTextColor(color);
+  }, [status]);
+  const renderStatus = () => {
+    switch (status) {
+      case 0:
+        return "Đặt trước";
+      case 1:
+        return "Đã xác nhận";
+      case 2:
+        return "Đang xử lý";
+      case 3:
+        return "Đang nấu trễ";
+      case 4:
+        return "Hoàn thành";
+      case 5:
+        return "Đã huỷ";
+      default:
+        return "";
+    }
+  };
   return (
     <Card className="w-80 bg-white border-2 border-[#C01D2E] mx-2 my-2 rounded-xl overflow-hidden shadow-md">
       <div className="w-full">
@@ -106,6 +152,9 @@ const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
               Đơn số #{orderNumber}
             </h2>
             <p className="text-gray-500">{formatDateTime(date)}</p>
+            <div style={tagStyle} className="text-center rounded-lg ">
+              <span className="text-sm font-semibold">{renderStatus()}</span>
+            </div>
           </div>
           <div className="bg-[#C01D2E] text-white px-3 py-1 rounded-full text-sm font-semibold">
             Bàn {tableNumber}
@@ -113,8 +162,8 @@ const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
         </div>
       </div>
       <div className="pt-4">
-        {items.map((item, index) => (
-          <div key={item.id} className="flex items-center mb-4">
+        {items.slice(0, 2).map((item, index) => (
+          <div key={index} className="flex items-center mb-4">
             <img
               src={item?.dishSizeDetail?.dish.image || item?.combo?.image}
               alt={item.dishSizeDetail?.dish.name || item.combo?.image}
@@ -219,6 +268,7 @@ const OrderManagement = () => {
               }
               tableNumber={order.table?.tableName}
               items={order.orderDetails}
+              status={order.orderSession?.orderSessionStatusId}
             />
           ))}
         </div>
