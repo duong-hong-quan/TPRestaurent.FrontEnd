@@ -208,7 +208,7 @@ const OptimizeProcess = () => {
       key: "status",
       render: (text, record) => (
         <Tag
-          className="text-base"
+          className="text-base break-words text-wrap"
           color={getColor(record.orderDetail.orderDetailStatusId)}
         >
           {record.orderDetail.orderDetailStatusId
