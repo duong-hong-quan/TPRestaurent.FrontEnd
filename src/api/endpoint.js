@@ -94,4 +94,5 @@ export const MapApi = {
 export const OrderSessionApi = {
   GET_GROUPED_DISH: "/order-session/get-grouped-dish",
   GET_ALL_ORDER_SESSION: "/order-session/get-all-order-session",
+  GET_ORDER_SESSION_BY_ID: "/order-session/get-order-session-by-id",
 };

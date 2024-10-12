@@ -19,6 +19,7 @@ import { formatDateTime, formatPrice } from "../../../util/Utility";
 import useCallApi from "../../../api/useCallApi";
 import { OrderSessionApi } from "../../../api/endpoint";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import OrderSessionModal from "./OrderSessionModal";
 const menuItems = [
   { key: "all", label: "Tất cả" },
   { key: "waiting", label: "Đang chờ" },
@@ -96,7 +97,14 @@ const OrderTag = ({ status, index }) => {
   );
 };
 
-const OrderCard = ({ orderNumber, date, items, tableNumber, status }) => {
+const OrderCard = ({
+  orderNumber,
+  date,
+  items,
+  tableNumber,
+  status,
+  fetchOrderDetail,
+}) => {
   const [textColor, setTextColor] = useState("");
 
   const statusColors = {
@@ -191,7 +199,7 @@ const OrderCard = ({ orderNumber, date, items, tableNumber, status }) => {
       </div>
 
       <div className="flex justify-between p-2 ">
-        <Button className="bg-pink-50  border-none">
+        <Button className="bg-pink-50  border-none" onClick={fetchOrderDetail}>
           <Eye size={24} className="h-6 w-6 text-red-800" />
         </Button>
         <div className="flex gap-1">
@@ -214,6 +222,8 @@ const OrderManagement = () => {
   const [orderSession, setOrderSession] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
   const { callApi, error, loading } = useCallApi();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [orderSessionData, setOrderSessionData] = useState({});
   const fetchData = async () => {
     const response = await callApi(
       `${OrderSessionApi.GET_ALL_ORDER_SESSION}`,
@@ -228,11 +238,22 @@ const OrderManagement = () => {
   useEffect(() => {
     fetchData();
   }, []);
+  const fetchOrderDetail = async (orderSessionId) => {
+    const response = await callApi(
+      `${OrderSessionApi.GET_ORDER_SESSION_BY_ID}?id=${orderSessionId}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setOrderSessionData(response.result);
+      setIsModalOpen(true);
+    }
+  };
+
   if (loading) {
     return <LoadingOverlay isLoading={loading} />;
   }
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <Typography
           variant="h5"
@@ -257,7 +278,7 @@ const OrderManagement = () => {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 overflow-y-auto max-h-[calc(100vh-300px)]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1 overflow-y-auto max-h-[calc(100vh-300px)]">
           {orderSession.map((order) => (
             <OrderCard
               orderNumber={order.orderSession?.orderSessionNumber}
@@ -269,10 +290,18 @@ const OrderManagement = () => {
               tableNumber={order.table?.tableName}
               items={order.orderDetails}
               status={order.orderSession?.orderSessionStatusId}
+              fetchOrderDetail={() =>
+                fetchOrderDetail(order?.orderSession?.orderSessionId)
+              }
             />
           ))}
         </div>
       </div>
+      <OrderSessionModal
+        orderSession={orderSessionData}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
