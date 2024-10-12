@@ -126,6 +126,22 @@ const OptimizeProcess = () => {
       setSelectedRows([]);
     }
   };
+  const getColor = (status) => {
+    switch (status) {
+      case 1:
+        return "yellow";
+      case 2:
+        return "blue";
+      case 3:
+        return "orange";
+      case 4:
+        return "green";
+      case 5:
+        return "gray";
+      default:
+        return "gray";
+    }
+  };
   const orderColumns = [
     {
       title: (
@@ -175,6 +191,41 @@ const OptimizeProcess = () => {
       render: (_, record) => record.quantity.quantity,
       sorter: (a, b) => a.quantity.quantity - b.quantity.quantity,
     },
+
+    {
+      title: "Mã bàn",
+      dataIndex: ["table", "tableName"],
+      key: "dishFromTableOrders",
+      render: (text, record) => (
+        <Tag className="text-base" color={record.table ? "lime" : "gray"}>
+          {record.table ? record.table?.tableName : "N/A"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: ["status"],
+      key: "status",
+      render: (text, record) => (
+        <Tag
+          className="text-base"
+          color={getColor(record.orderDetail.orderDetailStatusId)}
+        >
+          {record.orderDetail.orderDetailStatusId
+            ? record.orderDetail?.orderDetailStatus?.vietnameseName
+            : "N/A"}
+        </Tag>
+      ),
+      filters: [
+        { text: "Đang chờ", value: 1 },
+        { text: "Chưa đọc", value: 2 },
+        { text: "Đang xử lý", value: 3 },
+        { text: "Sẵn sàng phục vụ", value: 4 },
+        { text: "Huỷ", value: 5 },
+      ],
+      onFilter: (value, record) =>
+        record.orderDetail.orderDetailStatusId === value,
+    },
     {
       title: " Loại đơn",
       dataIndex: "orderType",
@@ -195,14 +246,6 @@ const OptimizeProcess = () => {
       onFilter: (value, record) => record.order?.orderTypeId === value,
     },
     {
-      title: "Mã bàn",
-      dataIndex: ["table", "tableName"],
-      key: "dishFromTableOrders",
-      render: (text, record) => (
-        <Tag color="red">{record.table?.tableName}</Tag>
-      ),
-    },
-    {
       title: "Đặt lúc",
       dataIndex: ["order", "orderDate"],
       key: "orderDate",
@@ -217,19 +260,6 @@ const OptimizeProcess = () => {
       },
       sorter: (a, b) =>
         new Date(a.order.orderDate) - new Date(b.order.orderDate),
-    },
-    {
-      title: "Hành động",
-      dataIndex: "action",
-      key: "action",
-      render: (_, record) => (
-        <IconButton
-          onClick={() => console.log(record)}
-          className="bg-white shadow-none  text-black"
-        >
-          <Edit2 />
-        </IconButton>
-      ),
     },
   ];
   const handleUpdateStatus = async () => {

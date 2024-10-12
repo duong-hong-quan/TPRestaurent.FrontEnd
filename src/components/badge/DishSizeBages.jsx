@@ -13,7 +13,9 @@ const DishSizeBages = ({ dishSize }) => {
   };
   return (
     <div>
-      <Tag color={getBadgeColor(dishSize)}>{dishSize.vietnameseName}</Tag>
+      <Tag className="text-base" color={getBadgeColor(dishSize)}>
+        {dishSize.vietnameseName}
+      </Tag>
     </div>
   );
 };
