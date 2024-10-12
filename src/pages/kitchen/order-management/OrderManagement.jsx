@@ -2,6 +2,7 @@ import { CardFooter, CardHeader, Typography } from "@material-tailwind/react";
 import { Button, Card, Input } from "antd";
 import { color } from "framer-motion";
 import {
+  AlertTriangle,
   BellRing,
   Check,
   CheckCircle,
@@ -9,6 +10,7 @@ import {
   CookingPot,
   Eye,
   Loader,
+  TicketIcon,
   X,
   XCircle,
 } from "lucide-react";
@@ -49,24 +51,30 @@ const OrderTag = ({ status, index }) => {
     "flex items-center rounded-md border text-sm font-bold shadow-md w-fit px-4 py-2 transition-all duration-300 ease-in-out ";
 
   const statusColors = {
-    waiting: "#C01D2E",
-    preparing: "#E3B054",
-    done: "#468764",
-    cancelled: "#545454",
+    0: "#C01D2E",
+    1: "#E3B054",
+    2: "#468764",
+    3: "#545454",
+    4: "#2ecc71",
+    5: "#95a5a6",
   };
 
   const statusBgColors = {
-    waiting: "#FFE9EC",
-    preparing: "#FFFCD4",
-    done: "#D0FFDD",
-    cancelled: "#DBDBDB",
+    0: "#FFE9EC",
+    1: "#FFFCD4",
+    2: "#D0FFDD",
+    3: "#DBDBDB",
+    4: "#D5F5E3",
+    5: "#EAEDED",
   };
 
   const statusIcons = {
-    waiting: <BellRing size={16} className="mr-2" />,
-    preparing: <CookingPot size={16} className="mr-2" />,
-    done: <CheckCircle size={16} className="mr-2" />,
-    cancelled: <XCircle size={16} className="mr-2" />,
+    0: <BellRing size={16} className="mr-2" />,
+    1: <Check size={16} className="mr-2" />,
+    2: <CookingPot size={16} className="mr-2" />,
+    3: <AlertTriangle size={16} className="mr-2" />,
+    4: <CheckCircle size={16} className="mr-2" />,
+    5: <XCircle size={16} className="mr-2" />,
   };
 
   useEffect(() => {
@@ -75,7 +83,7 @@ const OrderTag = ({ status, index }) => {
   }, [status]);
 
   const tagStyle = {
-    backgroundColor: `${statusBgColors[status]}`, // 80 is 50% opacity in hex
+    backgroundColor: `${statusBgColors[status]}`,
     borderColor: statusColors[status],
     color: textColor,
   };
@@ -87,40 +95,7 @@ const OrderTag = ({ status, index }) => {
     </div>
   );
 };
-export const orderData = {
-  orderNumber: 351,
-  date: "05 Feb 2023, 08:28 PM",
-  tableNumber: 1,
-  items: [
-    {
-      id: 1,
-      name: "Vegetable Mixups",
-      description: "Vegetable Fritters with Egg",
-      price: 5.3,
-      quantity: 1,
-      image:
-        "https://s3-alpha-sig.figma.com/img/cede/f2fa/0a35c8a1d8f399032cceab7502d20d6e?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=EQ99YZl85afRTgMJdgfHOdP6fZD0F5qjs0kA-X51P-rr5dmTi1jRF1vtoobwu1JKOKR5VMeV2HTbA3pTo9GooTtuP0BbK1ytNde0UMQWzQa6nwToyHJ-X3LPKCmodj4391A0-t70OivGlSsKu6z~LuzLlXcwWIt~XcbxG5IyGiFjXWYpiMfG5j1tL9ObE1oT9dza9epR484hU1Ipm~f9F43neg7QkGUFHzj~0SYhVigY6Pet4DP-qOaSAKJVJnDaa11j2ZtsgBnMsYTXAUSxl-a3MZQuYIcFP8QtfuQYpb2HUvag9gimV7PhxT-KM65mXnkV75PscfY-URT1wTHPCQ__",
-    },
-    {
-      id: 2,
-      name: "Chinese Takeout Disj",
-      description: "Fresh Prawn mix salad",
-      price: 5.3,
-      quantity: 1,
-      image:
-        "https://s3-alpha-sig.figma.com/img/cede/f2fa/0a35c8a1d8f399032cceab7502d20d6e?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=EQ99YZl85afRTgMJdgfHOdP6fZD0F5qjs0kA-X51P-rr5dmTi1jRF1vtoobwu1JKOKR5VMeV2HTbA3pTo9GooTtuP0BbK1ytNde0UMQWzQa6nwToyHJ-X3LPKCmodj4391A0-t70OivGlSsKu6z~LuzLlXcwWIt~XcbxG5IyGiFjXWYpiMfG5j1tL9ObE1oT9dza9epR484hU1Ipm~f9F43neg7QkGUFHzj~0SYhVigY6Pet4DP-qOaSAKJVJnDaa11j2ZtsgBnMsYTXAUSxl-a3MZQuYIcFP8QtfuQYpb2HUvag9gimV7PhxT-KM65mXnkV75PscfY-URT1wTHPCQ__",
-    },
-    {
-      id: 3,
-      name: "Chinese Takeout Disj",
-      description: "Fresh Prawn mix salad",
-      price: 5.3,
-      quantity: 1,
-      image:
-        "https://s3-alpha-sig.figma.com/img/cede/f2fa/0a35c8a1d8f399032cceab7502d20d6e?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=EQ99YZl85afRTgMJdgfHOdP6fZD0F5qjs0kA-X51P-rr5dmTi1jRF1vtoobwu1JKOKR5VMeV2HTbA3pTo9GooTtuP0BbK1ytNde0UMQWzQa6nwToyHJ-X3LPKCmodj4391A0-t70OivGlSsKu6z~LuzLlXcwWIt~XcbxG5IyGiFjXWYpiMfG5j1tL9ObE1oT9dza9epR484hU1Ipm~f9F43neg7QkGUFHzj~0SYhVigY6Pet4DP-qOaSAKJVJnDaa11j2ZtsgBnMsYTXAUSxl-a3MZQuYIcFP8QtfuQYpb2HUvag9gimV7PhxT-KM65mXnkV75PscfY-URT1wTHPCQ__",
-    },
-  ],
-};
+
 const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
   return (
     <Card className="w-80 bg-white border-2 border-[#C01D2E] mx-2 my-2 rounded-xl overflow-hidden shadow-md">
@@ -133,7 +108,7 @@ const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
             <p className="text-gray-500">{formatDateTime(date)}</p>
           </div>
           <div className="bg-[#C01D2E] text-white px-3 py-1 rounded-full text-sm font-semibold">
-            Bàn số {tableNumber}
+            Bàn {tableNumber}
           </div>
         </div>
       </div>
@@ -141,26 +116,20 @@ const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
         {items.map((item, index) => (
           <div key={item.id} className="flex items-center mb-4">
             <img
-              src={
-                item?.orderDetail?.dishSizeDetail?.dish.image ||
-                item?.orderDetail.combo?.image
-              }
-              alt={
-                item.dishSizeDetail?.dish.name || item?.orderDetail.combo?.image
-              }
+              src={item?.dishSizeDetail?.dish.image || item?.combo?.image}
+              alt={item.dishSizeDetail?.dish.name || item.combo?.image}
               className="w-16 h-16 rounded-full mr-4"
             />
             <div className="flex-grow">
               <h3 className="font-semibold">
-                {item.orderDetail?.combo?.name ||
-                  item.dishSizeDetail?.dish.name}
+                {item?.combo?.name || item?.dishSizeDetail.dish?.name}
               </h3>
               <p className="text-sm text-gray-500">
                 {item.dishSizeDetail?.dish.description}
               </p>
               <div className="flex justify-between mt-1">
-                <span>{formatPrice(item.orderDetail?.price)}</span>
-                <span>Số lượng: {item.orderDetail?.quantity}</span>
+                <span>{formatPrice(item?.price)}</span>
+                <span>Số lượng: {item?.quantity}</span>
               </div>
             </div>
           </div>
@@ -172,12 +141,12 @@ const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
         )}
       </div>
 
-      <div className="flex justify-between p-2">
+      <div className="flex justify-between p-2 ">
         <Button className="bg-pink-50  border-none">
           <Eye size={24} className="h-6 w-6 text-red-800" />
         </Button>
         <div className="flex gap-1">
-          <Button className="bg-[#E3B054] text-white  px-2 py-4">
+          <Button className="bg-[#3a3936] text-white  px-2 py-4">
             <CookingPot size={24} />
           </Button>
           <Button className="bg-[#468764] text-white px-2 py-4">
@@ -191,27 +160,6 @@ const OrderCard = ({ orderNumber, date, items, tableNumber }) => {
     </Card>
   );
 };
-const fakeData = [
-  { status: "waiting", index: 1 },
-  { status: "preparing", index: 2 },
-  { status: "done", index: 3 },
-  { status: "cancelled", index: 4 },
-  { status: "waiting", index: 5 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-  { status: "preparing", index: 6 },
-];
 
 const OrderManagement = () => {
   const [orderSession, setOrderSession] = useState([]);
@@ -249,9 +197,13 @@ const OrderManagement = () => {
         <TabStatusKitchen selected="all" />
         <div className="mb-6">
           <div className=" flex flex-wrap  w-full pb-2">
-            {fakeData.map((order, idx) => (
+            {orderSession.map((order, idx) => (
               <div className="mx-1 my-1">
-                <OrderTag key={idx} status={order.status} index={order.index} />
+                <OrderTag
+                  key={idx}
+                  status={order.orderSession.orderSessionStatusId}
+                  index={order.orderSession.orderSessionNumber}
+                />
               </div>
             ))}
           </div>
@@ -265,7 +217,7 @@ const OrderManagement = () => {
                 order.order?.reservationDate ||
                 order.order?.orderDate
               }
-              // tableNumber={orderData.tableNumber}
+              tableNumber={order.table?.tableName}
               items={order.orderDetails}
             />
           ))}
