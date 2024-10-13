@@ -1,22 +1,21 @@
-import { Button, Image, Table, Tag } from "antd";
-import { render } from "react-dom";
-import { FaEdit, FaLock, FaTrash } from "react-icons/fa";
-import { MdEditNote } from "react-icons/md";
+import { Button, Image, Modal, Table, Tag } from "antd";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { Tooltip } from "antd";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { DishApi } from "../../api/endpoint";
-import { useState } from "react";
-import useCallApi from "../../api/useCallApi";
 import { uniqueId } from "lodash";
-import NavigateCreateMenu from "../../pages/admin/menu/NavigateCreateMenu";
-import AdminDishPage from "../../pages/admin/AdminDishPage";
 import { useNavigate } from "react-router-dom";
 
-const DishTable = ({ dishes, loading, isAction = false, handleSelectRow }) => {
+const DishTable = ({
+  dishes,
+  loading,
+  isAction = false,
+  handleSelectRow,
+  deleteDish,
+}) => {
   const navigate = useNavigate();
   const renderTag = (dishSizeDetails, dish) => {
     return dishSizeDetails.map((dishSizeDetail, index) => {
@@ -165,7 +164,19 @@ const DishTable = ({ dishes, loading, isAction = false, handleSelectRow }) => {
                 >
                   <FaEdit />
                 </Button>
-                <Button size="sm" className="bg-white text-red-800">
+                <Button
+                  size="sm"
+                  className="bg-white text-red-800"
+                  onClick={() => {
+                    Modal.confirm({
+                      title: "Xác nhận xóa món ăn",
+                      content: `Bạn có chắc chắn muốn xóa món ăn ${record.dish.name}?`,
+                      onOk: () => deleteDish(record.dish.dishId),
+                      okText: "Xác nhận",
+                      cancelText: "Hủy",
+                    });
+                  }}
+                >
                   <FaTrash />
                 </Button>
               </div>
