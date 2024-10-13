@@ -26,20 +26,18 @@ import { useNotification } from "./hook/useNotification";
 import { data } from "autoprefixer";
 moment.tz.setDefault("Asia/Ho_Chi_Minh");
 
-async function requestPermission() {
+export async function requestPermission() {
   const permission = await Notification.requestPermission();
 
   if (permission === "granted") {
     const token = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_VAPID_KEY,
     });
-
-    //We can send token to server
-    console.log("Token generated : ", token);
+    return token;
   } else if (permission === "denied") {
-    //notifications are blocked
-    alert("You denied for the notification");
+    message.error("You denied for the notification");
   }
+  return null;
 }
 export const NotificationListener = () => {
   const { addNotification } = useNotification();

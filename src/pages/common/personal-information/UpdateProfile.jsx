@@ -3,14 +3,29 @@ import { Form, Input, DatePicker, Select, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import useCallApi from "../../../api/useCallApi";
+import { AccountApi } from "../../../api/endpoint";
+import { showError } from "../../../util/Utility";
 
 const { Option } = Select;
 
 const UpdateProfile = () => {
   const [form] = Form.useForm();
   const user = useSelector((state) => state.user.user || {});
-  const onFinish = (values) => {
-    message.success("Profile updated successfully");
+  const { callApi, error, loading } = useCallApi();
+  const onFinish = async (values) => {
+    const data = {
+      accountId: user.id,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      dob: values.dob,
+    };
+    const response = await callApi(`${AccountApi.UPDATE_ACCOUNT}`, "PUT", data);
+    if (response.isSuccess) {
+      message.success("Profile updated successfully");
+    } else {
+      showError(error);
+    }
   };
 
   const normFile = (e) => {
@@ -45,6 +60,9 @@ const UpdateProfile = () => {
                 }}
                 className="space-y-6"
               >
+                <Form.Item name="email" label="Email">
+                  <Input disabled className="w-full rounded-md" />
+                </Form.Item>
                 <div className="flex gap-1">
                   <Form.Item
                     name="lastName"
@@ -78,7 +96,7 @@ const UpdateProfile = () => {
                     },
                   ]}
                 >
-                  <Input className="w-full rounded-md" />
+                  <Input prefix={"+84"} className="w-full rounded-md" />
                 </Form.Item>
 
                 <Form.Item
@@ -92,17 +110,6 @@ const UpdateProfile = () => {
                     <Option value={true}>Nam</Option>
                     <Option value={false}>Nữ</Option>
                   </Select>
-                </Form.Item>
-
-                <Form.Item
-                  name="email"
-                  label="Email"
-                  rules={[
-                    { required: true, message: "Please input your email!" },
-                    { type: "email", message: "Please enter a valid email!" },
-                  ]}
-                >
-                  <Input className="w-full rounded-md" />
                 </Form.Item>
 
                 <Form.Item>
@@ -119,7 +126,7 @@ const UpdateProfile = () => {
 
             <div className="w-full lg:w-1/3">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Profile Picture
+                Ảnh đại diện
               </h2>
               <Form.Item
                 name="avatar"
@@ -131,7 +138,6 @@ const UpdateProfile = () => {
                   listType="picture-card"
                   className="avatar-uploader"
                   showUploadList={false}
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   beforeUpload={(file) => {
                     const isJpgOrPng =
                       file.type === "image/jpeg" || file.type === "image/png";
