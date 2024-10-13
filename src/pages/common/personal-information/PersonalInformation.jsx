@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import UpdateProfile from "./UpdateProfile";
 import PersonalAddress from "./PersonalAddress";
 import TabMananger from "../../../components/tab/TabManager";
+import PersonalSetting from "./PersonalSetting";
 
 const PersonalInformation = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -19,7 +20,7 @@ const PersonalInformation = () => {
       case "address":
         return <PersonalAddress />;
       case "settings":
-        return <p>Nội dung cài đặt tài khoản ở đây.</p>;
+        return <PersonalSetting />;
       default:
         return null;
     }

@@ -4,6 +4,7 @@ export const AccountApi = {
   VERIFY_FOR_RESERVATION: "/api/account/verify-for-reservation",
   GET_BY_PHONE: "/api/account/get-account-by-phone-number",
   CREATE_ACCOUNT: "/api/account/create-account",
+  UPDATE_ACCOUNT: "/api/account/update-account",
   VERIFY_ACCOUNT_OTP: "/api/account/verify-account-otp",
   CREATE_ADDRESS: "/api/account/create-customer-info-address",
   UPDATE_ADDRESS: "/api/account/update-customer-info-address",
