@@ -3,6 +3,7 @@ import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import { CreditCard, DollarSign, ShoppingCart } from "lucide-react";
+import { formatDate, formatDateTime, formatPrice } from "../../../util/Utility";
 const { RangePicker } = DatePicker;
 
 const statusMap = {
@@ -65,7 +66,7 @@ const TransactionTable = ({ data, loading }) => {
       key: "date",
       align: "center",
 
-      render: (date) => new Date(date).toLocaleString("vi-VN"),
+      render: (date) => formatDateTime(date),
     },
     {
       title: "Số tiền",
@@ -73,7 +74,7 @@ const TransactionTable = ({ data, loading }) => {
       key: "amount",
       align: "center",
 
-      render: (amount) => `${amount.toLocaleString()} VND`,
+      render: (amount) => `${formatPrice(amount)} `,
     },
 
     {

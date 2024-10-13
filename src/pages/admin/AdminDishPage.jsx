@@ -17,6 +17,8 @@ import CreateMenuPage from "./menu/CreateMenuPage";
 import ComboTable from "../../components/table/ComboTable";
 import NavigateCreateMenu from "./menu/NavigateCreateMenu";
 import { uniqueId } from "lodash";
+import { message } from "antd";
+import { showError } from "../../util/Utility";
 const AdminDishPage = ({ initData, tab }) => {
   const MenuTab = [
     {
@@ -95,6 +97,31 @@ const AdminDishPage = ({ initData, tab }) => {
       <NavigateCreateMenu back={() => setIsCreateDishModalVisible(false)} />
     );
   }
+
+  const deleteDish = async (dishId) => {
+    const response = await callApi(
+      `${DishApi.DELETE_DISH}?dishId=${dishId}`,
+      "POST"
+    );
+    if (response?.isSuccess) {
+      message.success("Xóa món thành công");
+      await fetchDishes();
+    } else {
+      showError(error);
+    }
+  };
+  const deleteCombo = async (comboId) => {
+    const response = await callApi(
+      `${ComboApi.DELETE_COMBO_BY_ID}?comboId=${comboId}`,
+      "POST"
+    );
+    if (response?.isSuccess) {
+      message.success("Xóa combo thành công");
+      await fetchDishes();
+    } else {
+      showError(error);
+    }
+  };
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -143,6 +170,7 @@ const AdminDishPage = ({ initData, tab }) => {
             dishes={dishes}
             loading={loading}
             isAction={true}
+            deleteDish={deleteDish}
           />
         ) : (
           Number(selectedMenuTab) === 2 && (
@@ -151,6 +179,7 @@ const AdminDishPage = ({ initData, tab }) => {
               data={combos}
               loading={loading}
               isAction={true}
+              deleteCombo={deleteCombo}
             />
           )
         )}
