@@ -138,10 +138,20 @@ const AdminDishPage = ({ initData, tab }) => {
       </CardHeader>
       <CardBody key={uniqueId()} className="overflow-y-scroll h-[500px]">
         {Number(selectedMenuTab) === 1 ? (
-          <DishTable key={uniqueId()} dishes={dishes} loading={loading} />
+          <DishTable
+            key={uniqueId()}
+            dishes={dishes}
+            loading={loading}
+            isAction={true}
+          />
         ) : (
           Number(selectedMenuTab) === 2 && (
-            <ComboTable key={uniqueId()} data={combos} loading={loading} />
+            <ComboTable
+              key={uniqueId()}
+              data={combos}
+              loading={loading}
+              isAction={true}
+            />
           )
         )}
       </CardBody>

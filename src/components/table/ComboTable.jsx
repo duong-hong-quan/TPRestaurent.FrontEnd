@@ -9,7 +9,7 @@ import {
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const ComboTable = ({ data, loading }) => {
+const ComboTable = ({ data, loading, isAction }) => {
   const navigate = useNavigate();
   const renderTag = (combo) => {
     let statusConfig = {};
@@ -18,18 +18,21 @@ const ComboTable = ({ data, loading }) => {
         color: "success",
         text: "Còn món",
         icon: <CheckCircleOutlined />,
+        quantityLeft: combo.quantityLeft,
       };
     } else if (combo.quantityLeft === 0) {
       statusConfig = {
         color: "error",
         text: "Hết món",
         icon: <CloseCircleOutlined />,
+        quantityLeft: combo.quantityLeft,
       };
     } else {
       statusConfig = {
         color: "warning",
         text: "Ngưng bán",
         icon: <ExclamationCircleOutlined />,
+        quantityLeft: combo.quantityLeft,
       };
     }
 
@@ -41,7 +44,7 @@ const ComboTable = ({ data, loading }) => {
             icon={statusConfig.icon}
             className="px-2 py-1 rounded-full text-sm font-semibold"
           >
-            {statusConfig.text}
+            {statusConfig.text} ({statusConfig.quantityLeft})
           </Tag>
         </Tooltip>
       </div>
