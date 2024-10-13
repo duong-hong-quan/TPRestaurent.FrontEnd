@@ -39,6 +39,7 @@ import AdminDishPage from "../pages/admin/AdminDishPage";
 import NavigateCreateMenu from "../pages/admin/menu/NavigateCreateMenu";
 import CreateMenuPage from "../pages/admin/menu/CreateMenuPage";
 import CreateComboPage from "../pages/admin/menu/CreateComboPage";
+import DailySellManagement from "../pages/admin/daily-sell/DailySellManagement";
 
 function Routers() {
   const routing = useRoutes([
@@ -201,6 +202,10 @@ function Routers() {
         {
           path: "manage-devices",
           element: <AdminDevicePage />,
+        },
+        {
+          path: "daily-sell-management",
+          element: <DailySellManagement />,
         },
       ],
     },

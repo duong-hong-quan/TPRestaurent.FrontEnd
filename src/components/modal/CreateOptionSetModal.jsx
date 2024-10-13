@@ -121,7 +121,7 @@ const CreateOptionSetModal = ({
     const dish = previewDishIndex.find(
       (dish) => dish.dish.dishId === getDishBaseDishDetailId(value).dishId
     );
-    if (dish) {
+    if (dish && getDishSizeDetail(value)) {
       dish.quantity = quantity;
     } else {
       debugger;

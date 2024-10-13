@@ -24,7 +24,10 @@ const menuItems = [
   {
     title: "Quản lý món ăn",
     icon: <GiCampCookingPot className="h-5 w-5 text-white" />,
-    path: "/admin/dish-management",
+    subItems: [
+      { title: "Quản lý món ăn", path: "/admin/dish-management" },
+      { title: "Quản lý bán hàng ngày", path: "/admin/daily-sell-management" },
+    ],
   },
   {
     title: "Quản lý đơn hàng",

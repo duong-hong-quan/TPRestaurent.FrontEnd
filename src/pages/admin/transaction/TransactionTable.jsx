@@ -32,6 +32,16 @@ const getMethodIcon = (method) => {
   }
 };
 const TransactionTable = ({ data, loading }) => {
+  const renderName = (record) => {
+    if (record.order.account) {
+      return `${record.order?.account?.lastName} ${record.order?.account?.firstName}`;
+    }
+    if (record.storeCredit) {
+      return `${record.storeCredit?.account?.lastName} ${record.storeCredit?.account?.firstName}`;
+    } else {
+      return "Khách vãng lai";
+    }
+  };
   const columns = [
     {
       title: "Mã giao dịch",
@@ -47,13 +57,7 @@ const TransactionTable = ({ data, loading }) => {
       key: "customerName",
       align: "center",
 
-      render: (_, record) => (
-        <span>
-          {record.order
-            ? `${record.order?.account?.lastName} ${record.order?.account?.firstName}`
-            : `${record.storeCredit?.account?.lastName} ${record.storeCredit?.account?.firstName}`}
-        </span>
-      ),
+      render: (_, record) => <span>{renderName(record)}</span>,
     },
     {
       title: "Ngày",

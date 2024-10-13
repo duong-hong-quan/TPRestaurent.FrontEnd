@@ -16,7 +16,7 @@ import NavigateCreateMenu from "../../pages/admin/menu/NavigateCreateMenu";
 import AdminDishPage from "../../pages/admin/AdminDishPage";
 import { useNavigate } from "react-router-dom";
 
-const DishTable = ({ dishes, loading }) => {
+const DishTable = ({ dishes, loading, isAction = false, handleSelectRow }) => {
   const navigate = useNavigate();
   const renderTag = (dishSizeDetails, dish) => {
     return dishSizeDetails.map((dishSizeDetail, index) => {
@@ -24,6 +24,7 @@ const DishTable = ({ dishes, loading }) => {
         color: "",
         text: "",
         icon: null,
+        quantityLeft: dishSizeDetail.quantityLeft,
       };
 
       if (
@@ -35,18 +36,21 @@ const DishTable = ({ dishes, loading }) => {
           color: "success",
           text: "Còn món",
           icon: <CheckCircleOutlined />,
+          quantityLeft: dishSizeDetail.quantityLeft,
         };
       } else if (dish.isAvailable && dishSizeDetail.quantityLeft === 0) {
         statusConfig = {
           color: "error",
           text: "Hết món",
           icon: <CloseCircleOutlined />,
+          quantityLeft: dishSizeDetail.quantityLeft,
         };
       } else {
         statusConfig = {
           color: "warning",
           text: "Ngưng bán",
           icon: <ExclamationCircleOutlined />,
+          quantityLeft: dishSizeDetail.quantityLeft,
         };
       }
 
@@ -58,10 +62,10 @@ const DishTable = ({ dishes, loading }) => {
           <Tooltip title={`Trạng thái: ${statusConfig.text}`}>
             <Tag
               color={statusConfig.color}
-              icon={statusConfig.icon}
+              // icon={statusConfig.icon}
               className="px-2 py-1 rounded-full text-sm font-semibold"
             >
-              {statusConfig.text}
+              {statusConfig.text} ({statusConfig.quantityLeft})
             </Tag>
           </Tooltip>
         </div>
@@ -144,27 +148,31 @@ const DishTable = ({ dishes, loading }) => {
       key: "status",
       render: (_, record) => renderTag(record.dishSizeDetails, record.dish),
     },
-    {
-      title: "Hành động",
-      dataIndex: "",
-      key: "action",
-      render: (_, record) => (
-        <div className="flex gap-4">
-          <Button
-            size="sm"
-            className="bg-white text-blue-800"
-            onClick={() => {
-              navigate(`/admin/create-menu/${record.dish.dishId}`);
-            }}
-          >
-            <FaEdit />
-          </Button>
-          <Button size="sm" className="bg-white text-red-800">
-            <FaTrash />
-          </Button>
-        </div>
-      ),
-    },
+    ...(isAction
+      ? [
+          {
+            title: "Hành động",
+            dataIndex: "",
+            key: "action",
+            render: (_, record) => (
+              <div className="flex gap-4">
+                <Button
+                  size="sm"
+                  className="bg-white text-blue-800"
+                  onClick={() => {
+                    navigate(`/admin/create-menu/${record.dish.dishId}`);
+                  }}
+                >
+                  <FaEdit />
+                </Button>
+                <Button size="sm" className="bg-white text-red-800">
+                  <FaTrash />
+                </Button>
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -174,6 +182,14 @@ const DishTable = ({ dishes, loading }) => {
       pagination={false}
       loading={loading}
       key={uniqueId()}
+      onRow={(record) => {
+        return {
+          onClick: () => {
+            handleSelectRow(record);
+          },
+        };
+      }}
+      scroll={{ x: 768 }}
     />
   );
 };
