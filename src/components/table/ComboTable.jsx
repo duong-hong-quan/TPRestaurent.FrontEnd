@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Table, Tag, Tooltip } from "antd";
+import { Button, Modal, Table, Tag, Tooltip } from "antd";
 import { formatDateTime } from "../../util/Utility";
 import {
   CheckCircleOutlined,
@@ -9,7 +9,7 @@ import {
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const ComboTable = ({ data, loading, isAction }) => {
+const ComboTable = ({ data, loading, isAction, deleteCombo }) => {
   const navigate = useNavigate();
   const renderTag = (combo) => {
     let statusConfig = {};
@@ -112,7 +112,19 @@ const ComboTable = ({ data, loading, isAction }) => {
           >
             <FaEdit />
           </Button>
-          <Button size="sm" className="bg-white text-red-800">
+          <Button
+            size="sm"
+            className="bg-white text-red-800"
+            onClick={() => {
+              Modal.confirm({
+                title: "Xác nhận xóa",
+                content: "Bạn có chắc chắn muốn xóa combo này?",
+                onOk: () => {
+                  deleteCombo(record.comboId);
+                },
+              });
+            }}
+          >
             <FaTrash />
           </Button>
         </div>

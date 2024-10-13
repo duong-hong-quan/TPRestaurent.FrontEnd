@@ -18,6 +18,7 @@ export const ComboApi = {
   CREATE_COMBO: "/combo/create-combo",
   UPDATE_COMBO: "/combo/update-combo",
   UPLOAD_COMBO_IMAGE: "/combo/upload-combo-image",
+  DELETE_COMBO_BY_ID: "/combo/delete-combo-by-id",
 };
 
 export const ConfigurationApi = {
@@ -87,6 +88,7 @@ export const DishApi = {
   CREATE_DISH: "/dish/create-dish",
   UPDATE_DISH: "/dish/update-dish",
   UPDATE_DISH_IMAGE: "/dish/update-dish-image",
+  DELETE_DISH: "/dish/delete-dish",
 };
 export const MapApi = {
   AUTO_COMPLETE: "/map/auto-complete",
