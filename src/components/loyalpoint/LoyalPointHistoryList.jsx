@@ -57,7 +57,7 @@ const LoyalPointHistoryItem = ({ transaction }) => {
 
 const LoyalPointHistoryList = ({ transactions }) => {
   return (
-    <div className=" p-6 bg-gray-50 border border-gray-100 rounded-md h-[650px] overflow-y-scroll">
+    <div className=" p-6 bg-gray-50 border border-gray-100 rounded-md max-h-[650px] overflow-y-scroll">
       {transactions.map((transaction, index) => (
         <LoyalPointHistoryItem key={index} transaction={transaction} />
       ))}
