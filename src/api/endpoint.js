@@ -96,3 +96,7 @@ export const OrderSessionApi = {
   GET_ALL_ORDER_SESSION: "/order-session/get-all-order-session",
   GET_ORDER_SESSION_BY_ID: "/order-session/get-order-session-by-id",
 };
+
+export const DishManagementApi = {
+  UPDATE_DISH_QUANTITY: "/dish-management/update-dish-quantity",
+};
