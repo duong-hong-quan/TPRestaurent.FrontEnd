@@ -9,7 +9,13 @@ import {
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const ComboTable = ({ data, loading, isAction, deleteCombo }) => {
+const ComboTable = ({
+  data,
+  loading,
+  isAction,
+  deleteCombo,
+  handleSelectRow,
+}) => {
   const navigate = useNavigate();
   const renderTag = (combo) => {
     let statusConfig = {};
@@ -18,21 +24,21 @@ const ComboTable = ({ data, loading, isAction, deleteCombo }) => {
         color: "success",
         text: "Còn món",
         icon: <CheckCircleOutlined />,
-        quantityLeft: combo.quantityLeft,
+        quantityLeft: combo.quantityLeft || 0,
       };
     } else if (combo.quantityLeft === 0) {
       statusConfig = {
         color: "error",
         text: "Hết món",
         icon: <CloseCircleOutlined />,
-        quantityLeft: combo.quantityLeft,
+        quantityLeft: combo.quantityLeft || 0,
       };
     } else {
       statusConfig = {
         color: "warning",
         text: "Ngưng bán",
         icon: <ExclamationCircleOutlined />,
-        quantityLeft: combo.quantityLeft,
+        quantityLeft: combo.quantityLeft || 0,
       };
     }
 
@@ -42,7 +48,7 @@ const ComboTable = ({ data, loading, isAction, deleteCombo }) => {
           <Tag
             color={statusConfig.color}
             icon={statusConfig.icon}
-            className="px-2 py-1 rounded-full text-sm font-semibold"
+            className="px-2 py-1 rounded-full text-sm font-semibold text-wrap"
           >
             {statusConfig.text} ({statusConfig.quantityLeft})
           </Tag>
@@ -97,39 +103,43 @@ const ComboTable = ({ data, loading, isAction, deleteCombo }) => {
       key: "rating",
       render: (_, record) => <span>{renderTag(record)}</span>,
     },
-    {
-      title: "Hành động",
-      dataIndex: "",
-      key: "action",
-      render: (_, record) => (
-        <div className="flex gap-4">
-          <Button
-            size="sm"
-            className="bg-white text-blue-800"
-            onClick={() => {
-              navigate(`/admin/create-combo/${record.comboId}`);
-            }}
-          >
-            <FaEdit />
-          </Button>
-          <Button
-            size="sm"
-            className="bg-white text-red-800"
-            onClick={() => {
-              Modal.confirm({
-                title: "Xác nhận xóa",
-                content: "Bạn có chắc chắn muốn xóa combo này?",
-                onOk: () => {
-                  deleteCombo(record.comboId);
-                },
-              });
-            }}
-          >
-            <FaTrash />
-          </Button>
-        </div>
-      ),
-    },
+    ...(isAction
+      ? [
+          {
+            title: "Hành động",
+            dataIndex: "",
+            key: "action",
+            render: (_, record) => (
+              <div className="flex gap-4">
+                <Button
+                  size="sm"
+                  className="bg-white text-blue-800"
+                  onClick={() => {
+                    navigate(`/admin/create-combo/${record.comboId}`);
+                  }}
+                >
+                  <FaEdit />
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-white text-red-800"
+                  onClick={() => {
+                    Modal.confirm({
+                      title: "Xác nhận xóa",
+                      content: "Bạn có chắc chắn muốn xóa combo này?",
+                      onOk: () => {
+                        deleteCombo(record.comboId);
+                      },
+                    });
+                  }}
+                >
+                  <FaTrash />
+                </Button>
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
   return (
     <Table
@@ -138,6 +148,14 @@ const ComboTable = ({ data, loading, isAction, deleteCombo }) => {
       rowKey="comboId"
       pagination={false}
       loading={loading}
+      size="small"
+      onRow={(record) => {
+        return {
+          onClick: () => {
+            handleSelectRow(record);
+          },
+        };
+      }}
     />
   );
 };
