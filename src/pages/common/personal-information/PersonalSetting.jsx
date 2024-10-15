@@ -42,9 +42,11 @@ const PersonalSetting = () => {
       ];
       setDevices(mockDevices);
     };
-
+    if (localStorage.getItem("device_token") !== null) {
+      setNotificationsEnabled(true);
+    }
     fetchDevices();
-  }, []);
+  }, [localStorage.getItem("device_token")]);
 
   const handleNotificationChange = async (checked) => {
     if (checked) {
