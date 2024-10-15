@@ -284,7 +284,7 @@ const OrderDetailModal = ({
             children: (
               <div>
                 <Table
-                  dataSource={filterMutualOrderDishes}
+                  dataSource={selectedDish?.uncheckedDishFromTableOrders}
                   columns={orderColumns}
                   rowKey={uniqueId()}
                   scroll={{ x: 800, y: 600 }}
