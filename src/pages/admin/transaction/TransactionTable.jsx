@@ -3,7 +3,7 @@ import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import { CreditCard, DollarSign, ShoppingCart } from "lucide-react";
-import { formatDate, formatDateTime, formatPrice } from "../../../util/Utility";
+import { formatDateTime, formatPrice } from "../../../util/Utility";
 const { RangePicker } = DatePicker;
 
 const statusMap = {
@@ -34,7 +34,7 @@ const getMethodIcon = (method) => {
 };
 const TransactionTable = ({ data, loading }) => {
   const renderName = (record) => {
-    if (record.order.account) {
+    if (record.order?.account) {
       return `${record.order?.account?.lastName} ${record.order?.account?.firstName}`;
     }
     if (record.storeCredit) {

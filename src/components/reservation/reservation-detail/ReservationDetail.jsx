@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
@@ -164,20 +164,36 @@ const ReservationDetail = ({ reservationData }) => {
               value={order?.orderId.substring(0, 8)}
             />
             <InfoItem label="Thời gian tạo" value={renderOrderTime()} />
-            <InfoItem
-              label="Họ và tên"
-              value={`${order?.account?.lastName} ${order?.account?.firstName}`}
-            />
-            <InfoItem
-              label="Điện thoại"
-              value={`0${order?.account?.phoneNumber}`}
-            />
-            {order?.orderTypeId != 2 && (
-              <InfoItem
-                label="Số lượng khách"
-                value={`${order?.numOfPeople} người`}
-              />
+            {order?.account && (
+              <>
+                <InfoItem
+                  label="Họ và tên"
+                  value={`${order?.account?.lastName} ${order?.account?.firstName}`}
+                />
+                <InfoItem
+                  label="Điện thoại"
+                  value={`0${order?.account?.phoneNumber}`}
+                />
+                {order?.orderTypeId != 2 && (
+                  <InfoItem
+                    label="Số lượng khách"
+                    value={
+                      orderTables && orderTables.length > 0
+                        ? orderTables
+                            .map(
+                              (item, index) => `Bàn ${item.table?.tableName}`
+                            )
+                            .join(", ")
+                        : "Chưa có thông tin"
+                    }
+                  />
+                )}
+              </>
             )}
+            <InfoItem
+              label="Ghi chú"
+              value={order?.note || "Không có ghi chú"}
+            />
             {order?.orderTypeId != 2 && (
               <InfoItem
                 label="Loại bàn"
@@ -213,25 +229,37 @@ const ReservationDetail = ({ reservationData }) => {
             </Typography>
             <InfoItem
               label={
-                order?.orderTypeId != 2 ? "Số tiền cọc" : "Tổng tiền thanh toán"
+                order?.orderTypeId === 1
+                  ? "Số tiền cọc"
+                  : "Tổng tiền thanh toán"
               }
               value={
-                order?.orderTypeId != 2
-                  ? `${order?.deposit?.toLocaleString()} VND`
-                  : `${calculateTotalOrder().toLocaleString()} VND`
+                order?.orderTypeId === 1
+                  ? `${formatPrice(order?.deposit?.toLocaleString())} `
+                  : `${formatPrice(order.totalAmount)}`
               }
             />
-            <InfoItem
-              label="Phương thức thanh toán"
-              value={renderPaymentMethod()}
-              isComponent
-            />
-            <InfoItem
-              label={
-                order?.orderTypeId != 2 ? "Đã đặt cọc lúc" : "Đã thanh toán lúc"
-              }
-              value={moment(order?.depositDate).format("DD/MM/YYYY HH:mm")}
-            />
+            {order.orderTypeId === 1 && (
+              <>
+                <InfoItem
+                  label="Phương thức thanh toán"
+                  value={renderPaymentMethod()}
+                  isComponent
+                />
+
+                <InfoItem
+                  label={
+                    order?.orderTypeId === 1
+                      ? "Đã đặt cọc lúc"
+                      : "Đã thanh toán lúc"
+                  }
+                  value={
+                    order.orderTypeId === 1 &&
+                    moment(order?.depositDate).format("DD/MM/YYYY HH:mm")
+                  }
+                />
+              </>
+            )}
           </div>
         </div>
         <Typography
@@ -247,6 +275,12 @@ const ReservationDetail = ({ reservationData }) => {
           pagination={false}
           className="border border-gray-200 rounded-lg overflow-hidden"
         />
+
+        <div className="flex justify-center my-4">
+          <Button className="bg-red-900 text-white mx-auto">
+            Thanh toán ngay
+          </Button>
+        </div>
       </CardBody>
     </Card>
   );

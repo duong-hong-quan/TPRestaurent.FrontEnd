@@ -28,7 +28,6 @@ const DailySellManagement = () => {
   const [dishSizeDetails, setDishSizeDetails] = useState([]);
   const [selectedComboId, setSelectedComboId] = useState(null);
   const [isAutoUpdate, setIsAutoUpdate] = useState(false);
-
   const fetchDishes = async () => {
     if (Number(selectedMenuTab) === 1) {
       const response = await callApi(
@@ -58,6 +57,9 @@ const DailySellManagement = () => {
   const handleSelectRow = (record) => {
     setDishSizeDetails(record.dishSizeDetails);
     setSelectedComboId(record.id);
+  };
+  const handleSelectRowCombo = (record) => {
+    console.log(record);
   };
 
   const handleInputChange = (id, field, value) => {
@@ -181,7 +183,12 @@ const DailySellManagement = () => {
             />
           ) : (
             Number(selectedMenuTab) === 2 && (
-              <ComboTable key={uniqueId()} data={combos} loading={loading} />
+              <ComboTable
+                key={uniqueId()}
+                data={combos}
+                loading={loading}
+                handleSelectRow={handleSelectRowCombo}
+              />
             )
           )}
         </div>
