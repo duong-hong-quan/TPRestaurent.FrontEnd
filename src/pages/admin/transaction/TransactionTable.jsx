@@ -34,7 +34,7 @@ const getMethodIcon = (method) => {
 };
 const TransactionTable = ({ data, loading }) => {
   const renderName = (record) => {
-    if (record.order.account) {
+    if (record.order?.account) {
       return `${record.order?.account?.lastName} ${record.order?.account?.firstName}`;
     }
     if (record.storeCredit) {
