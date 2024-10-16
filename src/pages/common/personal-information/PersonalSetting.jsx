@@ -9,51 +9,53 @@ import {
   LogOut,
   AlertTriangle,
 } from "lucide-react";
+import useCallApi from "../../../api/useCallApi";
+import { TokenApi } from "../../../api/endpoint";
+import { formatDateTime, showError } from "../../../util/Utility";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../../redux/features/authSlice";
 
 const { Title, Text } = Typography;
 
 const PersonalSetting = () => {
   const [devices, setDevices] = useState([]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const { callApi, error, loading } = useCallApi();
+  const user = useSelector((state) => state.user.user || {});
+  const dispatch = useDispatch();
+  const fetchDevices = async () => {
+    const response = await callApi(
+      `${TokenApi.GET_ALL_TOKEN_BY_USER}/${user.id}/1/100`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setDevices(response.result?.items);
+      
+    } else {
+      showError(error);
+    }
+  };
+  console.log(devices)
 
   useEffect(() => {
-    // Giả lập việc lấy danh sách thiết bị
-    const fetchDevices = async () => {
-      // Thay thế bằng cuộc gọi API thực tế
-      const mockDevices = [
-        {
-          id: 1,
-          name: "iPhone 12",
-          lastLogin: "2023-10-13 14:30",
-          type: "phone",
-        },
-        {
-          id: 2,
-          name: "MacBook Pro",
-          lastLogin: "2023-10-12 09:15",
-          type: "laptop",
-        },
-        {
-          id: 3,
-          name: "iPad Air",
-          lastLogin: "2023-10-11 18:45",
-          type: "tablet",
-        },
-      ];
-      setDevices(mockDevices);
-    };
-    if (localStorage.getItem("device_token") !== null) {
-      setNotificationsEnabled(true);
-    }
     fetchDevices();
-  }, [localStorage.getItem("device_token")]);
+  }, []);
 
   const handleNotificationChange = async (checked) => {
     if (checked) {
       const permission = await requestPermission();
       if (permission) {
-        localStorage.setItem("device_token", permission);
-        setNotificationsEnabled(true);
+        const response = await callApi(
+          `${TokenApi.ENABLE_NOTIFICATION}?deviceToken=${permission}`,
+          "POST"
+        );
+        if (response.isSuccess) {
+          localStorage.setItem("device_token", permission);
+          setNotificationsEnabled(true);
+          await fetchDevices();
+        } else {
+          showError(error);
+        }
       }
     } else {
       localStorage.removeItem("device_token");
@@ -61,27 +63,35 @@ const PersonalSetting = () => {
     }
   };
 
-  const handleLogoutDevice = (deviceId) => {
-    // Thực hiện đăng xuất thiết bị
-    setDevices(devices.filter((device) => device.id !== deviceId));
+  const handleLogoutDevice = (tokenId) => {
+    
   };
 
-  const handleLogoutAllDevices = () => {
+  const handleLogoutAllDevices = async () => {
     Modal.confirm({
       title: "Đăng xuất tất cả thiết bị",
       content: "Bạn có chắc chắn muốn đăng xuất khỏi tất cả thiết bị?",
-      onOk: () => {
-        // Thực hiện đăng xuất tất cả thiết bị
-        setDevices([]);
+      onOk: async () => {
+       const response = await callApi(`${TokenApi.LOG_OUT_ALL_DEVICE}?accountId=${user.id}`, "POST");
+        if (response.isSuccess) {
+          fetchDevices();
+          dispatch(logout());
+        } else {
+          showError(error);
+        }
       },
     });
   };
 
   const getDeviceIcon = (type) => {
     switch (type) {
-      case "phone":
+      case "iPhone":
         return <Smartphone size={20} />;
-      case "laptop":
+        case "android":
+        return <Smartphone size={20} />;
+      case "Windows PC":
+        return <Laptop size={20} />;
+        case "Mac":
         return <Laptop size={20} />;
       case "tablet":
         return <Tablet size={20} />;
@@ -113,7 +123,7 @@ const PersonalSetting = () => {
                 key="logout"
                 type="link"
                 danger
-                onClick={() => handleLogoutDevice(device.id)}
+                // onClick={() => handleLogoutDevice(device.id)}
                 icon={<LogOut size={16} />}
               >
                 Đăng xuất
@@ -121,9 +131,9 @@ const PersonalSetting = () => {
             ]}
           >
             <List.Item.Meta
-              avatar={getDeviceIcon(device.type)}
-              title={device.name}
-              description={`Đăng nhập lần cuối: ${device.lastLogin}`}
+              avatar={getDeviceIcon(device.deviceName)}
+              title={device.deviceName}
+             description={`Đăng nhập lần cuối: ${formatDateTime(device.lastLogin)}`}
             />
           </List.Item>
         )}
