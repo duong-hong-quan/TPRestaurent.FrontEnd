@@ -31,7 +31,7 @@ const AddressModal = ({
     getLocation();
     const response = await callApi(`${MapApi.AUTO_COMPLETE}`, "POST", {
       address: value,
-      destination: [location.lat, location.lng],
+      destination: [location.lat, location.lng] || [],
     });
     if (response.isSuccess) {
       setOptions(

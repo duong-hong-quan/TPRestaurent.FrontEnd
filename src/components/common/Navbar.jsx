@@ -8,6 +8,7 @@ import { isEmptyObject } from "../../util/Utility";
 import { FaUser } from "react-icons/fa";
 import NotificationDemo from "../notification/NotificationDemo";
 import { logout } from "../../redux/features/authSlice";
+import { Search } from "lucide-react";
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -132,7 +133,7 @@ export const Navbar = () => {
                 .map((item, index) => (
                   <IconButton
                     key={index}
-                    className="bg-transparent"
+                    className="bg-transparent rounded-full shadow-none mx-0 px-0"
                     onClick={toggleNotification}
                   >
                     <i
@@ -173,20 +174,7 @@ export const Navbar = () => {
               className="rounded-full text-white hover:bg-white/20 transition-all"
               onClick={() => setIsOpen(!isOpen)}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-              </svg>
+             <Search />
             </IconButton>
             {isEmptyObject(user) ? (
               <NavLink
