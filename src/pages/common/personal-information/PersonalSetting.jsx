@@ -63,8 +63,15 @@ const PersonalSetting = () => {
     }
   };
 
-  const handleLogoutDevice = (tokenId) => {
-    
+  const handleLogoutDevice =  async(tokenId) => {
+    const response= await callApi(`${TokenApi.DELETE_TOKEN}?tokenId=${tokenId}`, "DELETE");
+    if (response.isSuccess) {
+     const data= devices.filter((device) => device.accessToken === device.some((device) => device.accessToken));
+     console.log(data)
+      // fetchDevices();
+    } else {
+      showError(error);
+    }
   };
 
   const handleLogoutAllDevices = async () => {
@@ -123,18 +130,23 @@ const PersonalSetting = () => {
                 key="logout"
                 type="link"
                 danger
-                // onClick={() => handleLogoutDevice(device.id)}
+              onClick={() => handleLogoutDevice(device.tokenId)}
                 icon={<LogOut size={16} />}
               >
                 Đăng xuất
               </Button>,
             ]}
           >
+            
             <List.Item.Meta
               avatar={getDeviceIcon(device.deviceName)}
               title={device.deviceName}
              description={`Đăng nhập lần cuối: ${formatDateTime(device.lastLogin)}`}
             />
+               <List.Item.Meta
+             description={` Địa chỉ IP: ${device.deviceIP}`}
+            />
+
           </List.Item>
         )}
       />

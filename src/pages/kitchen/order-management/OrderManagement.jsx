@@ -98,12 +98,14 @@ const OrderTag = ({ status, index }) => {
 };
 
 const OrderCard = ({
+  id,
   orderNumber,
   date,
   items,
   tableNumber,
   status,
   fetchOrderDetail,
+  updateStatus,
 }) => {
   const [textColor, setTextColor] = useState("");
 
@@ -151,8 +153,89 @@ const OrderCard = ({
         return "";
     }
   };
+  console.log("items", items);
+  const renderAction = () => {
+    switch (status) {
+      case 0:
+        return (
+          <div className="flex justify-between p-2 ">
+            <Button
+              className="bg-pink-50  border-none"
+              onClick={fetchOrderDetail}
+            >
+              <Eye size={24} className="h-6 w-6 text-red-800" />
+            </Button>
+            <div className="flex gap-1">
+              <Button
+                className="bg-[yellow] text-white px-2 py-4"
+                onClick={() => updateStatus(id, 1)}
+              >
+                <Check size={24} />
+              </Button>
+              <Button
+                className="bg-[#7F7F7F] text-white  px-2 py-4"
+                onClick={() => updateStatus(id, 5)}
+              >
+                <X size={24} />
+              </Button>
+            </div>
+          </div>
+        );
+      case 1:
+        return (
+          <div className="flex justify-between p-2 ">
+            <Button
+              className="bg-pink-50  border-none"
+              onClick={fetchOrderDetail}
+            >
+              <Eye size={24} className="h-6 w-6 text-red-800" />
+            </Button>
+            <div className="flex gap-1">
+              <Button
+                className="bg-[orange] text-white px-2 py-4"
+                onClick={() => updateStatus(id, 1)}
+              >
+                <CookingPot size={24} />
+              </Button>
+              <Button
+                className="bg-[#7F7F7F] text-white  px-2 py-4"
+                onClick={() => updateStatus(id, 5)}
+              >
+                <X size={24} />
+              </Button>
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="flex justify-between p-2 ">
+            <Button
+              className="bg-pink-50  border-none"
+              onClick={fetchOrderDetail}
+            >
+              <Eye size={24} className="h-6 w-6 text-red-800" />
+            </Button>
+            <div className="flex gap-1">
+              <Button
+                className="bg-[#2ecc71] text-white px-2 py-4"
+                onClick={() => updateStatus(id, 4)}
+              >
+                <CheckCircle size={24} />
+              </Button>
+              <Button
+                className="bg-[#7F7F7F] text-white  px-2 py-4"
+                onClick={() => updateStatus(id, 5)}
+              >
+                <X size={24} />
+              </Button>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
-    <Card className="w-80 bg-white border-2 border-[#C01D2E] mx-2 my-2 rounded-xl overflow-hidden shadow-md">
+    <Card className=" bg-white border-2 border-[#C01D2E] mx-2 my-2 rounded-xl shadow-md">
       <div className="w-full">
         <div className="flex justify-between items-center">
           <div>
@@ -164,9 +247,16 @@ const OrderCard = ({
               <span className="text-sm font-semibold">{renderStatus()}</span>
             </div>
           </div>
-          <div className="bg-[#C01D2E] text-white px-3 py-1 rounded-full text-sm font-semibold">
-            Bàn {tableNumber}
-          </div>
+          {tableNumber && (
+            <div className="bg-[#C01D2E] text-white px-3 py-1 text-wrap rounded-full text-sm font-semibold">
+              Bàn {tableNumber}
+            </div>
+          )}
+          {!tableNumber && (
+            <div className="bg-[#C01D2E] text-white px-3 py-1 text-wrap rounded-full text-sm font-semibold">
+              Giao hàng
+            </div>
+          )}
         </div>
       </div>
       <div className="pt-4">
@@ -198,22 +288,7 @@ const OrderCard = ({
         )}
       </div>
 
-      <div className="flex justify-between p-2 ">
-        <Button className="bg-pink-50  border-none" onClick={fetchOrderDetail}>
-          <Eye size={24} className="h-6 w-6 text-red-800" />
-        </Button>
-        <div className="flex gap-1">
-          <Button className="bg-[#3a3936] text-white  px-2 py-4">
-            <CookingPot size={24} />
-          </Button>
-          <Button className="bg-[#468764] text-white px-2 py-4">
-            <Check size={24} />
-          </Button>
-          <Button className="bg-[#7F7F7F] text-white  px-2 py-4">
-            <X size={24} />
-          </Button>
-        </div>
-      </div>
+      {renderAction()}
     </Card>
   );
 };
@@ -252,6 +327,17 @@ const OrderManagement = () => {
   if (loading) {
     return <LoadingOverlay isLoading={loading} />;
   }
+
+  const updateOrderSessionStatus = async (orderSessionId, status) => {
+    const response = await callApi(
+      `${OrderSessionApi.UPDATE_ORDER_SESSION_STATUS}?id=${orderSessionId}&status=${status}`,
+      "PUT"
+    );
+    if (response.isSuccess) {
+      fetchData();
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
@@ -278,7 +364,7 @@ const OrderManagement = () => {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1 overflow-y-auto max-h-[calc(100vh-300px)]">
+        <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 gap-1 overflow-y-scroll max-h-[600px]">
           {orderSession.map((order) => (
             <OrderCard
               orderNumber={order.orderSession?.orderSessionNumber}
@@ -293,6 +379,8 @@ const OrderManagement = () => {
               fetchOrderDetail={() =>
                 fetchOrderDetail(order?.orderSession?.orderSessionId)
               }
+              updateStatus={updateOrderSessionStatus}
+              id={order.orderSession?.orderSessionId}
             />
           ))}
         </div>
