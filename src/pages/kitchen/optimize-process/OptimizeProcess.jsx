@@ -9,12 +9,11 @@ import { showError } from "../../../util/Utility";
 import OrderDetailModal from "./OrderDetailModal";
 import * as signalR from "@microsoft/signalr";
 import { baseUrl } from "../../../api/config/axios";
-import notification_sound from "../../../assets/sound/iphone.mp3";
+import notification_sound from "../../../assets/sound/kitchen.mp3";
 const { Title, Text } = Typography;
 
 const OptimizeProcess = () => {
   const [mutualOrderDishes, setMutualOrderDishes] = useState([]);
-  const [filterMutualOrderDishes, setFilterMutualOrderDishes] = useState([]);
   const [singleOrderDishes, setSingleOrderDishes] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedDish, setSelectedDish] = useState(null);
@@ -29,11 +28,6 @@ const OptimizeProcess = () => {
     if (result.isSuccess) {
       setMutualOrderDishes(result.result?.mutualOrderDishes);
       setSingleOrderDishes(result.result?.singleOrderDishes);
-      setFilterMutualOrderDishes(
-        selectedDish.dishFromTableOrders.filter(
-          (item) => item.orderDetail.orderDetailStatusId === 1
-        )
-      );
     }
   };
 
@@ -135,7 +129,6 @@ const OptimizeProcess = () => {
     setConnection(newConnection);
   }, []);
   useEffect(() => {
-    handleUserInteraction();
     if (connection) {
       // Start the connection
       connection
@@ -146,7 +139,7 @@ const OptimizeProcess = () => {
           // Subscribe to SignalR events
           connection.on("LOAD_ORDER_SESIONS", (data) => {
             fetchData();
-            if (isUserInteracted && audioRef.current) {
+            if (audioRef.current) {
               audioRef.current.play().catch((error) => {
                 console.error("Error playing audio:", error);
               });
@@ -163,28 +156,13 @@ const OptimizeProcess = () => {
       }
     };
   }, [connection]);
-  const handleUserInteraction = () => {
-    setIsUserInteracted(true);
-  };
-  useEffect(() => {
-    const unmuteAudio = () => {
-      if (audioRef.current) {
-        audioRef.current.muted = false;
-      }
-    };
-
-    // Unmute the audio after a short delay
-    const timer = setTimeout(unmuteAudio, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <div className="px-10 bg-white rounded-lg py-4 shadow-lg">
       <h5 className="text-center text-red-800 font-bold text-2xl">
         TỐI ƯU HOÁ CHẾ BIẾN MÓN
       </h5>
-      <audio ref={audioRef} autoPlay muted>
+      <audio ref={audioRef}>
         <source src={notification_sound} type="audio/mpeg" />
       </audio>
 
@@ -236,7 +214,7 @@ const OptimizeProcess = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-3 w-full  border-l-2 border-gray-300">
+          {/* <div className="col-span-3 w-full  border-l-2 border-gray-300">
             <div className="xl:bg-white rounded-lg p-6 h-full flex flex-col justify-between">
               <div className="flex justify-center mb-4">
                 <h3 className="text-red-800 uppercase text-2xl font-bold text-center">
@@ -323,7 +301,7 @@ const OptimizeProcess = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       {selectedDish && (
