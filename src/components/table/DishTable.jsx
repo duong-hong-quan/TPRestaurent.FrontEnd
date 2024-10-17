@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { uniqueId } from "lodash";
 import { useNavigate } from "react-router-dom";
+import { formatPrice } from "../../util/Utility";
 
 const DishTable = ({
   dishes,
@@ -119,27 +120,27 @@ const DishTable = ({
       dataIndex: "dishSizeDetails",
       key: "small",
       render: (sizes) =>
-        `${sizes
-          .find((s) => s.dishSize?.name === "SMALL")
-          ?.price?.toLocaleString()} VND`,
+        `${formatPrice(
+          sizes.find((s) => s.dishSize?.name === "SMALL")?.price
+        )}`,
     },
     {
       title: "Size vừa",
       dataIndex: "dishSizeDetails",
       key: "medium",
       render: (sizes) =>
-        `${sizes
-          .find((s) => s.dishSize?.name === "MEDIUM")
-          ?.price?.toLocaleString()} VND`,
+        `${formatPrice(
+          sizes.find((s) => s.dishSize?.name === "MEDIUM")?.price
+        )} `,
     },
     {
       title: "Size lớn",
       dataIndex: "dishSizeDetails",
       key: "large",
       render: (sizes) =>
-        `${sizes
-          .find((s) => s.dishSize?.name === "LARGE")
-          ?.price?.toLocaleString()} VND`,
+        `${formatPrice(
+          sizes.find((s) => s.dishSize?.name === "LARGE")?.price
+        )} `,
     },
     {
       title: "Trạng thái",

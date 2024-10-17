@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Modal, Table, Tag, Tooltip } from "antd";
-import { formatDateTime } from "../../util/Utility";
+import { formatDateTime, formatPrice } from "../../util/Utility";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -78,7 +78,7 @@ const ComboTable = ({
       title: "Giá",
       dataIndex: "price",
       key: "price",
-      render: (price) => `${price.toLocaleString()} VND`,
+      render: (price) => `${formatPrice(price)} `,
     },
     {
       title: "Hạn bán",
@@ -149,6 +149,7 @@ const ComboTable = ({
       pagination={false}
       loading={loading}
       size="small"
+      scroll={{ x: 600 }}
       onRow={(record) => {
         return {
           onClick: () => {
