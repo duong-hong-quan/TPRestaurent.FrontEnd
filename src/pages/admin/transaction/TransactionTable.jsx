@@ -14,9 +14,10 @@ const statusMap = {
 };
 
 const transactionTypeMap = {
-  0: { text: "Đặt cọc", color: "yellow", icon: <DollarSign /> },
-  1: { text: "Đặt hàng", color: "red", icon: <ShoppingCart /> },
-  2: { text: "Nạp số dư", color: "green", icon: <CreditCard /> },
+  1: { text: "Đặt cọc", color: "yellow", icon: <DollarSign /> },
+  2: { text: "Đặt hàng", color: "red", icon: <ShoppingCart /> },
+  3: { text: "Nạp số dư", color: "green", icon: <CreditCard /> },
+  4: { text: "Hoàn tiền", color: "blue", icon: <DollarSign /> },
 };
 
 const getMethodIcon = (method) => {
