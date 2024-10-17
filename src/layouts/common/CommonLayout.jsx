@@ -7,7 +7,7 @@ import ChatButton from "../../components/chat/ChatButton";
 const CommonLayout = () => {
   return (
     <>
-      <ChatButton />
+      {/* <ChatButton /> */}
 
       <Navbar />
 
