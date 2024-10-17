@@ -193,7 +193,7 @@ const OrderCard = ({
             <div className="flex gap-1">
               <Button
                 className="bg-[orange] text-white px-2 py-4"
-                onClick={() => updateStatus(id, 1)}
+                onClick={() => updateStatus(id, 2)}
               >
                 <CookingPot size={24} />
               </Button>
