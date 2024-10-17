@@ -15,20 +15,24 @@ import {
   XCircle,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { formatDateTime, formatPrice } from "../../../util/Utility";
+import { formatDateTime, formatPrice, showError } from "../../../util/Utility";
 import useCallApi from "../../../api/useCallApi";
 import { OrderSessionApi } from "../../../api/endpoint";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import OrderSessionModal from "./OrderSessionModal";
+import Pagination from "../../../components/pagination/Pagination";
+import { set } from "lodash";
 const menuItems = [
-  { key: "all", label: "Tất cả" },
-  { key: "waiting", label: "Đang chờ" },
-  { key: "preparing", label: "Đang chuẩn bị" },
-  { key: "done", label: "Đã xong" },
-  { key: "cancelled", label: "Đã huỷ" },
+  { key: "", label: "Tất cả" },
+  { key: "0", label: "Đặt trước" },
+  { key: "1", label: "Đã tiếp nhận" },
+  { key: "2", label: "Đang nấu" },
+  { key: "3", label: "Cảnh báo nấu trễ" },
+  { key: "4", label: "Hoàn thành" },
+  { key: "5", label: "Đã huỷ" },
 ];
 
-const TabStatusKitchen = ({ selected }) => {
+const TabStatusKitchen = ({ selected, onchange }) => {
   return (
     <div className="flex flex-wrap justify-start mb-4">
       {menuItems.map((item) => (
@@ -37,6 +41,7 @@ const TabStatusKitchen = ({ selected }) => {
           className={`bg-white text-gray-800 px-4 py-2 rounded-tl-md rounded-tr-md  font-semibold text-base rounded-bl-none rounded-br-none mr-1 min-h-10 min-w-fit shadow-md ${
             selected === item.key ? "text-red-900" : ""
           }`}
+          onClick={() => onchange(item.key)}
         >
           {item.label}
         </Button>
@@ -295,24 +300,37 @@ const OrderCard = ({
 
 const OrderManagement = () => {
   const [orderSession, setOrderSession] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("1");
   const { callApi, error, loading } = useCallApi();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderSessionData, setOrderSessionData] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 15;
+  const [totalPages, setTotalPages] = useState(1);
+  const onchangeStatus = (status) => {
+    setSelectedStatus(status);
+  };
+  const onPageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const fetchData = async () => {
     const response = await callApi(
-      `${OrderSessionApi.GET_ALL_ORDER_SESSION}`,
+      `${OrderSessionApi.GET_ALL_ORDER_SESSION}?status=${selectedStatus}&pageNumber=${currentPage}&pageSize=${pageSize}`,
       "GET"
     );
     if (response.isSuccess) {
       setOrderSession(response.result);
+      setTotalPages(response.result?.totalPages);
     } else {
-      console.log("error", error);
+      showError(error);
+      setOrderSession([]);
+      setTotalPages(o);
     }
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage, selectedStatus]);
   const fetchOrderDetail = async (orderSessionId) => {
     const response = await callApi(
       `${OrderSessionApi.GET_ORDER_SESSION_BY_ID}?id=${orderSessionId}`,
@@ -350,7 +368,7 @@ const OrderManagement = () => {
         <Input className="p-2 w-full sm:w-56" placeholder="Tìm đơn đặt món" />
       </div>
       <div className="mt-5 w-full">
-        <TabStatusKitchen selected="all" />
+        <TabStatusKitchen selected={selectedStatus} onchange={onchangeStatus} />
         <div className="mb-6">
           <div className=" flex flex-wrap  w-full pb-2">
             {orderSession.map((order, idx) => (
@@ -384,6 +402,12 @@ const OrderManagement = () => {
             />
           ))}
         </div>
+        <Pagination
+          currentPage={1}
+          onPageChange={onPageChange}
+          totalPages={totalPages}
+          key={`pagin`}
+        />
       </div>
       <OrderSessionModal
         orderSession={orderSessionData}
