@@ -320,7 +320,7 @@ const OrderManagement = () => {
       "GET"
     );
     if (response.isSuccess) {
-      setOrderSession(response.result);
+      setOrderSession(response.result.items);
       setTotalPages(response.result?.totalPages);
     } else {
       showError(error);
@@ -371,7 +371,7 @@ const OrderManagement = () => {
         <TabStatusKitchen selected={selectedStatus} onchange={onchangeStatus} />
         <div className="mb-6">
           <div className=" flex flex-wrap  w-full pb-2">
-            {orderSession.map((order, idx) => (
+            {orderSession?.map((order, idx) => (
               <div className="mx-1 my-1">
                 <OrderTag
                   key={idx}
