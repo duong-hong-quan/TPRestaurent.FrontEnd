@@ -196,8 +196,8 @@ const OptimizeProcess = () => {
 
         <Title level={3}>BẢNG ƯU TIÊN MÓN CẦN CHẾ BIẾN</Title>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-2">
-          <div className="  col-span-9 ">
+        <div className="grid grid-cols-1 2xl:grid-cols-12 ">
+          <div className=" col-span-12  2xl:col-span-9 ">
             <div className="grid  grid-cols-1 xl:grid-cols-2 gap-2">
               <div className="shadow-md rounded-md">
                 <div className="">
@@ -213,6 +213,7 @@ const OptimizeProcess = () => {
                         rowKey={uniqueId()}
                         size="small"
                         loading={loading}
+                        scroll={{ x: 600 }}
                       />
                     </div>
                   </div>
@@ -229,13 +230,14 @@ const OptimizeProcess = () => {
                     pagination={false}
                     rowKey="id"
                     size="small"
+                    scroll={{ x: 600 }}
                   />
                 </div>
               </div>
             </div>
           </div>
           <div className="col-span-3 w-full  border-l-2 border-gray-300">
-            <div className="bg-white rounded-lg p-6 h-full flex flex-col justify-between">
+            <div className="xl:bg-white rounded-lg p-6 h-full flex flex-col justify-between">
               <div className="flex justify-center mb-4">
                 <h3 className="text-red-800 uppercase text-2xl font-bold text-center">
                   Thông báo về đặt món
