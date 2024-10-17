@@ -139,7 +139,28 @@ const ReservationDetail = ({ reservationData }) => {
       };
     }
   });
-
+  const renderIsPayment = () => {
+    switch (order?.orderTypeId) {
+      case 1:
+        if (order?.statusId == 1) {
+          return true;
+        } else {
+          return false;
+        }
+      case 2:
+        if (order?.statusId == 4) {
+          return true;
+        } else {
+          return false;
+        }
+      case 3:
+        if (order?.statusId == 3) {
+          return true;
+        } else {
+          return false;
+        }
+    }
+  };
   return (
     <Card className="w-full shadow-none border-none">
       <CardBody className="p-6">
@@ -236,10 +257,10 @@ const ReservationDetail = ({ reservationData }) => {
               value={
                 order?.orderTypeId === 1
                   ? `${formatPrice(order?.deposit?.toLocaleString())} `
-                  : `${formatPrice(order.totalAmount)}`
+                  : `${formatPrice(order?.totalAmount)}`
               }
             />
-            {order.orderTypeId === 1 && (
+            {order?.orderTypeId === 1 && (
               <>
                 <InfoItem
                   label="Phương thức thanh toán"
@@ -275,12 +296,13 @@ const ReservationDetail = ({ reservationData }) => {
           pagination={false}
           className="border border-gray-200 rounded-lg overflow-hidden"
         />
-
-        <div className="flex justify-center my-4">
-          <Button className="bg-red-900 text-white mx-auto">
-            Thanh toán ngay
-          </Button>
-        </div>
+        {renderIsPayment() && (
+          <div className="flex justify-center my-4">
+            <Button className="bg-red-900 text-white mx-auto">
+              Thanh toán ngay
+            </Button>
+          </div>
+        )}
       </CardBody>
     </Card>
   );

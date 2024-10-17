@@ -6,6 +6,7 @@ import { ComboApi, DishApi, DishManagementApi } from "../../../api/endpoint";
 import DishTable from "../../../components/table/DishTable";
 import ComboTable from "../../../components/table/ComboTable";
 import { showError } from "../../../util/Utility";
+import TabMananger from "../../../components/tab/TabManager";
 
 const DailySellManagement = () => {
   const MenuTab = [
@@ -94,10 +95,10 @@ const DailySellManagement = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card>
-          <h4 className="text-center font-bold mb-4">
+    <div className="p-4 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <Card className="col-span-1 border-none">
+          <h4 className="text-center font-bold mb-4 text-red-800">
             QUẢN LÝ BÁN HÀNG HÀNG NGÀY
           </h4>
           <Space direction="vertical" className="w-full">
@@ -147,31 +148,24 @@ const DailySellManagement = () => {
               </Card>
             ))}
             <Button
-              type="primary"
               onClick={handleUpdateQuantityAndCountdown}
-              className="mt-4"
+              className="mt-4 bg-red-800 text-white"
               loading={loading}
             >
               Cập nhật ngay
             </Button>
           </Space>
         </Card>
-        <div className="">
-          <h4 className="text-center font-bold mb-4">CHI TIẾT MÓN ĂN</h4>
+        <div className="col-span-3">
+          <h4 className="text-center font-bold mb-4 text-red-800">
+            CHI TIẾT MÓN ĂN
+          </h4>
           <Space className="mb-4">
-            {MenuTab.map((tab) => (
-              <Button
-                key={uniqueId()}
-                type={
-                  Number(selectedMenuTab) === Number(tab.value)
-                    ? "primary"
-                    : "default"
-                }
-                onClick={() => setSelectedMenuTab(tab.value)}
-              >
-                {tab.label}
-              </Button>
-            ))}
+            <TabMananger
+              activeTab={selectedMenuTab}
+              items={MenuTab}
+              setActiveTab={setSelectedMenuTab}
+            />
           </Space>
 
           {Number(selectedMenuTab) === 1 ? (

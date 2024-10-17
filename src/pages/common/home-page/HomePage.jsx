@@ -65,7 +65,7 @@ export const HomePage = () => {
   ];
 
   return (
-    <div className="">
+    <>
       <LoadingOverlay isLoading={loading} />
 
       {!loading && (
@@ -92,6 +92,6 @@ export const HomePage = () => {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 };
