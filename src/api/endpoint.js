@@ -98,8 +98,16 @@ export const OrderSessionApi = {
   GET_GROUPED_DISH: "/order-session/get-grouped-dish",
   GET_ALL_ORDER_SESSION: "/order-session/get-all-order-session",
   GET_ORDER_SESSION_BY_ID: "/order-session/get-order-session-by-id",
+  UPDATE_ORDER_SESSION_STATUS: "/order-session/update-order-session-status",
 };
 
 export const DishManagementApi = {
   UPDATE_DISH_QUANTITY: "/dish-management/update-dish-quantity",
+};
+
+export const TokenApi = {
+  ENABLE_NOTIFICATION: "/token/enable-notification",
+  GET_ALL_TOKEN_BY_USER: "/token/get-all-token-by-user",
+  LOG_OUT_ALL_DEVICE: "/token/log-out-all-device",
+  DELETE_TOKEN: "/token/delete-token",
 };
