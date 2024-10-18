@@ -11,6 +11,7 @@ import { DishApi } from "../../../api/endpoint";
 import { message, Skeleton } from "antd";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { isEmptyObject } from "../../../util/Utility";
 
 export const HomePage = () => {
   const [dishes, setDishes] = useState([]);
@@ -45,7 +46,7 @@ export const HomePage = () => {
   };
 
   const checkInfo = async () => {
-    if (!user.isManuallyCreated) {
+    if (!isEmptyObject(user) && !user.isManuallyCreated) {
       message.warning(
         "Vui lòng cập nhật thông tin cá nhân. Chúng tôi sẽ chuyển bạn đến trang cập nhật trong 3 giây tới"
       );
