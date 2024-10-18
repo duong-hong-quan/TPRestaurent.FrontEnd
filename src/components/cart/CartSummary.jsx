@@ -166,22 +166,23 @@ const CartSummary = ({ handleClose }) => {
         navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
       }
     } else {
+      setIsAgree(false);
       showError(error);
     }
   };
-
+  const calculateDeliveryOrder = async () => {
+    const response = await callApi(
+      `${OrderApi.CALCULATE_DELIVER_ORDER}?customerInfoAddressId=${currentAddress.customerInfoAddressId}`,
+      "POST"
+    );
+    if (response.isSuccess) {
+      setDeliveryOrder(response.result);
+    } else {
+      showError(error);
+      setIsAgree(false);
+    }
+  };
   useEffect(() => {
-    const calculateDeliveryOrder = async () => {
-      const response = await callApi(
-        `${OrderApi.CALCULATE_DELIVER_ORDER}?customerInfoAddressId=${currentAddress.customerInfoAddressId}`,
-        "POST"
-      );
-      if (response.isSuccess) {
-        setDeliveryOrder(response.result);
-      } else {
-        showError(error);
-      }
-    };
     if (currentAddress) {
       calculateDeliveryOrder();
     }
@@ -199,7 +200,7 @@ const CartSummary = ({ handleClose }) => {
   if (loading) {
     return <LoadingOverlay isLoading={loading} />;
   }
-  console.log("deliveryOrder", deliveryOrder);
+  console.log("isAgree", isAgree);
   return (
     <div className="container my-4 p-6 bg-white">
       <Title level={3} className="uppercase text-center mb-6">

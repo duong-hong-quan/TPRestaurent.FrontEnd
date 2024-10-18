@@ -5,7 +5,7 @@ import MoMo_Logo from "../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../assets/imgs/payment-icon/VNpay_Logo.png";
 
 export const PaymentMethod = {
-  CASH: 1,
+  // CASH: 1,
   VNPAY: 2,
   MOMO: 3,
 };
@@ -19,8 +19,8 @@ const PaymentMethodSelector = ({ handleChange }) => {
   };
   const mapLanguage = (key) => {
     switch (key) {
-      case "CASH":
-        return { name: "Tiền mặt", description: "Thanh toán trực tiếp" };
+      // case "CASH":
+      //   return { name: "Tiền mặt", description: "Thanh toán trực tiếp" };
       case "VNPAY":
         return { name: "VNPay", description: "Tài khoản ví VNPAY" };
       case "MOMO":
@@ -73,8 +73,8 @@ const PaymentMethodSelector = ({ handleChange }) => {
 
 const getMethodIcon = (method) => {
   switch (method) {
-    case "CASH":
-      return <img src={Card_Logo} alt="" className="w-12 h-12" />;
+    // case "CASH":
+    //   return <img src={Card_Logo} alt="" className="w-12 h-12" />;
     case "VNPAY":
       return <img src={VNpay_Logo} alt="" className="w-12 h-12" />;
     case "MOMO":

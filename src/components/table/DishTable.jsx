@@ -77,30 +77,37 @@ const DishTable = ({
       title: "STT",
       dataIndex: "index",
       key: uniqueId(),
+      align:"center",
       render: (_, record) => <span>{record.dish.dishId.substring(0, 8)}</span>,
     },
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
+      align:"center",
       render: (_, record) => (
-        <Image
-          src={record.dish.image}
-          alt={record.dish.name}
-          width={100}
-          height={100}
-          style={{
-            objectFit: "cover",
-            marginBottom: "8px",
-            borderRadius: "20px",
-          }}
-        />
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Image
+        src={record.dish.image}
+        alt={record.dish.name}
+        width={100}
+        height={100}
+        style={{
+          objectFit: "cover",
+          borderRadius: "20px",
+          display: "block"
+        }}
+      />
+    </div>
       ),
+      
     },
     {
       title: "Tên món ",
       dataIndex: "name",
       key: "name",
+      align:"center",
+
       render: (_, record) => (
         <span className="uppercase">{record.dish.name}</span>
       ),

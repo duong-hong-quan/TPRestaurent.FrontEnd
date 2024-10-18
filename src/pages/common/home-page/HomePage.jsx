@@ -8,13 +8,17 @@ import TopVoucher from "../../../components/top-voucher/TopVoucher";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
-import { Skeleton } from "antd";
+import { message, Skeleton } from "antd";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export const HomePage = () => {
   const [dishes, setDishes] = useState([]);
   const [pageSize, setPageSize] = useState(9);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { callApi, error, loading } = useCallApi();
+  const user = useSelector((state) => state.user?.user || {});
+  const navigate = useNavigate();
   const fetchData = async () => {
     try {
       if (selectedCategory === null) {
@@ -39,8 +43,21 @@ export const HomePage = () => {
     } finally {
     }
   };
+
+  const checkInfo = async () => {
+    if (!user.isManuallyCreated) {
+      message.warning(
+        "Vui lòng cập nhật thông tin cá nhân. Chúng tôi sẽ chuyển bạn đến trang cập nhật trong 3 giây tới"
+      );
+      setTimeout(() => {
+        navigate("/user");
+      }, 3000);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    checkInfo();
   }, [pageSize]);
   const handleAddItem = () => {
     setPageSize(pageSize + 3);
@@ -68,6 +85,7 @@ export const HomePage = () => {
   if (loading) {
     return <Skeleton active key={loading} />;
   }
+
   return (
     <>
       <>
