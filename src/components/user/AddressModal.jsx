@@ -25,13 +25,13 @@ const AddressModal = ({
   const [options, setOptions] = useState([]);
   const { callApi, error } = useCallApi();
   const [form] = Form.useForm();
-  const [location, setLocation] = useState({ lat: "", lng: "" });
+  const [location, setLocation] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const handleSearch = async (value) => {
     getLocation();
     const response = await callApi(`${MapApi.AUTO_COMPLETE}`, "POST", {
       address: value,
-      destination: [location.lat, location.lng] || [],
+      destination: location ? [location.lat, location.lng] : null,
     });
     if (response.isSuccess) {
       setOptions(
@@ -108,16 +108,16 @@ const AddressModal = ({
           customerInfoAddressName: form.getFieldValue("address"),
           isCurrentUsed: form.getFieldValue("isPrimary"),
           accountId: user.id,
-          lat: editData?.lat || "",
-          lng: editData?.lng || "",
+          lat: editData?.lat || null,
+          lng: editData?.lng || null,
         });
       } else {
         response = await callApi(`${AccountApi.CREATE_ADDRESS}`, "POST", {
           customerInfoAddressName: form.getFieldValue("address"),
           isCurrentUsed: form.getFieldValue("isPrimary"),
           accountId: user.id,
-          lat: selectedAddress?.lat || "",
-          lng: selectedAddress?.lng || "",
+          lat: selectedAddress?.lat || null,
+          lng: selectedAddress?.lng || null,
         });
       }
 

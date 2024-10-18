@@ -162,12 +162,6 @@ const ProductDetail = () => {
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">Mô tả sản phẩm</h2>
       <p className="text-gray-700">{dish?.description}</p>
-      <ul className="list-disc list-inside mt-4 text-gray-700">
-        <li>Nguyên liệu tươi sạch, được chọn lọc kỹ càng</li>
-        <li>Thịt bò mềm, nhiều dinh dưỡng</li>
-        <li>Rau xanh giòn ngọt, đa dạng loại</li>
-        <li>Nước sốt đặc biệt, tạo nên hương vị độc đáo</li>
-      </ul>
     </div>
   );
   const dispatch = useDispatch();

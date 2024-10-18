@@ -227,223 +227,235 @@ const CreateMenuPage = ({ back }) => {
     return "";
   };
   return (
-    <div className="container">
-      <div className="p-6 shadow-xl border-none  bg-white rounded-xl h-[700px] overflow-auto">
+    <div className="max-w-6xl mx-auto my-8 ">
+      <div className=" border-none p-4 bg-white">
         <Typography className="text-red-800 mb-6 text-xl font-bold uppercase text-center">
           {id ? "Chỉnh sửa" : "Thêm "} món ăn
         </Typography>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          className="border-none"
-          style={{ border: "none !important" }}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <Form.Item
-              name="Name"
-              label="Tên món ăn"
-              rules={[{ required: true, message: "Vui lòng nhập tên món ăn" }]}
-            >
-              <Input placeholder="Nhập tên món ăn" name="name" />
-            </Form.Item>
-            <Form.Item
-              name="DishItemType"
-              label="Danh mục"
-              rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
-            >
-              <Select placeholder="Chọn danh mục">
-                {dishTypes &&
-                  dishTypes.length > 0 &&
-                  dishTypes.map((type) => (
-                    <Select.Option key={type.id} value={type.id}>
-                      {type.vietnameseName}
-                    </Select.Option>
-                  ))}
-              </Select>
-            </Form.Item>
-            <Form.Item name="TagIds" label="Tag món ăn">
-              <Select mode="tags" placeholder="Thêm tag cho món ăn" name="tags">
-                {tags &&
-                  tags.length > 0 &&
-                  tags.map((tag) => (
-                    <Select.Option key={tag.tagId} value={tag.tagId}>
-                      {tag.name}
-                    </Select.Option>
-                  ))}
-              </Select>
-            </Form.Item>
-          </div>
-
-          <Form.Item
-            name="Description"
-            label="Mô tả món ăn"
-            rules={[{ required: true, message: "Vui lòng nhập mô tả món ăn" }]}
+        <div className="h-[700px] overflow-y-scroll">
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            className="border-none"
+            style={{ border: "none !important" }}
           >
-            <TextArea
-              rows={4}
-              placeholder="Nhập mô tả chi tiết về món ăn"
-              name="description"
-            />
-          </Form.Item>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <Form.Item
+                name="Name"
+                label="Tên món ăn"
+                rules={[
+                  { required: true, message: "Vui lòng nhập tên món ăn" },
+                ]}
+              >
+                <Input placeholder="Nhập tên món ăn" name="name" />
+              </Form.Item>
+              <Form.Item
+                name="DishItemType"
+                label="Danh mục"
+                rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
+              >
+                <Select placeholder="Chọn danh mục">
+                  {dishTypes &&
+                    dishTypes.length > 0 &&
+                    dishTypes.map((type) => (
+                      <Select.Option key={type.id} value={type.id}>
+                        {type.vietnameseName}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="TagIds" label="Tag món ăn">
+                <Select
+                  mode="tags"
+                  placeholder="Thêm tag cho món ăn"
+                  name="tags"
+                >
+                  {tags &&
+                    tags.length > 0 &&
+                    tags.map((tag) => (
+                      <Select.Option key={tag.tagId} value={tag.tagId}>
+                        {tag.name}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </Form.Item>
+            </div>
 
-          <Form.List name="DishSizeDetailDtos">
-            {(fields, { add, remove }) => (
-              <>
-                <Form.Item>
-                  <Button
-                    onClick={() => add()}
-                    icon={<PlusOutlined />}
-                    className="mt-2 bg-red-800 hover:bg-red-700 text-white"
-                  >
-                    Thêm Size
-                  </Button>
-                </Form.Item>
-                {fields.map(({ key, name, ...restField }, index) => (
-                  <Space
-                    key={key}
-                    style={{ display: "flex", marginBottom: 8 }}
-                    align="baseline"
-                  >
-                    <Form.Item
-                      {...restField}
-                      name={[name, "dishSize"]}
-                      rules={[
-                        { required: true, message: "Vui lòng chọn size" },
-                      ]}
-                      label="Size"
+            <Form.Item
+              name="Description"
+              label="Mô tả món ăn"
+              rules={[
+                { required: true, message: "Vui lòng nhập mô tả món ăn" },
+              ]}
+            >
+              <TextArea
+                rows={4}
+                placeholder="Nhập mô tả chi tiết về món ăn"
+                name="description"
+              />
+            </Form.Item>
+
+            <Form.List name="DishSizeDetailDtos">
+              {(fields, { add, remove }) => (
+                <>
+                  <Form.Item>
+                    <Button
+                      onClick={() => add()}
+                      icon={<PlusOutlined />}
+                      className="mt-2 bg-red-800 hover:bg-red-700 text-white"
                     >
-                      <Select
-                        style={{ width: 120 }}
-                        placeholder="Chọn size"
-                        name={`dishSizeDetailDtos[${name}].size`}
-                      >
-                        {dishSizes &&
-                          dishSizes.length > 0 &&
-                          dishSizes.map((size) => (
-                            <Select.Option key={size.id} value={size.id}>
-                              {size.vietnameseName}
-                            </Select.Option>
-                          ))}
-                      </Select>
-                    </Form.Item>
-                    <div className="flex flex-col">
+                      Thêm Size
+                    </Button>
+                  </Form.Item>
+                  {fields.map(({ key, name, ...restField }, index) => (
+                    <Space
+                      key={key}
+                      style={{ display: "flex", marginBottom: 8 }}
+                      align="baseline"
+                    >
                       <Form.Item
                         {...restField}
-                        name={[name, "price"]}
+                        name={[name, "dishSize"]}
                         rules={[
-                          { required: true, message: "Vui lòng nhập giá" },
+                          { required: true, message: "Vui lòng chọn size" },
                         ]}
-                        label="Giá"
+                        label="Size"
+                      >
+                        <Select
+                          style={{ width: 120 }}
+                          placeholder="Chọn size"
+                          name={`dishSizeDetailDtos[${name}].size`}
+                        >
+                          {dishSizes &&
+                            dishSizes.length > 0 &&
+                            dishSizes.map((size) => (
+                              <Select.Option key={size.id} value={size.id}>
+                                {size.vietnameseName}
+                              </Select.Option>
+                            ))}
+                        </Select>
+                      </Form.Item>
+                      <div className="flex flex-col">
+                        <Form.Item
+                          {...restField}
+                          name={[name, "price"]}
+                          rules={[
+                            { required: true, message: "Vui lòng nhập giá" },
+                          ]}
+                          label="Giá"
+                        >
+                          <Input
+                            placeholder="Nhập giá"
+                            style={{ width: 120 }}
+                            name={`dishSizeDetailDtos[${name}].price`}
+                            type="number"
+                            onChange={() => renderPriceText(index)}
+                          />
+                        </Form.Item>
+                        <span className="max-w-32 break-words">
+                          {priceText[index]}
+                        </span>
+                      </div>
+
+                      <Form.Item
+                        {...restField}
+                        name={[name, "dishSizeDetailId"]}
+                        hidden
                       >
                         <Input
                           placeholder="Nhập giá"
                           style={{ width: 120 }}
-                          name={`dishSizeDetailDtos[${name}].price`}
-                          type="number"
-                          onChange={() => renderPriceText(index)}
+                          name={`dishSizeDetailDtos[${name}].dishSizeDetailId`}
                         />
                       </Form.Item>
-                      <span className="max-w-32 break-words">
-                        {priceText[index]}
-                      </span>
-                    </div>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "discount"]}
+                        rules={[
+                          { required: true, message: "Vui lòng nhập giá" },
+                        ]}
+                        label="Giảm (%)"
+                      >
+                        <Input
+                          placeholder="Nhập giá"
+                          style={{ width: 120 }}
+                          name={`dishSizeDetailDtos[${name}].discount`}
+                          type="number"
+                        />
+                      </Form.Item>
 
-                    <Form.Item
-                      {...restField}
-                      name={[name, "dishSizeDetailId"]}
-                      hidden
-                    >
-                      <Input
-                        placeholder="Nhập giá"
-                        style={{ width: 120 }}
-                        name={`dishSizeDetailDtos[${name}].dishSizeDetailId`}
+                      <MinusCircleOutlined
+                        onClick={() => remove(name)}
+                        className="text-red-500"
                       />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, "discount"]}
-                      rules={[{ required: true, message: "Vui lòng nhập giá" }]}
-                      label="Giảm (%)"
-                    >
-                      <Input
-                        placeholder="Nhập giá"
-                        style={{ width: 120 }}
-                        name={`dishSizeDetailDtos[${name}].discount`}
-                        type="number"
-                      />
-                    </Form.Item>
+                    </Space>
+                  ))}
+                </>
+              )}
+            </Form.List>
 
-                    <MinusCircleOutlined
-                      onClick={() => remove(name)}
-                      className="text-red-500"
-                    />
-                  </Space>
-                ))}
-              </>
-            )}
-          </Form.List>
-
-          <Form.Item
-            name="ImageFiles"
-            label="Hình ảnh món ăn"
-            valuePropName="fileList"
-            getValueFromEvent={(e) => e.fileList}
-          >
-            {!initData && (
-              <Upload
-                listType="picture-card"
-                fileList={fileList}
-                onPreview={handlePreview}
-                onChange={handleChange}
-                customRequest={dummyRequest}
-              >
-                {fileList.length >= 8 ? null : uploadButton()}
-              </Upload>
-            )}
-            {initData && (
-              <div className="flex items-center">
-                {initData?.dishImgs?.map((image) => (
-                  <div
-                    className="relative w-32 h-32 mr-4 shadow-md cursor-pointer"
-                    key={image.id}
-                  >
-                    <Upload
-                      showUploadList={false}
-                      beforeUpload={(file) => {
-                        handleUpdateImage(file, image);
-                        return false;
-                      }}
-                    >
-                      <img
-                        src={image.path}
-                        alt="avatar"
-                        className=" w-32 h-32 object-cover border border-gray-100"
-                      />
-                    </Upload>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Form.Item>
-          <Form.Item name="MainImageFile" label="Hình ảnh món ăn" hidden>
-            <Upload
-              customRequest={dummyRequest}
-              listType="picture-card"
-            ></Upload>
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="w-full bg-red-800 hover:bg-red-700"
-              loading={loading}
+            <Form.Item
+              name="ImageFiles"
+              label="Hình ảnh món ăn"
+              valuePropName="fileList"
+              getValueFromEvent={(e) => e.fileList}
             >
-              {id ? "Chỉnh sửa" : "Thêm "} món ăn
-            </Button>
-          </Form.Item>
-        </Form>
+              {!initData && (
+                <Upload
+                  listType="picture-card"
+                  fileList={fileList}
+                  onPreview={handlePreview}
+                  onChange={handleChange}
+                  customRequest={dummyRequest}
+                >
+                  {fileList.length >= 8 ? null : uploadButton()}
+                </Upload>
+              )}
+              {initData && (
+                <div className="flex items-center">
+                  {initData?.dishImgs?.map((image) => (
+                    <div
+                      className="relative w-32 h-32 mr-4 shadow-md cursor-pointer"
+                      key={image.id}
+                    >
+                      <Upload
+                        showUploadList={false}
+                        beforeUpload={(file) => {
+                          handleUpdateImage(file, image);
+                          return false;
+                        }}
+                      >
+                        <img
+                          src={image.path}
+                          alt="avatar"
+                          className=" w-32 h-32 object-cover border border-gray-100"
+                        />
+                      </Upload>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Form.Item>
+            <Form.Item name="MainImageFile" label="Hình ảnh món ăn" hidden>
+              <Upload
+                customRequest={dummyRequest}
+                listType="picture-card"
+              ></Upload>
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full bg-red-800 hover:bg-red-700"
+                loading={loading}
+              >
+                {id ? "Chỉnh sửa" : "Thêm "} món ăn
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
       </div>
       <Modal
         visible={previewOpen}
