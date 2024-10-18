@@ -21,12 +21,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { close, open } from "../../redux/features/sidebarSlice";
 import useCallApi from "../../api/useCallApi";
 import { NotificationApi } from "../../api/endpoint";
+import * as signalR from "@microsoft/signalr";
+import { baseUrl } from "../../api/config/axios";
+import { message } from "antd";
 
 const HeaderManager = ({ userName = "Admin" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const {callApi,error,loading} = useCallApi();
-  const [notifications, setNotifications] = useState([  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [connection, setConnection] = useState(null);
+
 const user=useSelector((state)=>state.user.user || {});
 const fetchNotifications = async () => {
   const response = await callApi(`${NotificationApi.GET_ALL_NOTIFICATION_BY_USER}/${user.id}`, "GET");
@@ -36,7 +41,37 @@ const fetchNotifications = async () => {
     showError(error);
   }
 };
+useEffect(() => {
+  // Create connection
+  const newConnection = new signalR.HubConnectionBuilder()
+    .withUrl(`${baseUrl}/notifications`) // Replace with your SignalR hub URL
+    .withAutomaticReconnect()
+    .build();
 
+  setConnection(newConnection);
+}, []);
+useEffect(() => {
+  if (connection) {
+    // Start the connection
+    connection
+      .start()
+      .then(() => {
+        console.log("Connected to SignalR");
+        message.success("Connected to SignalR");
+        connection.on("LOAD_ORDER", (data) => {
+          fetchNotifications();
+        });
+      })
+      .catch((error) => console.log("Connection failed: ", error));
+  }
+
+  // Cleanup on component unmount
+  return () => {
+    if (connection) {
+      connection.stop();
+    }
+  };
+}, [connection]);
 useEffect(() => {
   fetchNotifications();
 }, []);
@@ -44,17 +79,8 @@ useEffect(() => {
   const dispatch = useDispatch();
   const siderbar = useSelector((state) => state.sidebar);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications?.length;
 
-  const markAsRead = (id) => {
-    setNotifications(
-      notifications.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(notifications.map((n) => ({ ...n, read: true })));
-  };
 
   return (
     <div className="mx-auto min-w-full text-black bg-white  rounded-lg mt-2 px-4 py-2 shadow-lg">
@@ -125,8 +151,7 @@ useEffect(() => {
                     {notification.notificationName}
                   </Typography> 
                   <Typography
-                    variant="small"
-                    className="font-normal text-gray-700"
+                    className="font-normal text-gray-700 text-sm"
                   >
                     {notification.messages}
                   </Typography>
@@ -135,7 +160,6 @@ useEffect(() => {
               </div>
         
               <MenuItem
-                onClick={markAllAsRead}
                 className="flex items-center gap-2 justify-center mt-2 p-2 rounded-md hover:bg-blue-50 transition-all duration-300"
               >
                 <Typography
