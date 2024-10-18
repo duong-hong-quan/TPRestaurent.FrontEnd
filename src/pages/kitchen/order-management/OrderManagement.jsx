@@ -1,16 +1,12 @@
-import { CardFooter, CardHeader, Typography } from "@material-tailwind/react";
-import { Button, Card, Input } from "antd";
-import { color } from "framer-motion";
+import { Typography } from "@material-tailwind/react";
+import { Button, Card, Input, message, Skeleton } from "antd";
 import {
   AlertTriangle,
   BellRing,
   Check,
   CheckCircle,
-  Clock,
   CookingPot,
   Eye,
-  Loader,
-  TicketIcon,
   X,
   XCircle,
 } from "lucide-react";
@@ -21,34 +17,20 @@ import { OrderSessionApi } from "../../../api/endpoint";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import OrderSessionModal from "./OrderSessionModal";
 import Pagination from "../../../components/pagination/Pagination";
-import { set } from "lodash";
-const menuItems = [
-  { key: "", label: "Tất cả" },
-  { key: "0", label: "Đặt trước" },
-  { key: "1", label: "Đã tiếp nhận" },
-  { key: "2", label: "Đang nấu" },
-  { key: "3", label: "Cảnh báo nấu trễ" },
-  { key: "4", label: "Hoàn thành" },
-  { key: "5", label: "Đã huỷ" },
-];
+import * as signalR from "@microsoft/signalr";
+import { baseUrl } from "../../../api/config/axios";
+import notification_sound from "../../../assets/sound/kitchen.mp3";
+import TabMananger from "../../../components/tab/TabManager";
 
-const TabStatusKitchen = ({ selected, onchange }) => {
-  return (
-    <div className="flex flex-wrap justify-start mb-4">
-      {menuItems.map((item) => (
-        <Button
-          key={item.key}
-          className={`bg-white text-gray-800 px-4 py-2 rounded-tl-md rounded-tr-md  font-semibold text-base rounded-bl-none rounded-br-none mr-1 min-h-10 min-w-fit shadow-md ${
-            selected === item.key ? "text-red-900" : ""
-          }`}
-          onClick={() => onchange(item.key)}
-        >
-          {item.label}
-        </Button>
-      ))}
-    </div>
-  );
-};
+const menuItems = [
+  { value: "all", label: "Tất cả" },
+  { value: "0", label: "Đặt trước" },
+  { value: "1", label: "Đã tiếp nhận" },
+  { value: "2", label: "Đang nấu" },
+  { value: "3", label: "Cảnh báo nấu trễ" },
+  { value: "4", label: "Hoàn thành" },
+  { value: "5", label: "Đã huỷ" },
+];
 
 const OrderTag = ({ status, index }) => {
   const [textColor, setTextColor] = useState("");
@@ -307,13 +289,52 @@ const OrderManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 15;
   const [totalPages, setTotalPages] = useState(1);
+  const [connection, setConnection] = useState(null);
+  const audioRef = useRef(null);
+
   const onchangeStatus = (status) => {
     setSelectedStatus(status);
   };
   const onPageChange = (page) => {
     setCurrentPage(page);
   };
+  useEffect(() => {
+    // Create connection
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl(`${baseUrl}/notifications`) // Replace with your SignalR hub URL
+      .withAutomaticReconnect()
+      .build();
 
+    setConnection(newConnection);
+  }, []);
+  useEffect(() => {
+    if (connection) {
+      // Start the connection
+      connection
+        .start()
+        .then(() => {
+          console.log("Connected to SignalR");
+          message.success("Connected to SignalR");
+          // Subscribe to SignalR events
+          connection.on("LOAD_ORDER_SESIONS", (data) => {
+            fetchData();
+            if (audioRef.current) {
+              audioRef.current.play().catch((error) => {
+                console.error("Error playing audio:", error);
+              });
+            }
+          });
+        })
+        .catch((error) => console.log("Connection failed: ", error));
+    }
+
+    // Cleanup on component unmount
+    return () => {
+      if (connection) {
+        connection.stop();
+      }
+    };
+  }, [connection]);
   const fetchData = async () => {
     const response = await callApi(
       `${OrderSessionApi.GET_ALL_ORDER_SESSION}?status=${selectedStatus}&pageNumber=${currentPage}&pageSize=${pageSize}`,
@@ -321,11 +342,12 @@ const OrderManagement = () => {
     );
     if (response.isSuccess) {
       setOrderSession(response.result.items);
+
       setTotalPages(response.result?.totalPages);
     } else {
       showError(error);
       setOrderSession([]);
-      setTotalPages(o);
+      setTotalPages(0);
     }
   };
   useEffect(() => {
@@ -343,7 +365,7 @@ const OrderManagement = () => {
   };
 
   if (loading) {
-    return <LoadingOverlay isLoading={loading} />;
+    return <Skeleton loading={loading} />;
   }
 
   const updateOrderSessionStatus = async (orderSessionId, status) => {
@@ -357,8 +379,11 @@ const OrderManagement = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 bg-white p-4 rounded-lg">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <audio ref={audioRef}>
+          <source src={notification_sound} type="audio/mpeg" />
+        </audio>
         <Typography
           variant="h5"
           className="uppercase text-red-900 mb-4 sm:mb-0"
@@ -368,7 +393,12 @@ const OrderManagement = () => {
         <Input className="p-2 w-full sm:w-56" placeholder="Tìm đơn đặt món" />
       </div>
       <div className="mt-5 w-full">
-        <TabStatusKitchen selected={selectedStatus} onchange={onchangeStatus} />
+        <TabMananger
+          activeTab={selectedStatus}
+          items={menuItems}
+          setActiveTab={onchangeStatus}
+          enableCount={false}
+        />
         <div className="mb-6">
           <div className=" flex flex-wrap  w-full pb-2">
             {orderSession?.map((order, idx) => (
