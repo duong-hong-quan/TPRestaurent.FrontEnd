@@ -11,8 +11,19 @@ import * as signalR from "@microsoft/signalr";
 import { baseUrl } from "../../../api/config/axios";
 import notification_sound from "../../../assets/sound/kitchen.mp3";
 import styled from "styled-components";
-import { StyledTable } from "../../../components/custom-ui/StyledTable";
 const { Title, Text } = Typography;
+const StyledTable = styled(Table)`
+  .ant-table-thead > tr > th {
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: none;
+  }
+  .ant-table-tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: none;
+  }
+`;
 
 const OptimizeProcess = () => {
   const [mutualOrderDishes, setMutualOrderDishes] = useState([]);
@@ -52,13 +63,6 @@ const OptimizeProcess = () => {
       align: "center",
       render: (_, record) => (
         <div className="flex items-center justify-center">
-          <Image
-            className="rounded-md block"
-            src={record.dish?.image}
-            alt="Food"
-            width={100}
-            height={100}
-          />
           <p className="ml-10 font-semibold uppercase">{record.dish?.name}</p>
         </div>
       ),
@@ -68,6 +72,7 @@ const OptimizeProcess = () => {
       dataIndex: "quantity",
       key: "quantity",
       align: "center",
+      width: 250,
       render: (_, record) => (
         <div className="">
           {record.total.map((item, index) => (
@@ -89,10 +94,11 @@ const OptimizeProcess = () => {
       ),
     },
     {
-      title: "Xem chi tiết",
+      title: "Hành động",
       dataIndex: "detail",
       key: "detail",
       align: "center",
+      width: 50,
       render: (_, record) => (
         <div>
           <IconButton
@@ -179,16 +185,16 @@ const OptimizeProcess = () => {
         <div className="grid grid-cols-1 2xl:grid-cols-12 ">
           <div className=" col-span-12  2xl:col-span-12 ">
             <div className="grid  grid-cols-1 xl:grid-cols-2 gap-2">
-              <div className="shadow-md rounded-md">
+              <div className="">
                 <div className="">
-                  <div className="shadow-md rounded-md">
+                  <div className="">
                     <h3 className="bg-[#E3B054] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
                       Món trùng đơn
                     </h3>
                     <div className="w-full">
                       {loading && <Skeleton />}
                       {!loading && (
-                        <Table
+                        <StyledTable
                           dataSource={mutualOrderDishes}
                           columns={columns}
                           pagination={false}
@@ -202,14 +208,14 @@ const OptimizeProcess = () => {
                   </div>
                 </div>
               </div>
-              <div className="shadow-md rounded-md">
+              <div className="">
                 <h3 className="bg-[#C40519] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
                   Món lẻ đơn
                 </h3>
                 <div className="overflow-x-auto w-full">
                   {loading && <Skeleton />}
                   {!loading && (
-                    <Table
+                    <StyledTable
                       dataSource={singleOrderDishes}
                       columns={columns}
                       pagination={false}
