@@ -6,6 +6,7 @@ import { addToCart } from "../../redux/features/cartReservationSlice";
 import useCallApi from "../../api/useCallApi";
 import { DishApi } from "../../api/endpoint";
 import { NavLink } from "react-router-dom";
+import { message } from "antd";
 
 const MenuDish = ({
   dishes,
@@ -47,6 +48,10 @@ const MenuDish = ({
   };
 
   const handleAddToCart = (dish, size) => {
+    if (!size.isAvailable) {
+      message.error("Sản phẩm với size này đã hết hàng");
+      return;
+    }
     dispatch(addToCart({ dish, size, quantity: 1 }));
   };
 

@@ -65,7 +65,6 @@ const ComboDetail = ({ comboData, handleBack }) => {
     if (isValid) {
       const data = flattenComboData();
       dispatch(addCombo({ combo, selectedDishes: data, note: note }));
-      message.success("Đã thêm combo vào giỏ hàng");
     } else {
       message.error(errorMessage.join(`\n`), 5); // Display for 5 seconds
     }

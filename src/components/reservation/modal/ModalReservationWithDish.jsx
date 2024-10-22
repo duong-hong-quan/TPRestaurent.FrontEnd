@@ -108,6 +108,10 @@ const ModalReservationWithDish = ({
   }, [cartCombo, cart]);
 
   const handleAddToCart = (dish, size) => {
+    if (!size.isAvailable) {
+      message.error("Sản phẩm với size này đã hết hàng");
+      return;
+    }
     dispatch(addToCart({ dish, size, quantity: 1 }));
   };
 
