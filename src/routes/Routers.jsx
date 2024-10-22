@@ -45,6 +45,7 @@ import PersonalAddress from "../pages/common/personal-information/PersonalAddres
 import PersonalSetting from "../pages/common/personal-information/PersonalSetting";
 import AdminUserPage from "../pages/admin/user/AdminUserPage";
 import AdminShipperPage from "../pages/admin/user/AdminShipperPage";
+import Landing from "../pages/common/landing/landing";
 
 function Routers() {
   const routing = useRoutes([
@@ -111,6 +112,10 @@ function Routers() {
         {
           path: "payment/*",
           element: <VerifyPayment />,
+        },
+        {
+          path: "landing",
+          element: <Landing />,
         },
       ],
     },
