@@ -14,28 +14,28 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="space-y-4">
-            <img
+            {/* <img
               src="https://s3-alpha-sig.figma.com/img/6370/d58f/85684958f4e64a77e423ef9b6d87c617?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=AcMLi8KD4ifjyhIwmXlDNXKVQENVfaMsnHhbg5CgV5gULxqza3Je5YkoKIg5tBq-g9YjzeqgYP27M2zxHAx60~r2dJDsl0wPGcYpgmI7it-Oec6L51dSUmObx2MNKZRN5ix-W01svquVSKfEPylex4WgBL7JCKccRZd0GUm2CiHwS3fLEgindI5JDAG4HRBZzndB3ML9w5UQl5PRvAMWk~OwfFbv29ND4CCqDayMAcYf~S8wp841Xd24HtQ7TCyMBw6AsucT6wyvDad-FhBh-fPhLCpo96VfrwWe1xvmzwHFUyZi4RHeW0RYoRxDQxqcOnPDzvGZnFCzcpXpha9UHA__"
               alt="Restaurant Logo"
               className="w-48 mb-4"
-            />
+            /> */}
             <h3 className="text-xl font-semibold text-[#A31927]">
               Liên hệ chúng tôi
             </h3>
             <div className="space-y-2">
               <p className="flex items-center">
                 <PhoneOutlined className="mr-2" />
-                <a href="tel:+84123456789" className="hover:text-[#A31927]">
-                  +84 123 456 789
+                <a href="tel:+84919782444" className="hover:text-[#A31927]">
+                  +84 919 782 444
                 </a>
               </p>
               <p className="flex items-center">
                 <EnvironmentOutlined className="mr-2" />
-                123 Đường ABC, Quận XYZ, Thành phố HCM
+                78 Đường Lý Tự Trọng, Phường 2, Đà Lạt, Lâm Đồng
               </p>
               <p className="flex items-center">
                 <ClockCircleOutlined className="mr-2" />
-                Mở cửa: 10:00 - 22:00 hàng ngày
+                Mở cửa: 8:00 - 22:00 hàng ngày
               </p>
             </div>
             <div className="flex space-x-4 mt-4">

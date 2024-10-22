@@ -94,7 +94,7 @@ const MenuPage = () => {
         />
       </div>
 
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3  gap-2">
         {combos?.map((combo) => (
           <motion.div
             key={combo.comboId}
