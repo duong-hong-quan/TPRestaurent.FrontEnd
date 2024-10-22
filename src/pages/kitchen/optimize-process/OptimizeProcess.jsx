@@ -60,11 +60,8 @@ const OptimizeProcess = () => {
       title: "MÓN ĂN",
       dataIndex: "name",
       key: "name",
-      align: "center",
       render: (_, record) => (
-        <div className="flex items-center justify-center">
-          <p className="ml-10 font-semibold uppercase">{record.dish?.name}</p>
-        </div>
+        <p className=" font-semibold uppercase text-sm">{record.dish?.name}</p>
       ),
     },
     {

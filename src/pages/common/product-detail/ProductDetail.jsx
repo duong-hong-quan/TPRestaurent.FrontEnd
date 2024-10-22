@@ -166,6 +166,10 @@ const ProductDetail = () => {
   );
   const dispatch = useDispatch();
   const handleAddToCart = (dish, size) => {
+    if (!size.isAvailable) {
+      message.error("Sản phẩm với size này đã hết hàng");
+      return;
+    }
     if (quantity > 1) {
       dispatch(
         increaseQuantity({
@@ -387,10 +391,21 @@ const ProductDetail = () => {
                       selectedSize?.dishSizeDetailId === size.dishSizeDetailId
                         ? "bg-[#F2D2D5] text-[#C01D2E] border border-[#C01D2E]"
                         : "bg-[#EEEEEF] text-[#0F172AA8]"
-                    }`}
+                    }
+                    ${
+                      selectedSize?.dishSizeDetailId ===
+                        size.dishSizeDetailId &&
+                      !size.isAvailable &&
+                      "cursor-not-allowed"
+                    }
+                    
+                    `}
                   >
                     <p className="">{size.dishSize?.vietnameseName}</p>
                     <p className="font-bold">{formatPrice(size.price)}</p>
+                    {!size.isAvailable && (
+                      <p className="font-bold text-sm">Hết hàng</p>
+                    )}
                   </button>
                 ))}
               </div>
@@ -416,7 +431,6 @@ const ProductDetail = () => {
                 <button
                   onClick={() => {
                     handleAddToCart(dish, selectedSize);
-                    message.success("Đã thêm vào giỏ hàng");
                   }}
                   className="flex-1  text-[#E45834] py-3 px-6 rounded-3xl border  border-[#cd5a65] transition duration-300 flex items-center justify-center text-lg font-bold"
                 >

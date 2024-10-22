@@ -51,7 +51,12 @@ export const DishCard = ({
                     size.dishSizeDetailId
                       ? "bg-red-800 text-white"
                       : "bg-white text-red-800"
-                  } font-semibold transition-colors duration-300`}
+                  } font-semibold transition-colors duration-300 ${
+                    !size.isAvailable
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : ""
+                  }`}
+                  disabled={size.isAvailable === false}
                 >
                   {size.dishSize?.vietnameseName || size.dishSize?.name}
                 </button>
@@ -71,7 +76,6 @@ export const DishCard = ({
                   dish.dish,
                   selectedSizes?.size || dish.dishSizeDetails[0]
                 );
-                message.success("Đã thêm vào giỏ hàng");
               }}
               className="w-full mx-auto bg-red-800 text-white"
             >
