@@ -109,7 +109,7 @@ const ReservationRequestItem = ({ reservation }) => {
             statusKey
           )}-700`}
         >
-          {reservation.status.vietnameseName.toUpperCase()}
+          {reservation.status.vietnameseName?.toUpperCase()}
         </p>
       </div>
 
