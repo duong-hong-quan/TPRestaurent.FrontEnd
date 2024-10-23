@@ -1,17 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import { Typography, Table, message, Image, Tag, Badge, Skeleton } from "antd";
+import {
+  Typography,
+  Table,
+  message,
+  Tag,
+  Badge,
+  Skeleton,
+  Space,
+  Button,
+} from "antd";
 import useCallApi from "../../../api/useCallApi";
-import { OrderApi, OrderSessionApi } from "../../../api/endpoint";
-import { IconButton } from "@material-tailwind/react";
-import { Clock, Eye } from "lucide-react";
-import { uniqueId } from "lodash";
-import { showError } from "../../../util/Utility";
-import OrderDetailModal from "./OrderDetailModal";
+import { GroupedDishCraftApi, OrderApi } from "../../../api/endpoint";
 import * as signalR from "@microsoft/signalr";
 import { baseUrl } from "../../../api/config/axios";
 import notification_sound from "../../../assets/sound/kitchen.mp3";
 import styled from "styled-components";
+import { EyeOutlined } from "@ant-design/icons";
+import OrderDetailModal from "./OrderDetailModal";
+import { showError } from "../../../util/Utility";
+
 const { Title, Text } = Typography;
+
 const StyledTable = styled(Table)`
   .ant-table-thead > tr > th {
     text-align: center;
@@ -25,114 +34,183 @@ const StyledTable = styled(Table)`
   }
 `;
 
+const QuantityBadge = ({ label, count, color }) => (
+  <div className="flex items-center space-x-2">
+    <Badge
+      count={count}
+      showZero
+      className="flex items-center"
+      style={{ backgroundColor: color }}
+    >
+      <Tag color={color} className="px-3 py-1 text-sm font-medium">
+        {label}
+      </Tag>
+    </Badge>
+  </div>
+);
+
+const DishSizeInfo = ({
+  sizeData,
+  dishData,
+  groupedDishId,
+  fetchDetail,
+  type,
+}) => (
+  <div
+    className="flex items-center justify-start rounded-lg p-4 my-1"
+    style={{
+      border: "1px solid #ccc",
+    }}
+  >
+    <Text strong className="w-32">
+      {dishData?.Dish?.Name}
+    </Text>
+    <div>
+      {sizeData.map((item, index) => (
+        <div key={index} className="flex items-center gap-4 p-2 rounded">
+          <Text strong className="min-w-[100px]">
+            {item.DishSize.VietnameseName}:
+          </Text>
+          <Space>
+            <QuantityBadge
+              label="Chưa đọc"
+              count={item.UncheckedQuantity}
+              color="#a8181c"
+            />
+            <QuantityBadge
+              label="Đang nấu"
+              count={item.ProcessingQuantity}
+              color="#1890ff"
+            />
+          </Space>
+        </div>
+      ))}
+    </div>
+    <Button
+      className="ml-4"
+      onClick={async () =>
+        await fetchDetail(groupedDishId, dishData?.Dish.DishId, type)
+      }
+    >
+      <EyeOutlined />
+    </Button>
+  </div>
+);
+
 const OptimizeProcess = () => {
-  const [mutualOrderDishes, setMutualOrderDishes] = useState([]);
-  const [singleOrderDishes, setSingleOrderDishes] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [selectedDish, setSelectedDish] = useState(null);
   const [connection, setConnection] = useState(null);
   const audioRef = useRef(null);
-  const [isUserInteracted, setIsUserInteracted] = useState(false);
-
+  const [groupedDishCraft, setGroupedDishCraft] = useState([]);
   const { callApi, error, loading } = useCallApi();
-
-  const fetchData = async () => {
-    const result = await callApi(`${OrderSessionApi.GET_GROUPED_DISH}`, "GET");
-    if (result.isSuccess) {
-      setMutualOrderDishes(result.result?.mutualOrderDishes);
-      setSingleOrderDishes(result.result?.singleOrderDishes);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
+  const [selectedDish, setSelectedDish] = useState(null);
   const columns = [
     {
       dataIndex: "id",
       key: "id",
       title: "STT",
+      width: 80,
       render: (_, __, index) => index + 1,
-      align: "center",
+      fixed: "left",
     },
     {
       title: "MÓN ĂN",
-      dataIndex: "name",
+      dataIndex: "groupedDishJson",
       key: "name",
-      render: (_, record) => (
-        <p className=" font-semibold uppercase text-sm">{record.dish?.name}</p>
-      ),
-    },
-    {
-      title: "SỐ LƯỢNG",
-      dataIndex: "quantity",
-      key: "quantity",
-      align: "center",
-      width: 250,
-      render: (_, record) => (
-        <div className="">
-          {record.total.map((item, index) => (
-            <div key={index} className=" rounded-lg">
-              <div className="flex space-x-4">
-                <span className="block text-sm font-bold mb-2">
-                  {item.dishSize.vietnameseName}
-                </span>
-                <Badge count={item.uncheckedQuantity} showZero>
-                  <Tag color="green">Chưa đọc</Tag>
-                </Badge>
-                <Badge count={item.processingQuantity} showZero>
-                  <Tag color="green">Đang nấu</Tag>
-                </Badge>
-              </div>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      title: "Hành động",
-      dataIndex: "detail",
-      key: "detail",
-      align: "center",
-      width: 50,
-      render: (_, record) => (
-        <div>
-          <IconButton
-            onClick={() => {
-              setSelectedDish(record);
-            }}
-            className="cursor-pointer bg-white shadow-none text-black hover:shadow-none hover:bg-white"
-          >
-            <Eye />
-          </IconButton>
-        </div>
-      ),
+
+      render: (_, record) => {
+        const dishes = JSON.parse(record.groupedDishJson).MutualOrderDishes;
+        return (
+          dishes.length > 0 &&
+          dishes.map((dishItem, index) => (
+            <DishSizeInfo
+              key={index}
+              dishData={dishItem}
+              sizeData={dishItem.Dish?.Total || []}
+              groupedDishId={record.groupedDishCraftId}
+              fetchDetail={fetchDetail}
+              type={true}
+            />
+          ))
+        );
+      },
     },
   ];
 
-  const handleUpdateStatus = async () => {
-    const response = await callApi(
-      `${OrderApi.UPDATE_ORDER_DETAIL_STATUS}?isSuccessful=true`,
-      "PUT",
-      selectedRows
+  const columnSingle = [
+    {
+      dataIndex: "id",
+      key: "id",
+      title: "STT",
+      width: 80,
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "MÓN ĂN",
+      dataIndex: "groupedDishJson",
+      key: "name",
+
+      render: (_, record) => {
+        const dishes = JSON.parse(record.groupedDishJson).SingleOrderDishes;
+        return (
+          dishes.length > 0 &&
+          dishes.map((dishItem, index) => (
+            <DishSizeInfo
+              key={index}
+              dishData={dishItem}
+              sizeData={dishItem.Dish?.Total || []}
+              groupedDishId={record.groupedDishCraftId}
+              fetchDetail={fetchDetail}
+              type={false}
+            />
+          ))
+        );
+      },
+    },
+  ];
+  const fetchData = async () => {
+    const result = await callApi(`${GroupedDishCraftApi.GET_ALL}`, "GET");
+    if (result.isSuccess) {
+      setGroupedDishCraft(result.result.items);
+    }
+  };
+  const fetchDetail = async (groupedDishId, dishId, type) => {
+    const result = await callApi(
+      `${GroupedDishCraftApi.GET_BY_ID}/${groupedDishId}?dishId=${dishId}&isMutual=${type}`,
+      "GET"
     );
-    if (response.isSuccess) {
+    if (result.isSuccess) {
+      setSelectedDish(result.result);
+    }
+  };
+  console.log(selectedDish);
+  const handleUpdateStatus = async (selectedOrderDetail) => {
+    const result = await callApi(
+      `${OrderApi.UPDATE_ORDER_DETAIL_STATUS}`,
+      "PUT",
+      selectedOrderDetail
+    );
+    if (result.isSuccess) {
+      fetchData();
+      setSelectedDish(null);
       message.success("Cập nhật trạng thái thành công");
-      await fetchData();
     } else {
       showError(error);
     }
   };
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     // Create connection
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl}/notifications`) // Replace with your SignalR hub URL
+      .withUrl(`${baseUrl}/notifications`)
       .withAutomaticReconnect()
       .build();
 
     setConnection(newConnection);
   }, []);
+
   useEffect(() => {
     if (connection) {
       // Start the connection
@@ -142,25 +220,32 @@ const OptimizeProcess = () => {
           console.log("Connected to SignalR");
           message.success("Connected to SignalR");
           // Subscribe to SignalR events
-          connection.on("LOAD_ORDER_SESIONS", (data) => {
+          connection.on("LOAD_ORDER_SESIONS", () => {
             fetchData();
             if (audioRef.current) {
-              audioRef.current.play().catch((error) => {
-                console.error("Error playing audio:", error);
-              });
+              audioRef.current.play();
             }
           });
         })
         .catch((error) => console.log("Connection failed: ", error));
     }
 
-    // Cleanup on component unmount
     return () => {
       if (connection) {
         connection.stop();
       }
     };
   }, [connection]);
+
+  const filteredData = groupedDishCraft.filter((item) => {
+    const dishes = JSON.parse(item.groupedDishJson).MutualOrderDishes;
+    return dishes.length > 0;
+  });
+
+  const filteredSingleData = groupedDishCraft.filter((item) => {
+    const dishes = JSON.parse(item.groupedDishJson).SingleOrderDishes;
+    return dishes.length > 0;
+  });
 
   return (
     <div className="px-10 bg-white rounded-lg py-4 shadow-lg">
@@ -179,64 +264,51 @@ const OptimizeProcess = () => {
 
         <Title level={3}>BẢNG ƯU TIÊN MÓN CẦN CHẾ BIẾN</Title>
 
-        <div className="grid grid-cols-1 2xl:grid-cols-12 ">
-          <div className=" col-span-12  2xl:col-span-12 ">
-            <div className="grid  grid-cols-1 xl:grid-cols-2 gap-2">
-              <div className="">
-                <div className="">
-                  <div className="">
-                    <h3 className="bg-[#E3B054] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
-                      Món trùng đơn
-                    </h3>
-                    <div className="w-full">
-                      {loading && <Skeleton />}
-                      {!loading && (
-                        <StyledTable
-                          dataSource={mutualOrderDishes}
-                          columns={columns}
-                          pagination={false}
-                          rowKey={uniqueId()}
-                          size="small"
-                          loading={loading}
-                          scroll={{ x: 600 }}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="">
-                <h3 className="bg-[#C40519] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
-                  Món lẻ đơn
-                </h3>
-                <div className="overflow-x-auto w-full">
-                  {loading && <Skeleton />}
-                  {!loading && (
-                    <StyledTable
-                      dataSource={singleOrderDishes}
-                      columns={columns}
-                      pagination={false}
-                      rowKey="id"
-                      size="small"
-                      scroll={{ x: 600 }}
-                    />
-                  )}
-                </div>
-              </div>
+        <div className="grid  grid-cols-1 xl:grid-cols-2 gap-4 ">
+          <div className="">
+            <h3 className="bg-[#E3B054] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
+              Món trùng đơn
+            </h3>
+            <div className="w-full">
+              {loading && <Skeleton />}
+              {!loading && (
+                <StyledTable
+                  dataSource={filteredData}
+                  columns={columns}
+                  pagination={false}
+                  rowKey={(record) => record.id}
+                  loading={loading}
+                  scroll={{ x: 600 }}
+                />
+              )}
+            </div>
+          </div>
+          <div className="">
+            <h3 className="bg-[#C40519] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
+              Món lẻ đơn
+            </h3>
+            <div className="overflow-x-auto w-full">
+              {loading && <Skeleton />}
+              {!loading && (
+                <StyledTable
+                  dataSource={filteredSingleData}
+                  columns={columnSingle}
+                  pagination={false}
+                  scroll={{ x: 600 }}
+                  rowKey={(record) => record.id}
+                  size="small"
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
-      {selectedDish && (
-        <OrderDetailModal
-          selectedDish={selectedDish}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-          handleUpdateStatus={handleUpdateStatus}
-          loading={loading}
-          setSelectedDish={setSelectedDish}
-        />
-      )}
+      <OrderDetailModal
+        handleUpdateStatus={handleUpdateStatus}
+        loading={loading}
+        selectedDish={selectedDish}
+        setSelectedDish={setSelectedDish}
+      />
     </div>
   );
 };
