@@ -6,7 +6,6 @@ import MenuPage from "../pages/common/menu-page/MenuPage";
 import ProductDetail from "../pages/common/product-detail/ProductDetail";
 import ReservationPage from "../pages/common/reservation/ReservationPage";
 import UserLayout from "../layouts/common/UserLayout";
-import PersonalInformation from "../pages/common/personal-information/PersonalInformation";
 import PersonalOrder from "../pages/common/personal-information/PersonalOrder";
 import PersonalTransaction from "../pages/common/personal-information/PersonalTransaction";
 import ManagerLayout from "../layouts/common/ManagerLayout";
@@ -26,7 +25,6 @@ import VerifyPayment from "../pages/common/verify-payment/VerifyPayment";
 import { AdminDevicePage } from "../pages/admin/AdminDevicePage";
 import RestaurantCheckout from "../pages/common/customer/RestaurentCheckout";
 import { TransactionPage } from "../pages/admin/TransactionPage";
-import ChatButton from "../components/chat/ChatButton";
 import KitchenLayout from "../layouts/common/KitchenLayout";
 import OrderManagement from "../pages/kitchen/order-management/OrderManagement";
 import DishManagement from "../pages/kitchen/dish-management/DishManagement";
@@ -46,6 +44,7 @@ import PersonalSetting from "../pages/common/personal-information/PersonalSettin
 import AdminUserPage from "../pages/admin/user/AdminUserPage";
 import AdminShipperPage from "../pages/admin/user/AdminShipperPage";
 import Landing from "../pages/common/landing/Landing";
+import TiviShow from "../pages/common/tivi/tivi-show";
 
 function Routers() {
   const routing = useRoutes([
@@ -56,6 +55,10 @@ function Routers() {
     {
       path: "restaurant-checkout",
       element: <RestaurantCheckout />,
+    },
+    {
+      path: "order-tivi",
+      element: <TiviShow />,
     },
     {
       path: "/",
