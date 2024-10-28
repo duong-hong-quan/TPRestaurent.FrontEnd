@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 body {
-    font-family: 'Poppins', sans-serif;
+    /* font-family: 'Poppins', sans-serif; */
+    font-family: 'Montserrat', sans-serif;
     overflow-y: scroll; /* Đảm bảo luôn hiển thị thanh cuộn */
 
   }
