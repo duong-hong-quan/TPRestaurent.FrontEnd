@@ -18,6 +18,7 @@ import {
   removeCombo,
 } from "../../../redux/features/cartSlice";
 import useSyncCart from "../../../hook/useSyncCart";
+import { useEffect } from "react";
 
 export function ReservationCart() {
   const cartReservation = useSelector((state) => state.cartReservation);
