@@ -21,6 +21,14 @@ const OrderDetailAdmin = ({ reservationData, fetchData }) => {
   const totalAmount = order.totalAmount;
 
   const handlePayment = async () => {
+    if (!amount) {
+      message.error("Vui lòng nhập số tiền khách đưa");
+      return;
+    }
+    if (amount < totalAmount) {
+      message.error("Số tiền khách đưa không đủ");
+      return;
+    }
     const response = await callApi(
       `${OrderApi.MAKE_DINE_IN_ORDER_BILL}`,
       "POST",
@@ -29,6 +37,8 @@ const OrderDetailAdmin = ({ reservationData, fetchData }) => {
         paymentMethod: 1,
         couponIds: [],
         loyalPointsToUse: 0,
+        cashReceived: amount,
+        changeReturned: amount - totalAmount,
       }
     );
     if (response?.isSuccess) {
