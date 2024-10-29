@@ -55,13 +55,14 @@ const CartPage = () => {
     }
     setIsSummary(true);
   };
-  if (isSummary) {
-    return <CartSummary handleClose={() => setIsSummary(false)} />;
-  }
+
   const totalPrice = cart.total ? cart.total + (cartTotal || 0) : cartTotal;
   useEffect(() => {
     syncCart();
   }, []);
+  if (isSummary) {
+    return <CartSummary handleClose={() => setIsSummary(false)} />;
+  }
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
