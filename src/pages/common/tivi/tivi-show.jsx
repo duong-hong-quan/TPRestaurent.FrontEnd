@@ -1,796 +1,237 @@
 // eslint-disable-next-line no-unused-vars
-import React from "react";
+import React, { useEffect, useState } from "react";
 import OrderSessionList from "./OrderSessionList";
 import ProcessingOrders from "./ProcessingOrders";
 import CompletedOrders from "./CompletedOrders";
-
-// Dữ liệu mẫu của bạn
-const sampleData = {
-  result: {
-    items: [
-      {
-        orderSession: {
-          orderSessionId: "0989fd08-06cc-42a0-b5ce-607976bd630a",
-          orderSessionTime: "2024-10-24T14:30:39.0400504",
-          orderSessionNumber: 52,
-          orderSessionStatusId: 2,
-          orderSessionStatus: {
-            id: 2,
-            name: "Processing",
-            vietnameseName: "Đang Xử Lý",
-          },
-        },
-        table: null,
-        order: {
-          orderId: "0da3569c-35da-4e62-b54f-ce5ece01afa2",
-          orderDate: "2024-10-24T14:30:39.1856431",
-          assignedTime: null,
-          startDeliveringTime: null,
-          deliveredTime: null,
-          reservationDate: null,
-          mealTime: null,
-          endTime: null,
-          cancelledTime: null,
-          totalAmount: 896666,
-          statusId: 5,
-          status: {
-            id: 5,
-            name: "Processing",
-            vietnameseName: "Đang Xử Lý",
-          },
-          accountId: "601d5c9c-a1ba-472c-a4c6-956ec80a69aa",
-          account: null,
-          addressId: "9cbc4f36-c663-4f37-876b-ec6e8115f978",
-          customerInfoAddress: null,
-          loyalPointsHistoryId: null,
-          loyalPointsHistory: null,
-          note: "Không có ghi chú",
-          orderTypeId: 2,
-          orderType: {
-            id: 2,
-            name: "Delivery",
-            vietnameseName: "Giao hàng tận nơi",
-          },
-          numOfPeople: null,
-          deposit: null,
-          isPrivate: null,
-          validatingImg: null,
-          shipperId: null,
-          shipper: null,
-        },
-        orderDetails: [
-          {
-            orderDetailId: "7abffb32-3dee-4879-9bbc-05b549439c17",
-            orderId: "0da3569c-35da-4e62-b54f-ce5ece01afa2",
-            order: null,
-            dishSizeDetailId: "f7732390-b421-42f6-ac77-4e50b340c40f",
-            dishSizeDetail: {
-              dishSizeDetailId: "f7732390-b421-42f6-ac77-4e50b340c40f",
-              isAvailable: true,
-              price: 149000,
-              discount: 2,
-              dishId: "853a9f9c-46f5-4111-9c81-350fb52753f5",
-              dish: {
-                dishId: "853a9f9c-46f5-4111-9c81-350fb52753f5",
-                name: "Beefsteak update",
-                description: "ko có",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F853a9f9c-46f5-4111-9c81-350fb52753f5_main.jpg.png?alt=media&token=05e32230-faff-4973-955f-e68102b0b272",
-                dishItemTypeId: 4,
-                dishItemType: {
-                  id: 4,
-                  name: "BBQ",
-                  vietnameseName: "Nướng",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 0,
-              dishSize: {
-                id: 0,
-                name: "SMALL",
-                vietnameseName: "Nhỏ",
-              },
-              quantityLeft: 0,
-              dailyCountdown: 0,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 2,
-            price: 149000,
-            note: null,
-            orderTime: "2024-10-24T14:30:39.0400565",
-            readyToServeTime: null,
-            orderDetailStatusId: 4,
-            orderDetailStatus: {
-              id: 4,
-              name: "ReadyToServe",
-              vietnameseName: "Đã hoàn thành",
-            },
-            orderSessionId: "0989fd08-06cc-42a0-b5ce-607976bd630a",
-            orderSession: null,
-          },
-          {
-            orderDetailId: "fec1879c-0b07-4679-b163-1c718c84d53b",
-            orderId: "0da3569c-35da-4e62-b54f-ce5ece01afa2",
-            order: null,
-            dishSizeDetailId: "35610b9f-c73a-46ff-8a99-354f38162f4b",
-            dishSizeDetail: {
-              dishSizeDetailId: "35610b9f-c73a-46ff-8a99-354f38162f4b",
-              isAvailable: true,
-              price: 129000,
-              discount: 2,
-              dishId: "e7f50e4b-81f2-43d1-a7b3-7f4f027ec090",
-              dish: {
-                dishId: "e7f50e4b-81f2-43d1-a7b3-7f4f027ec090",
-                name: "Salad cá hồi",
-                description:
-                  "Salad cá hồi là món ăn yêu thích, chinh phục vị giác của nhiều người",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2Fe7f50e4b-81f2-43d1-a7b3-7f4f027ec090_main.jpg.png?alt=media&token=8d18f322-12c0-48df-a8f2-c6f4f79d0446",
-                dishItemTypeId: 1,
-                dishItemType: {
-                  id: 1,
-                  name: "APPETIZER",
-                  vietnameseName: "Khai Vị",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 0,
-              dishSize: {
-                id: 0,
-                name: "SMALL",
-                vietnameseName: "Nhỏ",
-              },
-              quantityLeft: 10,
-              dailyCountdown: 0,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 1,
-            price: 129000,
-            note: null,
-            orderTime: "2024-10-24T14:30:39.0400565",
-            readyToServeTime: null,
-            orderDetailStatusId: 4,
-            orderDetailStatus: {
-              id: 4,
-              name: "ReadyToServe",
-              vietnameseName: "Đã hoàn thành",
-            },
-            orderSessionId: "0989fd08-06cc-42a0-b5ce-607976bd630a",
-            orderSession: null,
-          },
-          {
-            orderDetailId: "cb7502f1-d248-4792-ab57-be4dea36e56e",
-            orderId: "0da3569c-35da-4e62-b54f-ce5ece01afa2",
-            order: null,
-            dishSizeDetailId: "60877b89-7fee-4309-90f6-ad57ed3b6f7c",
-            dishSizeDetail: {
-              dishSizeDetailId: "60877b89-7fee-4309-90f6-ad57ed3b6f7c",
-              isAvailable: true,
-              price: 1223333,
-              discount: 4,
-              dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-              dish: {
-                dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-                name: "Lẩu chua",
-                description: "tuyet he",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7_main.jpg.png?alt=media&token=b40d2abd-dd15-49a9-8194-064432b38e04",
-                dishItemTypeId: 3,
-                dishItemType: {
-                  id: 3,
-                  name: "HOTPOT",
-                  vietnameseName: "Lẩu",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 0,
-              dishSize: {
-                id: 0,
-                name: "SMALL",
-                vietnameseName: "Nhỏ",
-              },
-              quantityLeft: 10,
-              dailyCountdown: 10,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 2,
-            price: 122333,
-            note: null,
-            orderTime: "2024-10-24T14:30:39.0400565",
-            readyToServeTime: null,
-            orderDetailStatusId: 4,
-            orderDetailStatus: {
-              id: 4,
-              name: "ReadyToServe",
-              vietnameseName: "Đã hoàn thành",
-            },
-            orderSessionId: "0989fd08-06cc-42a0-b5ce-607976bd630a",
-            orderSession: null,
-          },
-          {
-            orderDetailId: "aea757d4-83df-4ba1-9b4f-c18152302c12",
-            orderId: "0da3569c-35da-4e62-b54f-ce5ece01afa2",
-            order: null,
-            dishSizeDetailId: "51fcf031-9a65-4212-aeed-ce497089fe94",
-            dishSizeDetail: {
-              dishSizeDetailId: "51fcf031-9a65-4212-aeed-ce497089fe94",
-              isAvailable: true,
-              price: 200000,
-              discount: 2,
-              dishId: "b0edf9c8-4818-40bf-b11b-fa28e965616d",
-              dish: {
-                dishId: "b0edf9c8-4818-40bf-b11b-fa28e965616d",
-                name: "Beefsteak nha",
-                description:
-                  "Món beef steak áp chảo với bơ tỏi và hương thảo này mang lại hương vị như một bữa ăn chất lượng tại nhà hàng.",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2Fb0edf9c8-4818-40bf-b11b-fa28e965616d_main.jpg.png?alt=media&token=0ca84961-80d1-4b3c-8638-1fc79ad6dd83",
-                dishItemTypeId: 3,
-                dishItemType: {
-                  id: 3,
-                  name: "HOTPOT",
-                  vietnameseName: "Lẩu",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 0,
-              dishSize: {
-                id: 0,
-                name: "SMALL",
-                vietnameseName: "Nhỏ",
-              },
-              quantityLeft: 20,
-              dailyCountdown: 0,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 1,
-            price: 200000,
-            note: null,
-            orderTime: "2024-10-24T14:30:39.0400565",
-            readyToServeTime: null,
-            orderDetailStatusId: 4,
-            orderDetailStatus: {
-              id: 4,
-              name: "ReadyToServe",
-              vietnameseName: "Đã hoàn thành",
-            },
-            orderSessionId: "0989fd08-06cc-42a0-b5ce-607976bd630a",
-            orderSession: null,
-          },
-        ],
-      },
-      {
-        orderSession: {
-          orderSessionId: "3adbc635-fe2d-46a4-b355-830ad2d2a985",
-          orderSessionTime: "2024-10-20T18:08:44.4297973",
-          orderSessionNumber: 36,
-          orderSessionStatusId: 2,
-          orderSessionStatus: {
-            id: 2,
-            name: "Processing",
-            vietnameseName: "Đang Xử Lý",
-          },
-        },
-        table: null,
-        order: {
-          orderId: "95dff781-a36d-4ab1-bc0c-f6e1bf330df0",
-          orderDate: "2024-10-20T18:08:44.4980228",
-          assignedTime: null,
-          startDeliveringTime: null,
-          deliveredTime: null,
-          reservationDate: null,
-          mealTime: null,
-          endTime: null,
-          cancelledTime: null,
-          totalAmount: 225066.4,
-          statusId: 4,
-          status: {
-            id: 4,
-            name: "Pending",
-            vietnameseName: "Chờ Xử Lý",
-          },
-          accountId: "22ca9104-2837-4862-a399-1027ae9e0889",
-          account: null,
-          addressId: "c440fe1f-721e-4d12-b923-3190fb17b4f5",
-          customerInfoAddress: null,
-          loyalPointsHistoryId: null,
-          loyalPointsHistory: null,
-          note: "Không có ghi chú",
-          orderTypeId: 2,
-          orderType: {
-            id: 2,
-            name: "Delivery",
-            vietnameseName: "Giao hàng tận nơi",
-          },
-          numOfPeople: null,
-          deposit: null,
-          isPrivate: null,
-          validatingImg: null,
-          shipperId: null,
-          shipper: null,
-        },
-        orderDetails: [
-          {
-            orderDetailId: "98964570-826b-48a4-8e7c-0be9c5f559df",
-            orderId: "95dff781-a36d-4ab1-bc0c-f6e1bf330df0",
-            order: null,
-            dishSizeDetailId: "60877b89-7fee-4309-90f6-ad57ed3b6f7c",
-            dishSizeDetail: {
-              dishSizeDetailId: "60877b89-7fee-4309-90f6-ad57ed3b6f7c",
-              isAvailable: true,
-              price: 1223333,
-              discount: 4,
-              dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-              dish: {
-                dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-                name: "Lẩu chua",
-                description: "tuyet he",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7_main.jpg.png?alt=media&token=b40d2abd-dd15-49a9-8194-064432b38e04",
-                dishItemTypeId: 3,
-                dishItemType: {
-                  id: 3,
-                  name: "HOTPOT",
-                  vietnameseName: "Lẩu",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 0,
-              dishSize: {
-                id: 0,
-                name: "SMALL",
-                vietnameseName: "Nhỏ",
-              },
-              quantityLeft: 10,
-              dailyCountdown: 10,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 1,
-            price: 122333,
-            note: null,
-            orderTime: "2024-10-20T18:08:44.4298085",
-            readyToServeTime: null,
-            orderDetailStatusId: 1,
-            orderDetailStatus: {
-              id: 1,
-              name: "Reserved",
-              vietnameseName: "Đặt trước",
-            },
-            orderSessionId: "3adbc635-fe2d-46a4-b355-830ad2d2a985",
-            orderSession: null,
-          },
-          {
-            orderDetailId: "cd6ed337-a9d8-426f-94ce-1cc20e92b207",
-            orderId: "95dff781-a36d-4ab1-bc0c-f6e1bf330df0",
-            order: null,
-            dishSizeDetailId: "35610b9f-c73a-46ff-8a99-354f38162f4b",
-            dishSizeDetail: {
-              dishSizeDetailId: "35610b9f-c73a-46ff-8a99-354f38162f4b",
-              isAvailable: true,
-              price: 129000,
-              discount: 2,
-              dishId: "e7f50e4b-81f2-43d1-a7b3-7f4f027ec090",
-              dish: {
-                dishId: "e7f50e4b-81f2-43d1-a7b3-7f4f027ec090",
-                name: "Salad cá hồi",
-                description:
-                  "Salad cá hồi là món ăn yêu thích, chinh phục vị giác của nhiều người",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2Fe7f50e4b-81f2-43d1-a7b3-7f4f027ec090_main.jpg.png?alt=media&token=8d18f322-12c0-48df-a8f2-c6f4f79d0446",
-                dishItemTypeId: 1,
-                dishItemType: {
-                  id: 1,
-                  name: "APPETIZER",
-                  vietnameseName: "Khai Vị",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 0,
-              dishSize: {
-                id: 0,
-                name: "SMALL",
-                vietnameseName: "Nhỏ",
-              },
-              quantityLeft: 10,
-              dailyCountdown: 0,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 1,
-            price: 129000,
-            note: null,
-            orderTime: "2024-10-20T18:08:44.4298085",
-            readyToServeTime: null,
-            orderDetailStatusId: 1,
-            orderDetailStatus: {
-              id: 1,
-              name: "Reserved",
-              vietnameseName: "Đặt trước",
-            },
-            orderSessionId: "3adbc635-fe2d-46a4-b355-830ad2d2a985",
-            orderSession: null,
-          },
-        ],
-      },
-      {
-        orderSession: {
-          orderSessionId: "b17d04c0-ba00-4a2a-a8f6-3ae8e7032b49",
-          orderSessionTime: "2024-10-19T21:41:20.7121403",
-          orderSessionNumber: 29,
-          orderSessionStatusId: 2,
-          orderSessionStatus: {
-            id: 2,
-            name: "Processing",
-            vietnameseName: "Đang Xử Lý",
-          },
-        },
-        table: null,
-        order: {
-          orderId: "895e7d32-e977-4963-b585-2c4358f93d06",
-          orderDate: "2024-10-19T21:41:30.7782226",
-          assignedTime: null,
-          startDeliveringTime: null,
-          deliveredTime: null,
-          reservationDate: null,
-          mealTime: null,
-          endTime: null,
-          cancelledTime: null,
-          totalAmount: 507888,
-          statusId: 4,
-          status: {
-            id: 4,
-            name: "Pending",
-            vietnameseName: "Chờ Xử Lý",
-          },
-          accountId: "d4c81997-269c-47db-90f6-20139c6aca79",
-          account: null,
-          addressId: "19e4e6c4-324c-486f-85a7-ee7cc8b2df38",
-          customerInfoAddress: null,
-          loyalPointsHistoryId: null,
-          loyalPointsHistory: null,
-          note: "Không có ghi chú",
-          orderTypeId: 2,
-          orderType: {
-            id: 2,
-            name: "Delivery",
-            vietnameseName: "Giao hàng tận nơi",
-          },
-          numOfPeople: null,
-          deposit: null,
-          isPrivate: null,
-          validatingImg: null,
-          shipperId: null,
-          shipper: null,
-        },
-        orderDetails: [
-          {
-            orderDetailId: "ffe04d7c-8259-41b9-8d89-4312ce5bec21",
-            orderId: "895e7d32-e977-4963-b585-2c4358f93d06",
-            order: null,
-            dishSizeDetailId: "78cef86d-ab00-425e-90b6-59541d445a95",
-            dishSizeDetail: {
-              dishSizeDetailId: "78cef86d-ab00-425e-90b6-59541d445a95",
-              isAvailable: false,
-              price: 22222,
-              discount: 5,
-              dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-              dish: {
-                dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-                name: "Lẩu chua",
-                description: "tuyet he",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7_main.jpg.png?alt=media&token=b40d2abd-dd15-49a9-8194-064432b38e04",
-                dishItemTypeId: 3,
-                dishItemType: {
-                  id: 3,
-                  name: "HOTPOT",
-                  vietnameseName: "Lẩu",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 1,
-              dishSize: {
-                id: 1,
-                name: "MEDIUM",
-                vietnameseName: "Vừa",
-              },
-              quantityLeft: 10,
-              dailyCountdown: 10,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 1,
-            price: 22222,
-            note: null,
-            orderTime: "2024-10-19T21:41:20.712324",
-            readyToServeTime: null,
-            orderDetailStatusId: 3,
-            orderDetailStatus: {
-              id: 3,
-              name: "Processing",
-              vietnameseName: "Đang Xử Lý",
-            },
-            orderSessionId: "b17d04c0-ba00-4a2a-a8f6-3ae8e7032b49",
-            orderSession: null,
-          },
-          {
-            orderDetailId: "4fa68322-bd3e-4249-979f-bc79964de78f",
-            orderId: "895e7d32-e977-4963-b585-2c4358f93d06",
-            order: null,
-            dishSizeDetailId: "ab0a5fe4-b9ca-472c-b624-83756cd06bbc",
-            dishSizeDetail: {
-              dishSizeDetailId: "ab0a5fe4-b9ca-472c-b624-83756cd06bbc",
-              isAvailable: false,
-              price: 333333,
-              discount: 2,
-              dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-              dish: {
-                dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-                name: "Lẩu chua",
-                description: "tuyet he",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7_main.jpg.png?alt=media&token=b40d2abd-dd15-49a9-8194-064432b38e04",
-                dishItemTypeId: 3,
-                dishItemType: {
-                  id: 3,
-                  name: "HOTPOT",
-                  vietnameseName: "Lẩu",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 2,
-              dishSize: {
-                id: 2,
-                name: "LARGE",
-                vietnameseName: "Lớn",
-              },
-              quantityLeft: 10,
-              dailyCountdown: 10,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 1,
-            price: 333333,
-            note: null,
-            orderTime: "2024-10-19T21:41:20.712324",
-            readyToServeTime: null,
-            orderDetailStatusId: 3,
-            orderDetailStatus: {
-              id: 3,
-              name: "Processing",
-              vietnameseName: "Đang Xử Lý",
-            },
-            orderSessionId: "b17d04c0-ba00-4a2a-a8f6-3ae8e7032b49",
-            orderSession: null,
-          },
-          {
-            orderDetailId: "c44beb02-0871-465c-886a-de55b04ced31",
-            orderId: "895e7d32-e977-4963-b585-2c4358f93d06",
-            order: null,
-            dishSizeDetailId: "60877b89-7fee-4309-90f6-ad57ed3b6f7c",
-            dishSizeDetail: {
-              dishSizeDetailId: "60877b89-7fee-4309-90f6-ad57ed3b6f7c",
-              isAvailable: true,
-              price: 1223333,
-              discount: 4,
-              dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-              dish: {
-                dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-                name: "Lẩu chua",
-                description: "tuyet he",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7_main.jpg.png?alt=media&token=b40d2abd-dd15-49a9-8194-064432b38e04",
-                dishItemTypeId: 3,
-                dishItemType: {
-                  id: 3,
-                  name: "HOTPOT",
-                  vietnameseName: "Lẩu",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 0,
-              dishSize: {
-                id: 0,
-                name: "SMALL",
-                vietnameseName: "Nhỏ",
-              },
-              quantityLeft: 10,
-              dailyCountdown: 10,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 1,
-            price: 122333,
-            note: null,
-            orderTime: "2024-10-19T21:41:20.712324",
-            readyToServeTime: null,
-            orderDetailStatusId: 3,
-            orderDetailStatus: {
-              id: 3,
-              name: "Processing",
-              vietnameseName: "Đang Xử Lý",
-            },
-            orderSessionId: "b17d04c0-ba00-4a2a-a8f6-3ae8e7032b49",
-            orderSession: null,
-          },
-        ],
-      },
-      {
-        orderSession: {
-          orderSessionId: "9da1c542-712b-4ce7-96fc-5b04e20ec45e",
-          orderSessionTime: "2024-10-19T21:36:26.9264747",
-          orderSessionNumber: 28,
-          orderSessionStatusId: 2,
-          orderSessionStatus: {
-            id: 2,
-            name: "Processing",
-            vietnameseName: "Đang Xử Lý",
-          },
-        },
-        table: null,
-        order: {
-          orderId: "5837a858-4448-4662-8799-1e6beea051c6",
-          orderDate: "2024-10-19T21:36:26.9607899",
-          assignedTime: null,
-          startDeliveringTime: null,
-          deliveredTime: null,
-          reservationDate: null,
-          mealTime: null,
-          endTime: null,
-          cancelledTime: null,
-          totalAmount: 274666,
-          statusId: 5,
-          status: {
-            id: 5,
-            name: "Processing",
-            vietnameseName: "Đang Xử Lý",
-          },
-          accountId: "d4c81997-269c-47db-90f6-20139c6aca79",
-          account: null,
-          addressId: "19e4e6c4-324c-486f-85a7-ee7cc8b2df38",
-          customerInfoAddress: null,
-          loyalPointsHistoryId: null,
-          loyalPointsHistory: null,
-          note: "Không có ghi chú",
-          orderTypeId: 2,
-          orderType: {
-            id: 2,
-            name: "Delivery",
-            vietnameseName: "Giao hàng tận nơi",
-          },
-          numOfPeople: null,
-          deposit: null,
-          isPrivate: null,
-          validatingImg: null,
-          shipperId: null,
-          shipper: null,
-        },
-        orderDetails: [
-          {
-            orderDetailId: "15741160-32bd-4f46-968f-232233cc5071",
-            orderId: "5837a858-4448-4662-8799-1e6beea051c6",
-            order: null,
-            dishSizeDetailId: "60877b89-7fee-4309-90f6-ad57ed3b6f7c",
-            dishSizeDetail: {
-              dishSizeDetailId: "60877b89-7fee-4309-90f6-ad57ed3b6f7c",
-              isAvailable: true,
-              price: 1223333,
-              discount: 4,
-              dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-              dish: {
-                dishId: "3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7",
-                name: "Lẩu chua",
-                description: "tuyet he",
-                image:
-                  "https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F3d007ac3-6f7d-45ae-b73d-6a04f3b18ee7_main.jpg.png?alt=media&token=b40d2abd-dd15-49a9-8194-064432b38e04",
-                dishItemTypeId: 3,
-                dishItemType: {
-                  id: 3,
-                  name: "HOTPOT",
-                  vietnameseName: "Lẩu",
-                },
-                isAvailable: true,
-                isDeleted: false,
-                isMainItem: true,
-                preparationTime: null,
-              },
-              dishSizeId: 0,
-              dishSize: {
-                id: 0,
-                name: "SMALL",
-                vietnameseName: "Nhỏ",
-              },
-              quantityLeft: 10,
-              dailyCountdown: 10,
-            },
-            comboId: null,
-            combo: null,
-            quantity: 2,
-            price: 122333,
-            note: null,
-            orderTime: "2024-10-19T21:36:26.9264811",
-            readyToServeTime: null,
-            orderDetailStatusId: 1,
-            orderDetailStatus: {
-              id: 1,
-              name: "Reserved",
-              vietnameseName: "Đặt trước",
-            },
-            orderSessionId: "9da1c542-712b-4ce7-96fc-5b04e20ec45e",
-            orderSession: null,
-          },
-        ],
-      },
-    ],
-    totalPages: 1,
-    preOrderQuantity: 32,
-    confirmedQuantity: 31,
-    processingQuantity: 4,
-    lateWarningQuantity: 0,
-    completedQuantity: 24,
-    cancelledQuantity: 0,
-  },
-  isSuccess: true,
-  messages: [],
-};
+import Header from "./HeaderTivi";
+import useCallApi from "../../../api/useCallApi";
+import { OrderSessionApi } from "../../../api/endpoint";
+import { useMemo } from "react";
+import OrderProgressBar from "./ProgressTotal";
 
 const TiviShow = () => {
-  const orderSessions = sampleData.result.items;
+  const [orderSessions, setOrderSessions] = useState([]);
+  const [orderSessions1, setOrderSessions1] = useState([]);
+  const { callApi } = useCallApi();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 100;
+  const selectedStatus = 1; // Chỉ lấy trạng thái '1'
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchDataOrderSessionNew();
+      await fetchDataAllOrderSession();
+    };
+    fetchData();
+  }, [currentPage]);
+
+  // Hàm gọi API
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchDataAllOrderSession = async () => {
+    setLoading(true);
+    const response = await callApi(
+      `${OrderSessionApi.GET_ALL_ORDER_SESSION}?pageNumber=${currentPage}&pageSize=${pageSize}`,
+      "GET"
+    );
+
+    if (response.isSuccess) {
+      const sortedItems = response.result.items.sort(
+        (a, b) =>
+          b.orderSession?.orderSessionNumber -
+          a.orderSession?.orderSessionNumber
+      );
+      setOrderSessions(sortedItems);
+      setTotalPages(response.result?.totalPages);
+    } else {
+      setOrderSessions([]);
+      setTotalPages(0);
+    }
+    setLoading(false);
+  };
+
+  const fetchDataOrderSessionNew = async () => {
+    setLoading(true);
+    try {
+      const response = await callApi(
+        `${OrderSessionApi.GET_ALL_ORDER_SESSION}?status=${selectedStatus}&pageNumber=${currentPage}&pageSize=${pageSize}`,
+        "GET"
+      );
+
+      if (response.isSuccess) {
+        const sortedItems = response.result.items.sort(
+          (a, b) =>
+            b.orderSession?.orderSessionNumber -
+            a.orderSession?.orderSessionNumber
+        );
+        setOrderSessions1(sortedItems);
+        setTotalPages(response.result?.totalPages);
+        setError(null); // Clear any existing error
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (err) {
+      setError(err.message);
+      setOrderSessions1([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Render error message
+  if (error) return <div>Error: {error}</div>;
+
+  // const orderSessions = sampleData.result.items;
+  console.log("====================================");
+  console.log("orderSessions", orderSessions);
+  console.log("====================================");
 
   // Lọc các món ăn đang chuẩn bị và đã hoàn thành
-  const processingOrders = orderSessions.flatMap((session) =>
-    session.orderDetails.filter((detail) => detail.orderDetailStatusId === 3)
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const processingOrders = useMemo(
+    () =>
+      orderSessions.flatMap((session) =>
+        session.orderDetails
+          ?.filter((detail) => detail.orderDetailStatusId === 3)
+          .map((detail) => ({
+            ...detail,
+            orderSessionNumber: session.orderSession?.orderSessionNumber,
+            tableName: session?.table?.tableName,
+          }))
+      ) || [],
+    [orderSessions]
   );
 
+  console.log("====================================");
+  console.log("processingOrders", processingOrders);
+  console.log("====================================");
+
+  // Lọc các món ăn đã hoàn thành hoặc hủy
   const completedOrders = orderSessions.flatMap((session) =>
-    session.orderDetails.filter(
-      (detail) =>
-        detail.orderDetailStatusId === 4 || detail.orderDetailStatusId === 5
-    )
+    session.orderDetails
+      .filter(
+        (detail) =>
+          detail.orderDetailStatusId === 4 || detail.orderDetailStatusId === 5
+      )
+      .map((detail) => ({
+        ...detail,
+        orderSessionNumber: session.orderSession?.orderSessionNumber, // Include orderSessionNumber
+        tableName: session?.table?.tableName, // Include orderSessionNumber
+      }))
   );
+
+  // =================================================================================================
+
+  // Lọc tất cả các món ăn trong tất cả phiên ngoại trừ phiên đặt trước
+  const totalOrders = orderSessions
+    .filter((detail) => detail.orderSession.orderSessionStatusId !== 0)
+    .flatMap((session) => session.orderDetails);
+
+  // Lọc món cần chế biến
+  const unProcessingOrders = orderSessions.flatMap((session) =>
+    session.orderDetails
+      .filter((detail) => detail.orderDetailStatusId === 2)
+      .map((detail) => ({
+        ...detail,
+        orderSessionNumber: session.orderSession?.orderSessionNumber, // Include orderSessionNumber
+        tableName: session?.table?.tableName, // Include orderSessionNumber
+      }))
+  );
+
+  // Lọc các món ăn đã hoàn thành hoặc hủy
+  const doneOrders = orderSessions.flatMap((session) =>
+    session.orderDetails
+      .filter((detail) => detail.orderDetailStatusId === 4)
+      .map((detail) => ({
+        ...detail,
+        orderSessionNumber: session.orderSession?.orderSessionNumber, // Include orderSessionNumber
+        tableName: session?.table?.tableName, // Include orderSessionNumber
+      }))
+  );
+  // Lọc các món ăn đã hoàn thành hoặc hủy
+  const cancelOrders = orderSessions.flatMap((session) =>
+    session.orderDetails
+      .filter((detail) => detail.orderDetailStatusId === 5)
+      .map((detail) => ({
+        ...detail,
+        orderSessionNumber: session.orderSession?.orderSessionNumber, // Include orderSessionNumber
+        tableName: session?.table?.tableName, // Include orderSessionNumber
+      }))
+  );
+
+  const totalOrdersCount =
+    unProcessingOrders.length +
+    processingOrders.length +
+    doneOrders.length +
+    cancelOrders.length;
 
   return (
-    <div className="flex flex-col items-center p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold uppercase mb-4">
-        Danh sách đơn đặt món tại nhà hàng
-      </h1>
-      <div className="flex justify-around w-full  space-x-4">
-        <OrderSessionList orderSessions={orderSessions} />
-        <ProcessingOrders orders={processingOrders} />
-        <CompletedOrders orders={completedOrders} />
+    <div className="h-screen flex flex-col  overflow-hidden">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 z-10">
+        <Header />
       </div>
+
+      {/* Main Content Section */}
+      {/* {loading ? (
+        <div className=" mt-[260px]">Loading...</div>
+      ) : ( */}
+      <div className="flex flex-1 mt-[160px]  bg-gray-100 overflow-hidden p-10">
+        <div className="flex w-full justify-between space-x-4">
+          {/* Order Session List */}
+          <div className="w-1/3 overflow-hidden mb-4">
+            <OrderSessionList orderSessions={orderSessions1} />
+            <div className="w-full text-center rounded-lg py-2 mt-2 bg-blue-500 font-semibold text-white">
+              Hiện có {orderSessions1.length} Phiên đặt mới
+            </div>
+            <div className="mt-4">
+              {/* <p>
+                Tổng số lượng phiên:{" "}
+                {
+                  orderSessions.filter(
+                    (detail) => detail.orderSession.orderSessionStatusId !== 0
+                  ).length
+                }{" "}
+                phiên ( trừ phiên đặt trước)
+              </p>
+              <p>
+                Tổng số lượng món tất cả các phiên: {totalOrders.length} món (
+                trừ phiên đặt trước)
+              </p> */}
+              <div className="flex justify-center items-center">
+                <div className="font-semibold text-[#9A0E1D]">
+                  100% ({totalOrdersCount} món)
+                </div>
+                <OrderProgressBar
+                  unProcessingOrders={unProcessingOrders}
+                  processingOrders={processingOrders}
+                  doneOrders={doneOrders}
+                  cancelOrders={cancelOrders}
+                  totalOrdersCount={totalOrdersCount}
+                />
+              </div>
+              {/* <p>
+                Tổng số lượng món cần chế biến: {unProcessingOrders.length} món
+              </p>
+              <p>
+                Tổng số lượng món đang chế biến: {processingOrders.length} món
+              </p>
+              <p>Tổng số lượng món đã chế biến xong: {doneOrders.length} món</p>
+              <p>Tổng số lượng món đã huỷ: {cancelOrders.length} món</p> */}
+            </div>
+          </div>
+          <div className="h-[1050px] w-[5px] rounded-md bg-[#9A0E1D]/30 mx-2"></div>
+          {/* Processing and Completed Orders */}
+          <div className="flex w-[65%] justify-between overflow-hidden">
+            <ProcessingOrders orders={processingOrders} />
+            <CompletedOrders orders={completedOrders} />
+          </div>
+        </div>
+      </div>
+      {/* )} */}
     </div>
   );
 };
