@@ -1,12 +1,12 @@
 import { Button, message, Modal } from "antd";
 import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
 import { useEffect, useState } from "react";
-import ReservationInformation from "../ReservationInformation";
 import { OrderApi } from "../../../api/endpoint";
 import { formatPrice, mergeCartData, showError } from "../../../util/Utility";
 import useCallApi from "../../../api/useCallApi";
 import { Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import ReservationInformation from "../reservation/ReservationInformation";
 
 const ModalReservationWithoutDish = ({ show, handleClose, information }) => {
   console.log(information);

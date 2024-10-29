@@ -22,6 +22,8 @@ import { AccountApi, OrderApi } from "../../../api/endpoint";
 import ModalPolicy from "../../policy/PolicyModal";
 import dayjs from "dayjs";
 import ModalReservationWithDish from "../modal/ModalReservationWithDish";
+import ModalReservationWithoutDish from "../modal/ModalReservationWithoutDish";
+import OtpConfirmModal from "../../../pages/login/OtpConfirmModal";
 const { TextArea } = Input;
 
 const Reservation = () => {
