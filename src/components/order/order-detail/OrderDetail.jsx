@@ -9,7 +9,11 @@ import { formatDateTime, formatPrice } from "../../../util/Utility";
 import { StyledTable } from "../../custom-ui/StyledTable";
 import { WarningOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
-import { ConfigurationApi, OrderApi } from "../../../api/endpoint";
+import {
+  ConfigurationApi,
+  OrderApi,
+  TransactionApi,
+} from "../../../api/endpoint";
 import dayjs from "dayjs";
 import OrderTag from "../../tag/OrderTag";
 
@@ -412,7 +416,24 @@ const OrderDetail = ({ reservationData, fetchData }) => {
         />
         {renderIsPayment() && (
           <div className="flex justify-center my-4">
-            <Button className="bg-red-900 text-white mx-auto">
+            <Button
+              className="bg-red-900 text-white mx-auto"
+              loading={loading}
+              onClick={async () => {
+                const response = await callApi(
+                  `${TransactionApi.CREATE_PAYMENT}`,
+                  "POST",
+                  {
+                    orderId: order?.orderId,
+                    paymentMethod: order?.transaction?.paymentMethodId,
+                  }
+                );
+                debugger;
+                if (response?.isSuccess) {
+                  window.location.href = response.result;
+                }
+              }}
+            >
               Thanh toán ngay
             </Button>
           </div>
