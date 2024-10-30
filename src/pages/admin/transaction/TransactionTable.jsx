@@ -3,8 +3,12 @@ import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import { CreditCard, DollarSign, ShoppingCart } from "lucide-react";
-import { formatDateTime, formatPrice } from "../../../util/Utility";
+import { formatDateTime, formatPrice, showError } from "../../../util/Utility";
 import { StyledTable } from "../../../components/custom-ui/StyledTable";
+import useCallApi from "../../../api/useCallApi";
+import { TransactionApi } from "../../../api/endpoint";
+import { useState } from "react";
+import ModalTransactionDetail from "../../../components/payment/ModalTransactionDetail";
 const { RangePicker } = DatePicker;
 
 const statusMap = {
@@ -37,7 +41,7 @@ const getMethodIcon = (method) => {
       return null;
   }
 };
-const TransactionTable = ({ data, loading }) => {
+const TransactionTable = ({ data, loading, handleOpenModal }) => {
   const renderName = (record) => {
     if (record.order?.account) {
       return `${record.order?.account?.lastName} ${record.order?.account?.firstName}`;
@@ -143,7 +147,12 @@ const TransactionTable = ({ data, loading }) => {
         columns={columns}
         dataSource={data}
         loading={loading}
-        rowKey="id"
+        rowKey={(record) => record.id}
+        onRow={(record) => {
+          return {
+            onClick: () => handleOpenModal(record),
+          };
+        }}
         pagination={false}
       />
     </div>

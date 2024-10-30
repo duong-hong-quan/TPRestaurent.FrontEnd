@@ -89,6 +89,7 @@ export const TransactionApi = {
     "/transaction/get-transaction-history-by-customer-id",
   GET_STORE_CREDIT_TRANSACTION_HISTORY_BY_CUSTOMER_ID:
     "/transaction/get-stored-credit-transaction-history-by-customer-id",
+  GET_TRANSACTION_BY_ID: "/transaction/get-payment-by-id",
 };
 
 export const DishApi = {

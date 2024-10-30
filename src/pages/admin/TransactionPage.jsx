@@ -16,18 +16,35 @@ import TabMananger from "../../components/tab/TabManager";
 import Pagination from "../../components/pagination/Pagination";
 import { Skeleton } from "antd";
 import { TransactionStatus } from "../../util/GlobalType";
+import { TransactionApi } from "../../api/endpoint";
+import ModalTransactionDetail from "../../components/payment/ModalTransactionDetail";
 
 const TABS = TransactionStatus;
 
 export function TransactionPage() {
   const [activeTab, setActiveTab] = useState("");
+  const [selectedTransaction, setSelectedTransaction] = useState({});
   const [transactionData, setTransactionData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { callApi, error, loading } = useCallApi();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
+  };
+  const handleOpenModal = async (record) => {
+    const response = await callApi(
+      `${TransactionApi.GET_TRANSACTION_BY_ID}/${record.id}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setSelectedTransaction(response.result);
+      setIsModalOpen(true);
+    } else {
+      showError(error);
+    }
   };
   const fetchData = async () => {
     const response = await callApi(
@@ -82,12 +99,21 @@ export function TransactionPage() {
         </div>
       </CardHeader>
       <CardBody className="overflow-scroll max-h-[500px] px-0">
-        <TransactionTable data={transactionData} loading={loading} />
+        <TransactionTable
+          data={transactionData}
+          loading={loading}
+          handleOpenModal={handleOpenModal}
+        />
       </CardBody>
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handleCurrentPageChange}
+      />
+      <ModalTransactionDetail
+        data={selectedTransaction}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </Card>
   );
