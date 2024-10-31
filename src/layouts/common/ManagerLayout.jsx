@@ -60,6 +60,7 @@ const menuItems = [
     subItems: [
       { title: "Cài đặt", path: "/admin/settings" },
       { title: "Quản lý thiết bị", path: "/admin/manage-devices" },
+      { title: "Quản lý sơ đồ bàn ăn", path: "/admin/dining-area" },
     ],
   },
 ];
