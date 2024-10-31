@@ -14,6 +14,8 @@ import { MdEditNote } from "react-icons/md";
 import useCallApi from "../../api/useCallApi";
 import Pagination from "../../components/pagination/Pagination";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
+import { StyledTable } from "../../components/custom-ui/StyledTable";
+import { NavLink } from "react-router-dom";
 
 export function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
@@ -77,6 +79,7 @@ export function AdminDevicePage() {
       title: "Hành động",
       dataIndex: "",
       key: "",
+      width: 100,
       render: () => (
         <div className="flex gap-4">
           <Button size="sm" className="bg-white text-yellow-800">
@@ -104,13 +107,16 @@ export function AdminDevicePage() {
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button variant="outlined" size="sm">
-              Xuất báo cáo
-            </Button>
+            <NavLink
+              to={`/admin/dining-area`}
+              className={`bg-white block text-black rounded-md shadow-xl px-4 py-2 cursor-pointer`}
+            >
+              Cấu hình sơ đồ bàn
+            </NavLink>
             <Button
               className="flex items-center bg-red-700 gap-3"
               size="sm"
-              //   onClick={fetchReservations}
+              onClick={fetchData}
             >
               <ArrowPathIcon strokeWidth={2} className="h-4 w-4" /> Làm mới
             </Button>
@@ -129,18 +135,18 @@ export function AdminDevicePage() {
         </div>
       </CardHeader>
       <CardBody className="overflow-auto h-[550px]">
-        <Table
+        <StyledTable
           dataSource={devices}
           columns={columns}
           rowKey="deviceId"
           pagination={false}
         />
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handleCurrentPageChange}
-        />
       </CardBody>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handleCurrentPageChange}
+      />
     </Card>
   );
 }
