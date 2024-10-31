@@ -8,6 +8,7 @@ import {
   Skeleton,
   Space,
   Button,
+  Image,
 } from "antd";
 import useCallApi from "../../../api/useCallApi";
 import { GroupedDishCraftApi, OrderApi } from "../../../api/endpoint";
@@ -17,7 +18,7 @@ import notification_sound from "../../../assets/sound/kitchen.mp3";
 import styled from "styled-components";
 import { EyeOutlined } from "@ant-design/icons";
 import OrderDetailModal from "./OrderDetailModal";
-import { showError } from "../../../util/Utility";
+import { combineTimes, showError } from "../../../util/Utility";
 import { set } from "lodash";
 
 const { Title, Text } = Typography;
@@ -71,6 +72,12 @@ const DishSizeInfo = ({
     <div>
       {sizeData.map((item, index) => (
         <div key={index} className="flex items-center gap-4 p-2 rounded">
+          <Image
+            src={dishData.Dish.Image}
+            width={50}
+            height={50}
+            className="rounded-full"
+          />
           <Text strong className="min-w-[100px]">
             {item.DishSize.VietnameseName}:
           </Text>
@@ -121,6 +128,15 @@ const OptimizeProcess = () => {
       fixed: "left",
     },
     {
+      dataIndex: "timeGrouped",
+      key: "timeGrouped",
+      title: "Thời gian gom món",
+      width: 200,
+      render: (_, record) => (
+        <span>{combineTimes(record.startTime, record.endTime)}</span>
+      ),
+    },
+    {
       title: "MÓN ĂN",
       dataIndex: "groupedDishJson",
       key: "name",
@@ -153,6 +169,15 @@ const OptimizeProcess = () => {
       title: "STT",
       width: 80,
       render: (_, __, index) => index + 1,
+    },
+    {
+      dataIndex: "timeGrouped",
+      key: "timeGrouped",
+      title: "Thời gian gom món",
+      width: 200,
+      render: (_, record) => (
+        <span>{combineTimes(record.startTime, record.endTime)}</span>
+      ),
     },
     {
       title: "MÓN ĂN",
@@ -292,7 +317,7 @@ const OptimizeProcess = () => {
             <h3 className="bg-[#E3B054] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
               Món trùng đơn
             </h3>
-            <div className="w-full">
+            <div className="w-full max-h-[550px] overflow-y-auto">
               {loading && <Skeleton />}
               {!loading && (
                 <StyledTable
@@ -310,7 +335,7 @@ const OptimizeProcess = () => {
             <h3 className="bg-[#C40519] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
               Món lẻ đơn
             </h3>
-            <div className="overflow-x-auto w-full">
+            <div className="w-full max-h-[550px] overflow-y-auto">
               {loading && <Skeleton />}
               {!loading && (
                 <StyledTable
