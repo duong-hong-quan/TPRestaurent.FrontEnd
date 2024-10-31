@@ -18,7 +18,12 @@ import {
 } from "../../../util/Utility";
 import { useSelector } from "react-redux";
 import useCallApi from "../../../api/useCallApi";
-import { AccountApi, OrderApi } from "../../../api/endpoint";
+import {
+  AccountApi,
+  ConfigurationApi,
+  OrderApi,
+  TableApi,
+} from "../../../api/endpoint";
 import ModalPolicy from "../../policy/PolicyModal";
 import dayjs from "dayjs";
 import ModalReservationWithDish from "../modal/ModalReservationWithDish";
@@ -33,7 +38,6 @@ const Reservation = () => {
     useState(false);
   const [isValid, setIsValid] = useState(false);
   const [information, setInformation] = useState({});
-  const [isOtpSuccess, setIsOtpSuccess] = useState(false);
   const [selectedEndTime, setSelectedEndTime] = useState(null);
   const [endTimeSlots, setEndTimeSlots] = useState([]);
   const [isValidatePhone, setIsValidatePhone] = useState(false);
@@ -41,7 +45,9 @@ const Reservation = () => {
   const { loading, callApi, error } = useCallApi();
   const [show, setShow] = useState(false);
   const [showModalWithoutDish, setShowModalWithoutDish] = useState(false);
+  const [timeSlots, setTimeSlots] = useState([]);
   console.log(endTimeSlots);
+
   const handleCloseModalWithoutDish = () => {
     setShowModalWithoutDish(false);
   };
@@ -60,27 +66,6 @@ const Reservation = () => {
       form.setFieldValue("date", dayjs(momentDate, "DD/MM/YYYY"));
     }
   };
-  useEffect(() => {
-    initData();
-    const now = moment();
-    const roundedStartTime = now
-      .clone()
-      .minute(Math.ceil(now.minute() / 30) * 30)
-      .second(0);
-    const initialStartTime = roundedStartTime.isBefore(now)
-      ? roundedStartTime.add(30, "minutes")
-      : roundedStartTime;
-    const initialEndTime = initialStartTime
-      .clone()
-      .add(1, "hour")
-      .format("HH:mm");
-    form.setFieldsValue({
-      startTime: initialStartTime.format("HH:mm"),
-      endTime: initialEndTime,
-    });
-    setSelectedEndTime(initialEndTime);
-    setEndTimeSlots(generateEndTimeSlots(initialStartTime));
-  }, [form]);
 
   const handlePhoneChange = (e) => {
     const cleanedPhone = e.target.value.replace(/\s+/g, "");
@@ -161,7 +146,7 @@ const Reservation = () => {
       .format("YYYY-MM-DDTHH:mm:ss");
     debugger;
     const responseSuggessTable = await callApi(
-      `${OrderApi.SUGGEST_TABLE}`,
+      `${TableApi.FIND_TABLE}`,
       "POST",
       {
         startTime: combinedStartTime,
@@ -210,28 +195,43 @@ const Reservation = () => {
     return current && current < moment().startOf("day");
   };
 
-  const generateTimeSlots = () => {
+  const generateTimeSlots = async () => {
     const times = [];
-    const start = moment().startOf("day").hour(6); // Start at 10:00
-    const end = moment().startOf("day").hour(23); // End at 22:00
-    while (start <= end) {
-      times.push(start.format("HH:mm"));
-      start.add(30, "minutes");
+    let startTime = 0;
+    let endTime = 0;
+    const response = await callApi(
+      `${ConfigurationApi.GET_CONFIG_BY_NAME}/OPEN_TIME`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+    }
+    const responseEndTime = await callApi(
+      `${ConfigurationApi.GET_CONFIG_BY_NAME}/CLOSED_TIME`,
+      "GET"
+    );
+    if (response?.isSuccess && responseEndTime?.isSuccess) {
+      endTime = responseEndTime?.result?.currentValue;
+      startTime = response?.result?.currentValue;
+      const start = moment().startOf("day").hour(startTime); // Start at 10:00
+      const end = moment().startOf("day").hour(endTime); // End at 22:00
+      while (start <= end) {
+        times.push(start.format("HH:mm"));
+        start.add(30, "minutes");
+      }
+    } else {
+      showError(error);
     }
     return times;
   };
 
   const generateEndTimeSlots = (startTime) => {
-    const times = generateTimeSlots();
     const startMoment = moment(startTime, "HH:mm");
-    let arr = times.filter((time) =>
+    let arr = timeSlots.filter((time) =>
       moment(time, "HH:mm").isAfter(startMoment)
     );
     const shift = arr.shift();
     return arr.filter((item) => item !== shift);
   };
-
-  const timeSlots = generateTimeSlots();
 
   const handleStartTimeChange = (value) => {
     const newEndTime = moment(value, "HH:mm").add(1, "hour").format("HH:mm");
@@ -240,9 +240,6 @@ const Reservation = () => {
     setEndTimeSlots(generateEndTimeSlots(value));
   };
 
-  const filteredTimeSlots = timeSlots.filter((time) =>
-    moment(time, "HH:mm").isAfter(moment())
-  );
   const handleValidatePhone = async () => {
     const data = await callApi(
       `${AccountApi.GET_BY_PHONE}?phoneNumber=${form
@@ -285,6 +282,38 @@ const Reservation = () => {
       }
     }
   };
+
+  useEffect(() => {
+    initData();
+    const now = moment();
+    const roundedStartTime = now
+      .clone()
+      .minute(Math.ceil(now.minute() / 30) * 30)
+      .second(0);
+    const initialStartTime = roundedStartTime.isBefore(now)
+      ? roundedStartTime.add(30, "minutes")
+      : roundedStartTime;
+    const initialEndTime = initialStartTime
+      .clone()
+      .add(1, "hour")
+      .format("HH:mm");
+    form.setFieldsValue({
+      startTime: initialStartTime.format("HH:mm"),
+      endTime: initialEndTime,
+    });
+    setSelectedEndTime(initialEndTime);
+    generateTimeSlots().then((slots) => {
+      setTimeSlots(slots);
+      setEndTimeSlots(generateEndTimeSlots(initialStartTime.format("HH:mm")));
+    });
+  }, [form]);
+
+  const filteredTimeSlots = timeSlots?.filter((time) =>
+    moment(time, "HH:mm").isAfter(moment())
+  );
+
+  const momentDate = moment().format("DD/MM/YYYY");
+
   if (isReservationModalVisible) {
     return (
       <>
@@ -294,7 +323,6 @@ const Reservation = () => {
           information={information}
           handleCloseOtp={handleCloseOtp}
           handleOpenOtp={handleOpenOtp}
-          isOtpSuccess={isOtpSuccess}
         />
         <OtpConfirmModal
           visible={isOtpModalVisible}
@@ -307,7 +335,7 @@ const Reservation = () => {
       </>
     );
   }
-  const momentDate = moment().format("DD/MM/YYYY");
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 rounded-2xl shadow-2xl">
       <h1 className="text-2xl font-bold uppercase mb-6 text-center">Đặt bàn</h1>
@@ -428,11 +456,12 @@ const Reservation = () => {
                   onChange={handleStartTimeChange}
                   disabled={!isValidatePhone}
                 >
-                  {filteredTimeSlots.map((time) => (
-                    <Select.Option key={time} value={time}>
-                      {time}
-                    </Select.Option>
-                  ))}
+                  {filteredTimeSlots?.length > 0 &&
+                    filteredTimeSlots?.map((time) => (
+                      <Select.Option key={time} value={time}>
+                        {time}
+                      </Select.Option>
+                    ))}
                 </Select>
               </Form.Item>
               <Form.Item
