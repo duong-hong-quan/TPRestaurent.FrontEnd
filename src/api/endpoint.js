@@ -45,7 +45,6 @@ export const OrderApi = {
   GET_DETAIL: "/order/get-order-detail",
   CHANGE_ORDER_STATUS: "/order/change-order-status",
   GET_ALL: "/order/get-all-order-by-status",
-  SUGGEST_TABLE: "/order/suggest-table",
   ADD_TABLE_TO_RESEVATION: "/reservation/add-table-to-reservation",
   UPDATE_RESERVATION: "/reservation/update-reservation-status",
   CALCULATE_RESERVATION: "/order/calculate-reservation",
@@ -140,4 +139,6 @@ export const TableApi = {
   CREATE_TABLE: "/table/create-table",
   UPDATE_TABLE: "/table/update-table",
   DELETE_TABLE: "/table/delete-table",
+  FIND_TABLE: "/table/find-table",
+  UPDATE_TABLE_COORDINATE: "/table/update-table-coordinate",
 };

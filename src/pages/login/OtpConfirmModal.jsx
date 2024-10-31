@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { author, login } from "../../redux/features/authSlice";
 import useCallApi from "../../api/useCallApi";
-import { AccountApi } from "../../api/endpoint";
+import { AccountApi, TokenApi } from "../../api/endpoint";
 import { showError } from "../../util/Utility";
 import OTP from "antd/es/input/OTP";
+import { requestPermission } from "../../App";
 
 const OtpConfirmModal = ({
   visible,
@@ -19,25 +20,7 @@ const OtpConfirmModal = ({
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
   const { loading, error, callApi } = useCallApi();
-  // const handleChange = (value, index) => {
-  //   const newOtp = [...otp];
-  //   newOtp[index] = value;
-  //   // Move focus to the next inputß if value is entered and it's not the last input
-  //   if (value && index < 5) {
-  //     document.getElementById(`otp-${index + 1}`).focus();
-  //   }
 
-  //   // Handle clearing the OTP if the last input is deleted
-  //   if (value === "" && index === 5) {
-  //     // Clear all OTP inputs
-  //     setOtp(["", "", "", "", "", ""]);
-  //     // Move focus to the first input
-  //     document.getElementById(`otp-0`).focus();
-  //   } else {
-  //     // Update the OTP state
-  //     setOtp(newOtp);
-  //   }
-  // };
   const dispatch = useDispatch();
 
   const handleSubmit = async () => {
@@ -52,6 +35,28 @@ const OtpConfirmModal = ({
           localStorage.setItem("refreshToken", resposne?.result?.refreshToken);
           dispatch(login(resposne?.result?.account));
           dispatch(author(resposne?.result?.mainRole));
+          const tokenUser = await callApi(
+            `${TokenApi.GET_USER_TOKEN_BY_IP}`,
+            "POST"
+          );
+          if (tokenUser.isSuccess) {
+            console.log(tokenUser);
+            if (!tokenUser.result?.deviceToken) {
+              const permission = await requestPermission();
+              if (permission) {
+                const response = await callApi(
+                  `${TokenApi.ENABLE_NOTIFICATION}?deviceToken=${permission}`,
+                  "POST"
+                );
+                if (response.isSuccess) {
+                  localStorage.setItem("device_token", permission);
+                } else {
+                  showError(error);
+                }
+              }
+            }
+          }
+
           message.success("Đăng nhập thành công");
           navigate("/");
           onClose();

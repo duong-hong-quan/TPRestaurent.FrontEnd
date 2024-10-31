@@ -4,6 +4,8 @@ import Draggable from "react-draggable";
 import useCallApi from "../../../api/useCallApi";
 import { TableApi } from "../../../api/endpoint";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import { Button, message } from "antd";
+import { showError } from "../../../util/Utility";
 
 const TABLE_SIZES = {
   2: { width: 80, height: 80 }, // 1 cell
@@ -49,29 +51,18 @@ const isCollision = (newPosition, tableSize, tables, currentIndex) => {
 
 const DiningArea = () => {
   const [tables, setTables] = useState([]);
-  const { callApi, loading } = useCallApi(); // Removed unused error and loading variables
+  const { callApi, loading, error } = useCallApi(); // Removed unused error and loading variables
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await callApi(`${TableApi.GET_ALL}/1/100`, "GET");
       if (response.isSuccess) {
-        const mappedTables = response.result?.items?.map((item, index) => ({
-          id: item.tableId,
-          name: item.tableName,
-          position: {
-            x: index % GRID_COLUMNS,
-            y: Math.floor(index / GRID_COLUMNS),
-          },
-          tableSizeId: item.tableSizeId,
-        }));
-
-        setTables(mappedTables);
+        setTables(response.result.items);
       }
     };
-
     fetchData();
   }, []);
-
+  console.log(tables);
   const handleDrag = (index, data) => {
     const snappedPosition = snapToGrid(data.x, data.y);
     const tableSize = TABLE_SIZES[tables[index].tableSizeId];
@@ -96,13 +87,18 @@ const DiningArea = () => {
   return (
     <>
       <LoadingOverlay isLoading={loading} />
-      <div className="bg-gray-100 container min-h-screen mx-auto p-8">
-        <Title level={3} className="mb-6">
-          Dining Area
-        </Title>
+      <div className="bg-white rounded-lg shadow-lg container min-h-screen mx-auto p-8">
+        <h3 className="text-red-800 uppercase font-bold mb-6">
+          Khu vực bàn ăn
+        </h3>
         <div className="flex gap-8">
           {/* Left side: Drag location with grid */}
-          <div className="w-2/3 relative border border-gray-300 rounded-lg">
+          <div
+            className="w-2/3 relative border-r-2 overflow-scroll  border-gray-300 p-6 rounded-lg"
+            style={{
+              border: "2px solid #e5e7eb",
+            }}
+          >
             {[...Array(GRID_ROWS)].map((_, y) =>
               [...Array(GRID_COLUMNS)].map((_, x) => (
                 <div
@@ -156,26 +152,49 @@ const DiningArea = () => {
             })}
           </div>
           {/* Right side: List of tables */}
-          <div className="w-1/3">
-            <Title level={4} className="mb-4">
-              Tables
-            </Title>
-            <ul className="space-y-2">
-              {tables.map((table) => (
-                <li
-                  key={table.id}
-                  className="bg-white p-4 border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+          <div className="w-1/3 shadow-lg px-2 py-1">
+            <div className="">
+              <h3 className="mb-4 text-red-800 font-bold uppercase">
+                Danh sách bàn
+              </h3>
+              <ul className="space-y-2  max-h-[550px] overflow-y-auto">
+                {tables.map((table) => (
+                  <li
+                    key={table.id}
+                    className="bg-white p-4 border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{table.name}</span>
+                      <span className="text-gray-500">
+                        {TABLE_SIZES[table.tableSizeId].width}x
+                        {TABLE_SIZES[table.tableSizeId].height}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex justify-center mt-4">
+                <Button
+                  className="bg-red-800 text-white my-2 mx-auto"
+                  onClick={async () => {
+                    const response = await callApi(
+                      `${TableApi.UPDATE_TABLE_COORDINATE}`,
+                      "POST",
+                      tables
+                    );
+                    if (response.isSuccess) {
+                      message.success("Lưu thay đổi sơ đồ bàn thành công");
+                    } else {
+                      showError(error);
+                    }
+                  }}
+                  loading={loading}
                 >
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">{table.name}</span>
-                    <span className="text-gray-500">
-                      {TABLE_SIZES[table.tableSizeId].width}x
-                      {TABLE_SIZES[table.tableSizeId].height}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  Lưu thay đổi sơ đồ bàn
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
