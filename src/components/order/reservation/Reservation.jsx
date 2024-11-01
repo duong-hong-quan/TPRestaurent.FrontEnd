@@ -6,6 +6,7 @@ import {
   message,
   Select,
   Checkbox,
+  Modal,
 } from "antd";
 import { UserOutlined, MailOutlined, TeamOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
@@ -168,6 +169,24 @@ const Reservation = () => {
         });
         message.success("Hệ thống chúng tôi đã tìm ra bàn phù hợp với bạn");
         setIsReservationModalVisible(true);
+      } else if (responseSuggessTable?.result?.length > 0) {
+        Modal.confirm({
+          title: "Xác nhận",
+          content: responseSuggessTable?.messages.join("\n"),
+          onOk: async () => {
+            setInformation({
+              ...information,
+              startTime: combinedStartTime,
+              endTime: combinedEndTime,
+              numberOfPeople: form.getFieldValue("numberOfPeople"),
+              note: form.getFieldValue("note"),
+              isPrivate: form.getFieldValue("isPrivate"),
+            });
+          },
+          onCancel: async () => {
+            close();
+          },
+        });
       }
     } else {
       showError(error);

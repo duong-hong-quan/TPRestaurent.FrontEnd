@@ -4,7 +4,7 @@ import Draggable from "react-draggable";
 import useCallApi from "../../../api/useCallApi";
 import { TableApi } from "../../../api/endpoint";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
-import { Button, message } from "antd";
+import { Button, message, Modal } from "antd";
 import { showError } from "../../../util/Utility";
 
 const TABLE_SIZES = {
@@ -52,14 +52,13 @@ const isCollision = (newPosition, tableSize, tables, currentIndex) => {
 const DiningArea = () => {
   const [tables, setTables] = useState([]);
   const { callApi, loading, error } = useCallApi(); // Removed unused error and loading variables
-
+  const fetchData = async () => {
+    const response = await callApi(`${TableApi.GET_ALL}/1/100`, "GET");
+    if (response.isSuccess) {
+      setTables(response.result.items);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await callApi(`${TableApi.GET_ALL}/1/100`, "GET");
-      if (response.isSuccess) {
-        setTables(response.result.items);
-      }
-    };
     fetchData();
   }, []);
   console.log(tables);
@@ -178,16 +177,47 @@ const DiningArea = () => {
                 <Button
                   className="bg-red-800 text-white my-2 mx-auto"
                   onClick={async () => {
-                    const response = await callApi(
-                      `${TableApi.UPDATE_TABLE_COORDINATE}`,
-                      "POST",
-                      tables
-                    );
-                    if (response.isSuccess) {
-                      message.success("Lưu thay đổi sơ đồ bàn thành công");
-                    } else {
-                      showError(error);
-                    }
+                    Modal.confirm({
+                      title: "Xác nhận",
+                      content:
+                        "Bạn có chắc chắn muốn lưu thay đổi sơ đồ bàn? Nếu có, bạn sẽ chịu toàn bộ trách nhiệm cho những hậu quả từ thay đổi này gây ra !",
+                      onOk: async () => {
+                        const response = await callApi(
+                          `${TableApi.UPDATE_TABLE_COORDINATE}?isForce=false`,
+                          "POST",
+                          tables
+                        );
+                        if (response.isSuccess) {
+                          message.success("Lưu thay đổi sơ đồ bàn thành công");
+                        } else {
+                          Modal.confirm({
+                            title: "Xác nhận",
+                            content: response.messages.join("\n"),
+                            onOk: async () => {
+                              const response = await callApi(
+                                `${TableApi.UPDATE_TABLE_COORDINATE}?isForce=true`,
+                                "POST",
+                                tables
+                              );
+                              if (response.isSuccess) {
+                                message.success(
+                                  "Lưu thay đổi sơ đồ bàn thành công"
+                                );
+                              } else {
+                                showError(error);
+                              }
+                            },
+                            onCancel: async () => {
+                              await fetchData();
+                            },
+                          });
+                        }
+                      },
+                      onCancel: async () => {
+                        message.info("Hủy lưu thay đổi sơ đồ bàn");
+                        await fetchData();
+                      },
+                    });
                   }}
                   loading={loading}
                 >
