@@ -3,6 +3,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  IconButton,
   Typography,
 } from "@material-tailwind/react";
 import { BanknotesIcon, ChartBarIcon } from "@heroicons/react/24/solid";
@@ -11,6 +12,7 @@ import {
   ChefHatIcon,
   Clock,
   ExternalLink,
+  EyeIcon,
   MapPin,
   TruckIcon,
   UserIcon,
@@ -33,10 +35,14 @@ import {
 import useCallApi from "../../api/useCallApi";
 import { OrderApi } from "../../api/endpoint";
 import dayjs from "dayjs";
-import { formatDate } from "../../util/Utility";
+import { formatDate, formatDateTime, formatPrice } from "../../util/Utility";
 import OrderTag from "../../components/tag/OrderTag";
 import ModalOrderDetailAdmin from "../../components/order/modal/ModalOrderDetailAdmin";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
+import { StyledTable } from "../../components/custom-ui/StyledTable";
+import { DatePicker, Space } from "antd";
+import { configCalendar } from "./AdminMealHistoryPage";
+const { RangePicker } = DatePicker;
 
 // Thêm mock data cho các biểu đồ
 const mockData = {
@@ -44,6 +50,7 @@ const mockData = {
     {
       icon: <BanknotesIcon className="w-6 h-6 text-white" />,
       title: "Lợi nhuận hôm nay",
+      value: "1,200,000",
       footer: "10% tăng so với hôm qua",
     },
     {
@@ -74,12 +81,7 @@ const mockData = {
       footer: "3 nhân viên đang hoạt động",
     },
   ],
-  orders: [
-    { id: "1001", status: "Hoàn thành", total: 125.99 },
-    { id: "1002", status: "Đang xử lý", total: 89.5 },
-    { id: "1003", status: "Đang xác nhận", total: 54.25 },
-    { id: "1005", status: "Huỷ", total: 0 },
-  ],
+
   popularItems: [
     { name: "Margherita Pizza", sales: 145, price: 12.99 },
     { name: "Caesar Salad", sales: 98, price: 8.5 },
@@ -124,6 +126,7 @@ const AdminDashboardPage = ({
   const { callApi, error, loading } = useCallApi();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetail, setOrderDetail] = useState(null);
+  const [ordersData, setOrdersData] = useState([]);
   const fetchDetail = async (id) => {
     const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
     if (response?.isSuccess) {
@@ -145,15 +148,103 @@ const AdminDashboardPage = ({
       setReservations(response?.result?.items);
     }
   };
+  const columns = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "orderId",
+      key: "orderId",
+      render: (text) => <Typography>{text.substring(0, 8)}</Typography>,
+    },
+    {
+      title: "Khách hàng",
+      dataIndex: "customerInfo",
+      key: "customerInfo",
+      render: (_, record) => (
+        <Typography>
+          {`${record.account?.firstName} ${record.account?.lastName}`}
+        </Typography>
+      ),
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
+      render: (_, record) => (
+        <Typography>{formatPrice(record.totalAmount)} </Typography>
+      ),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (_, record) => <OrderTag orderStatusId={record.statusId} />,
+    },
+    {
+      title: "Ngày đặt hàng",
+      dataIndex: "orderDate",
+      key: "orderDate",
+      render: (_, record) => (
+        <Typography>{formatDateTime(record.orderDate)}</Typography>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      dataIndex: "action",
+      render: (_, record) => (
+        <IconButton
+          variant="text"
+          onClick={async () => await fetchDetail(record.orderId)}
+        >
+          <EyeIcon className="h-4 w-4 text-black" />
+        </IconButton>
+      ),
+    },
+  ];
+  const fetchOrder = async () => {
+    const response = await callApi(
+      `${OrderApi.GET_ORDER_WITH_FILTER}`,
+      "POST",
+      {
+        startDate: dayjs().format("YYYY-MM-DD"),
 
+        endDate: dayjs().format("YYYY-MM-DD"),
+        status: 4 || 5,
+        type: 2,
+      }
+    );
+    if (response?.isSuccess) {
+      setOrdersData(response?.result?.items);
+    }
+  };
   useEffect(() => {
     fetchReservations();
+    fetchOrder();
   }, []);
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12">
       <LoadingOverlay loading={loading} />
-      <div className="p-6 col-span-1 xl:col-span-9 max-h-[900px] overflow-y-auto">
+      <div className="p-6  bg-white col-span-1 xl:col-span-9 max-h-[900px] overflow-y-auto">
+        <div className="flex xl:flex-row flex-col items-center  justify-between my-10">
+          <Typography className="mr-2 text-red-800 font-semibold text-2xl">
+            TRANG THỐNG KÊ TỔNG QUAN HỆ THỐNG
+          </Typography>
+          <div className="flex bg-white px-2 py-4 rounded-xl items-center">
+            <Typography className="mr-2 text-red-800 font-semibold">
+              Chọn khoảng ngày
+            </Typography>
+            <RangePicker
+              locale={configCalendar}
+              format="DD/MM/YYYY"
+              onChange={(value) => {
+                console.log(value);
+              }}
+              value={[dayjs().subtract(7, "day"), dayjs()]}
+              size="large"
+            />
+          </div>
+        </div>
         <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
           {stats.map(({ icon, title, value, footer }) => (
             <Card key={title}>
@@ -188,8 +279,6 @@ const AdminDashboardPage = ({
         {/* Biểu đồ doanh thu theo ngày */}
 
         <div className="mb-6 grid grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2">
-          {/* Biểu đồ phân bổ danh mục món ăn */}
-
           <Card>
             <CardHeader variant="gradient" className="mb-8 p-6 bg-red-900">
               <Typography variant="h6" color="white">
@@ -254,52 +343,21 @@ const AdminDashboardPage = ({
               Đơn hàng gần đây
             </Typography>
           </CardHeader>
-          <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
-            <table className="w-full min-w-[640px] table-auto">
-              <thead>
-                <tr>
-                  {["Mã đơn", "trạng thái", "Tổng tiền"].map((el) => (
-                    <th
-                      key={el}
-                      className="border-b border-red-gray-50 py-3 px-5 text-left"
-                    >
-                      <Typography
-                        variant="small"
-                        className="text-[11px] font-bold uppercase text-red-gray-400"
-                      >
-                        {el}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map(({ id, status, total }) => (
-                  <tr key={id}>
-                    <td className="py-3 px-5">
-                      <Typography variant="small" color="red-gray">
-                        #{id}
-                      </Typography>
-                    </td>
-                    <td className="py-3 px-5">
-                      <Typography variant="small" color="red-gray">
-                        {status}
-                      </Typography>
-                    </td>
-                    <td className="py-3 px-5">
-                      <Typography variant="small" color="red-gray">
-                        ${total}
-                      </Typography>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <CardBody className="overflow-y-scroll max-h-[300px] pb-2">
+            <StyledTable
+              columns={columns}
+              dataSource={ordersData}
+              pagination={false}
+              rowKey="orderId"
+              loading={loading}
+            />
           </CardBody>
         </Card>
       </div>
       <div className="col-span-1 xl:col-span-3 p-4 max-h-[900px] overflow-y-auto bg-gray-50">
-        <h3>Lịch đặt bàn </h3>
+        <Typography className="text-lg uppercase text-red-800 font-semibold my-2">
+          Lịch đặt bàn hôm nay
+        </Typography>
         {reservations?.map((item, index) => (
           <div
             key={index}
@@ -324,7 +382,15 @@ const AdminDashboardPage = ({
             <div className="flex space-x-4">
               {/* Time Indicator */}
               <div className="relative flex flex-col items-center">
-                <div className="w-2 h-full bg-red-500 absolute top-0 left-1/2 transform -translate-x-1/2 rounded-full" />
+                <div
+                  className={`w-2 h-full absolute top-0 left-1/2 transform -translate-x-1/2 rounded-full ${
+                    item.statusId == 4
+                      ? "bg-blue-500"
+                      : item.statusId == 10
+                      ? "bg-red-700"
+                      : "bg-green-800"
+                  }`}
+                />
                 <span className="bg-white z-10 px-3 py-1 rounded-full text-sm font-semibold text-gray-700 border border-gray-200">
                   {dayjs(item?.mealTime).format("HH:mm")}
                 </span>
@@ -341,11 +407,11 @@ const AdminDashboardPage = ({
                   {/* Table Information */}
                   <div className="flex items-center space-x-2 text-gray-600">
                     <MapPin className="w-4 h-4" />
-                    <span className="text-sm">
-                      {item.tables.map((item) => (
-                        <span>{item.table.tableName}</span>
-                      ))}
-                    </span>
+                    {item.tables.map((item) => (
+                      <span className="text-sm font-bold mx-2 block">
+                        {item.table.tableName}
+                      </span>
+                    ))}
                   </div>
 
                   {/* Guest Count */}
