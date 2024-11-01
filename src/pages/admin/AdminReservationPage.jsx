@@ -206,17 +206,21 @@ export function AdminReservationPage() {
             </Button>
           </div>
 
-          {showCalendar && (
-            <div className="max-h-[500px] overflow-y-auto">
-              <Calendar
-                locale={configCalendar}
-                value={selectedDate}
-                fullscreen={false}
-                className="mt-4"
-                onChange={handleDateChange}
-              />
-            </div>
-          )}
+          {/* {showCalendar && ( */}
+          <div
+            className={`max-h-[500px] overflow-hidden transition-all duration-300 ${
+              showCalendar ? "h-[320px]" : "h-0"
+            }`}
+          >
+            <Calendar
+              locale={configCalendar}
+              value={selectedDate}
+              fullscreen={false}
+              className="mt-4"
+              onChange={handleDateChange}
+            />
+          </div>
+          {/* )} */}
         </div>
 
         <div className="col-span-2">

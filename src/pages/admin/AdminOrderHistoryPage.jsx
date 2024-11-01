@@ -282,17 +282,20 @@ export function AdminOrderHistoryPage() {
                   </Button>
                 </div>
 
-                {showCalendar && (
-                  <div className="max-h-[500px] overflow-y-auto">
-                    <Calendar
-                      fullscreen={false}
-                      locale={configCalendar}
-                      value={selectedDate}
-                      className="mt-4"
-                      onChange={handleDateChange}
-                    />
-                  </div>
-                )}
+                <div
+                  className={`max-h-[500px] overflow-hidden transition-all duration-300 ${
+                    showCalendar ? "h-[320px]" : "h-0"
+                  }`}
+                >
+                  {" "}
+                  <Calendar
+                    fullscreen={false}
+                    locale={configCalendar}
+                    value={selectedDate}
+                    className="mt-4"
+                    onChange={handleDateChange}
+                  />
+                </div>
               </>
             )}
 
