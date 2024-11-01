@@ -211,6 +211,7 @@ export function AdminReservationPage() {
               <Calendar
                 locale={configCalendar}
                 value={selectedDate}
+                fullscreen={false}
                 className="mt-4"
                 onChange={handleDateChange}
               />
