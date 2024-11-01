@@ -50,6 +50,7 @@ const mockData = {
     {
       icon: <BanknotesIcon className="w-6 h-6 text-white" />,
       title: "Lợi nhuận hôm nay",
+      value: "1,200,000",
       footer: "10% tăng so với hôm qua",
     },
     {
@@ -225,7 +226,7 @@ const AdminDashboardPage = ({
     <div className="grid grid-cols-1 xl:grid-cols-12">
       <LoadingOverlay loading={loading} />
       <div className="p-6  bg-white col-span-1 xl:col-span-9 max-h-[900px] overflow-y-auto">
-        <div className="flex   justify-between my-10">
+        <div className="flex xl:flex-row flex-col items-center  justify-between my-10">
           <Typography className="mr-2 text-red-800 font-semibold text-2xl">
             TRANG THỐNG KÊ TỔNG QUAN HỆ THỐNG
           </Typography>
