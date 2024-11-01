@@ -98,7 +98,7 @@ export function TransactionPage() {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="overflow-scroll max-h-[500px] px-0">
+      <CardBody className="overflow-scroll max-h-[500px] px-10">
         <TransactionTable
           data={transactionData}
           loading={loading}
