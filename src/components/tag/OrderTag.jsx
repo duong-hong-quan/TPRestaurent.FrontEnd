@@ -44,7 +44,7 @@ const OrderStatus = [
     label: "Đang nấu",
     value: 5,
     color: "processing",
-    text: "Đang xử lý",
+    text: "Đang nấu",
     icon: <SyncOutlined spin />,
   },
   {
