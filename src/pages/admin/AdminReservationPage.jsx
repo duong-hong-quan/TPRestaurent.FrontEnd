@@ -182,7 +182,7 @@ export function AdminReservationPage() {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="grid grid-cols-3 max-h-[650px] overflow-y-scroll gap-2">
+      <CardBody className="grid grid-cols-1 xl:grid-cols-3 max-h-[650px] overflow-y-scroll gap-2">
         <div className="col-span-1  overflow-auto">
           <Typography className="text-red-800 uppercase font-semibold">
             Chọn khoảng thời gian
@@ -206,7 +206,6 @@ export function AdminReservationPage() {
             </Button>
           </div>
 
-          {/* {showCalendar && ( */}
           <div
             className={`max-h-[500px] overflow-hidden transition-all duration-300 ${
               showCalendar ? "h-[320px]" : "h-0"
@@ -220,10 +219,9 @@ export function AdminReservationPage() {
               onChange={handleDateChange}
             />
           </div>
-          {/* )} */}
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-1 overflow-auto xl:col-span-2">
           <TabMananger
             items={TABS}
             activeTab={activeTab}

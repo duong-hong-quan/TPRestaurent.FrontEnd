@@ -256,7 +256,7 @@ export function AdminOrderHistoryPage() {
             </div>
           </div>
         </CardHeader>
-        <CardBody className="grid grid-cols-3 gap-2">
+        <CardBody className="grid grid-cols-1  xl:grid-cols-3 gap-2">
           <div className="col-span-1  overflow-auto">
             {activeTab !== 6 && (
               <>
@@ -329,7 +329,7 @@ export function AdminOrderHistoryPage() {
             )}
           </div>
 
-          <div className="col-span-2">
+          <div className="col-span-1 xl:col-span-2 max-h-[650px] overflow-y-auto">
             <div className="mb-4">
               <TabMananger
                 items={TABS}
