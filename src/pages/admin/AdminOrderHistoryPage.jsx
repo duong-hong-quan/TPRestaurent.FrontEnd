@@ -285,6 +285,7 @@ export function AdminOrderHistoryPage() {
                 {showCalendar && (
                   <div className="max-h-[500px] overflow-y-auto">
                     <Calendar
+                      fullscreen={false}
                       locale={configCalendar}
                       value={selectedDate}
                       className="mt-4"

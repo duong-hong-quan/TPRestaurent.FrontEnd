@@ -50,11 +50,6 @@ const menuItems = [
     path: "/admin/transaction-history",
   },
   {
-    title: "Tin nhắn",
-    icon: <FaEnvelope className="h-5 w-5 text-white" />,
-    path: "/admin/messages",
-  },
-  {
     title: "Cấu hình hệ thống",
     icon: <FaCog className="h-5 w-5 text-white" />,
     subItems: [

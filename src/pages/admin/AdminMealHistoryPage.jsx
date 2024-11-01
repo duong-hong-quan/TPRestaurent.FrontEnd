@@ -289,10 +289,11 @@ export function AdminMealHistoryPage() {
               </div>
 
               {showCalendar && (
-                <div className="max-h-[500px] overflow-y-auto">
+                <div className=" overflow-y-auto">
                   <Calendar
                     locale={configCalendar}
                     value={selectedDate}
+                    fullscreen={false}
                     className="mt-4"
                     onChange={handleDateChange}
                   />
@@ -317,21 +318,21 @@ export function AdminMealHistoryPage() {
                   />
                 </IconButton>
               </div>
-              <div className="grid grid-cols-3 gap-2   rounded-xl shadow-xl p-4 border-2 ">
+              <div className="grid grid-cols-3 gap-2 rounded-xl shadow-xl p-4 border-2 ">
                 {tables.length > 0 &&
                   tables.map((table) => (
                     <div
-                      onClick={() => setSelectedTable(table.tableId)}
+                      onClick={() => setSelectedTable(table.id)}
                       style={{
                         border: "1px solid #e5e7eb",
                       }}
                       className={`${
-                        selectedTable === table.tableId
+                        selectedTable === table.id
                           ? "bg-red-800 text-white  hover:bg-red-400"
                           : "bg-white text-red-700 hover:bg-red-100"
                       } rounded-lg  font-semibold text-center h-12 flex justify-center items-center hover:cursor-pointer`}
                     >
-                      <span className="block">{table.tableName}</span>
+                      <span className="block">{table.name}</span>
                     </div>
                   ))}
               </div>
