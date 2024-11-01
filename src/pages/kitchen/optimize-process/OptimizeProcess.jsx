@@ -61,24 +61,24 @@ const DishSizeInfo = ({
   setSelectedGroupedDishId,
 }) => (
   <div
-    className="flex items-center justify-start rounded-lg p-4 my-1"
+    className="flex w-full items-center justify-start rounded-lg p-4 my-1"
     style={{
       border: "1px solid #ccc",
     }}
   >
-    <Text strong className="w-32">
+    <Text strong className="text-wrap  w-[150px]">
       {dishData?.Dish?.Name}
     </Text>
-    <div>
+    <div className="">
       {sizeData.map((item, index) => (
-        <div key={index} className="flex items-center gap-4 p-2 rounded">
+        <div key={index} className="grid grid-cols-5 p-2 rounded">
           <Image
             src={dishData.Dish.Image}
             width={50}
             height={50}
             className="rounded-full"
           />
-          <Text strong className="min-w-[100px]">
+          <Text strong className="text-wrap max-w-[150px] my-auto">
             {item.DishSize.VietnameseName}:
           </Text>
           <Space>
@@ -125,7 +125,6 @@ const OptimizeProcess = () => {
       title: "STT",
       width: 80,
       render: (_, __, index) => index + 1,
-      fixed: "left",
     },
     {
       dataIndex: "timeGrouped",
@@ -133,7 +132,7 @@ const OptimizeProcess = () => {
       title: "Thời gian gom món",
       width: 200,
       render: (_, record) => (
-        <span>{combineTimes(record.startTime, record.endTime)}</span>
+        <span className="text-nowrap">{combineTimes(record.startTime, record.endTime)}</span>
       ),
     },
     {
@@ -176,7 +175,7 @@ const OptimizeProcess = () => {
       title: "Thời gian gom món",
       width: 200,
       render: (_, record) => (
-        <span>{combineTimes(record.startTime, record.endTime)}</span>
+        <span className="text-nowrap">{combineTimes(record.startTime, record.endTime)}</span>
       ),
     },
     {
@@ -327,6 +326,7 @@ const OptimizeProcess = () => {
                   rowKey={(record) => record.id}
                   loading={loading}
                   scroll={{ x: 600 }}
+
                 />
               )}
             </div>
@@ -344,7 +344,6 @@ const OptimizeProcess = () => {
                   pagination={false}
                   scroll={{ x: 600 }}
                   rowKey={(record) => record.id}
-                  size="small"
                 />
               )}
             </div>

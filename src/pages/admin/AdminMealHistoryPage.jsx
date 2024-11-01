@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { Calendar, DatePicker, Select, Table } from "antd";
 import {
   combineTimes,
+  formatDate,
   formatDateTime,
   formatPrice,
   showError,
@@ -161,7 +162,7 @@ export function AdminMealHistoryPage() {
       key: "mealTime",
       render: (_, record) => (
         <Typography>
-          {combineTimes(record?.mealTime, record?.endTime)}
+          {record.endTime? combineTimes(record?.mealTime, record?.endTime) :formatDateTime(record?.mealTime)}
         </Typography>
       ),
     },
