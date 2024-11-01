@@ -264,7 +264,7 @@ export function AdminMealHistoryPage() {
           </div>
         </CardHeader>
         <CardBody className="grid grid-cols-1 xl:grid-cols-3 max-h-[900px] overflow-y-scroll ">
-          <div className="col-span-1 p-10">
+          <div className="col-span-1 p-4">
             <div className="w-full  overflow-auto">
               <Typography className="text-red-800 uppercase font-semibold">
                 Chọn khoảng thời gian
@@ -288,17 +288,19 @@ export function AdminMealHistoryPage() {
                 </Button>
               </div>
 
-              {showCalendar && (
-                <div className=" overflow-y-auto">
-                  <Calendar
-                    locale={configCalendar}
-                    value={selectedDate}
-                    fullscreen={false}
-                    className="mt-4"
-                    onChange={handleDateChange}
-                  />
-                </div>
-              )}
+              <div
+                className={`max-h-[500px] overflow-hidden transition-all duration-300 ${
+                  showCalendar ? "h-[320px]" : "h-0"
+                }`}
+              >
+                <Calendar
+                  locale={configCalendar}
+                  value={selectedDate}
+                  fullscreen={false}
+                  className="mt-4"
+                  onChange={handleDateChange}
+                />
+              </div>
             </div>
 
             <div>
