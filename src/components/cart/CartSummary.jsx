@@ -179,8 +179,8 @@ const CartSummary = ({ handleClose }) => {
         navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
       }
     } else {
-      setIsAgree(false);
       showError(error);
+      setIsAgree(false);
     }
   };
   const calculateDeliveryOrder = async () => {
@@ -193,6 +193,8 @@ const CartSummary = ({ handleClose }) => {
     } else {
       showError(error);
       setIsAgree(false);
+Console.log(isAgree)
+
     }
   };
   useEffect(() => {
@@ -229,7 +231,6 @@ const CartSummary = ({ handleClose }) => {
         </Tag>
       ));
   };
-
   return (
     <div className="container my-4 p-6 bg-white">
       <LoadingOverlay loading={loading} />
@@ -427,6 +428,8 @@ const CartSummary = ({ handleClose }) => {
         onChange={() => {
           setIsAgree(!isAgree);
         }}
+        defaultChecked={false}
+        checked={isAgree}
         className="font-bold text-lg my-2"
       >
         Tôi đồng ý các điều khoản và chính sách mua hàng tại nhà hàng Thiên Phú
