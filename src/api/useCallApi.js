@@ -20,7 +20,7 @@ const useCallApi = () => {
           result = await api.put(endpoint, data, config);
           break;
         case "DELETE":
-          (result = await api.delete(endpoint)), config;
+          result = await api.delete(endpoint, config);
           break;
         default:
           throw new Error(`Unsupported method: ${method}`);
@@ -45,7 +45,27 @@ const useCallApi = () => {
     };
   };
 
-  return { error, loading, callApi };
+  const callMultipleApis = async (apiCalls) => {
+    setLoading(true);
+    setError([]);
+    try {
+      const responses = await Promise.all(
+        apiCalls.map(({ endpoint, method, data, config }) =>
+          callApi(endpoint, method, data, config)
+        )
+      );
+      return responses;
+    } catch (err) {
+      setError((prevErrors) => [
+        ...prevErrors,
+        err.message || "Call API failed",
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { error, loading, callApi, callMultipleApis };
 };
 
 export default useCallApi;

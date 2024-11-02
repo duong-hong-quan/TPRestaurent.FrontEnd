@@ -44,75 +44,20 @@ import { DatePicker, Space } from "antd";
 import { configCalendar } from "./AdminMealHistoryPage";
 const { RangePicker } = DatePicker;
 
-// Thêm mock data cho các biểu đồ
-const mockData = {
-  popularItems: [
-    { name: "Margherita Pizza", sales: 145, price: 12.99 },
-    { name: "Caesar Salad", sales: 98, price: 8.5 },
-    { name: "Spaghetti Carbonara", sales: 87, price: 14.75 },
-    { name: "Grilled Salmon", sales: 76, price: 18.99 },
-    { name: "Chocolate Lava Cake", sales: 65, price: 6.5 },
-  ],
-  revenueData: [
-    { name: "T2", revenue: 4000 },
-    { name: "T3", revenue: 3000 },
-    { name: "T4", revenue: 2000 },
-    { name: "T5", revenue: 2780 },
-    { name: "T6", revenue: 1890 },
-    { name: "T7", revenue: 2390 },
-    { name: "CN", revenue: 3490 },
-  ],
-  categoryData: [
-    { name: "Món chính", value: 400 },
-    { name: "Tráng miệng", value: 300 },
-    { name: "Đồ uống", value: 300 },
-    { name: "Khai vị", value: 200 },
-  ],
-  orderStatusData: [
-    { status: "Hoàn thành", count: 45 },
-    { status: "Đang xử lý", count: 25 },
-    { status: "Đang xác nhận", count: 15 },
-    { status: "Huỷ", count: 5 },
-  ],
-};
-
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-const AdminDashboardPage = ({
-  revenueData = mockData.revenueData,
-  orderStatusData = mockData.orderStatusData,
-}) => {
+const AdminDashboardPage = ({}) => {
   const [reservations, setReservations] = useState([]);
-  const { callApi, error, loading } = useCallApi();
+  const { error, loading, callMultipleApis } = useCallApi();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetail, setOrderDetail] = useState(null);
   const [ordersData, setOrdersData] = useState([]);
   const [statistics, setStatistics] = useState({});
+  const [statisticChart, setStatisticChart] = useState({});
   const [dateChoose, setDateChoose] = useState([
-    dayjs().subtract(7, "day"),
+    dayjs().subtract(1, "month"),
     dayjs(),
   ]);
-  const fetchDetail = async (id) => {
-    const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
-    if (response?.isSuccess) {
-      setOrderDetail(response?.result);
-      setIsModalOpen(true);
-    }
-  };
-  const fetchReservations = async () => {
-    const response = await callApi(
-      `${OrderApi.GET_ORDER_WITH_FILTER}`,
-      "POST",
-      {
-        startDate: dayjs().format("YYYY-MM-DD"),
-        endDate: dayjs().format("YYYY-MM-DD"),
-        type: 1 || 3,
-      }
-    );
-    if (response?.isSuccess) {
-      setReservations(response?.result?.items);
-    }
-  };
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -166,44 +111,101 @@ const AdminDashboardPage = ({
       ),
     },
   ];
-  const fetchOrder = async () => {
-    const response = await callApi(
-      `${OrderApi.GET_ORDER_WITH_FILTER}`,
-      "POST",
-      {
-        startDate: dayjs().format("YYYY-MM-DD"),
+  const fetchDetail = async (id) => {
+    const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
+    if (response?.isSuccess) {
+      setOrderDetail(response?.result);
+      setIsModalOpen(true);
+    }
+  };
 
-        endDate: dayjs().format("YYYY-MM-DD"),
-        status: 4 || 5,
-        type: 2,
-      }
-    );
-    if (response?.isSuccess) {
-      setOrdersData(response?.result?.items);
+  const fetchAllData = async () => {
+    try {
+      debugger;
+      const responses = await callMultipleApis([
+        {
+          endpoint: OrderApi.GET_ORDER_WITH_FILTER,
+          method: "POST",
+          data: {
+            startDate: dateChoose[0].format("YYYY-MM-DD"),
+            endDate: dateChoose[1].format("YYYY-MM-DD"),
+            type: 1 || 3,
+          },
+        },
+        {
+          endpoint: OrderApi.GET_ORDER_WITH_FILTER,
+          method: "POST",
+          data: {
+            startDate: dateChoose[0].format("YYYY-MM-DD"),
+            endDate: dateChoose[1].format("YYYY-MM-DD"),
+            status: 4 || 5,
+            type: 2,
+          },
+        },
+        {
+          endpoint: `${
+            StatisticApi.GET_STATISTIC_FOR_NUMBER_REPORT
+          }?startDate=${dateChoose[0].format(
+            "YYYY-MM-DD"
+          )}&endDate=${dateChoose[1].format("YYYY-MM-DD")}`,
+          method: "GET",
+        },
+        {
+          endpoint: `${
+            StatisticApi.GET_STATISTIC_FOR_DASHBOARD_REPORT
+          }?startDate=${dateChoose[0].format(
+            "YYYY-MM-DD"
+          )}&endDate=${dateChoose[1].format("YYYY-MM-DD")}`,
+          method: "GET",
+        },
+      ]);
+
+      const [
+        reservationsResponse,
+        ordersResponse,
+        statisticsResponse,
+        statisticsChartResponse,
+      ] = responses;
+
+      if (reservationsResponse?.isSuccess)
+        setReservations(reservationsResponse?.result?.items);
+      if (ordersResponse?.isSuccess)
+        setOrdersData(ordersResponse?.result?.items);
+      if (statisticsResponse?.isSuccess)
+        setStatistics(statisticsResponse?.result);
+      if (statisticsChartResponse?.isSuccess)
+        setStatisticChart(statisticsChartResponse?.result);
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
     }
   };
-  const fetchStatistics = async () => {
-    const response = await callApi(
-      `${
-        StatisticApi.GET_STATISTIC_FOR_NUMBER_REPORT
-      }?startDate=${dateChoose[0].format(
-        "YYYY-MM-DD"
-      )}&endDate=${dateChoose[1].format("YYYY-MM-DD")}`,
-      "GET"
-    );
-    if (response?.isSuccess) {
-      setStatistics(response?.result);
-    }
-  };
+
   useEffect(() => {
-    fetchReservations();
-    fetchOrder();
-    fetchStatistics();
+    fetchAllData();
   }, [dateChoose]);
-
+  const monthlyRevenueData = statisticChart?.monthlyRevenue
+    ? Object.keys(statisticChart.monthlyRevenue).map((month) => ({
+        name: month,
+        revenue: statisticChart.monthlyRevenue[month],
+      }))
+    : [];
+  const orderStatusData = [
+    {
+      status: "Thành công",
+      count: statisticChart?.orderStatusReportResponse?.successfullyOrderNumber,
+    },
+    {
+      status: "Hủy",
+      count: statisticChart?.orderStatusReportResponse?.cancellingOrderNumber,
+    },
+    {
+      status: "Chờ thanh toán",
+      count: statisticChart?.orderStatusReportResponse?.pendingOrderNumber,
+    },
+  ];
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12">
-      <LoadingOverlay loading={loading} />
+      <LoadingOverlay isLoading={loading} />
       <div className="p-6  bg-white col-span-1 xl:col-span-9 max-h-[900px] overflow-y-auto">
         <div className="flex xl:flex-row flex-col items-center  justify-between my-10">
           <Typography className="mr-2 text-red-800 font-semibold text-2xl">
@@ -237,7 +239,7 @@ const AdminDashboardPage = ({
                 variant="small"
                 className="font-normal text-red-gray-600"
               >
-                Lợi nhuận hôm nay
+                Lợi nhuận
               </Typography>
               <Typography variant="h4" color="red-gray">
                 {formatPrice(statistics?.profitReportResponse?.profit)}
@@ -365,7 +367,7 @@ const AdminDashboardPage = ({
           <Card>
             <CardHeader variant="gradient" className="mb-8 p-6 bg-red-900">
               <Typography variant="h6" color="white">
-                Doanh thu theo ngày
+                Doanh thu theo tháng
               </Typography>
             </CardHeader>
             <CardBody>
@@ -373,7 +375,7 @@ const AdminDashboardPage = ({
                 <LineChart
                   height={300}
                   width={500}
-                  data={revenueData}
+                  data={monthlyRevenueData}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
