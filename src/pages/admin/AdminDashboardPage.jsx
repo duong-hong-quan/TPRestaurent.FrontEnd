@@ -48,7 +48,7 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const AdminDashboardPage = ({}) => {
   const [reservations, setReservations] = useState([]);
-  const { error, loading, callMultipleApis } = useCallApi();
+  const { error, loading, callMultipleApis, callApi } = useCallApi();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetail, setOrderDetail] = useState(null);
   const [ordersData, setOrdersData] = useState([]);
@@ -58,6 +58,13 @@ const AdminDashboardPage = ({}) => {
     dayjs().subtract(1, "month"),
     dayjs(),
   ]);
+  const fetchDetail = async (id) => {
+    const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
+    if (response?.isSuccess) {
+      setOrderDetail(response?.result);
+      setIsModalOpen(true);
+    }
+  };
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -111,13 +118,6 @@ const AdminDashboardPage = ({}) => {
       ),
     },
   ];
-  const fetchDetail = async (id) => {
-    const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
-    if (response?.isSuccess) {
-      setOrderDetail(response?.result);
-      setIsModalOpen(true);
-    }
-  };
 
   const fetchAllData = async () => {
     try {
