@@ -20,7 +20,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { close, open } from "../../redux/features/sidebarSlice";
 import useCallApi from "../../api/useCallApi";
-import { NotificationApi } from "../../api/endpoint";
+import { NotificationApi, TokenApi } from "../../api/endpoint";
 import * as signalR from "@microsoft/signalr";
 import { baseUrl } from "../../api/config/axios";
 import { message } from "antd";
@@ -210,8 +210,21 @@ const HeaderManager = ({ userName = "Admin" }) => {
               </MenuItem>
 
               <MenuItem
-                onClick={() => {
-                  dispatch(logout());
+                onClick={async () => {
+                  const tokenUser = await callApi(
+                    `${TokenApi.GET_USER_TOKEN_BY_IP}`,
+                    "POST"
+                  );
+                  if (tokenUser.isSuccess) {
+                    const responseRemoveToken = await callApi(
+                      `${TokenApi.DELETE_TOKEN}?tokenId=${tokenUser.result.tokenId}`,
+                      "DELETE"
+                    );
+                    if (responseRemoveToken.isSuccess) {
+                      dispatch(logout());
+                      navigate("/");
+                    }
+                  }
 
                   closeMenu();
                 }}
