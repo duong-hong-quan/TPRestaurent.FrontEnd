@@ -10,7 +10,7 @@ import NotificationDemo from "../notification/NotificationDemo";
 import { logout } from "../../redux/features/authSlice";
 import { Search, SearchIcon } from "lucide-react";
 import useCallApi from "../../api/useCallApi";
-import { NotificationApi } from "../../api/endpoint";
+import { NotificationApi, TokenApi } from "../../api/endpoint";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -61,9 +61,18 @@ export const Navbar = () => {
     setIsOpen(false);
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
+  const handleLogout = async () => {
+    const tokenUser = await callApi(`${TokenApi.GET_USER_TOKEN_BY_IP}`, "POST");
+    if (tokenUser.isSuccess) {
+      const responseRemoveToken = await callApi(
+        `${TokenApi.DELETE_TOKEN}?tokenId=${tokenUser.result.tokenId}`,
+        "DELETE"
+      );
+      if (responseRemoveToken.isSuccess) {
+        dispatch(logout());
+        navigate("/");
+      }
+    }
   };
 
   const caculatorItems = () => {
