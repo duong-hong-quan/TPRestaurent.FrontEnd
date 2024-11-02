@@ -14,6 +14,9 @@ export const AccountApi = {
   VERIFY_CHANGE_EMAIL: "/api/account/verify-change-email",
   LOAD_AVAILABLE_SHIPPER: "/api/account/load-available-shipper",
   GET_ACCOUNTS_BY_ROLE_NAME: "/api/account/get-accounts-by-role-name",
+  CREATE_ACCOUNT_RESTAURANT_EMPLOYEE:
+    "/api/account/create-account-restaurant-employee",
+  BAN_USER: "/api/account/ban-user",
 };
 
 export const ComboApi = {
