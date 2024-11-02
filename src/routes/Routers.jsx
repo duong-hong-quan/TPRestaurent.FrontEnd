@@ -46,6 +46,7 @@ import AdminShipperPage from "../pages/admin/user/AdminShipperPage";
 import Landing from "../pages/common/landing/Landing";
 import TiviShow from "../pages/common/tivi/tivi-show";
 import DiningArea from "../pages/admin/table-management/DiningArea";
+import CreateEmployeeAccount from "../pages/admin/user/CreateEmployeeAccount";
 
 function Routers() {
   const routing = useRoutes([
@@ -236,6 +237,10 @@ function Routers() {
         {
           path: "user-management",
           element: <AdminUserPage />,
+        },
+        {
+          path: "user-management/create",
+          element: <CreateEmployeeAccount />,
         },
         {
           path: "shipper-management",
