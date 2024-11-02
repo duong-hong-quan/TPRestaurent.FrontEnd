@@ -142,3 +142,9 @@ export const TableApi = {
   FIND_TABLE: "/table/find-table",
   UPDATE_TABLE_COORDINATE: "/table/update-table-coordinate",
 };
+export const StatisticApi = {
+  GET_STATISTIC_FOR_NUMBER_REPORT:
+    "/statistic/get-statistic-report-for-number-report",
+  GET_STATISTIC_FOR_DASHBOARD_REPORT:
+    "/statistic/get-statistic-for-dashboard-report",
+};

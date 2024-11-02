@@ -33,7 +33,7 @@ import {
   Cell,
 } from "recharts";
 import useCallApi from "../../api/useCallApi";
-import { OrderApi } from "../../api/endpoint";
+import { OrderApi, StatisticApi } from "../../api/endpoint";
 import dayjs from "dayjs";
 import { formatDate, formatDateTime, formatPrice } from "../../util/Utility";
 import OrderTag from "../../components/tag/OrderTag";
@@ -46,42 +46,6 @@ const { RangePicker } = DatePicker;
 
 // Thêm mock data cho các biểu đồ
 const mockData = {
-  stats: [
-    {
-      icon: <BanknotesIcon className="w-6 h-6 text-white" />,
-      title: "Lợi nhuận hôm nay",
-      value: "1,200,000",
-      footer: "10% tăng so với hôm qua",
-    },
-    {
-      icon: <UserIcon className="w-6 h-6 text-white" />,
-      title: "Tổng số khách hàng",
-      value: "3,462",
-      footer: "5% tăng trong tuần này",
-    },
-    {
-      icon: <TruckIcon className="w-6 h-6 text-white" />,
-      title: "Đơn hàng hôm nay",
-      value: "23",
-    },
-    {
-      icon: <CalendarCheck className="w-6 h-6 text-white" />,
-      title: "Tổng lượt đặt bàn hôm nay",
-      value: "10 lịch đặt bàn",
-    },
-    {
-      icon: <ChefHatIcon className="w-6 h-6 text-white" />,
-      title: "Nhân viên nhà bếp",
-      value: "19 nhân viên",
-    },
-    {
-      icon: <UserIcon className="w-6 h-6 text-white" />,
-      title: "Tổng shipper",
-      value: "7 nhân viên",
-      footer: "3 nhân viên đang hoạt động",
-    },
-  ],
-
   popularItems: [
     { name: "Margherita Pizza", sales: 145, price: 12.99 },
     { name: "Caesar Salad", sales: 98, price: 8.5 },
@@ -115,11 +79,7 @@ const mockData = {
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const AdminDashboardPage = ({
-  stats = mockData.stats,
-  orders = mockData.orders,
-  popularItems = mockData.popularItems,
   revenueData = mockData.revenueData,
-  categoryData = mockData.categoryData,
   orderStatusData = mockData.orderStatusData,
 }) => {
   const [reservations, setReservations] = useState([]);
@@ -127,6 +87,11 @@ const AdminDashboardPage = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetail, setOrderDetail] = useState(null);
   const [ordersData, setOrdersData] = useState([]);
+  const [statistics, setStatistics] = useState({});
+  const [dateChoose, setDateChoose] = useState([
+    dayjs().subtract(7, "day"),
+    dayjs(),
+  ]);
   const fetchDetail = async (id) => {
     const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
     if (response?.isSuccess) {
@@ -217,10 +182,24 @@ const AdminDashboardPage = ({
       setOrdersData(response?.result?.items);
     }
   };
+  const fetchStatistics = async () => {
+    const response = await callApi(
+      `${
+        StatisticApi.GET_STATISTIC_FOR_NUMBER_REPORT
+      }?startDate=${dateChoose[0].format(
+        "YYYY-MM-DD"
+      )}&endDate=${dateChoose[1].format("YYYY-MM-DD")}`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+      setStatistics(response?.result);
+    }
+  };
   useEffect(() => {
     fetchReservations();
     fetchOrder();
-  }, []);
+    fetchStatistics();
+  }, [dateChoose]);
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12">
@@ -238,42 +217,146 @@ const AdminDashboardPage = ({
               locale={configCalendar}
               format="DD/MM/YYYY"
               onChange={(value) => {
-                console.log(value);
+                setDateChoose(value);
               }}
-              value={[dayjs().subtract(7, "day"), dayjs()]}
+              value={dateChoose}
               size="large"
             />
           </div>
         </div>
         <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
-          {stats.map(({ icon, title, value, footer }) => (
-            <Card key={title}>
-              <CardHeader
-                variant="gradient"
-                className="bg-red-900 absolute -mt-4 grid h-16 w-16 place-items-center"
+          <Card key={"Lợi nhuận"}>
+            <CardHeader
+              variant="gradient"
+              className="bg-red-900 absolute -mt-4 grid h-16 w-16 place-items-center"
+            >
+              <BanknotesIcon className="w-6 h-6 text-white" />
+            </CardHeader>
+            <CardBody className="p-4 text-right">
+              <Typography
+                variant="small"
+                className="font-normal text-red-gray-600"
               >
-                {icon}
-              </CardHeader>
-              <CardBody className="p-4 text-right">
-                <Typography
-                  variant="small"
-                  className="font-normal text-red-gray-600"
-                >
-                  {title}
-                </Typography>
-                <Typography variant="h4" color="red-gray">
-                  {value}
-                </Typography>
-              </CardBody>
-              {footer && (
-                <CardBody className="border-t border-red-gray-50 p-4">
-                  <Typography className="font-normal text-red-gray-600">
-                    {footer}
-                  </Typography>
-                </CardBody>
-              )}
-            </Card>
-          ))}
+                Lợi nhuận hôm nay
+              </Typography>
+              <Typography variant="h4" color="red-gray">
+                {formatPrice(statistics?.profitReportResponse?.profit)}
+              </Typography>
+            </CardBody>
+          </Card>
+          <Card key={"Tổng số khách hàng"}>
+            <CardHeader
+              variant="gradient"
+              className="bg-red-900 absolute -mt-4 grid h-16 w-16 place-items-center"
+            >
+              <UserIcon className="w-6 h-6 text-white" />
+            </CardHeader>
+            <CardBody className="p-4 text-right">
+              <Typography
+                variant="small"
+                className="font-normal text-red-gray-600"
+              >
+                Tổng số khách hàng
+              </Typography>
+              <Typography variant="h4" color="red-gray">
+                {statistics?.customerStasticResponse?.numberOfCustomer}
+              </Typography>
+            </CardBody>
+          </Card>
+          <Card key={`Đơn hàng`}>
+            <CardHeader
+              variant="gradient"
+              className="bg-red-900 absolute -mt-4 grid h-16 w-16 place-items-center"
+            >
+              <UserIcon className="w-6 h-6 text-white" />
+            </CardHeader>
+            <CardBody className="p-4 text-right">
+              <Typography
+                variant="small"
+                className="font-normal text-red-gray-600"
+              >
+                Tổng số đơn hàng
+              </Typography>
+              <Typography variant="h4" color="red-gray">
+                {statistics?.totalDeliveringOrderNumber}
+              </Typography>
+            </CardBody>
+
+            <CardBody className="border-t border-red-gray-50 p-4">
+              <Typography className="font-normal text-red-gray-600"></Typography>
+            </CardBody>
+          </Card>
+          <Card key={"Lịch đặt bàn"}>
+            <CardHeader
+              variant="gradient"
+              className="bg-red-900 absolute -mt-4 grid h-16 w-16 place-items-center"
+            >
+              <UserIcon className="w-6 h-6 text-white" />
+            </CardHeader>
+            <CardBody className="p-4 text-right">
+              <Typography
+                variant="small"
+                className="font-normal text-red-gray-600"
+              >
+                Tổng lượt đặt bàn
+              </Typography>
+              <Typography variant="h4" color="red-gray">
+                {statistics?.totalReservationNumber}
+              </Typography>
+            </CardBody>
+
+            <CardBody className="border-t border-red-gray-50 p-4">
+              <Typography className="font-normal text-red-gray-600"></Typography>
+            </CardBody>
+          </Card>
+          <Card key={"Nhân viên nhà bếp"}>
+            <CardHeader
+              variant="gradient"
+              className="bg-red-900 absolute -mt-4 grid h-16 w-16 place-items-center"
+            >
+              <UserIcon className="w-6 h-6 text-white" />
+            </CardHeader>
+            <CardBody className="p-4 text-right">
+              <Typography
+                variant="small"
+                className="font-normal text-red-gray-600"
+              >
+                Nhân viên nhà bếp
+              </Typography>
+              <Typography variant="h4" color="red-gray">
+                {statistics?.totalChefNumber}
+              </Typography>
+            </CardBody>
+
+            <CardBody className="border-t border-red-gray-50 p-4">
+              <Typography className="font-normal text-red-gray-600"></Typography>
+            </CardBody>
+          </Card>
+          <Card key={"Tổng số shipper"}>
+            <CardHeader
+              variant="gradient"
+              className="bg-red-900 absolute -mt-4 grid h-16 w-16 place-items-center"
+            >
+              <UserIcon className="w-6 h-6 text-white" />
+            </CardHeader>
+            <CardBody className="p-4 text-right">
+              <Typography
+                variant="small"
+                className="font-normal text-red-gray-600"
+              >
+                Tổng số shipper
+              </Typography>
+              <Typography variant="h4" color="red-gray">
+                {statistics?.shipperStatisticResponse?.numberOfShipper}
+              </Typography>
+            </CardBody>
+
+            <CardBody className="border-t border-red-gray-50 p-4">
+              <Typography className="font-normal text-red-gray-600">
+                {`${statistics?.shipperStatisticResponse?.numberOfShipperIsWorking} shipper đang đi giao`}
+              </Typography>
+            </CardBody>
+          </Card>
         </div>
 
         {/* Biểu đồ doanh thu theo ngày */}
