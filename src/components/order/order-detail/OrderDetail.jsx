@@ -413,7 +413,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
           pagination={false}
           className="border border-gray-200 rounded-lg overflow-hidden"
         />
-        {order.validatingImg && (
+        {order?.validatingImg && (
           <div className="flex flex-col items-start ">
             <Typography className="font-bold my-2">
               Ảnh shipper xác nhận giao hàng:
