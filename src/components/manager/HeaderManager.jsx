@@ -224,6 +224,9 @@ const HeaderManager = ({ userName = "Admin" }) => {
                       dispatch(logout());
                       navigate("/");
                     }
+                  } else {
+                    dispatch(logout());
+                    navigate("/");
                   }
 
                   closeMenu();

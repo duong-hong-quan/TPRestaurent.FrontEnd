@@ -4,7 +4,7 @@ import Draggable from "react-draggable";
 import useCallApi from "../../../api/useCallApi";
 import { TableApi } from "../../../api/endpoint";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
-import { Button, message, Modal } from "antd";
+import { Alert, Button, message, Modal } from "antd";
 import { showError } from "../../../util/Utility";
 
 const TABLE_SIZES = {
@@ -83,6 +83,7 @@ const DiningArea = () => {
     }
   };
   console.log(tables);
+  const isWarning = tables?.some((table) => table.tableStatusId === 0);
   return (
     <>
       <LoadingOverlay isLoading={loading} />
@@ -90,6 +91,62 @@ const DiningArea = () => {
         <h3 className="text-red-800 uppercase font-bold mb-6">
           Khu vực bàn ăn
         </h3>
+        <div className="flex flex-col justify-end items-end ">
+          <div
+            style={{
+              border: "1px solid #ccc",
+            }}
+            className="p-4 rounded-lg"
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  marginRight: "10px",
+                }}
+                className="bg-yellow-200"
+              ></div>
+              <span>Mới tạo</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  marginRight: "10px",
+                }}
+                className="bg-green-500"
+              ></div>
+              <span>Bàn đang trống</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  marginRight: "10px",
+                }}
+                className="bg-red-500"
+              ></div>
+              <span>Đang sử dụng</span>
+            </div>
+          </div>
+        </div>
+        {isWarning && (
+          <Alert
+            message="Cảnh báo"
+            description="Có ít nhất một bàn ăn chưa được sắp xếp hoặc chưa được gán vị trí trên sơ đồ. Vui lòng kiểm tra lại."
+            type="warning"
+            showIcon
+            className="my-4"
+          />
+        )}
         <div className="grid grid-cols-1 xl:grid-cols-3 xl:gap-8">
           {/* Left side: Drag location with grid */}
           <div
@@ -135,7 +192,19 @@ const DiningArea = () => {
                   grid={[GRID_SIZE, GRID_SIZE]}
                 >
                   <div
-                    className="absolute flex flex-col items-center justify-center bg-white border border-gray-400 rounded-lg shadow-md p-4 cursor-pointer hover:shadow-xl transition-shadow duration-300"
+                    className={`absolute flex flex-col items-center justify-center border border-gray-400 rounded-lg shadow-md p-4 cursor-pointer hover:shadow-xl transition-shadow duration-300 ${
+                      table.tableStatusId === 0
+                        ? "bg-yellow-200"
+                        : table.tableStatusId === 1
+                        ? "bg-green-500"
+                        : "bg-red-300"
+                    } ${
+                      table.tableStatusId === 0
+                        ? "text-yellow-900"
+                        : table.tableStatusId === 1
+                        ? "text-white"
+                        : "text-white"
+                    }`}
                     style={{
                       width: tableSize.width,
                       height: tableSize.height,
@@ -164,10 +233,6 @@ const DiningArea = () => {
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{table.name}</span>
-                      <span className="text-gray-500">
-                        {TABLE_SIZES[table.tableSizeId].width}x
-                        {TABLE_SIZES[table.tableSizeId].height}
-                      </span>
                     </div>
                   </li>
                 ))}
