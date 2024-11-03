@@ -26,7 +26,7 @@ import { message } from "antd";
 import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
 import { ThermometerSun } from "lucide-react";
-
+import ReactMarkdown from "react-markdown";
 const useDishData = (id) => {
   const [dish, setDish] = useState({});
   const [dishSizeDetails, setDishSizeDetails] = useState([]);
@@ -161,7 +161,7 @@ const ProductDetail = () => {
   const renderDescriptionTab = () => (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">Mô tả sản phẩm</h2>
-      <p className="text-gray-700">{dish?.description}</p>
+      <div dangerouslySetInnerHTML={{ __html: dish?.description }} />
     </div>
   );
   const dispatch = useDispatch();

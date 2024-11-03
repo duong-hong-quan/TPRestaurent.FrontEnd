@@ -17,6 +17,8 @@ import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
 import { numberToWords, showError } from "../../../util/Utility";
 import { useNavigate, useParams } from "react-router-dom";
+import "react-quill/dist/quill.snow.css"; // import styles
+import ReactQuill from "react-quill";
 
 const { TextArea } = Input;
 
@@ -42,6 +44,8 @@ const CreateMenuPage = ({ back }) => {
   const [dishSizes, setDishSizes] = useState([]);
   const navigate = useNavigate();
   const [priceText, setPriceText] = useState([]);
+  const [description, setDescription] = useState(""); // new state for rich text description
+
   const fetchDataById = async (id) => {
     const response = await callApi(`${DishApi.GET_BY_ID}/${id}`, "GET");
     if (response?.isSuccess) {
@@ -289,11 +293,7 @@ const CreateMenuPage = ({ back }) => {
                 { required: true, message: "Vui lòng nhập mô tả món ăn" },
               ]}
             >
-              <TextArea
-                rows={4}
-                placeholder="Nhập mô tả chi tiết về món ăn"
-                name="description"
-              />
+              <ReactQuill placeholder="Nhập mô tả chi tiết về món ăn" />
             </Form.Item>
 
             <Form.List name="DishSizeDetailDtos">

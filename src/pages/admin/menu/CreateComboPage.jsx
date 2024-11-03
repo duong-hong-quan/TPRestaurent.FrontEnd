@@ -27,6 +27,8 @@ import {
 import CreateOptionSetModal from "../../../components/modal/CreateOptionSetModal";
 import { useParams } from "react-router-dom";
 import moment from "moment";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // import styles
 
 const { RangePicker } = DatePicker;
 const { Title, Text } = Typography;
@@ -355,7 +357,7 @@ const CreateComboPage = () => {
           />
         </Form.Item>
         <Form.Item name="description" label="Mô tả combo">
-          <Input.TextArea rows={4} placeholder="Mô tả combo..." />
+          <ReactQuill placeholder="Nhập mô tả chi tiết về combo món ăn" />
         </Form.Item>
 
         <Divider orientation="left">Bộ món</Divider>

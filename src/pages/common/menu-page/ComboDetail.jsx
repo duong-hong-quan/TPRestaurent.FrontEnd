@@ -101,6 +101,10 @@ const ComboDetail = ({ comboData, handleBack }) => {
                   />
                 ))}
             </div>
+            <div className="px-4">
+              <h5 className="text-2xl font-bold mt-4">Mô tả</h5>
+              <div dangerouslySetInnerHTML={{ __html: combo?.description }} />
+            </div>
           </div>
           <div className="md:w-1/2 p-10">
             <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center">
@@ -165,10 +169,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
                       <Typography variant="small" className="mt-1 text-center">
                         {dish.dishSizeDetail.dish.name}
                       </Typography>
-                      <Typography
-                        variant="tiny"
-                        className="text-center text-gray-600"
-                      >
+                      <Typography variant="tiny">
                         Giá: {formatPrice(dish.dishSizeDetail.price)}
                       </Typography>
                     </div>
