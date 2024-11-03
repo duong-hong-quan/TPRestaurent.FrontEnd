@@ -24,29 +24,6 @@ const CreateEmployeeAccount = () => {
   };
 
   // Custom validation for phone number
-  const validatePhoneNumber = (_, value) => {
-    debugger;
-    if (!value) {
-      return Promise.reject(new Error("Please enter the phone number"));
-    }
-
-    // Remove any +84 or leading zeroes for verification
-    let normalizedValue = value.replace(/^(\+84|0)/, "");
-
-    if (value.length !== 9 && value.length !== 10) {
-      return Promise.reject(
-        new Error("Phone number must be 9 or 10 digits without country code")
-      );
-    }
-
-    if (value.startsWith("0") && value.length > 11) {
-      return Promise.reject(
-        new Error("Phone number cannot start with 0 and exceed 11 characters")
-      );
-    }
-
-    return Promise.resolve();
-  };
 
   return (
     <div
@@ -112,7 +89,13 @@ const CreateEmployeeAccount = () => {
         <Form.Item
           label="Số điện thoại"
           name="phoneNumber"
-          rules={[{ validator: validatePhoneNumber }]}
+          rules={[
+            { required: true, message: "Please enter the phone number" },
+            {
+              pattern: /^[1-9]\d{8,9}$/,
+              message: "Số điện thoại không hợp lệ. Vui lòng kiểm tra lại.",
+            },
+          ]}
         >
           <Input prefix={"+84"} placeholder="Số điện thoại của nhân viên" />
         </Form.Item>

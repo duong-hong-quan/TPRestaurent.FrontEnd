@@ -1,8 +1,9 @@
-import { Button, Input } from "antd";
+import { Button, Input, Form } from "antd"; // Import Form from antd
 import { useState, useEffect } from "react";
 import OtpConfirmModal from "./OtpConfirmModal";
 import loginImage from "../../assets/imgs/login.png";
 import useCallApi from "../../api/useCallApi";
+
 const LoginPage = () => {
   const [phone, setPhone] = useState("");
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
@@ -10,8 +11,8 @@ const LoginPage = () => {
   const [resOtp, setResOtp] = useState(null);
   const { callApi, error, loading } = useCallApi();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (values) => {
+    const { phone } = values; // Get phone number from the form values
     const data = await callApi(
       `/api/account/send-otp?phoneNumber=${phone}&otp=${0}`,
       "POST"
@@ -50,27 +51,41 @@ const LoginPage = () => {
           <h1 className="text-2xl font-bold text-center text-red-700 mb-4">
             Đăng nhập
           </h1>
-          <form className="flex flex-col gap-4" onSubmit={handleLogin}>
-            <label htmlFor="phone" className="text-red-700">
-              Số điện thoại
-            </label>
-            <Input
-              id="phone"
-              placeholder="Nhập số điện thoại"
-              prefix={"+84"}
-              className="border border-gray-300 rounded"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-            <Button
-              type="primary"
-              className="bg-red-700 hover:bg-red-800 w-full"
-              htmlType="submit"
-              loading={loading}
+          <Form
+            className="flex flex-col gap-4"
+            onFinish={handleLogin} // Use onFinish for form submission
+          >
+            <Form.Item
+              label="Số điện thoại"
+              name="phone"
+              rules={[
+                { required: true, message: "Vui lòng nhập số điện thoại" },
+                {
+                  pattern: /^[1-9]\d{8,9}$/,
+                  message: "Số điện thoại không hợp lệ. Vui lòng kiểm tra lại.",
+                },
+              ]}
             >
-              Đăng nhập ngay
-            </Button>
-          </form>
+              <Input
+                id="phone"
+                placeholder="Nhập số điện thoại"
+                prefix="+84"
+                className="border border-gray-300 rounded"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                className="bg-red-700 hover:bg-red-800 w-full"
+                htmlType="submit"
+                loading={loading}
+              >
+                Đăng nhập ngay
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
       </div>
       <OtpConfirmModal

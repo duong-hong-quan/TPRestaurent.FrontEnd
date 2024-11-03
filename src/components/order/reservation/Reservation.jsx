@@ -402,6 +402,10 @@ const Reservation = () => {
               label="Số điện thoại"
               name="phone"
               rules={[
+                {
+                  pattern: /^[1-9]\d{8,9}$/,
+                  message: "Số điện thoại không hợp lệ. Vui lòng kiểm tra lại.",
+                },
                 { required: true, message: "Vui lòng nhập số điện thoại" },
               ]}
             >
