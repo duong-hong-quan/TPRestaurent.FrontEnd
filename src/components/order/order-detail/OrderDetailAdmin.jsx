@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { Button, Input, message, Modal, Radio, Table } from "antd";
+import { Button, Image, Input, message, Modal, Radio, Table } from "antd";
 import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
@@ -459,6 +459,22 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
               pagination={false}
               className="border border-gray-200 rounded-lg overflow-hidden"
             />
+
+            {order.validatingImg && (
+              <div className="flex flex-col items-start ">
+                <Typography className="font-bold my-2">
+                  Ảnh shipper xác nhận giao hàng:
+                </Typography>
+                <div className="w-20 h-20 rounded-lg shadow-sm ">
+                  <Image
+                    src={order.validatingImg}
+                    alt="Validating Image"
+                    className="w-full h-full"
+                  />
+                </div>
+              </div>
+            )}
+
             {renderIsPayment() && (
               <Card className="max-w-md mx-auto p-6 bg-white shadow-lg">
                 <div className="flex flex-col space-y-6">

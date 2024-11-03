@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { Button, Modal, Table } from "antd";
 import moment from "moment/moment";
@@ -414,6 +413,21 @@ const OrderDetail = ({ reservationData, fetchData }) => {
           pagination={false}
           className="border border-gray-200 rounded-lg overflow-hidden"
         />
+        {order.validatingImg && (
+          <div className="flex flex-col items-start ">
+            <Typography className="font-bold my-2">
+              Ảnh shipper xác nhận giao hàng:
+            </Typography>
+            <div className="w-20 h-20 rounded-lg shadow-sm ">
+              <Image
+                src={order.validatingImg}
+                alt="Validating Image"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+        )}
+
         {renderIsPayment() && (
           <div className="flex justify-center my-4">
             <Button
