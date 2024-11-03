@@ -54,7 +54,7 @@ const menuItems = [
     icon: <FaCog className="h-5 w-5 text-white" />,
     subItems: [
       { title: "Cài đặt", path: "/admin/settings" },
-      { title: "Quản lý thiết bị", path: "/admin/manage-devices" },
+      { title: "Quản lý bàn ăn", path: "/admin/manage-devices" },
       { title: "Quản lý sơ đồ bàn ăn", path: "/admin/dining-area" },
     ],
   },

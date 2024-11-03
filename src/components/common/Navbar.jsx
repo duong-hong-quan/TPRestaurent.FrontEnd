@@ -72,6 +72,9 @@ export const Navbar = () => {
         dispatch(logout());
         navigate("/");
       }
+    } else {
+      dispatch(logout());
+      navigate("/");
     }
   };
 

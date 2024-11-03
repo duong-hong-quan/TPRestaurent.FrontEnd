@@ -144,6 +144,8 @@ export const TableApi = {
   DELETE_TABLE: "/table/delete-table",
   FIND_TABLE: "/table/find-table",
   UPDATE_TABLE_COORDINATE: "/table/update-table-coordinate",
+  GET_ALL_TABLE_RATING: "/table/get-all-table-rating",
+  CREATE_TABLE: "/table/create-table",
 };
 export const StatisticApi = {
   GET_STATISTIC_FOR_NUMBER_REPORT:

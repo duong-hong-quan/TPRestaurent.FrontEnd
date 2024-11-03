@@ -16,37 +16,44 @@ import Pagination from "../../components/pagination/Pagination";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import { StyledTable } from "../../components/custom-ui/StyledTable";
 import { NavLink } from "react-router-dom";
+import CreateTableModal from "../../components/modal/CreateTableModal";
+import { Edit, PlusIcon, SettingsIcon } from "lucide-react";
+import { TableApi } from "../../api/endpoint";
+import { render } from "react-dom";
 
 export function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
   const { callApi, error, loading } = useCallApi();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const totalItems = 10;
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
   const fetchData = async () => {
     const response = await callApi(
-      `/device/get-all-device?pageNumber=${currentPage}&pageSize=${totalItems}`,
+      `${TableApi.GET_ALL}/${currentPage}/${totalItems}`,
       "GET"
     );
     if (response?.isSuccess) {
       setDevices(response?.result?.items);
+
+      setTotalPages(response?.result?.totalPages);
     }
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage]);
   const columns = [
     {
       title: "Tên bàn",
-      dataIndex: "tableName",
-      key: "tableName",
+      dataIndex: "name",
+      key: "name",
     },
     {
       title: " Loại bàn",
-      dataIndex: ["table", "tableSizeId"],
+      dataIndex: "tableSizeId",
       key: "tableSizeId",
       render: (tableSizeId) => {
         switch (tableSizeId) {
@@ -76,17 +83,25 @@ export function AdminDevicePage() {
       },
     },
     {
+      title: "Loại phòng",
+      dataIndex: ["room", "name"],
+    },
+    {
+      title: "Riêng tư",
+      dataIndex: ["room", "isPrivate"],
+      render: (isPrivate) => {
+        return isPrivate ? "Có" : "Không";
+      },
+    },
+    {
       title: "Hành động",
       dataIndex: "",
       key: "",
       width: 100,
       render: () => (
         <div className="flex gap-4">
-          <Button size="sm" className="bg-white text-yellow-800">
-            <FaLock />
-          </Button>
           <Button size="sm" className="bg-white text-red-800">
-            <MdEditNote />
+            <Edit />
           </Button>
         </div>
       ),
@@ -100,37 +115,34 @@ export function AdminDevicePage() {
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray">
-              Quản lý thiết bị
+              Quản lý bàn ăn
             </Typography>
             <Typography color="gray" className="mt-1 font-normal">
-              Xem và quản lý tất cả các thiết bị tại nhà hàng
+              Xem và quản lý tất cả các bàn ăn tại nhà hàng
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <NavLink
               to={`/admin/dining-area`}
-              className={`bg-white block text-black rounded-md shadow-xl px-4 py-2 cursor-pointer`}
+              className={`flex bg-red-800  items-center text-white rounded-md shadow-xl px-4 py-2 cursor-pointer`}
             >
-              Cấu hình sơ đồ bàn
+              <SettingsIcon strokeWidth={2} className="h-4 w-4 mr-1" /> Cấu hình
+              sơ đồ bàn
             </NavLink>
             <Button
-              className="flex items-center bg-red-700 gap-3"
+              className="flex items-center bg-red-800 gap-3"
+              size="sm"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <PlusIcon strokeWidth={2} className="h-4 w-4" /> Tạo bàn mới
+            </Button>
+            <Button
+              className="flex items-center bg-red-800 gap-3"
               size="sm"
               onClick={fetchData}
             >
               <ArrowPathIcon strokeWidth={2} className="h-4 w-4" /> Làm mới
             </Button>
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="mb-4">
-            <div className="flex border-b border-gray-200"></div>
-          </div>
-          <div className="w-full md:w-72">
-            <Input
-              label="Tìm kiếm"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            />
           </div>
         </div>
       </CardHeader>
@@ -146,6 +158,11 @@ export function AdminDevicePage() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handleCurrentPageChange}
+      />
+      <CreateTableModal
+        handleCloseModal={() => setIsModalOpen(false)}
+        isModalOpen={isModalOpen}
+        key={"create-table-modal"}
       />
     </Card>
   );
