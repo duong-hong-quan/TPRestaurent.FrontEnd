@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardBody,
@@ -6,18 +6,8 @@ import {
   IconButton,
   Typography,
 } from "@material-tailwind/react";
-import { BanknotesIcon, ChartBarIcon } from "@heroicons/react/24/solid";
-import {
-  CalendarCheck,
-  ChefHatIcon,
-  Clock,
-  ExternalLink,
-  EyeIcon,
-  MapPin,
-  TruckIcon,
-  UserIcon,
-  Users,
-} from "lucide-react";
+import { BanknotesIcon } from "@heroicons/react/24/solid";
+import { ExternalLink, EyeIcon, MapPin, UserIcon, Users } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -28,19 +18,17 @@ import {
   Legend,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
   Cell,
 } from "recharts";
 import useCallApi from "../../api/useCallApi";
-import { OrderApi, StatisticApi } from "../../api/endpoint";
+import { InvoiceApi, OrderApi, StatisticApi } from "../../api/endpoint";
 import dayjs from "dayjs";
 import { formatDate, formatDateTime, formatPrice } from "../../util/Utility";
 import OrderTag from "../../components/tag/OrderTag";
 import ModalOrderDetailAdmin from "../../components/order/modal/ModalOrderDetailAdmin";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import { StyledTable } from "../../components/custom-ui/StyledTable";
-import { DatePicker, Space } from "antd";
+import { Button, DatePicker } from "antd";
 import { configCalendar } from "./AdminMealHistoryPage";
 const { RangePicker } = DatePicker;
 
@@ -203,6 +191,22 @@ const AdminDashboardPage = ({}) => {
       count: statisticChart?.orderStatusReportResponse?.pendingOrderNumber,
     },
   ];
+  const handleExportReport = async () => {
+    const response = await callApi(
+      `${InvoiceApi.GENERATE_GENERAL_INVOICE}`,
+      "POST",
+      {
+        startTime: dateChoose[0].format("YYYY-MM-DD"),
+        endTime: dateChoose[1].format("YYYY-MM-DD"),
+        orderType: 2,
+        pageNumber: 1,
+        pageSize: 100,
+      }
+    );
+    if (response?.isSuccess) {
+      window.open(response?.result);
+    }
+  };
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12">
       <LoadingOverlay isLoading={loading} />
@@ -224,6 +228,12 @@ const AdminDashboardPage = ({}) => {
               value={dateChoose}
               size="large"
             />
+            <Button
+              className="bg-red-800 text-white px-4 py-2 mx-4"
+              onClick={handleExportReport}
+            >
+              Xuất báo cáo
+            </Button>
           </div>
         </div>
         <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-3">

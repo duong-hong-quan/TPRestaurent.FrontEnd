@@ -155,3 +155,7 @@ export const StatisticApi = {
   GET_STATISTIC_FOR_DASHBOARD_REPORT:
     "/statistic/get-statistic-report-for-dashboard-report",
 };
+
+export const InvoiceApi = {
+  GENERATE_GENERAL_INVOICE: "/invoice/generate-general-invoice",
+};

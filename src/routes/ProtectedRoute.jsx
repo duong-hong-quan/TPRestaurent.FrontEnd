@@ -16,7 +16,7 @@ export const ProtectedRoute = ({ children, role }) => {
     debugger;
     const currentTokenResponse = await callApi(
       `${TokenApi.GET_USER_TOKEN_BY_IP}`,
-      "GET"
+      "POST"
     );
     if (!currentTokenResponse.isSuccess) {
       dispatch(logout());
