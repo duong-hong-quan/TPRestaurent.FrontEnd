@@ -46,9 +46,6 @@ const VerifyPayment = () => {
 
     if (vnpResponseCode) {
       setIsVNPAY(true);
-      const vnpOrderInfo = decodeURIComponent(
-        searchParams.get("vnp_OrderInfo")
-      );
       if (vnpResponseCode === "00") {
         const data = await callApi(
           `${TransactionApi.UPDATE_STATUS}/${id}/2`,
@@ -56,6 +53,9 @@ const VerifyPayment = () => {
         );
         if (data.isSuccess) {
           setIsSuccess(true);
+          if (getOS() === "Android") {
+            window.location.href = `thienphurestaurant://transaction?isSuccess=true&transactionId=${id}`;
+          }
         }
       } else {
         const data = await callApi(
@@ -63,10 +63,16 @@ const VerifyPayment = () => {
           "PUT"
         );
         if (data.isSuccess) {
-          setIsSuccess(true);
+          setIsSuccess(false);
+          if (getOS() === "Android") {
+            window.location.href = `thienphurestaurant://transaction?isSuccess=false&transactionId=${id}`;
+          }
+        } else {
+          setModalMessage(
+            `Thanh toán VNPay thất bại . Vui lòng thanh toán lại`
+          );
+          setIsSuccess(false);
         }
-        setModalMessage(`Thanh toán VNPay thất bại . Vui lòng thanh toán lại`);
-        setIsSuccess(false);
       }
     } else if (partnerCode === "MOMO") {
       debugger;
@@ -81,6 +87,9 @@ const VerifyPayment = () => {
             `Thanh toán Momo thành công cho đơn hàng: ${orderInfo}.`
           );
           setIsSuccess(true);
+          if (getOS() === "Android") {
+            window.location.href = `thienphurestaurant://transaction?isSuccess=true&transactionId=${id}`;
+          }
         }
       } else {
         const data = await callApi(
@@ -92,13 +101,13 @@ const VerifyPayment = () => {
           setModalMessage(
             `Thanh toán Momo thất bại cho đơn hàng: ${orderInfo}. Vui lòng thanh toán lại`
           );
+          if (getOS() === "Android") {
+            window.location.href = `thienphurestaurant://transaction?isSuccess=false&transactionId=${id}`;
+          }
         }
       }
     }
-    debugger;
-    if (getOS() === "Android") {
-      window.location.href = `thienphurestaurant://transaction?isSuccess=${isSuccess}`;
-    }
+
     setModalIsOpen(true);
   };
   useEffect(() => {
