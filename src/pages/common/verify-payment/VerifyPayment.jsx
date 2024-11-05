@@ -95,6 +95,7 @@ const VerifyPayment = () => {
         }
       }
     }
+    debugger;
     if (getOS() === "Android") {
       window.location.href = `thienphurestaurant://transaction?isSuccess=${isSuccess}`;
     }
