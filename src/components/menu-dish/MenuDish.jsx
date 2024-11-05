@@ -16,23 +16,12 @@ const MenuDish = ({
   selectedCategory,
   menuCategories,
 }) => {
-  const [menuCategoriesWithIcons, setMenuCategoriesWithIcons] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState({});
   const { callApi, error, loading } = useCallApi();
   const dispatch = useDispatch();
   const fetchData = async () => {
     const response = await callApi(`${DishApi.GET_ALL_DISH_TYPE}/1/100`);
     if (response?.isSuccess) {
-      const categoriesWithIcons = response.result.items.map((category) => {
-        const matchedCategory = menuCategories.find(
-          (menuCategory) => menuCategory.name === category.name
-        );
-        return {
-          ...category,
-          icon: matchedCategory ? matchedCategory.icon : "fa-martini-glass",
-        };
-      });
-      setMenuCategoriesWithIcons(categoriesWithIcons);
     }
   };
   useEffect(() => {
@@ -80,25 +69,7 @@ const MenuDish = ({
             Xem tất cả
           </NavLink>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
-          {menuCategoriesWithIcons.map((category, index) => (
-            <div
-              onClick={() => {
-                setSelectedCategory(category.id);
-                fetchDishes();
-              }}
-              key={index}
-              className={`${
-                selectedCategory === category.id ? "bg-gray-400" : "bg-red-800"
-              }  rounded-lg text-red-600 p-2 font-bold bg-white shadow-2xl text-center flex flex-col justify-center items-center`}
-            >
-              <div>
-                <i className={`fa-solid ${category.icon}`}></i>
-              </div>
-              <p>{category.vietnameseName}</p>
-            </div>
-          ))}
-        </div>
+
         <div className="grid sm:grid-cols-2 md:grid-cols-3  gap-4 mb-6">
           {dishes.map((dish, index) => (
             <DishCard

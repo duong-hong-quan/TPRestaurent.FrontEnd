@@ -64,25 +64,6 @@ export const HomePage = () => {
     setPageSize(pageSize + 3);
   };
 
-  const menuCategories = [
-    { name: "APPETIZER", icon: "fa-martini-glass" },
-    { name: "SOUP", icon: "fa-temperature-high" },
-    { name: "HOTPOT", icon: "fa-fire-burner" },
-    { name: "BBQ", icon: "fa-lemon" },
-    { name: "HOTPOT_BROTH", icon: "fa-martini-glass" },
-    { name: "HOTPOT_MEAT", icon: "fa-scroll" },
-    { name: "HOTPOT_SEAFOOD", icon: "fa-martini-glass" },
-    { name: "HOTPOT_VEGGIE", icon: "fa-martini-glass" },
-    { name: "BBQ_MEAT", icon: "fa-martini-glass" },
-    { name: "BBQ_SEAFOOD", icon: "fa-martini-glass" },
-    { name: "HOTPOT_TOPPING", icon: "fa-martini-glass" },
-    { name: "BBQ_TOPPING", icon: "fa-martini-glass" },
-    { name: "SIDEDISH", icon: "fa-martini-glass" },
-    { name: "DRINK", icon: "fa-martini-glass" },
-    { name: "DESSERT", icon: "fa-martini-glass" },
-    { name: "SAUCE", icon: "fa-martini-glass" },
-  ];
-
   return (
     <>
       <>
@@ -90,24 +71,19 @@ export const HomePage = () => {
           <SliderHome />
         </div>
 
-        <div className="">
-          <TopVoucher />
-          <IntroHome />
-          <BestSeller />
-          {loading && <Skeleton />}
-          {!loading && (
-            <MenuDish
-              dishes={dishes}
-              handleAddItem={handleAddItem}
-              fetchDishes={fetchData}
-              setSelectedCategory={setSelectedCategory}
-              selectedCategory={selectedCategory}
-              menuCategories={menuCategories}
-            />
-          )}
+        <IntroHome />
+        <BestSeller />
+        {!loading && (
+          <MenuDish
+            dishes={dishes}
+            handleAddItem={handleAddItem}
+            fetchDishes={fetchData}
+            setSelectedCategory={setSelectedCategory}
+            selectedCategory={selectedCategory}
+          />
+        )}
 
-          <TopFeedback />
-        </div>
+        <TopFeedback />
       </>
     </>
   );
