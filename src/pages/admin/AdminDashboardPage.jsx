@@ -28,7 +28,7 @@ import OrderTag from "../../components/tag/OrderTag";
 import ModalOrderDetailAdmin from "../../components/order/modal/ModalOrderDetailAdmin";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import { StyledTable } from "../../components/custom-ui/StyledTable";
-import { Button, DatePicker } from "antd";
+import { Button, DatePicker, Select } from "antd";
 import { configCalendar } from "./AdminMealHistoryPage";
 const { RangePicker } = DatePicker;
 
@@ -46,6 +46,7 @@ const AdminDashboardPage = ({}) => {
     dayjs().subtract(1, "month"),
     dayjs(),
   ]);
+  const [selectedOrderType, setSelectedOrderType] = useState(0);
   const fetchDetail = async (id) => {
     const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
     if (response?.isSuccess) {
@@ -198,9 +199,9 @@ const AdminDashboardPage = ({}) => {
       {
         startTime: dateChoose[0].format("YYYY-MM-DD"),
         endTime: dateChoose[1].format("YYYY-MM-DD"),
-        orderType: 2,
-        pageNumber: 1,
-        pageSize: 100,
+        orderType: selectedOrderType,
+        pageNumber: 0,
+        pageSize: 0,
       }
     );
     if (response?.isSuccess) {
@@ -211,10 +212,10 @@ const AdminDashboardPage = ({}) => {
     <div className="grid grid-cols-1 xl:grid-cols-12">
       <LoadingOverlay isLoading={loading} />
       <div className="p-6  bg-white col-span-1 xl:col-span-9 max-h-[900px] overflow-y-auto">
+        <Typography className="mr-2 text-red-800 font-semibold text-2xl">
+          TRANG THỐNG KÊ TỔNG QUAN HỆ THỐNG
+        </Typography>
         <div className="flex xl:flex-row flex-col items-center  justify-between my-10">
-          <Typography className="mr-2 text-red-800 font-semibold text-2xl">
-            TRANG THỐNG KÊ TỔNG QUAN HỆ THỐNG
-          </Typography>
           <div className="flex bg-white px-2 py-4 rounded-xl items-center">
             <Typography className="mr-2 text-red-800 font-semibold">
               Chọn khoảng ngày
@@ -228,6 +229,15 @@ const AdminDashboardPage = ({}) => {
               value={dateChoose}
               size="large"
             />
+            <Select
+              onChange={(value) => setSelectedOrderType(value)}
+              value={selectedOrderType}
+              className="mx-4"
+            >
+              <Select.Option value={0}>Đặt bàn trước</Select.Option>
+              <Select.Option value={1}>Ăn tại quán</Select.Option>
+              <Select.Option value={2}>Đơn online</Select.Option>
+            </Select>
             <Button
               className="bg-red-800 text-white px-4 py-2 mx-4"
               onClick={handleExportReport}
