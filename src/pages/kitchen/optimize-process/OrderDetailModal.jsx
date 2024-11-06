@@ -26,7 +26,6 @@ const OrderDetailModal = ({
   loading,
   setSelectedDish,
   isRefresh,
-  handleIsRefresh,
 }) => {
   console.log(selectedDish);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -171,7 +170,6 @@ const OrderDetailModal = ({
   ];
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    handleIsRefresh();
   };
   return (
     <Modal

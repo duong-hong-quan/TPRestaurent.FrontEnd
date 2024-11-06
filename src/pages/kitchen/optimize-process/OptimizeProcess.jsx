@@ -61,7 +61,9 @@ const DishSizeInfo = ({
   setSelectedGroupedDishId,
 }) => (
   <div
-    className="flex w-full items-center justify-start rounded-lg p-4 my-1"
+    className={`flex w-full items-center justify-start rounded-lg p-4 my-1 ${
+      dishData.IsLate ? "bg-yellow-700 bg-opacity-40" : "bg-white"
+    }`}
     style={{
       border: "1px solid #ccc",
     }}
@@ -69,7 +71,7 @@ const DishSizeInfo = ({
     <Text strong className="text-wrap  w-[150px]">
       {dishData?.Dish?.Name}
     </Text>
-    <div className="">
+    <div>
       {sizeData.map((item, index) => (
         <div key={index} className="grid grid-cols-5 p-2 rounded">
           <Image
@@ -132,7 +134,9 @@ const OptimizeProcess = () => {
       title: "Thời gian gom món",
       width: 200,
       render: (_, record) => (
-        <span className="text-nowrap">{combineTimes(record.startTime, record.endTime)}</span>
+        <span className="text-nowrap">
+          {combineTimes(record.startTime, record.endTime)}
+        </span>
       ),
     },
     {
@@ -175,7 +179,9 @@ const OptimizeProcess = () => {
       title: "Thời gian gom món",
       width: 200,
       render: (_, record) => (
-        <span className="text-nowrap">{combineTimes(record.startTime, record.endTime)}</span>
+        <span className="text-nowrap">
+          {combineTimes(record.startTime, record.endTime)}
+        </span>
       ),
     },
     {
@@ -237,10 +243,8 @@ const OptimizeProcess = () => {
       selectedOrderDetail
     );
     if (result.isSuccess) {
-      await fetchAfterHandle();
-      message.success("Cập nhật trạng thái thành công");
       setSelectedDish(null);
-      setIsRefresh(!isRefresh);
+      message.success("Cập nhật trạng thái thành công");
     } else {
       showError(error);
     }
@@ -327,7 +331,6 @@ const OptimizeProcess = () => {
                   rowKey={(record) => record.id}
                   loading={loading}
                   scroll={{ x: 600 }}
-
                 />
               )}
             </div>
@@ -357,7 +360,6 @@ const OptimizeProcess = () => {
         selectedDish={selectedDish}
         setSelectedDish={setSelectedDish}
         isRefresh={isRefresh}
-        handleIsRefresh={() => setIsRefresh(!isRefresh)}
       />
     </div>
   );
