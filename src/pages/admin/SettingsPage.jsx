@@ -20,7 +20,7 @@ import Pagination from "../../components/pagination/Pagination";
 import { StyledTable } from "../../components/custom-ui/StyledTable";
 import { EditIcon, ShowerHead } from "lucide-react";
 import dayjs from "dayjs";
-import { showError } from "../../util/Utility";
+import { formatDateTime, showError } from "../../util/Utility";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
 
 const { Title } = Typography;
@@ -30,6 +30,7 @@ const SettingsPage = () => {
   const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [selectedHistories, setSelectedHistories] = useState([]);
   const { callApi, error, loading } = useCallApi();
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
@@ -58,8 +59,17 @@ const SettingsPage = () => {
     fetchData();
   }, [currentPage]);
 
-  const handleEdit = (record) => {
+  const handleEdit = async (record) => {
     setSelectedRecord(record);
+    const response = await callApi(
+      `${ConfigurationApi.GET_ALL_CONFIG_VERSION_BY_ID}/${record.configurationId}/1/100`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+      setSelectedHistories(response.result.items);
+    } else {
+      showError(error);
+    }
     form.setFieldsValue({
       configurationId: record.configurationId,
       name: record.name,
@@ -261,16 +271,25 @@ const SettingsPage = () => {
                   title: "Ngày áp dụng",
                   dataIndex: "activeDate",
                   key: "activeDate",
-                  render: (text) => (
-                    <span>{moment(text).format("DD/MM/YYYY")}</span>
-                  ),
+                  render: (text) => <span>{formatDateTime(text)}</span>,
                 },
                 {
                   title: "Gía trị cấu hình",
                   dataIndex: "activeValue",
                   key: "activeValue",
                 },
+                {
+                  title: "Tên cấu hình",
+                  dataIndex: ["configuration", "vietnameseName"],
+                  key: "vietnameseName",
+                },
+                {
+                  title: "Đơn vị",
+                  dataIndex: ["configuration", "unit"],
+                  key: "unit",
+                },
               ]}
+              dataSource={selectedHistories}
               pagination={false}
             />
           </div>
