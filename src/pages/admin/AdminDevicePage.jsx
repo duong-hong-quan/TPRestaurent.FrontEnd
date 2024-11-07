@@ -6,7 +6,7 @@ import {
   Input,
   Typography,
 } from "@material-tailwind/react";
-import { Skeleton, Table } from "antd";
+import { message, Skeleton, Table } from "antd";
 import { ArrowPathIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { FaLock } from "react-icons/fa";
@@ -17,9 +17,11 @@ import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import { StyledTable } from "../../components/custom-ui/StyledTable";
 import { NavLink } from "react-router-dom";
 import CreateTableModal from "../../components/modal/CreateTableModal";
-import { Edit, PlusIcon, SettingsIcon } from "lucide-react";
+import { Edit, PlusIcon, SettingsIcon, TrashIcon } from "lucide-react";
 import { TableApi } from "../../api/endpoint";
 import { render } from "react-dom";
+import UpdateTableModal from "../../components/modal/UpdateTableModal";
+import { showError } from "../../util/Utility";
 
 export function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
@@ -28,6 +30,37 @@ export function AdminDevicePage() {
   const [totalPages, setTotalPages] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const totalItems = 10;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [formData, setFormData] = useState({
+    tableId: "",
+    tableName: "",
+    deviceCode: "",
+    devicePassword: "",
+  });
+  const handleEditClick = (data) => {
+    console.log(data);
+    setFormData({
+      deviceCode: data.name,
+      tableId: data.id,
+      devicePassword: "",
+      tableName: data.name,
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleFormSubmit = async (values) => {
+    const response = await callApi(TableApi.UPDATE_TABLE, "POST", values);
+    if (response?.isSuccess) {
+      setIsModalVisible(false);
+      await fetchData();
+    } else {
+      showError(error);
+    }
+  };
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
@@ -40,6 +73,18 @@ export function AdminDevicePage() {
       setDevices(response?.result?.items);
 
       setTotalPages(response?.result?.totalPages);
+    }
+  };
+  const handleDeleteClick = async (record) => {
+    const response = await callApi(
+      `${TableApi.DELETE_TABLE}/${record.id}`,
+      "POST"
+    );
+    if (response?.isSuccess) {
+      message.success("Xóa bàn thành công");
+      await fetchData();
+    } else {
+      showError(error);
     }
   };
   useEffect(() => {
@@ -98,10 +143,21 @@ export function AdminDevicePage() {
       dataIndex: "",
       key: "",
       width: 100,
-      render: () => (
+      render: (_, record) => (
         <div className="flex gap-4">
-          <Button size="sm" className="bg-white text-red-800">
+          <Button
+            onClick={() => handleEditClick(record)}
+            size="sm"
+            className="bg-white text-red-800"
+          >
             <Edit />
+          </Button>
+          <Button
+            size="sm"
+            className="bg-white text-red-800"
+            onClick={() => handleDeleteClick(record)}
+          >
+            <TrashIcon />
           </Button>
         </div>
       ),
@@ -163,6 +219,13 @@ export function AdminDevicePage() {
         handleCloseModal={() => setIsModalOpen(false)}
         isModalOpen={isModalOpen}
         key={"create-table-modal"}
+      />
+      <UpdateTableModal
+        formData={formData}
+        handleCancel={handleCancel}
+        handleFormSubmit={handleFormSubmit}
+        isModalVisible={isModalVisible}
+        loading={loading}
       />
     </Card>
   );
