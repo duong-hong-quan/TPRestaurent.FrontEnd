@@ -30,6 +30,7 @@ export const ComboApi = {
 
 export const ConfigurationApi = {
   GET_ALL: "/configuration/get-all-config",
+  GET_ALL_CONFIG_VERSION_BY_ID: "/configuration/get-all-configuration-version",
   GET_CONFIG_BY_NAME: "/configuration/get-config-by-name",
   UPDATE_CONFIG: "/configuration/update-config",
   CREATE_CONFIG_SERVICE: "/configuration/create-config-service",
