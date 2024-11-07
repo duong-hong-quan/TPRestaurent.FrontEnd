@@ -105,7 +105,7 @@ const CreateMenuPage = ({ back }) => {
       const response = await callApi(`${DishApi.UPDATE_DISH}`, "PUT", {
         dishId: initData.dish?.dish?.dishId,
         name: data.Name,
-        isAvailable: true,
+        preparationTime: Number(data.PreparationTime),
         description: data.Description,
         updateDishSizeDetailDtos: data.DishSizeDetailDtos,
         dishItemType: data.DishItemType,
@@ -118,11 +118,13 @@ const CreateMenuPage = ({ back }) => {
     } else {
       const formData = new FormData();
       const data = form.getFieldsValue();
+      debugger;
       form.setFieldValue("MainImageFile", fileList[0]);
       formData.append("MainImageFile", fileList[0].originFileObj);
       formData.append("Name", data.Name);
       formData.append("DishItemType", data.DishItemType);
       formData.append("Description", data.Description);
+      formData.append("PreparationTime", Number(data.PreparationTime));
       for (let i = 0; i < fileList.length; i++) {
         formData.append("ImageFiles", fileList[i].originFileObj);
       }
@@ -170,6 +172,7 @@ const CreateMenuPage = ({ back }) => {
         Name: initData?.dish?.dish?.name,
         DishItemType: initData?.dish?.dish?.dishItemTypeId,
         Description: initData?.dish?.dish?.description,
+        PreparationTime: initData?.dish?.dish?.preparationTime,
         TagIds: initData?.dishTags?.map((tag) => tag.tag.tagId),
         DishSizeDetailDtos: initData?.dish?.dishSizeDetails?.map((size) => ({
           dishSizeDetailId: size.dishSizeDetailId,
@@ -268,6 +271,9 @@ const CreateMenuPage = ({ back }) => {
                       </Select.Option>
                     ))}
                 </Select>
+              </Form.Item>
+              <Form.Item name="PreparationTime" label="Thời gian ước tính">
+                <Input type="number" className="max-w-[200px]" />
               </Form.Item>
               <Form.Item name="TagIds" label="Tag món ăn">
                 <Select

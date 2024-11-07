@@ -84,6 +84,7 @@ const CreateComboPage = () => {
     form.setFieldsValue({
       name: comboData?.combo?.name,
       price: comboData?.combo?.price,
+      preparationTime: comboData?.combo?.preparationTime,
       description: comboData?.combo?.description,
       tagIds: [...new Set(comboData?.dishTags.map((tag) => tag.tagId))],
       dateRange: [
@@ -163,6 +164,7 @@ const CreateComboPage = () => {
         price: values.price,
         description: values.description,
         tagIds: values.tagIds,
+        preparationTime: Number(values.preparationTime),
         startDate: formatLocalDateTime(new Date(startDate)),
         endDate: formatLocalDateTime(new Date(endDate)),
         dishComboDtos: valuesOptionSet.flat().map((combo, index) => ({
@@ -192,6 +194,7 @@ const CreateComboPage = () => {
         price: values.price,
         description: values.description,
         tagIds: values.tagIds,
+        preparationTime: Number(values.preparationTime),
         startDate: formatLocalDateTime(new Date(startDate)),
         endDate: formatLocalDateTime(new Date(endDate)),
         dishComboDtos: valuesOptionSet.flat().map((combo, index) => ({
@@ -210,6 +213,7 @@ const CreateComboPage = () => {
       formData.append("name", transformedData.name);
       formData.append("price", transformedData.price);
       formData.append("description", transformedData.description);
+      formData.append("preparationTime", transformedData.preparationTime);
       transformedData.tagIds.forEach((tagId, index) => {
         formData.append(`tagIds[${index}]`, tagId);
       });
@@ -344,18 +348,31 @@ const CreateComboPage = () => {
             </Select>
           </Form.Item>
         </div>
-        <Form.Item
-          name="dateRange"
-          label="Thời gian bán"
-          rules={[{ required: true }]}
-        >
-          <RangePicker
-            showTime
-            format="DD/MM/YYYY HH:mm"
-            disabledTime={disabledTime}
-            disabledDate={disabledDate}
-          />
-        </Form.Item>
+        <div className="flex gap-4">
+          <Form.Item
+            name="preparationTime"
+            label="Thời gian chuẩn bị"
+            rules={[{ required: true }]}
+          >
+            <InputNumber
+              min={1}
+              className="max-w-[200px]"
+              placeholder="Nhập thời gian chuẩn bị"
+            />
+          </Form.Item>
+          <Form.Item
+            name="dateRange"
+            label="Thời gian bán"
+            rules={[{ required: true }]}
+          >
+            <RangePicker
+              showTime
+              format="DD/MM/YYYY HH:mm"
+              disabledTime={disabledTime}
+              disabledDate={disabledDate}
+            />
+          </Form.Item>
+        </div>
         <Form.Item name="description" label="Mô tả combo">
           <ReactQuill placeholder="Nhập mô tả chi tiết về combo món ăn" />
         </Form.Item>
