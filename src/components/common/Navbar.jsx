@@ -1,14 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
-import { Button, IconButton } from "@material-tailwind/react";
+import {
+  Button,
+  IconButton,
+  MenuItem,
+  Typography,
+} from "@material-tailwind/react";
 import { Badge } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { isEmptyObject } from "../../util/Utility";
 import { FaUser } from "react-icons/fa";
-import NotificationDemo from "../notification/NotificationDemo";
 import { logout } from "../../redux/features/authSlice";
-import { Search, SearchIcon } from "lucide-react";
+import { Dot, Search, SearchIcon } from "lucide-react";
 import useCallApi from "../../api/useCallApi";
 import { NotificationApi, TokenApi } from "../../api/endpoint";
 
@@ -34,24 +38,29 @@ export const Navbar = () => {
   const userMenuRef = useRef(null);
 
   const fetchNotifications = async () => {
-    const response = await callApi(
-      `${NotificationApi.GET_ALL_NOTIFICATION_BY_USER}/${user.id}`,
-      "GET"
-    );
-    if (response.isSuccess) {
-      setNotifications(response.result?.items);
+    if (user) {
+      const response = await callApi(
+        `${NotificationApi.GET_ALL_NOTIFICATION_BY_USER}/${user.id}`,
+        "GET"
+      );
+      if (response.isSuccess) {
+        setNotifications(response.result?.items);
+      } else {
+        console.error(error);
+      }
     } else {
-      console.error(error);
+      setNotifications([]);
     }
   };
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [user]);
 
   const toggleNotification = () => {
     setIsNotificationOpen(!isNotificationOpen);
     setIsMenuUserOpen(false);
+    debugger;
     setIsOpen(false);
   };
 
@@ -204,7 +213,10 @@ export const Navbar = () => {
               {icons
                 .filter((i) => i.name === "Thông báo")
                 .map((item, index) => (
-                  <Badge count={notifications.length} key={index}>
+                  <Badge
+                    count={notifications.filter((item) => !item.isRead).length}
+                    key={index}
+                  >
                     <IconButton
                       className="bg-transparent rounded-full shadow-none mx-0 px-0"
                       onClick={toggleNotification}
@@ -217,7 +229,66 @@ export const Navbar = () => {
                 ))}
               {isNotificationOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-2 z-20">
-                  <NotificationDemo notifications={notifications} />
+                  <div className="p-2  bg-white rounded-lg ">
+                    <Typography variant="h3" className="text-red-800 ">
+                      Thông báo
+                    </Typography>
+                    <hr />
+                    <div className="h-[400px] overflow-auto ">
+                      {notifications.map((notification) => (
+                        <MenuItem
+                          key={notification.notificationId}
+                          onClick={async () => {
+                            const response = await callApi(
+                              `${NotificationApi.MARK_AS_READ}/${notification.notificationId}`,
+                              "POST"
+                            );
+                            if (response.isSuccess) {
+                              await fetchNotifications();
+                            }
+                          }}
+                          className={`flex flex-col  gap-2 p-2 rounded-md transition-all duration-300 ${
+                            notification?.read
+                              ? "opacity-50 bg-gray-100"
+                              : "hover:bg-blue-50"
+                          }`}
+                        >
+                          <Typography
+                            variant="lead"
+                            className="font-bold text-lg text-gray-700"
+                          >
+                            {notification.notificationName}
+                          </Typography>
+                          <Typography className="font-normal text-gray-700 text-sm flex items-center">
+                            {notification.messages}
+                            {!notification.isRead && (
+                              <span className="text-blue-600 animate-pulse">
+                                <Dot size={40} />
+                              </span>
+                            )}
+                          </Typography>
+                        </MenuItem>
+                      ))}
+                    </div>
+
+                    <MenuItem className="flex items-center gap-2 justify-center mt-2 p-2 rounded-md hover:bg-blue-50 transition-all duration-300">
+                      <Typography
+                        variant="small"
+                        className="font-medium text-blue-500 hover:text-blue-700 cursor-pointer"
+                        onClick={async () => {
+                          const response = await callApi(
+                            `${NotificationApi.MARK_ALL_AS_READ}/${user.id}`,
+                            "POST"
+                          );
+                          if (response.isSuccess) {
+                            await fetchNotifications();
+                          }
+                        }}
+                      >
+                        Đánh dấu đọc tất cả
+                      </Typography>
+                    </MenuItem>
+                  </div>
                 </div>
               )}
             </div>
