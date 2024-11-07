@@ -134,6 +134,8 @@ export const TokenApi = {
 export const NotificationApi = {
   GET_ALL_NOTIFICATION_BY_USER:
     "/notification/get-all-notification-by-account-id",
+  MARK_AS_READ: "/notification/mark-as-read",
+  MARK_ALL_AS_READ: "/notification/mark-all-as-read",
 };
 export const GroupedDishCraftApi = {
   GET_ALL: "/grouped-dish-craft/get-all-grouped-dish",

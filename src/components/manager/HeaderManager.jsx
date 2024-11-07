@@ -26,6 +26,7 @@ import { baseUrl } from "../../api/config/axios";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/authSlice";
+import { Dot } from "lucide-react";
 const HeaderManager = ({ userName = "Admin" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -83,7 +84,7 @@ const HeaderManager = ({ userName = "Admin" }) => {
   const dispatch = useDispatch();
   const siderbar = useSelector((state) => state.sidebar);
 
-  const unreadCount = notifications?.length;
+  const unreadCount = notifications?.filter((item) => !item.isRead).length;
 
   return (
     <div className="mx-auto min-w-full text-black bg-white  rounded-lg mt-2 px-4 py-2 shadow-lg">
@@ -141,8 +142,16 @@ const HeaderManager = ({ userName = "Admin" }) => {
               <div className="w-80 h-[400px] overflow-auto ">
                 {notifications.map((notification) => (
                   <MenuItem
-                    key={notification.id}
-                    // onClick={() => markAsRead(notification.id)}
+                    key={notification.notificationId}
+                    onClick={async () => {
+                      const response = await callApi(
+                        `${NotificationApi.MARK_AS_READ}/${notification.notificationId}`,
+                        "POST"
+                      );
+                      if (response.isSuccess) {
+                        await fetchNotifications();
+                      }
+                    }}
                     className={`flex flex-col  gap-2 p-2 rounded-md transition-all duration-300 ${
                       notification?.read
                         ? "opacity-50 bg-gray-100"
@@ -155,8 +164,13 @@ const HeaderManager = ({ userName = "Admin" }) => {
                     >
                       {notification.notificationName}
                     </Typography>
-                    <Typography className="font-normal text-gray-700 text-sm">
+                    <Typography className="font-normal text-gray-700 text-sm flex items-center">
                       {notification.messages}
+                      {!notification.isRead && (
+                        <span className="text-blue-600 animate-pulse">
+                          <Dot size={40} />
+                        </span>
+                      )}
                     </Typography>
                   </MenuItem>
                 ))}
@@ -165,7 +179,16 @@ const HeaderManager = ({ userName = "Admin" }) => {
               <MenuItem className="flex items-center gap-2 justify-center mt-2 p-2 rounded-md hover:bg-blue-50 transition-all duration-300">
                 <Typography
                   variant="small"
-                  className="font-medium text-blue-500 hover:text-blue-700"
+                  className="font-medium text-blue-500 hover:text-blue-700 cursor-pointer"
+                  onClick={async () => {
+                    const response = await callApi(
+                      `${NotificationApi.MARK_ALL_AS_READ}/${user.id}`,
+                      "POST"
+                    );
+                    if (response.isSuccess) {
+                      await fetchNotifications();
+                    }
+                  }}
                 >
                   Đánh dấu đọc tất cả
                 </Typography>
