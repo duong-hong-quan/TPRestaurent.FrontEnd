@@ -6,7 +6,9 @@ import { addToCart } from "../../redux/features/cartReservationSlice";
 import useCallApi from "../../api/useCallApi";
 import { DishApi } from "../../api/endpoint";
 import { NavLink } from "react-router-dom";
-import { message } from "antd";
+import { Button, Input, message, Select, Slider } from "antd";
+import styled from "styled-components";
+import { FilterIcon } from "lucide-react";
 
 const MenuDish = ({
   dishes,
@@ -19,6 +21,8 @@ const MenuDish = ({
   const [selectedSizes, setSelectedSizes] = useState({});
   const { callApi, error, loading } = useCallApi();
   const dispatch = useDispatch();
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+
   const fetchData = async () => {
     const response = await callApi(`${DishApi.GET_ALL_DISH_TYPE}/1/100`);
     if (response?.isSuccess) {
@@ -54,6 +58,39 @@ const MenuDish = ({
     }
     return 0;
   };
+  const handleSearch = (value) => {
+    console.log("Search:", value);
+  };
+
+  const handlePriceChange = (value) => {
+    console.log("Price Range:", value);
+  };
+
+  const handleTypeChange = (value) => {
+    console.log("Type:", value);
+  };
+  const WrapperSearch = styled.div`
+    .ant-btn-variant-solid {
+      background-color: #a31927;
+      color: #fff;
+      border-color: #a31927;
+    }
+    .ant-btn-variant-solid:hover {
+      background-color: #a31927 !important;
+      color: #fff;
+      border-color: #a31927;
+    }
+  `;
+  const WrapperInput = styled.div`
+    .ant-input-outlined {
+      border-color: #a31927;
+      background-color: #a31927;
+      text-color: #fff;
+    }
+  `;
+  const toggleFilterVisibility = () => {
+    setIsFilterVisible(!isFilterVisible);
+  };
 
   return (
     <div className="bg-[#A31927] py-6 px-4">
@@ -61,9 +98,50 @@ const MenuDish = ({
         <h1 className="text-white text-center text-2xl font-bold mb-4">
           KHÁM PHÁ THỰC ĐƠN
         </h1>
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-between mb-4">
+          <div className="p-4">
+            <h3
+              className="bg-white bg-opacity-20 rounded-tl-lg rounded-tr-lg p-4   uppercase text-white font-bold flex items-center gap-2 cursor-pointer"
+              onClick={toggleFilterVisibility}
+            >
+              Bộ lọc <FilterIcon size={22} />
+            </h3>
+            <div
+              className={`bg-white bg-opacity-20  p-4 rounded-bl-lg rounded-br-lg rounded-tl-none rounded-tr-none transition-all duration-500 ease-in-out overflow-hidden ${
+                isFilterVisible
+                  ? "max-h-screen opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="flex mb-4">
+                <WrapperSearch>
+                  <Input.Search
+                    placeholder="Tìm kiếm món ăn"
+                    onSearch={handleSearch}
+                    enterButton
+                    className="flex-grow min-w-[380px]"
+                  />
+                </WrapperSearch>
+              </div>
+              <div className="flex mb-4">
+                <Input type="number" placeholder="Gía tối thiểu" min={50000} />
+                <span className="mx-2">-</span>
+                <Input type="number" placeholder="Gía tối đa" />
+              </div>
+              <Select
+                placeholder="Select type"
+                onChange={handleTypeChange}
+                className="w-full mb-4"
+              >
+                <Option value="appetizer">Appetizer</Option>
+                <Option value="main">Main Course</Option>
+                <Option value="dessert">Dessert</Option>
+                <Option value="beverage">Beverage</Option>
+              </Select>
+            </div>
+          </div>
           <NavLink
-            className="text-[#F2D2D5] text-md hover:underline"
+            className="text-[#F2D2D5] text-md hover:underline block"
             to={`/search`}
           >
             Xem tất cả
