@@ -54,7 +54,9 @@ export const Navbar = () => {
   };
 
   useEffect(() => {
-    fetchNotifications();
+    if (!isEmptyObject(user)) {
+      fetchNotifications();
+    }
   }, [user]);
 
   const toggleNotification = () => {
