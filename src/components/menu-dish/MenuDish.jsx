@@ -98,7 +98,7 @@ const MenuDish = ({
         <h1 className="text-white text-center text-2xl font-bold mb-4">
           KHÁM PHÁ THỰC ĐƠN
         </h1>
-        <div className="flex justify-between mb-4">
+        <div className="xl:flex xl:flex-row flex-col justify-between mb-4">
           <div className="p-4">
             <h3
               className="bg-white bg-opacity-20 rounded-tl-lg rounded-tr-lg p-4   uppercase text-white font-bold flex items-center gap-2 cursor-pointer"
