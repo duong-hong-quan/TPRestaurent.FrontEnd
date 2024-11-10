@@ -43,7 +43,7 @@ const OrderSessionList = ({ orderSessions }) => {
               <th className="border text-xl font-bold p-2">Bàn ăn</th>
               <th className="border text-xl font-bold p-2">Tạo lúc</th>
               <th className="border text-xl font-bold p-2">Số món</th>
-              <th className="border text-xl font-bold p-2">
+              <th className="border text-xl font-bold p-2 w-[40%]">
                 Hình món x Số lượng
               </th>
             </tr>
@@ -82,30 +82,49 @@ const OrderSessionList = ({ orderSessions }) => {
                     )}
                   </td>
                   <td className="border p-2 text-center">
-                    <span className="font-semibold text-[#EDAA16]">
-                      + {session.orderDetails.length} món
+                    <span className="font-semibold text-3xl text-[#EDAA16]">
+                      {session.orderDetails.length}
                     </span>
                   </td>
 
                   {/* Hình món */}
-                  <td className="border p-2 text-center">
-                    <div className="flex flex-wrap justify-center items-center max-w-[270px] space-x-1">
-                      {session.orderDetails.map((orderDetail, idx) => (
-                        <div key={idx} className="text-center mx-1">
-                          <img
-                            src={
-                              orderDetail?.dishSizeDetail?.dish?.image ??
-                              orderDetail?.combo?.image
-                            }
-                            alt="Dish"
-                            className="w-14 h-10 rounded-md"
-                          />
-                          <p className="font-bold text-[#9A0E1D]">
-                            x {orderDetail.quantity}
-                          </p>
-                        </div>
-                      ))}
+                  <td className="border p-2 text-center min-w-[320px]">
+                    <div className="flex flex-wrap justify-center space-x-1">
+                      {session.orderDetails
+                        .slice(0, 3)
+                        .map((orderDetail, idx) => (
+                          <div
+                            key={idx}
+                            className="text-center mx-1 max-w-[100px]"
+                          >
+                            <img
+                              src={
+                                orderDetail?.dishSizeDetail?.dish?.image ??
+                                orderDetail?.combo?.image
+                              }
+                              alt="Dish"
+                              className="w-14 h-10 mx-auto rounded-md"
+                            />
+                            <p className="text-[15px] font-bold text-center">
+                              {orderDetail?.dishSizeDetail?.dish?.name ??
+                                orderDetail?.combo?.name}
+                              <span className="font-bold text-[#9A0E1D]">
+                                {" "}
+                                x{orderDetail.quantity}
+                              </span>
+                            </p>
+                          </div>
+                        ))}
+
+                      {/* Nếu có hơn 3 món, hiển thị số món còn lại */}
                     </div>
+                    {session.orderDetails.length > 3 && (
+                      <div className="text-center mx-1">
+                        <p className="text-[15px] font-bold text-[#EDAA16]">
+                          + {session.orderDetails.length - 3} món
+                        </p>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))
