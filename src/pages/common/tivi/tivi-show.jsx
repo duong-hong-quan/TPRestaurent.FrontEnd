@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import OrderSessionList from "./OrderSessionList";
 import ProcessingOrders from "./ProcessingOrders";
 import CompletedOrders from "./CompletedOrders";
@@ -8,31 +8,98 @@ import useCallApi from "../../../api/useCallApi";
 import { OrderSessionApi } from "../../../api/endpoint";
 import { useMemo } from "react";
 import OrderProgressBar from "./ProgressTotal";
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import * as signalR from "@microsoft/signalr";
+import { baseUrl } from "../../../api/config/axios";
+import { message } from "antd";
 
 const TiviShow = () => {
   const [orderSessions, setOrderSessions] = useState([]);
   const [orderSessions1, setOrderSessions1] = useState([]);
+  const [connection, setConnection] = useState(null);
+  const audioRef = useRef(null);
   const { callApi } = useCallApi();
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 100;
   const selectedStatus = 1; // Chỉ lấy trạng thái '1'
 
+  console.log("====================================");
+  console.log("loading", loading);
+  console.log("====================================");
+
+  // Cập nhật loading trạng thái trong suốt quá trình fetch
+  const fetchData = async () => {
+    setLoading(true); // Đặt trạng thái loading là true trước khi gọi API
+    try {
+      await Promise.all([
+        fetchDataOrderSessionNew(),
+        fetchDataAllOrderSession(),
+      ]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false); // Sau khi tất cả đã hoàn tất, tắt loading
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchDataOrderSessionNew();
-      await fetchDataAllOrderSession();
-    };
     fetchData();
   }, [currentPage]);
 
+  useEffect(() => {
+    // Create connection
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl(`${baseUrl}/notifications`)
+      .withAutomaticReconnect()
+      .build();
+
+    setConnection(newConnection);
+  }, []);
+
+  useEffect(() => {
+    if (connection) {
+      // Start the connection
+      connection
+        .start()
+        .then(() => {
+          console.log("Connected to SignalR");
+          message.success("Connected to SignalR");
+          // Subscribe to SignalR events
+          connection.on("LOAD_ORDER_SESIONS", () => {
+            message.success("Có một phiên mới được tạo");
+
+            fetchData();
+            if (audioRef.current) {
+              audioRef.current.play();
+            }
+          });
+
+          // Listen for the 'LOAD_FINISHED_DISHES' event
+          connection.on("LOAD_FINISHED_DISHES", () => {
+            message.success("Có món đã hoàn thành");
+            fetchData(); // Refetch data when finished dishes event is received
+            if (audioRef.current) {
+              audioRef.current.play();
+            }
+          });
+        })
+        .catch((error) => console.log("Connection failed: ", error));
+    }
+
+    return () => {
+      if (connection) {
+        connection.stop();
+      }
+    };
+  }, [connection]);
+
   // Hàm gọi API
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Hàm gọi API tất cả phiên
   const fetchDataAllOrderSession = async () => {
-    setLoading(true);
     const response = await callApi(
       `${OrderSessionApi.GET_ALL_ORDER_SESSION}?pageNumber=${currentPage}&pageSize=${pageSize}`,
       "GET"
@@ -50,11 +117,10 @@ const TiviShow = () => {
       setOrderSessions([]);
       setTotalPages(0);
     }
-    setLoading(false);
   };
 
+  // Hàm gọi API các phiên có trạng thái mới
   const fetchDataOrderSessionNew = async () => {
-    setLoading(true);
     try {
       const response = await callApi(
         `${OrderSessionApi.GET_ALL_ORDER_SESSION}?status=${selectedStatus}&pageNumber=${currentPage}&pageSize=${pageSize}`,
@@ -76,8 +142,6 @@ const TiviShow = () => {
     } catch (err) {
       setError(err.message);
       setOrderSessions1([]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -170,6 +234,10 @@ const TiviShow = () => {
 
   return (
     <div className="h-screen flex flex-col  overflow-hidden">
+      {loading && !processingOrders && !completedOrders && (
+        <LoadingOverlay loading={loading} />
+      )}
+
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-10">
         <Header />
@@ -182,10 +250,10 @@ const TiviShow = () => {
       <div className="flex flex-1 mt-[160px]  bg-gray-100 overflow-hidden p-10">
         <div className="flex w-full justify-between space-x-4">
           {/* Order Session List */}
-          <div className="w-1/3 overflow-hidden mb-4">
+          <div className="w-[40%] overflow-hidden mb-4">
             <OrderSessionList orderSessions={orderSessions1} />
             <div className="w-full text-center rounded-lg py-2 mt-2 bg-blue-500 font-semibold text-white">
-              Hiện có {orderSessions1.length} Phiên đặt mới
+              Hiện có {orderSessions1.length} phiên đặt mới hôm nay
             </div>
             <div className="mt-4">
               {/* <p>
@@ -225,7 +293,7 @@ const TiviShow = () => {
           </div>
           <div className="h-[1050px] w-[5px] rounded-md bg-[#9A0E1D]/30 mx-2"></div>
           {/* Processing and Completed Orders */}
-          <div className="flex w-[65%] justify-between overflow-hidden">
+          <div className="flex w-[60%] justify-between overflow-hidden">
             <ProcessingOrders orders={processingOrders} />
             <CompletedOrders orders={completedOrders} />
           </div>
