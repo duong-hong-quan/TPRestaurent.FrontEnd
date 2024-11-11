@@ -59,8 +59,8 @@ const PersonalFeedback = () => {
             >
               <div className="flex items-center  w-full g gap-2 flex-1">
                 <Image
-                  src={item.dishSizeDetail.dish.image}
-                  alt={item.dishSizeDetail.dish.name}
+                  src={item.dishSizeDetail?.dish?.image}
+                  alt={item.dishSizeDetail?.dish?.name}
                   width={100}
                   height={100}
                   className="mr-4"
@@ -68,32 +68,32 @@ const PersonalFeedback = () => {
                 <div className="flex flex-col flex-1">
                   <div className="flex justify-between items-center">
                     <h2 className="font-bold text-lg">
-                      {item.dishSizeDetail.dish.name}
+                      {item.dishSizeDetail?.dish?.name}
                     </h2>
-                    <Tag color="green">{item.status.vietnameseName}</Tag>
+                    <Tag color="green">{item.status?.vietnameseName}</Tag>
                   </div>
                   <p
                     className="text-gray-500"
                     dangerouslySetInnerHTML={{
-                      __html: item.dishSizeDetail.dish.description,
+                      __html: item.dishSizeDetail?.dish?.description,
                     }}
                   />
                   <div className="mt-2 flex items-center space-x-4">
                     <Badge
-                      count={`${item.dishSizeDetail.dishSize.vietnameseName} Size`}
+                      count={`${item.dishSizeDetail?.dishSize?.vietnameseName} Size`}
                       style={{ backgroundColor: "#87d068" }}
                     />
                     <p>Số lượng: {item.quantity}</p>
                     <p className="font-bold">
-                      {formatPrice(item.dishSizeDetail.price)}
+                      {formatPrice(item.dishSizeDetail?.price)}
                     </p>
                     <p className="text-red-500">
-                      Giảm: {item.dishSizeDetail.discount}%
+                      Giảm: {item.dishSizeDetail?.discount}%
                     </p>
                   </div>
                   <div className="mt-2 flex items-center space-x-4">
                     <Tag color="blue">
-                      {item.dishSizeDetail.dish.dishItemType.vietnameseName}
+                      {item.dishSizeDetail?.dish?.dishItemType?.vietnameseName}
                     </Tag>
 
                     <p>Thời gian đặt đơn: {formatDateTime(item.orderTime)}</p>
