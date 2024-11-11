@@ -17,6 +17,8 @@ export const AccountApi = {
   CREATE_ACCOUNT_RESTAURANT_EMPLOYEE:
     "/api/account/create-account-restaurant-employees",
   BAN_USER: "/api/account/ban-user",
+  GET_ACCOUNT_BY_PHONENUMBER_KEYWORD:
+    "/api/account/get-account-by-phone-number-keyword",
 };
 
 export const ComboApi = {
