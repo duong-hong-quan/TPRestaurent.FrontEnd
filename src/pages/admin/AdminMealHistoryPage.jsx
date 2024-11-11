@@ -162,7 +162,9 @@ export function AdminMealHistoryPage() {
       key: "mealTime",
       render: (_, record) => (
         <Typography>
-          {record.endTime? combineTimes(record?.mealTime, record?.endTime) :formatDateTime(record?.mealTime)}
+          {record.endTime
+            ? combineTimes(record?.mealTime, record?.endTime)
+            : formatDateTime(record?.mealTime)}
         </Typography>
       ),
     },
@@ -381,6 +383,7 @@ export function AdminMealHistoryPage() {
         onClose={() => {
           setIsModalOpen(!isModalOpen);
         }}
+        fetchData={fetchOrder}
         reservation={orderDetail}
       />
     </>
