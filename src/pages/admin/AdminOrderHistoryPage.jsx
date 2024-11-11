@@ -243,9 +243,6 @@ export function AdminOrderHistoryPage() {
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              <Button variant="outlined" size="sm">
-                Xuất báo cáo
-              </Button>
               <Button
                 className="flex items-center bg-red-700 gap-3"
                 size="sm"
