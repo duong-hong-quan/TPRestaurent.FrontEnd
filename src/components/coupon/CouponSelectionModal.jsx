@@ -29,8 +29,7 @@ const CouponSelectionModal = ({
   console.log(totalPrice);
   return (
     <Modal
-      title="Select Coupons"
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       footer={[
         <Button
@@ -46,19 +45,19 @@ const CouponSelectionModal = ({
       <List
         dataSource={coupons}
         renderItem={(coupon) => (
-          <List.Item>
+          <List.Item
+            className={
+              totalPrice < coupon.minimumAmount
+                ? `flex  bg-gray-50  items-center `
+                : `bg-white flex items-center`
+            }
+          >
             <Checkbox
               onChange={() => handleSelectCoupon(coupon.couponProgramId)}
               checked={selectedCoupons.includes(coupon.couponProgramId)}
               disabled={totalPrice < coupon.minimumAmount}
             >
-              <div
-                className={
-                  totalPrice < coupon.minimumAmount
-                    ? `bg-gray-50 flex items-center `
-                    : `bg-white flex items-center`
-                }
-              >
+              <div className="flex items-center">
                 <img
                   src={coupon.img}
                   alt={coupon.code}
@@ -75,7 +74,6 @@ const CouponSelectionModal = ({
                     <Text>{formatDate(coupon.expiryDate)}</Text>
                   </div>
                   <div className="flex items-center">
-                    <DollarSign className="w-4 h-4 mr-1" />
                     <Text>
                       Mua sắm tổi thiểu {formatPrice(coupon.minimumAmount)}
                     </Text>
