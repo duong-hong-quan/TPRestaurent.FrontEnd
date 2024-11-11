@@ -8,7 +8,11 @@ const sidebarItems = [
     text: "Lịch sử đặt chỗ của tôi",
     href: "/user/reservation-history",
   },
-
+  {
+    icon: "fa-comment",
+    text: "Đánh giá của tôi",
+    href: "/user/feedback",
+  },
   { icon: "fa-wallet", text: "Ví xu", href: "transaction-history" },
 ];
 

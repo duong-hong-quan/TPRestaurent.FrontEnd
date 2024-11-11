@@ -27,6 +27,7 @@ import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
 import { ThermometerSun } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import FeedbackForm from "../../../components/feedback/FeedbackForm";
 const useDishData = (id) => {
   const [dish, setDish] = useState({});
   const [dishSizeDetails, setDishSizeDetails] = useState([]);
@@ -315,12 +316,6 @@ const ProductDetail = () => {
               ))}
             </div>
           ))}
-        </div>
-        <div className="mt-8 text-center">
-          <button className="bg-red-600 text-white py-2 px-6 rounded-full hover:bg-red-700 transition duration-300 flex items-center justify-center mx-auto">
-            <MessageOutlined className="mr-2" />
-            Viết đánh giá
-          </button>
         </div>
       </div>
     );

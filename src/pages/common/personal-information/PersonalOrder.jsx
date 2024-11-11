@@ -6,6 +6,7 @@ import Pagination from "../../../components/pagination/Pagination";
 import TabMananger from "../../../components/tab/TabManager";
 import { OrderApi } from "../../../api/endpoint";
 import OrderHistoryList from "../../../components/order/order-history/OrderHistoryList";
+import { OrderStatus } from "../../../util/GlobalType";
 
 const PersonalOrder = () => {
   const { callApi, error, loading } = useCallApi();
@@ -33,14 +34,9 @@ const PersonalOrder = () => {
   useEffect(() => {
     fetchData();
   }, [user, currentPage, activeTab]);
-  const tabs = [
-    { value: 4, label: "Chờ xác nhận" },
-    { value: 5, label: "Đã thanh toán" },
-    { value: 6, label: "Chuẩn bị giao hàng" },
-    { value: 7, label: "Đang giao" },
-    { value: 8, label: "Đã nhận hàng" },
-    { value: 9, label: "Đã huỷ" },
-  ];
+  const tabs = OrderStatus.filter(
+    (item) => item.value !== 0 && item.value != 1
+  );
 
   return (
     <div className="w-full max-w-3xl mx-auto">

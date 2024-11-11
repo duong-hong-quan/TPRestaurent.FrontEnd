@@ -49,7 +49,6 @@ const ReservationRequestItem = ({ reservation }) => {
     const response = await callApi(`${OrderApi.GET_DETAIL}/${id}`, "GET");
     if (response?.isSuccess) {
       setReservationData(response?.result);
-      setCurrentReservationId(id);
     }
   };
   const handleChange = async (id) => {
