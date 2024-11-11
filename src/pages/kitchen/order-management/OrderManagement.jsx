@@ -51,7 +51,7 @@ const OrderTag = ({ status, index }) => {
     0: "#FFE9EC",
     1: "#FFFCD4",
     2: "#D0FFDD",
-    3: "#DBDBDB",
+    3: "#eed202",
     4: "#D5F5E3",
     5: "#EAEDED",
   };
@@ -100,7 +100,7 @@ const OrderCard = ({
     0: "#C01D2E",
     1: "#E3B054",
     2: "#468764",
-    3: "#545454",
+    3: "#523923",
     4: "#2ecc71",
     5: "#95a5a6",
   };
@@ -109,7 +109,7 @@ const OrderCard = ({
     0: "#FFE9EC",
     1: "#FFFCD4",
     2: "#D0FFDD",
-    3: "#DBDBDB",
+    3: "#eed202",
     4: "#D5F5E3",
     5: "#EAEDED",
   };
@@ -154,7 +154,7 @@ const OrderCard = ({
             </Button>
             <div className="flex gap-1">
               <Button
-                className="bg-[yellow] text-white px-2 py-4"
+                className="bg-yellow-800 text-white px-2 py-4"
                 onClick={() => updateStatus(id, 1)}
               >
                 <Check size={24} />
@@ -216,6 +216,17 @@ const OrderCard = ({
                 <X size={24} />
               </Button>
             </div>
+          </div>
+        );
+      default:
+        return (
+          <div className="flex justify-between p-2 ">
+            <Button
+              className="bg-pink-50  border-none"
+              onClick={fetchOrderDetail}
+            >
+              <Eye size={24} className="h-6 w-6 text-red-800" />
+            </Button>
           </div>
         );
     }
@@ -376,6 +387,7 @@ const OrderManagement = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 bg-white p-4 rounded-lg">
+      <LoadingOverlay isLoading={loading} />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <audio ref={audioRef}>
           <source src={notification_sound} type="audio/mpeg" />
@@ -408,8 +420,7 @@ const OrderManagement = () => {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 gap-1 overflow-y-scroll max-h-[600px]">
-          {loading && <Skeleton loading={loading} />}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  gap-1 overflow-y-scroll max-h-[600px]">
           {!loading &&
             orderSession.length > 0 &&
             orderSession.map((order) => (
