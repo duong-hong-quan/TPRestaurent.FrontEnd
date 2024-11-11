@@ -67,6 +67,8 @@ export const OrderApi = {
   UPDATE_ORDER_STATUS: "/order/update-order-status",
   MAKE_DINE_IN_ORDER_BILL: "/order/make-dine-in-order-bill",
   GET_BEST_SELLER_DISH_AND_COMBO: "/order/get-best-seller-dishes-and-combo",
+  GET_ALL_ORDER_DETAIL_BY_ACCOUNT_ID:
+    "/order/get-all-order-detail-by-account-id",
 };
 
 export const ReservationApi = {
@@ -164,4 +166,8 @@ export const StatisticApi = {
 
 export const InvoiceApi = {
   GENERATE_GENERAL_INVOICE: "/invoice/generate-general-invoice",
+};
+
+export const RatingApi = {
+  CREATE: "/rating/create-rating",
 };

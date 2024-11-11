@@ -47,6 +47,7 @@ import Landing from "../pages/common/landing/Landing";
 import TiviShow from "../pages/common/tivi/tivi-show";
 import DiningArea from "../pages/admin/table-management/DiningArea";
 import CreateEmployeeAccount from "../pages/admin/user/CreateEmployeeAccount";
+import PersonalFeedback from "../pages/common/personal-information/PersonalFeedback";
 
 function Routers() {
   const routing = useRoutes([
@@ -163,6 +164,10 @@ function Routers() {
         {
           path: "settings",
           element: <PersonalSetting />,
+        },
+        {
+          path: "feedback",
+          element: <PersonalFeedback />,
         },
       ],
     },

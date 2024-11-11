@@ -1,12 +1,16 @@
-import React, { useState } from "react";
-import { Form, Input, Rate, Upload, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Rate, Upload, Button, message } from "antd";
 import { PictureOutlined, DeleteOutlined } from "@ant-design/icons";
+import useCallApi from "../../api/useCallApi";
+import { RatingApi } from "../../api/endpoint";
+import { showError } from "../../util/Utility";
 
 const { TextArea } = Input;
 
-const FeedbackForm = ({ orderDetailId, orderId }) => {
+const FeedbackForm = ({ orderDetailId, accountId, onHide }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
+  const { callApi, callMultipleApis, error, loading } = useCallApi();
 
   const uploadProps = {
     beforeUpload: (file) => {
@@ -33,7 +37,7 @@ const FeedbackForm = ({ orderDetailId, orderId }) => {
     },
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const formData = new FormData();
     fileList.forEach((file) => {
       formData.append("ImageFiles", file.originFileObj);
@@ -47,7 +51,22 @@ const FeedbackForm = ({ orderDetailId, orderId }) => {
 
     console.log("Form values:", values);
     console.log("FormData:", formData);
+    const response = await callApi(`${RatingApi.CREATE}`, "POST", formData);
+    if (response.isSuccess) {
+      message.success("Cảm ơn bạn đã đánh giá!");
+      form.resetFields();
+      setFileList([]);
+      onHide();
+    } else {
+      showError(error);
+    }
   };
+  useEffect(() => {
+    form.setFieldsValue({
+      OrderDetailId: orderDetailId,
+      AccountId: accountId,
+    });
+  }, [orderDetailId, accountId]);
 
   return (
     <div className="max-w-7xlp-6 rounded-lg my-4">
@@ -71,7 +90,7 @@ const FeedbackForm = ({ orderDetailId, orderId }) => {
               },
             ]}
           >
-            <Rate className="text-3xl text-left " allowHalf />
+            <Rate className="text-3xl text-left " />
           </Form.Item>
         </div>
 
