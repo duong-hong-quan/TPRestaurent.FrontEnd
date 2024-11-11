@@ -356,6 +356,7 @@ const ModalReservationWithDish = ({
               information={information}
               back={() => setIsSummary(false)}
               dateDeposit={dateDeposit}
+              deposit={deposit}
             />
           )}
         </div>

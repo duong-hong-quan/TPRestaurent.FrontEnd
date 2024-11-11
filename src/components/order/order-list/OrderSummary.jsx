@@ -24,7 +24,7 @@ import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import CartCombosTable from "../../cart/CartCombosTable";
 import { CartSingleTable } from "../../cart/CartSingleTable";
-const OrderSummary = ({ back, data, information, dateDeposit }) => {
+const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
   const cartReservation = useSelector((state) => state.cartReservation);
   const cartCombos = useSelector((state) => state.cart);
   const dispatch = useDispatch();
@@ -116,7 +116,8 @@ const OrderSummary = ({ back, data, information, dateDeposit }) => {
                 Số tiền đặt cọc:
               </Typography>
               <Typography className="text-base">
-                {formatPrice(data.reservationOrder.deposit)}
+                {formatPrice(data.reservationOrder.deposit) ||
+                  formatPrice(deposit)}
               </Typography>
             </div>
             <div className="flex justify-between items-center my-4">
