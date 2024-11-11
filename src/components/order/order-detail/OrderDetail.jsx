@@ -164,7 +164,6 @@ const OrderDetail = ({ reservationData, fetchData }) => {
     }
   };
   const handleCancelOrder = async (orderId) => {
-    debugger;
     const response = await callApi(
       `${ConfigurationApi.GET_CONFIG_BY_NAME}/TIME_TO_RESERVATION_WITH_DISHES_LAST`,
       "GET"
@@ -443,7 +442,6 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                     paymentMethod: order?.transaction?.paymentMethodId,
                   }
                 );
-                debugger;
                 if (response?.isSuccess) {
                   window.location.href = response.result;
                 }

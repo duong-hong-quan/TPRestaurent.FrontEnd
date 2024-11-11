@@ -13,7 +13,6 @@ export const ProtectedRoute = ({ children, role }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchCurrentToken = async () => {
-    debugger;
     const currentTokenResponse = await callApi(
       `${TokenApi.GET_USER_TOKEN_BY_IP}`,
       "POST"

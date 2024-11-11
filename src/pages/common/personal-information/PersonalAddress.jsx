@@ -295,7 +295,6 @@ const PersonalAddress = () => {
   };
   const handleActiveTab = (tab) => {
     console.log("tab", tab);
-    debugger;
     switch (tab) {
       case "0":
         navigate("/user");

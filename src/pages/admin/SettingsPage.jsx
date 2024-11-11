@@ -114,7 +114,6 @@ const SettingsPage = () => {
     },
   ];
   const handleCreateConfigService = async (values) => {
-    debugger;
     const payload = {
       ...values,
       activeDate: dayjs(values.activeDate).format("YYYY-MM-DD"),
