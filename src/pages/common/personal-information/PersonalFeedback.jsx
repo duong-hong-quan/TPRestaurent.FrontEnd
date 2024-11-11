@@ -53,75 +53,99 @@ const PersonalFeedback = () => {
       <div className="space-y-4">
         {data?.length > 0 &&
           data.map((item) => (
-            <div
-              key={item.orderDetailsId}
-              className="shadow-lg flex flex-row items-center rounded-l p-4 w-full"
-            >
-              <div className="flex items-center  w-full g gap-2 flex-1">
-                <Image
-                  src={item.dishSizeDetail.dish.image}
-                  alt={item.dishSizeDetail.dish.name}
-                  width={100}
-                  height={100}
-                  className="mr-4"
-                />
-                <div className="flex flex-col flex-1">
-                  <div className="flex justify-between items-center">
-                    <h2 className="font-bold text-lg">
-                      {item.dishSizeDetail.dish.name}
-                    </h2>
-                    <Tag color="green">{item.status.vietnameseName}</Tag>
-                  </div>
-                  <p
-                    className="text-gray-500"
-                    dangerouslySetInnerHTML={{
-                      __html: item.dishSizeDetail.dish.description,
-                    }}
+            <>
+              <div
+                key={item.orderDetailsId}
+                className="shadow-lg flex flex-row items-center rounded-l p-4 w-full"
+              >
+                <div className="flex items-center  w-full g gap-2 flex-1">
+                  <Image
+                    src={
+                      item.dishSizeDetail?.dish?.image ||
+                      item.comboDish?.combo?.image
+                    }
+                    alt={
+                      item.dishSizeDetail?.dish?.name ||
+                      item.comboDish?.combo?.name
+                    }
+                    width={100}
+                    height={100}
+                    className="mr-4"
                   />
-                  <div className="mt-2 flex items-center space-x-4">
-                    <Badge
-                      count={`${item.dishSizeDetail.dishSize.vietnameseName} Size`}
-                      style={{ backgroundColor: "#87d068" }}
-                    />
-                    <p>Số lượng: {item.quantity}</p>
-                    <p className="font-bold">
-                      {formatPrice(item.dishSizeDetail.price)}
-                    </p>
-                    <p className="text-red-500">
-                      Giảm: {item.dishSizeDetail.discount}%
-                    </p>
-                  </div>
-                  <div className="mt-2 flex items-center space-x-4">
-                    <Tag color="blue">
-                      {item.dishSizeDetail.dish.dishItemType.vietnameseName}
-                    </Tag>
+                  <div className="flex flex-col flex-1">
+                    <div className="flex justify-between items-center">
+                      <h2 className="font-bold text-lg">
+                        {item.dishSizeDetail?.dish?.name ||
+                          item.comboDish?.combo?.name}
+                      </h2>
+                      <Tag color="green">{item.status?.vietnameseName}</Tag>
+                    </div>
 
-                    <p>Thời gian đặt đơn: {formatDateTime(item.orderTime)}</p>
+                    <p
+                      className="text-gray-500"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          item.dishSizeDetail?.dish?.description ||
+                          item.comboDish?.combo?.description,
+                      }}
+                    />
+                    <div className="mt-2 flex items-center space-x-4">
+                      {item.dishSizeDetail?.dishSize && (
+                        <Badge
+                          count={`${item.dishSizeDetail?.dishSize?.vietnameseName} `}
+                          style={{ backgroundColor: "#87d068" }}
+                        />
+                      )}
+                      <p>Số lượng: {item.quantity}</p>
+                      <p className="font-bold">
+                        {formatPrice(
+                          item.dishSizeDetail?.price ||
+                            item.comboDish?.combo.price
+                        )}
+                      </p>
+                      <p className="text-red-500">
+                        Giảm:{" "}
+                        {item.dishSizeDetail?.discount ||
+                          item.comboDish?.combo.discount}
+                        %
+                      </p>
+                    </div>
+                    <div className="mt-2 flex items-center space-x-4">
+                      {item.dishSizeDetail?.dish?.dishItemType && (
+                        <Tag color="blue">
+                          {
+                            item.dishSizeDetail?.dish?.dishItemType
+                              ?.vietnameseName
+                          }
+                        </Tag>
+                      )}
+                      <p>Thời gian đặt đơn: {formatDateTime(item.orderTime)}</p>
+                    </div>
                   </div>
+                  {!item.isRated && (
+                    <DownCircleFilled
+                      size={50}
+                      className="cursor-pointer text-red-800"
+                      onClick={() => {
+                        setIsShowModal(!isShowModal);
+                        setSelectedItem(item.orderDetailsId);
+                      }}
+                    />
+                  )}
                 </div>
-                {!item.isRated && (
-                  <DownCircleFilled
-                    size={50}
-                    className="cursor-pointer text-red-800"
-                    onClick={() => {
-                      setIsShowModal(!isShowModal);
-                      setSelectedItem(item.orderDetailsId);
-                    }}
-                  />
-                )}
               </div>
-            </div>
+              {isShowModal && item.orderDetailsId === selectedItem && (
+                <FeedbackForm
+                  orderDetailId={selectedItem}
+                  accountId={user.id}
+                  onHide={async () => {
+                    setIsShowModal(!isShowModal);
+                    await fetchData();
+                  }}
+                />
+              )}
+            </>
           ))}
-        {isShowModal && (
-          <FeedbackForm
-            orderDetailId={selectedItem}
-            accountId={user.id}
-            onHide={async () => {
-              setIsShowModal(!isShowModal);
-              await fetchData();
-            }}
-          />
-        )}
       </div>
     </div>
   );
