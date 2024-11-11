@@ -200,8 +200,8 @@ const AdminDashboardPage = ({}) => {
         startTime: dateChoose[0].format("YYYY-MM-DD"),
         endTime: dateChoose[1].format("YYYY-MM-DD"),
         orderType: selectedOrderType,
-        pageNumber: 0,
-        pageSize: 0,
+        pageNumber: 1,
+        pageSize: 100,
       }
     );
     if (response?.isSuccess) {
