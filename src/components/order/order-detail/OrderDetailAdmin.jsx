@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { Button, Image, Input, message, Modal, Radio, Table } from "antd";
+import {
+  Button,
+  Image,
+  Input,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Table,
+} from "antd";
 import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
@@ -14,11 +23,12 @@ import {
   WarningOutlined,
 } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
-import { ConfigurationApi, OrderApi } from "../../../api/endpoint";
+import { AccountApi, ConfigurationApi, OrderApi } from "../../../api/endpoint";
 import dayjs from "dayjs";
-import { DollarSign, HandCoins, UndoDot } from "lucide-react";
+import { DollarSign, HandCoins, PhoneCall, UndoDot } from "lucide-react";
 import LoadingOverlay from "../../loading/LoadingOverlay";
 import OrderTag from "../../tag/OrderTag";
+import { debounce } from "lodash";
 
 const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
   const { order, orderDishes, orderTables } = reservationData;
@@ -26,7 +36,8 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
   const [amount, setAmount] = useState("");
   const totalAmount = order?.totalAmount;
   const [refundType, setRefundType] = useState("cash"); // 'cash' or 'wallet'
-
+  const [selectedAccount, setSelectedAccount] = useState(null);
+  const [listAccount, setListAccount] = useState([]);
   const handlePayment = async () => {
     if (!amount) {
       message.error("Vui lòng nhập số tiền khách đưa");
@@ -40,6 +51,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
       `${OrderApi.MAKE_DINE_IN_ORDER_BILL}`,
       "POST",
       {
+        accountId: selectedAccount || undefined,
         orderId: order.orderId,
         paymentMethod: 1,
         couponIds: [],
@@ -51,6 +63,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
     );
     if (response?.isSuccess) {
       message.success("Thanh toán thành công");
+      fetchData();
       onClose();
     } else {
       showError(error);
@@ -302,6 +315,20 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
       onCancel() {},
     });
   };
+
+  const handleSearchAccount = async (value) => {
+    const response = await callApi(
+      `${AccountApi.GET_ACCOUNT_BY_PHONENUMBER_KEYWORD}/1/1000?phoneNumber=${value}`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+      setListAccount(response?.result.items);
+    } else {
+      setListAccount([]);
+    }
+  };
+  const debouncedHandleSearchAccount = debounce(handleSearchAccount, 800);
+
   return (
     <Card className="w-full shadow-none border-none">
       <LoadingOverlay loading={loading} />
@@ -480,6 +507,28 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
                 <div className="flex flex-col space-y-6">
                   {/* Amount Input Section */}
                   <div className="relative">
+                    <div>
+                      <label className="flex items-center gap-2" htmlFor="">
+                        <PhoneCall size={16} /> Số điện thoại
+                      </label>
+                      <Select
+                        key={listAccount?.length} // Add a key prop to force re-render
+                        onChange={(value) => setSelectedAccount(value)}
+                        className="my-2 h-12 w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        showSearch
+                        onSearch={debouncedHandleSearchAccount}
+                        defaultOpen={true}
+                        loading={loading}
+                        placeholder="Nhập số điện thoại"
+                      >
+                        {listAccount?.length > 0 &&
+                          listAccount.map((account) => (
+                            <Select.Option key={account.id} value={account.id}>
+                              {`${account.lastName} ${account.firstName} - 0${account.phoneNumber}`}
+                            </Select.Option>
+                          ))}
+                      </Select>
+                    </div>
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
                       <HandCoins size={16} className="text-gray-500" />
                       Tiền khách đưa

@@ -353,6 +353,7 @@ export function AdminOrderHistoryPage() {
         visible={open}
         onClose={() => setOpen(!open)}
         reservation={orderSelected}
+        fetchData={fetchOrder}
       />
     </>
   );
