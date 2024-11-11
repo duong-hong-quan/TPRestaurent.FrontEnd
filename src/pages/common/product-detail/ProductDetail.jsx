@@ -22,7 +22,7 @@ import {
   addToCart,
   increaseQuantity,
 } from "../../../redux/features/cartReservationSlice";
-import { message } from "antd";
+import { Image, message } from "antd";
 import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
 import { ThermometerSun } from "lucide-react";
@@ -35,6 +35,8 @@ const useDishData = (id) => {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dishTags, setDishTags] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [numberOfRating, setNumberOfRating] = useState(0);
   const { callApi, error, loading } = useCallApi();
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +49,8 @@ const useDishData = (id) => {
           setDishSizeDetails(dish?.dishSizeDetails);
           setReviews(ratingDish);
           setDishTags(dishTags);
+          setAverageRating(response.result.averageRating);
+          setNumberOfRating(response.result.numberOfRating);
           console.log(dishTags);
         } else {
           showError(error);
@@ -61,7 +65,16 @@ const useDishData = (id) => {
     fetchData();
   }, [id]);
 
-  return { dish, dishSizeDetails, images, reviews, isLoading, dishTags };
+  return {
+    dish,
+    dishSizeDetails,
+    images,
+    reviews,
+    isLoading,
+    dishTags,
+    averageRating,
+    numberOfRating,
+  };
 };
 
 const ImageGallery = React.memo(
@@ -138,8 +151,16 @@ const DishTags = ({ dishTags }) => {
 };
 const ProductDetail = () => {
   const { id } = useParams();
-  const { dish, dishSizeDetails, images, reviews, isLoading, dishTags } =
-    useDishData(id);
+  const {
+    dish,
+    dishSizeDetails,
+    images,
+    reviews,
+    isLoading,
+    dishTags,
+    averageRating,
+    numberOfRating,
+  } = useDishData(id);
 
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -185,7 +206,6 @@ const ProductDetail = () => {
     }
   };
   const renderRatingTab = () => {
-    const totalReviews = reviews?.length;
     const starCounts = [5, 4, 3, 2, 1].map(
       (star) =>
         reviews.filter((review) => review?.rating?.pointId === star).length
@@ -205,21 +225,23 @@ const ProductDetail = () => {
         <div className="flex items-start mb-8">
           <div className="text-center mr-8">
             <div className="text-5xl font-bold text-red-600">
-              {dish?.averageRating}
+              {averageRating}
             </div>
             <div className="flex justify-center my-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <StarFilled
                   key={star}
                   className={`text-lg ${
-                    star <= Math.round(dish?.averageRating)
+                    star <= Math.round(averageRating)
                       ? "text-yellow-400"
                       : "text-gray-300"
                   }`}
                 />
               ))}
             </div>
-            <div className="text-sm text-gray-500">{totalReviews} đánh giá</div>
+            <div className="text-sm text-gray-500">
+              {numberOfRating} đánh giá
+            </div>
           </div>
           <div className="flex-grow">
             {[5, 4, 3, 2, 1].map((star) => (
@@ -229,7 +251,9 @@ const ProductDetail = () => {
                   <div
                     className="bg-yellow-400 h-2 rounded-full"
                     style={{
-                      width: `${(starCounts[5 - star] / totalReviews) * 100}%`,
+                      width: `${
+                        (starCounts[5 - star] / numberOfRating) * 100
+                      }%`,
                     }}
                   ></div>
                 </div>
@@ -262,58 +286,53 @@ const ProductDetail = () => {
               key={review?.rating?.ratingId}
               className="bg-white p-6 rounded-lg"
             >
-              {filteredReviews.map((review) => (
-                <div
-                  key={review?.rating?.ratingId}
-                  className="bg-white p-6 rounded-lg shadow-md border border-gray-200"
-                >
-                  <div className="flex items-start mb-4">
-                    <img
-                      src={review?.rating?.createByAccount?.avatar}
-                      alt={review?.rating?.createByAccount?.avatar}
-                      className="w-12 h-12 rounded-full mr-4"
-                    />
-                    <div className="flex-grow">
-                      <h3 className="text-xl font-semibold">
-                        {review?.rating?.createByAccount?.firstName}
-                      </h3>
-                      <div className="flex items-center mt-1">
-                        {[...Array(5)].map((_, i) => (
-                          <StarFilled
-                            key={i}
-                            className={`text-lg ${
-                              i < review?.rating?.pointId
-                                ? "text-yellow-400"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                        <span className="ml-2 text-sm text-gray-600">
-                          {formatDate(review?.rating?.createDate)}
-                        </span>
-                      </div>
-                    </div>
+              <div className="flex items-start mb-4">
+                <img
+                  src={review?.rating?.createByAccount?.avatar}
+                  alt={review?.rating?.createByAccount?.avatar}
+                  className="w-12 h-12 rounded-full mr-4"
+                />
+                <div className="flex-grow">
+                  <h3 className="text-xl font-semibold">
+                    {review?.rating?.createByAccount?.firstName}
+                  </h3>
+                  <div className="flex items-center mt-1">
+                    {[...Array(5)].map((_, i) => (
+                      <StarFilled
+                        key={i}
+                        className={`text-lg ${
+                          i < review?.rating?.pointId
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                    <span className="ml-2 text-sm text-gray-600">
+                      {formatDate(review?.rating?.createDate)}
+                    </span>
                   </div>
-
-                  <p className="text-gray-700 mb-4">
-                    {" "}
-                    <strong>Đánh giá: </strong>
-                    {review?.rating?.title}
-                  </p>
-                  {review?.ratingImgs?.length > 0 && (
-                    <div className="flex items-center space-x-4">
-                      {review.ratingImgs.map((img) => (
-                        <img
-                          key={img.ratingImgId}
-                          src={img.path}
-                          alt={img.path}
-                          className="w-24 h-24 object-cover rounded-lg"
-                        />
-                      ))}
-                    </div>
-                  )}
                 </div>
-              ))}
+              </div>
+
+              <p className="text-gray-700 mb-4">
+                {" "}
+                <strong>Đánh giá: </strong>
+                {review?.rating?.title}
+              </p>
+              {review?.ratingImgs?.length > 0 && (
+                <div className="flex items-center space-x-4">
+                  {review.ratingImgs.map((img) => (
+                    <Image
+                      key={img.ratingImgId}
+                      src={img.path}
+                      alt={img.path}
+                      width={100}
+                      height={100}
+                      className="object-cover rounded-lg"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
