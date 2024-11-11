@@ -15,6 +15,7 @@ import {
 } from "../../../api/endpoint";
 import dayjs from "dayjs";
 import OrderTag from "../../tag/OrderTag";
+import FeedbackForm from "../../feedback/FeedbackForm";
 
 const OrderDetail = ({ reservationData, fetchData }) => {
   const { order, orderDishes, orderTables } = reservationData;
@@ -419,8 +420,8 @@ const OrderDetail = ({ reservationData, fetchData }) => {
               Ảnh shipper xác nhận giao hàng:
             </Typography>
             <div className="w-20 h-20 rounded-lg shadow-sm ">
-              <Image
-                src={order.validatingImg}
+              <img
+                src={order?.validatingImg}
                 alt="Validating Image"
                 className="w-full h-full"
               />

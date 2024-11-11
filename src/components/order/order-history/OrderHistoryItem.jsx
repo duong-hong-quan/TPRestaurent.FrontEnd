@@ -19,7 +19,6 @@ const OrderHistoryItem = ({ order }) => {
     );
     if (response?.isSuccess) {
       setReservationData(response?.result);
-      setCurrentReservationId(id);
     }
   };
   useEffect(() => {
