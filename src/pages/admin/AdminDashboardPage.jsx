@@ -110,7 +110,6 @@ const AdminDashboardPage = ({}) => {
 
   const fetchAllData = async () => {
     try {
-      debugger;
       const responses = await callMultipleApis([
         {
           endpoint: OrderApi.GET_ORDER_WITH_FILTER,

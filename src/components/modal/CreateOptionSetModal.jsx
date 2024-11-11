@@ -83,7 +83,6 @@ const CreateOptionSetModal = ({
     mapData();
   }, [initData]);
   const handleSelectedDish = async (value, indexList) => {
-    debugger;
     let selectedDishs = [...selectedDish];
     let selecterDishIndex = selectedDishs[index] || [];
     selecterDishIndex[indexList] = value;
@@ -115,7 +114,6 @@ const CreateOptionSetModal = ({
   };
 
   const handlePreview = (value, quantity) => {
-    debugger;
     let previewDish = [...previewDishes];
     let previewDishIndex = previewDish[index] || [];
     const dish = previewDishIndex.find(
@@ -124,7 +122,6 @@ const CreateOptionSetModal = ({
     if (dish && getDishSizeDetail(value)) {
       dish.quantity = quantity;
     } else {
-      debugger;
       previewDishIndex.push({
         dish: getDishBaseDishDetailId(value),
         quantity: quantity,

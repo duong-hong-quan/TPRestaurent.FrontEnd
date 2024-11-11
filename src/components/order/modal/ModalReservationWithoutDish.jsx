@@ -15,7 +15,6 @@ const ModalReservationWithoutDish = ({ show, handleClose, information }) => {
   const { callApi, error, loading } = useCallApi();
   const navigate = useNavigate();
   const handleDeposit = async () => {
-    debugger;
     const data = await callApi(
       `${OrderApi.CALCULATE_RESERVATION}`,
       "POST",

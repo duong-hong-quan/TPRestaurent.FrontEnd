@@ -118,7 +118,6 @@ const CreateMenuPage = ({ back }) => {
     } else {
       const formData = new FormData();
       const data = form.getFieldsValue();
-      debugger;
       form.setFieldValue("MainImageFile", fileList[0]);
       formData.append("MainImageFile", fileList[0].originFileObj);
       formData.append("Name", data.Name);
@@ -222,7 +221,6 @@ const CreateMenuPage = ({ back }) => {
     }
   };
   const renderPriceText = (index) => {
-    debugger;
     let price = form.getFieldValue(`DishSizeDetailDtos`);
     price = price[index]?.price;
     if (price) {

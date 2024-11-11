@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import PersonalInformation from "./PersonalInformation";
 import OTP from "antd/es/input/OTP";
 import OTPInput from "react-otp-input";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -59,7 +60,7 @@ const UpdateProfile = () => {
     formData.append("accountId", user.id);
     formData.append("firstName", values.firstName);
     formData.append("lastName", values.lastName);
-    formData.append("dob", new Date(values.dob).toDateString("YYYY-MM-DD"));
+    formData.append("dob", dayjs(values.dob).format("YYYY-MM-DD"));
     formData.append("gender", values.gender);
     if (file) {
       formData.append("Image", file);
@@ -100,7 +101,7 @@ const UpdateProfile = () => {
       firstName: user.firstName,
       lastName: user.lastName,
       phone: user.phoneNumber,
-      dob: moment(user.dob),
+      dob: dayjs(user.dob),
       gender: user.gender,
       email: user.email,
     });
@@ -108,7 +109,6 @@ const UpdateProfile = () => {
   }, [form, user]);
   const handleActiveTab = (tab) => {
     console.log("tab", tab);
-    debugger;
     switch (tab) {
       case "0":
         navigate("/user");

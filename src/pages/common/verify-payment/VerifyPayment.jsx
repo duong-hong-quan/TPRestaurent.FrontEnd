@@ -75,7 +75,6 @@ const VerifyPayment = () => {
         }
       }
     } else if (partnerCode === "MOMO") {
-      debugger;
       const orderInfo = decodeURIComponent(searchParams.get("orderId"));
       if (resultCode === "0") {
         const data = await callApi(

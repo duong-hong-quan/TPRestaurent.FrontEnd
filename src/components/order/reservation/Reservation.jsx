@@ -145,7 +145,6 @@ const Reservation = () => {
       .hour(endHour)
       .minute(endMinute)
       .format("YYYY-MM-DDTHH:mm:ss");
-    debugger;
     const responseSuggessTable = await callApi(
       `${TableApi.FIND_TABLE}`,
       "POST",

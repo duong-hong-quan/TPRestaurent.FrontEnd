@@ -69,7 +69,6 @@ const ModalReservationWithDish = ({
   const [dateDeposit, setDateDeposit] = useState("");
 
   const fetchRangeDeposit = async () => {
-    debugger;
     const response = await callApi(
       `${ConfigurationApi.GET_CONFIG_BY_NAME}/TIME_TO_RESERVATION_WITH_DISHES_LAST`,
       "GET"

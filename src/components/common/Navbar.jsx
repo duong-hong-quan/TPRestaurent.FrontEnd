@@ -62,7 +62,6 @@ export const Navbar = () => {
   const toggleNotification = () => {
     setIsNotificationOpen(!isNotificationOpen);
     setIsMenuUserOpen(false);
-    debugger;
     setIsOpen(false);
   };
 

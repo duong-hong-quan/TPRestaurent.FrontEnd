@@ -219,7 +219,6 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
     }
   };
   const handleCancelOrder = async (orderId) => {
-    debugger;
     const response = await callApi(
       `${ConfigurationApi.GET_CONFIG_BY_NAME}/TIME_TO_RESERVATION_WITH_DISHES_LAST`,
       "GET"

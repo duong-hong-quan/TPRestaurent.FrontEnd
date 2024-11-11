@@ -193,8 +193,7 @@ const CartSummary = ({ handleClose }) => {
     } else {
       showError(error);
       setIsAgree(false);
-Console.log(isAgree)
-
+      Console.log(isAgree);
     }
   };
   useEffect(() => {
@@ -213,7 +212,6 @@ Console.log(isAgree)
     return totalBefore;
   };
   const handleCoupons = async () => {
-    debugger;
     setIsModalCouponVisible(true);
     const response = await callApi(`${CouponApi.GET_ALL}/1/100`, "GET");
     if (response.isSuccess) {
