@@ -36,7 +36,8 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const AdminDashboardPage = ({}) => {
   const [reservations, setReservations] = useState([]);
-  const { error, loading, callMultipleApis, callApi } = useCallApi();
+  const { error, loading, callMultipleApis, callApi, loadingPromise } =
+    useCallApi();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetail, setOrderDetail] = useState(null);
   const [ordersData, setOrdersData] = useState([]);
@@ -236,7 +237,7 @@ const AdminDashboardPage = ({}) => {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12">
-      <LoadingOverlay isLoading={loading} />
+      <LoadingOverlay isLoading={loadingPromise} />
       <div className="p-6  bg-white col-span-1 xl:col-span-9 max-h-[900px] overflow-y-auto">
         <Typography className="mr-2 text-red-800 font-semibold text-2xl">
           TRANG THỐNG KÊ TỔNG QUAN HỆ THỐNG
