@@ -27,6 +27,7 @@ import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/authSlice";
 import { Dot } from "lucide-react";
+import { formatDateTime } from "../../util/Utility";
 const HeaderManager = ({ userName = "Admin" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -172,6 +173,11 @@ const HeaderManager = ({ userName = "Admin" }) => {
                         </span>
                       )}
                     </Typography>
+                    <div className="flex justify-end">
+                      <span className="text-xs block">
+                        {formatDateTime(notification.notifyTime)}
+                      </span>
+                    </div>
                   </MenuItem>
                 ))}
               </div>
