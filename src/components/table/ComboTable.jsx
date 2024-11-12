@@ -34,14 +34,17 @@ const ComboTable = ({
 
   const renderTag = (combo) => {
     let statusConfig = {};
-    if (combo.quantityLeft > 0 || combo.quantityLeft === null) {
+    if (
+      combo.quantityLeft > 0 ||
+      (combo.quantityLeft === null && combo.dailyCountdown > 0)
+    ) {
       statusConfig = {
         color: "success",
         text: "Còn món",
         icon: <CheckCircleOutlined />,
         quantityLeft: combo.quantityLeft || 0,
       };
-    } else if (combo.quantityLeft === 0) {
+    } else if (combo.quantityLeft === 0 || combo.quantityLeft === null) {
       statusConfig = {
         color: "error",
         text: "Hết món",
