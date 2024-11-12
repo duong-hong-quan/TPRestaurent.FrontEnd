@@ -308,7 +308,7 @@ const CreateComboPage = () => {
     }
   };
   return (
-    <div className="max-w-4xl mx-auto my-8  bg-white px-4 py-6 rounded-lg shadow-lg">
+    <div className="max-w-7xl mx-auto my-8  bg-white px-4 py-6  rounded-lg">
       <Typography className="text-xl font-bold text-center mb-6 uppercase text-red-800">
         Tạo combo món ăn
       </Typography>
