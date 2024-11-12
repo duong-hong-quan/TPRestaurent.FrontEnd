@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Card,
   CardBody,
@@ -207,6 +207,33 @@ const AdminDashboardPage = ({}) => {
       window.open(response?.result);
     }
   };
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const { width } = entry.contentRect;
+        const height = width * 0.7; // Adjust the height as needed
+        setChartDimensions({ width, height });
+      }
+    });
+
+    if (chartRef.current) {
+      resizeObserver.observe(chartRef.current);
+    }
+
+    return () => {
+      if (chartRef.current) {
+        resizeObserver.unobserve(chartRef.current);
+      }
+    };
+  }, []);
+
+  const [chartDimensions, setChartDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12">
       <LoadingOverlay isLoading={loading} />
@@ -390,10 +417,10 @@ const AdminDashboardPage = ({}) => {
               </Typography>
             </CardHeader>
             <CardBody>
-              <div className="w-full h-96">
+              <div ref={chartRef} className="w-full">
                 <LineChart
-                  height={300}
-                  width={500}
+                  height={chartDimensions.height}
+                  width={chartDimensions.width}
                   data={monthlyRevenueData}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
@@ -418,8 +445,12 @@ const AdminDashboardPage = ({}) => {
               </Typography>
             </CardHeader>
             <CardBody>
-              <div className="w-full h-72">
-                <BarChart width={400} height={250} data={orderStatusData}>
+              <div ref={chartRef} className="w-full">
+                <BarChart
+                  width={chartDimensions.width}
+                  height={chartDimensions.height}
+                  data={orderStatusData}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="status" />
                   <YAxis />
