@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { formatDate, formatPrice } from "../../../util/Utility";
+import { formatDate, formatPrice, isEmptyObject } from "../../../util/Utility";
 import { useDispatch } from "react-redux";
 import { addCombo } from "../../../redux/features/cartSlice";
 import { message } from "antd";
@@ -20,7 +20,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
     setMainImageIndex(index);
   };
 
-  const handleDishSelect = (dishOptionSetIndex, dish) => {
+  const handleDishSelect = (dishOptionSetIndex, dish, numOfChoice) => {
     setSelectedDishes((prev) => {
       const currentSelected = prev[dishOptionSetIndex] || [];
       const dishIndex = currentSelected.findIndex(
@@ -28,19 +28,27 @@ const ComboDetail = ({ comboData, handleBack }) => {
       );
 
       let updatedSelected;
-      if (dishIndex > -1) {
+      if (currentSelected.length === 0) {
+        // First selection, push the dish
+        updatedSelected = [dish];
+      } else if (dishIndex > -1) {
         // Remove the dish if it's already selected
         updatedSelected = currentSelected.filter(
           (d) => d.dishSizeDetailId !== dish.dishSizeDetailId
         );
-      } else {
-        // Add the dish if it's not selected
+      } else if (currentSelected.length < numOfChoice) {
+        // Add the dish if it's not selected and within the limit
         updatedSelected = [...currentSelected, dish];
+      } else {
+        // Exceeding the limit
+        message.error(`Bạn chỉ được chọn ${numOfChoice} món `, 5);
+        return prev;
       }
 
       return { ...prev, [dishOptionSetIndex]: updatedSelected };
     });
   };
+
   const isDishSelected = (dishOptionSetIndex, dishSizeDetailId) => {
     return (
       selectedDishes[dishOptionSetIndex]?.some(
@@ -153,8 +161,21 @@ const ComboDetail = ({ comboData, handleBack }) => {
                     {dishOptionSet?.dishCombo?.map((dish, dishIndex) => (
                       <div
                         key={dishIndex}
-                        className="relative cursor-pointer"
-                        onClick={() => handleDishSelect(index, dish)}
+                        className={`relative  ${
+                          dish.quantityLeft === 0 || !dish.quantityLeft
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() => {
+                          if (dish.quantityLeft === 0 || !dish.quantityLeft) {
+                            return;
+                          }
+                          handleDishSelect(
+                            index,
+                            dish,
+                            dishOptionSet.numOfChoice
+                          );
+                        }}
                       >
                         <div className="relative">
                           <img
@@ -174,8 +195,18 @@ const ComboDetail = ({ comboData, handleBack }) => {
                         >
                           {dish.dishSizeDetail.dish.name}
                         </Typography>
-                        <Typography variant="tiny">
-                          Giá: {formatPrice(dish.dishSizeDetail.price)}
+                        <Typography
+                          variant="tiny"
+                          className="flex flex-col items-center"
+                        >
+                          <span className="font-bold">
+                            Giá: {formatPrice(dish.dishSizeDetail.price)}
+                          </span>
+                          <span className="text-red-800 font-semibold">
+                            {dish.quantityLeft === 0 || !dish.quantityLeft
+                              ? "Hết hàng"
+                              : `Còn ${dish.quantityLeft} món`}
+                          </span>
                         </Typography>
                       </div>
                     ))}
