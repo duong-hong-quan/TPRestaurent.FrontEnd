@@ -11,7 +11,7 @@ import { DishApi } from "../../../api/endpoint";
 import { message, Skeleton } from "antd";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { isEmptyObject } from "../../../util/Utility";
+import { isEmptyObject, showError } from "../../../util/Utility";
 
 export const HomePage = () => {
   const [dishes, setDishes] = useState([]);
@@ -63,6 +63,17 @@ export const HomePage = () => {
   const handleAddItem = () => {
     setPageSize(pageSize + 3);
   };
+  const fetchDataFilter = async (minPrice, maxPrice, dishType, keyword) => {
+    const response = await callApi(
+      `${DishApi.GET_ALL}/1/10?startPrice=${minPrice}&endPrice=${maxPrice}&type=${dishType}&keyword=${keyword}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setDishes(response?.result?.items);
+    } else {
+      showError(error);
+    }
+  };
 
   return (
     <>
@@ -77,9 +88,7 @@ export const HomePage = () => {
           <MenuDish
             dishes={dishes}
             handleAddItem={handleAddItem}
-            fetchDishes={fetchData}
-            setSelectedCategory={setSelectedCategory}
-            selectedCategory={selectedCategory}
+            fetchDishes={fetchDataFilter}
           />
         )}
 

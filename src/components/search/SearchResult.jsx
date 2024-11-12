@@ -46,10 +46,26 @@ function SearchResults() {
     setPageSize(pageSize + 3);
   };
 
+  const fetchDataFilter = async (minPrice, maxPrice, dishType, keyword) => {
+    const response = await callApi(
+      `${DishApi.GET_ALL}/${currentPage}/10?startPrice=${minPrice}&endPrice=${maxPrice}&type=${dishType}&keyword=${keyword}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setDishes(response?.result?.items);
+      setTotalPages(response?.result?.totalPages);
+    } else {
+    }
+  };
+
   return (
     <div>
-      <LoadingOverlay loading={loading} />
-      <MenuDish dishes={dishes} handleAddItem={handleAddItem} />
+      <LoadingOverlay isLoading={loading} />
+      <MenuDish
+        dishes={dishes}
+        handleAddItem={handleAddItem}
+        fetchDishes={fetchDataFilter}
+      />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { addCombo } from "../../../redux/features/cartSlice";
 import { message } from "antd";
 import { CategoryTag } from "../../../components/badge/RestaurantCategoryBadges";
+import { CarTaxiFrontIcon, ShoppingCart } from "lucide-react";
 
 const ComboDetail = ({ comboData, handleBack }) => {
   const { combo, dishCombo, imgs } = comboData;
@@ -73,12 +74,12 @@ const ComboDetail = ({ comboData, handleBack }) => {
     return Object.values(selectedDishes).flat();
   };
   return (
-    <div className="max-w-[1200px] mx-auto p-4">
+    <div className="max-w-7xl mx-auto p-4">
       <button onClick={handleBack} className="text-red-700 font-bold text-lg">
         Back
       </button>
 
-      <Card className="mb-8 overflow-hidden">
+      <div className="mb-8 overflow-hidden">
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/2 relative">
             <img
@@ -137,55 +138,61 @@ const ComboDetail = ({ comboData, handleBack }) => {
               Chọn món ăn của bạn
             </Typography>
 
-            {comboData.dishCombo?.map((dishOptionSet, index) => (
-              <div key={index}>
-                <Typography
-                  variant="h6"
-                  color="blue-gray"
-                  className="mb-2 uppercase"
-                >
-                  {`Món ${dishOptionSet.dishItemType?.vietnameseName} (Chọn
+            <div className="max-h-96 overflow-y-scroll">
+              {comboData.dishCombo?.map((dishOptionSet, index) => (
+                <div key={index}>
+                  <Typography
+                    variant="h6"
+                    color="blue-gray"
+                    className="mb-2 uppercase"
+                  >
+                    {`Món ${dishOptionSet.dishItemType?.vietnameseName} (Chọn
                   ${dishOptionSet.numOfChoice})`}
-                </Typography>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {dishOptionSet?.dishCombo?.map((dish, dishIndex) => (
-                    <div
-                      key={dishIndex}
-                      className="relative cursor-pointer"
-                      onClick={() => handleDishSelect(index, dish)}
-                    >
-                      <div className="relative">
-                        <img
-                          src={dish.dishSizeDetail.dish.image}
-                          alt={dish.dishSizeDetail.dish.name}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        {isDishSelected(index, dish.dishSizeDetailId) && (
-                          <div className="absolute inset-0 bg-red-500 bg-opacity-50 flex items-center justify-center rounded-lg">
-                            <CheckCircleIcon className="h-10 w-10 text-white" />
-                          </div>
-                        )}
+                  </Typography>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {dishOptionSet?.dishCombo?.map((dish, dishIndex) => (
+                      <div
+                        key={dishIndex}
+                        className="relative cursor-pointer"
+                        onClick={() => handleDishSelect(index, dish)}
+                      >
+                        <div className="relative">
+                          <img
+                            src={dish.dishSizeDetail.dish.image}
+                            alt={dish.dishSizeDetail.dish.name}
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                          {isDishSelected(index, dish.dishSizeDetailId) && (
+                            <div className="absolute inset-0 bg-red-500 bg-opacity-50 flex items-center justify-center rounded-lg">
+                              <CheckCircleIcon className="h-10 w-10 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <Typography
+                          variant="small"
+                          className="mt-1 text-center"
+                        >
+                          {dish.dishSizeDetail.dish.name}
+                        </Typography>
+                        <Typography variant="tiny">
+                          Giá: {formatPrice(dish.dishSizeDetail.price)}
+                        </Typography>
                       </div>
-                      <Typography variant="small" className="mt-1 text-center">
-                        {dish.dishSizeDetail.dish.name}
-                      </Typography>
-                      <Typography variant="tiny">
-                        Giá: {formatPrice(dish.dishSizeDetail.price)}
-                      </Typography>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
             <Button
-              className="w-full mt-4 border border-red-500 bg-white text-red-600"
+              className="w-full mt-4 border border-red-500 bg-white text-red-600 flex items-center justify-center gap-2"
               onClick={handleAddToCart}
             >
+              <ShoppingCart />
               Thêm vào giỏ hàng
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
