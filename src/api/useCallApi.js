@@ -4,6 +4,7 @@ import api from "./config/axios";
 const useCallApi = () => {
   const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingPromise, setLoadingPromise] = useState(false);
 
   const callApi = async (endpoint, method, data, config = {}) => {
     setLoading(true);
@@ -46,7 +47,7 @@ const useCallApi = () => {
   };
 
   const callMultipleApis = async (apiCalls) => {
-    setLoading(true);
+    setLoadingPromise(true);
     setError([]);
     try {
       const responses = await Promise.all(
@@ -61,11 +62,11 @@ const useCallApi = () => {
         err.message || "Call API failed",
       ]);
     } finally {
-      setLoading(false);
+      setLoadingPromise(false);
     }
   };
 
-  return { error, loading, callApi, callMultipleApis };
+  return { error, loading, callApi, callMultipleApis, loadingPromise };
 };
 
 export default useCallApi;
