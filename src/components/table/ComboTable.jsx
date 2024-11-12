@@ -80,9 +80,8 @@ const ComboTable = ({
       title: "Mã combo",
       dataIndex: "comboId",
       key: "comboId",
-      render: (text) => (
-        <span className="text-wrap">{text.substring(0, 8)}</span>
-      ),
+      width: 80,
+      render: (text) => <span>{text.substring(0, 8)}</span>,
     },
     {
       title: "Hình ảnh",
@@ -149,7 +148,9 @@ const ComboTable = ({
       title: "Trạng thái",
       key: "rating",
       width: 200,
-      render: (_, record) => <span>{renderTag(record)}</span>,
+      render: (_, record) => (
+        <div className="flex justify-center">{renderTag(record)}</div>
+      ),
     },
     ...(isAction
       ? [
