@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   StarFilled,
@@ -7,7 +7,6 @@ import {
   ShoppingCartOutlined,
   LeftOutlined,
   RightOutlined,
-  MessageOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import {
@@ -26,8 +25,6 @@ import { Image, message } from "antd";
 import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
 import { ThermometerSun } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import FeedbackForm from "../../../components/feedback/FeedbackForm";
 const useDishData = (id) => {
   const [dish, setDish] = useState({});
   const [dishSizeDetails, setDishSizeDetails] = useState([]);

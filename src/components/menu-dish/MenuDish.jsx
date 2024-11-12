@@ -6,28 +6,27 @@ import { addToCart } from "../../redux/features/cartReservationSlice";
 import useCallApi from "../../api/useCallApi";
 import { DishApi } from "../../api/endpoint";
 import { NavLink } from "react-router-dom";
-import { Button, Input, message, Select, Slider } from "antd";
+import { Input, message, Select } from "antd";
 import styled from "styled-components";
 import { FilterIcon } from "lucide-react";
 
-const MenuDish = ({
-  dishes,
-  handleAddItem,
-  fetchDishes,
-  setSelectedCategory,
-  selectedCategory,
-  menuCategories,
-}) => {
+const MenuDish = ({ dishes, handleAddItem, fetchDishes }) => {
   const [selectedSizes, setSelectedSizes] = useState({});
-  const { callApi, error, loading } = useCallApi();
+  const [dishType, setDishType] = useState([]);
+  const { callApi } = useCallApi();
   const dispatch = useDispatch();
   const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [minPrice, setMinPrice] = useState(50000);
+  const [maxPrice, setMaxPrice] = useState(1000000);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const fetchData = async () => {
-    const response = await callApi(`${DishApi.GET_ALL_DISH_TYPE}/1/100`);
+    const response = await callApi(`${DishApi.GET_ALL_DISH_TYPE}/1/100`, "GET");
     if (response?.isSuccess) {
+      setDishType(response?.result.items);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -58,18 +57,26 @@ const MenuDish = ({
     }
     return 0;
   };
-  const handleSearch = (value) => {
-    console.log("Search:", value);
-  };
-
-  const handlePriceChange = (value) => {
-    console.log("Price Range:", value);
-  };
 
   const handleTypeChange = (value) => {
-    console.log("Type:", value);
+    setSelectedCategory(value);
+    fetchDishes(minPrice, maxPrice, value, "");
   };
+
+  const handleMinPriceChange = (e) => {
+    const value = e.target.value;
+    setMinPrice(value);
+    fetchDishes(value, maxPrice, selectedCategory, "");
+  };
+
+  const handleMaxPriceChange = (e) => {
+    const value = e.target.value;
+    setMaxPrice(value);
+    fetchDishes(minPrice, value, selectedCategory, "");
+  };
+
   const WrapperSearch = styled.div`
+    width: 100%;
     .ant-btn-variant-solid {
       background-color: #a31927;
       color: #fff;
@@ -81,16 +88,16 @@ const MenuDish = ({
       border-color: #a31927;
     }
   `;
-  const WrapperInput = styled.div`
-    .ant-input-outlined {
-      border-color: #a31927;
-      background-color: #a31927;
-      text-color: #fff;
-    }
-  `;
+
   const toggleFilterVisibility = () => {
     setIsFilterVisible(!isFilterVisible);
   };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchDishes(minPrice, maxPrice, selectedCategory, "");
+    }
+  }, [selectedCategory, minPrice, maxPrice]);
 
   return (
     <div className="bg-[#A31927] py-6 px-4">
@@ -101,13 +108,13 @@ const MenuDish = ({
         <div className="xl:flex xl:flex-row flex-col justify-between mb-4">
           <div className="p-4">
             <h3
-              className="bg-white bg-opacity-20 rounded-tl-lg rounded-tr-lg p-4   uppercase text-white font-bold flex items-center gap-2 cursor-pointer"
+              className="bg-white bg-opacity-20 rounded-tl-lg rounded-tr-lg p-4 uppercase text-white font-bold flex items-center gap-2 cursor-pointer"
               onClick={toggleFilterVisibility}
             >
               Bộ lọc <FilterIcon size={22} />
             </h3>
             <div
-              className={`bg-white bg-opacity-20  p-4 rounded-bl-lg rounded-br-lg rounded-tl-none rounded-tr-none transition-all duration-500 ease-in-out overflow-hidden ${
+              className={`bg-white bg-opacity-20 p-4 rounded-bl-lg rounded-br-lg rounded-tl-none rounded-tr-none transition-all duration-500 ease-in-out overflow-hidden ${
                 isFilterVisible
                   ? "max-h-screen opacity-100"
                   : "max-h-0 opacity-0"
@@ -117,26 +124,40 @@ const MenuDish = ({
                 <WrapperSearch>
                   <Input.Search
                     placeholder="Tìm kiếm món ăn"
-                    onSearch={handleSearch}
+                    onSearch={(value) =>
+                      fetchDishes(minPrice, maxPrice, selectedCategory, value)
+                    }
                     enterButton
-                    className="flex-grow min-w-[380px]"
                   />
                 </WrapperSearch>
               </div>
               <div className="flex mb-4">
-                <Input type="number" placeholder="Gía tối thiểu" min={50000} />
+                <Input
+                  type="number"
+                  placeholder="Gía tối thiểu"
+                  min={50000}
+                  value={minPrice}
+                  onChange={handleMinPriceChange}
+                />
                 <span className="mx-2">-</span>
-                <Input type="number" placeholder="Gía tối đa" />
+                <Input
+                  type="number"
+                  placeholder="Gía tối đa"
+                  max={maxPrice}
+                  value={maxPrice}
+                  onChange={handleMaxPriceChange}
+                />
               </div>
               <Select
-                placeholder="Select type"
+                placeholder="Chọn loại món ăn"
                 onChange={handleTypeChange}
                 className="w-full mb-4"
               >
-                <Option value="appetizer">Appetizer</Option>
-                <Option value="main">Main Course</Option>
-                <Option value="dessert">Dessert</Option>
-                <Option value="beverage">Beverage</Option>
+                {dishType.map((type) => (
+                  <Select.Option key={type.id} value={type.id}>
+                    {type.vietnameseName}
+                  </Select.Option>
+                ))}
               </Select>
             </div>
           </div>
@@ -148,7 +169,7 @@ const MenuDish = ({
           </NavLink>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3  gap-4 mb-6">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           {dishes.map((dish, index) => (
             <DishCard
               key={index}
