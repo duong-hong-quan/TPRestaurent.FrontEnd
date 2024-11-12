@@ -12,7 +12,7 @@ const NavigateCreateMenu = ({ back }) => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto bg-white p-6 rounded-lg">
+    <div className="max-w-7xl mx-auto bg-white p-6 rounded-lg">
       <span
         onClick={back}
         className=" py-2 rounded-lg block cursor-pointer text-red-800"
