@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Modal, Select, Table, Tag, Tooltip } from "antd";
+import { Button, Image, Modal, Select, Table, Tag, Tooltip } from "antd";
 import { formatDateTime, formatPrice } from "../../util/Utility";
 import {
   CheckCircleOutlined,
@@ -9,6 +9,7 @@ import {
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { StyledTable } from "../custom-ui/StyledTable";
+import { render } from "react-dom";
 
 const ComboTable = ({
   data,
@@ -75,6 +76,29 @@ const ComboTable = ({
     );
   };
   const columns = [
+    {
+      title: "Mã combo",
+      dataIndex: "comboId",
+      key: "comboId",
+      render: (text) => (
+        <span className="text-wrap">{text.substring(0, 8)}</span>
+      ),
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      width: 200,
+      render: (image) => (
+        <Image
+          src={image}
+          width={100}
+          height={100}
+          alt="combo"
+          className=" object-cover rounded-lg border border-gray-200"
+        />
+      ),
+    },
     {
       title: "Tên combo",
       dataIndex: "name",
@@ -169,7 +193,6 @@ const ComboTable = ({
       rowKey="comboId"
       pagination={false}
       loading={loading}
-      size="small"
       scroll={{ x: 600 }}
       onRow={(record) => {
         return {
