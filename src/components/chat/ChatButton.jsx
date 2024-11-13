@@ -36,8 +36,8 @@ const ChatButton = () => {
 
       try {
         const response = await callApi(
-          `chatbot/test-chat?message=${newMessage}`,
-          "GET"
+          `chatbot/ai-response?message=${newMessage}`,
+          "POST"
         );
         setMessages((prev) => [
           ...prev,
