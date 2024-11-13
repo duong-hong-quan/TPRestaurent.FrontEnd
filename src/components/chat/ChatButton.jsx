@@ -102,9 +102,13 @@ const ChatButton = () => {
             ))}
             {loading && (
               <div className="mb-2 text-left">
-                <span className="inline-block p-2 text-white rounded-lg bg-red-500 animate-pulse">
-                  Thinking...
-                </span>
+                <div className="inline-block p-2 text-black rounded-lg bg-red-100">
+                  <div className="flex space-x-1">
+                    <div class="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div class="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div class="h-2 w-2 bg-black rounded-full animate-bounce"></div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
