@@ -1,4 +1,3 @@
-import Title from "antd/es/skeleton/Title";
 import React, { useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import useCallApi from "../../../api/useCallApi";
@@ -8,13 +7,24 @@ import { Alert, Button, message, Modal } from "antd";
 import { showError } from "../../../util/Utility";
 
 const TABLE_SIZES = {
-  2: { width: 80, height: 80 }, // 1 cell
-  4: { width: 160, height: 80 }, // 2 cells
-  8: { width: 160, height: 160 }, // 4 cells
-  6: { width: 240, height: 80 }, // Custom size for 6 tableSizeId
-  10: { width: 320, height: 160 }, // Custom size for 10 tableSizeId
+  2: { width: 70, height: 70 }, // 1 cell with padding
+  4: { width: 150, height: 70 }, // 2 cells with padding
+  8: { width: 150, height: 150 }, // 4 cells with padding
+  6: { width: 230, height: 70 }, // Custom size for 6 tableSizeId with padding
+  10: { width: 310, height: 150 }, // Custom size for 10 tableSizeId with padding
 };
+const getContrastingTextColor = (hexColor) => {
+  // Convert the hex color to RGB
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
 
+  // Calculate the perceived brightness of the color
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  // Determine the text color based on the brightness
+  return brightness > 128 ? "black" : "white";
+};
 const GRID_SIZE = 80;
 const GRID_COLUMNS = 12;
 const GRID_ROWS = 12;
@@ -51,7 +61,7 @@ const isCollision = (newPosition, tableSize, tables, currentIndex) => {
 
 const DiningArea = () => {
   const [tables, setTables] = useState([]);
-  const { callApi, loading, error } = useCallApi(); // Removed unused error and loading variables
+  const { callApi, loading, error } = useCallApi();
   const fetchData = async () => {
     const response = await callApi(`${TableApi.GET_ALL}/1/100`, "GET");
     if (response.isSuccess) {
@@ -194,24 +204,24 @@ const DiningArea = () => {
                   <div
                     className={`absolute flex flex-col items-center justify-center border border-gray-400 rounded-lg shadow-md p-4 cursor-pointer hover:shadow-xl transition-shadow duration-300 ${
                       table.tableStatusId === 0
-                        ? "bg-yellow-200"
+                        ? "bg-yellow-200 "
                         : table.tableStatusId === 1
                         ? "bg-green-500"
-                        : "bg-red-300"
-                    } ${
+                        : "bg-red-300 "
+                    } text-${getContrastingTextColor(
                       table.tableStatusId === 0
-                        ? "text-yellow-900"
+                        ? "#fde68a" // Yellow-200
                         : table.tableStatusId === 1
-                        ? "text-white"
-                        : "text-white"
-                    }`}
+                        ? "#16a34a" // Green-500
+                        : "#f87171" // Red-300
+                    )}`}
                     style={{
                       width: tableSize.width,
                       height: tableSize.height,
                     }}
                   >
-                    <span className="text-sm block">{table.name}</span>
-                    <span className="text-sm block">
+                    <span className="text-sm block text-nowrap">{table.name}</span>
+                    <span className="text-xs block">
                       Bàn {table.tableSizeId} người
                     </span>
                   </div>
