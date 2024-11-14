@@ -27,6 +27,23 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 const { Text } = Typography;
+import styled from "styled-components";
+
+export const StyledTable = styled(Table)`
+  .ant-table-thead > tr > th {
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: none;
+  }
+  .ant-table-tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: none;
+  }
+  .ant-space {
+    width: 100%;
+  }
+`;
 
 const MobileCartView = ({ cartItems, formatPrice, isDisabled }) => {
   const dispatch = useDispatch();
@@ -202,7 +219,7 @@ export const CartSingleTable = ({ cartItems, isDisabled }) => {
       title: "Số lượng",
       key: "quantity",
       render: (_, record) => (
-        <div className="flex items-center">
+        <Space className="flex justify-center">
           {!isDisabled && (
             <Button
               icon={<MinusOutlined />}
@@ -234,7 +251,7 @@ export const CartSingleTable = ({ cartItems, isDisabled }) => {
               className="border-gray-300"
             />
           )}
-        </div>
+        </Space>
       ),
     },
     {
@@ -295,7 +312,7 @@ export const CartSingleTable = ({ cartItems, isDisabled }) => {
     <div className="py-8">
       <>
         <div className="hidden lg:block">
-          <Table
+          <StyledTable
             columns={columns}
             dataSource={cartItems}
             pagination={false}
