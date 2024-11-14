@@ -93,7 +93,7 @@ const ChatButton = () => {
                 }`}
               >
                 <span
-                  className={`inline-block max- w-[80%] p-2 break-words rounded-lg ${
+                  className={`inline-block max-w-[80%] p-2 break-words rounded-lg ${
                     message.sender === "user" ? "bg-gray-100" : "bg-red-100"
                   }`}
                 >
