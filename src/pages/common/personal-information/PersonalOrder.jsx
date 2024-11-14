@@ -35,7 +35,7 @@ const PersonalOrder = () => {
     fetchData();
   }, [user, currentPage, activeTab]);
   const tabs = OrderStatus.filter(
-    (item) => item.value !== 0 && item.value != 1
+    (item) => item.value !== 1&& item.value != 2
   );
 
   return (

@@ -6,6 +6,7 @@ body {
     /* font-family: 'Poppins', sans-serif; */
     font-family: 'Montserrat', sans-serif;
     overflow-y: scroll; /* Đảm bảo luôn hiển thị thanh cuộn */
+    overflow-x: scroll;
 
   }
 
@@ -26,4 +27,5 @@ body {
   
   ::-webkit-scrollbar-track {
     background-color: #f1f1f1; /* Màu nền của thanh cuộn */
+
   }

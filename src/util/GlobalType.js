@@ -22,16 +22,17 @@ export const OrderStatus = [
     value: 2,
   },
   {
+    label: "Đang chờ thanh toán",
+    value: 4,
+  },
+  {
     label: "Đang nấu",
     value: 5,
   },
+
   {
     label: "Đã lên hết món",
     value: 3,
-  },
-  {
-    label: "Đã đặt trước",
-    value: 4,
   },
   {
     label: "Sẵn sàng giao hàng",
