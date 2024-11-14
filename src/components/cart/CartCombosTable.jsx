@@ -21,6 +21,23 @@ import { useDispatch } from "react-redux";
 import { editComboNote } from "../../redux/features/cartSlice";
 
 const { Text } = Typography;
+import styled from "styled-components";
+
+export const StyledTable = styled(Table)`
+  .ant-table-thead > tr > th {
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: none;
+  }
+  .ant-table-tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: none;
+  }
+  .ant-space-item {
+    width: 100%;
+  }
+`;
 
 const MobileCartCombosView = ({
   cartCombos,
@@ -197,11 +214,11 @@ const CartCombosTable = ({
       dataIndex: "selectedDishes",
       key: "selectedDishes",
       render: (selectedDishes) => (
-        <Space direction="vertical">
+        <Space className="flex flex-col">
           {Object.values(selectedDishes)
             .flat()
             .map((dishCombo, index) => (
-              <Space key={index} align="start">
+              <Space key={index} align="start" className="grid grid-cols-2 ">
                 <Image
                   src={dishCombo.dishSizeDetail?.dish?.image}
                   alt={dishCombo.dishSizeDetail?.dish?.name}
@@ -209,7 +226,9 @@ const CartCombosTable = ({
                   height={50}
                   style={{ objectFit: "cover", borderRadius: "50%" }}
                 />
-                <Text>{dishCombo.dishSizeDetail?.dish?.name}</Text>
+                <Text className="col-span-1">
+                  {dishCombo.dishSizeDetail?.dish?.name}
+                </Text>
               </Space>
             ))}
         </Space>
@@ -220,7 +239,7 @@ const CartCombosTable = ({
       dataIndex: "quantity",
       key: "quantity",
       render: (_, record) => (
-        <Space>
+        <Space className="flex justify-center">
           {!isDisabled && (
             <Button
               icon={<MinusOutlined />}
@@ -303,7 +322,7 @@ const CartCombosTable = ({
   return (
     <div>
       <div className="hidden lg:block">
-        <Table
+        <StyledTable
           dataSource={cartCombos.items}
           columns={columns}
           rowKey="comboId"

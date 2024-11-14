@@ -7,12 +7,14 @@ export const StyledTable = styled(Table)`
     vertical-align: middle;
     border-bottom: none;
     background-color: #ad0303;
-    color: white
+    color: white;
   }
   .ant-table-tbody > tr > td {
     text-align: center;
     vertical-align: middle;
     border-bottom: none;
   }
-
+  .ant-space {
+    width: 100%;
+  }
 `;
