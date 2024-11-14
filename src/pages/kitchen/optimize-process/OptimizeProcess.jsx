@@ -245,6 +245,7 @@ const OptimizeProcess = () => {
     if (result.isSuccess) {
       setSelectedDish(null);
       message.success("Cập nhật trạng thái thành công");
+      await fetchData();
     } else {
       showError(error);
     }
