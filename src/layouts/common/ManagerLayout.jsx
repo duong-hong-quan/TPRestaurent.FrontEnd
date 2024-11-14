@@ -39,6 +39,7 @@ const menuItems = [
     title: "Quản lý đơn hàng",
     icon: <FaShoppingBag className="h-5 w-5 text-white" />,
     subItems: [
+      { title: "Tổng quan", path: "/admin/order-overview" },
       { title: "Yêu cầu đặt bàn", path: "/admin/reservation-history" },
       { title: "Đơn hàng online", path: "/admin/order-history" },
       { title: "Đặt món tại quán", path: "/admin/meal-history" },
