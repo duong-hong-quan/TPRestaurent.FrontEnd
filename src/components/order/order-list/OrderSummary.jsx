@@ -21,6 +21,8 @@ import {
 } from "../../../redux/features/cartSlice";
 import Card_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
+import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
+
 import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import CartCombosTable from "../../cart/CartCombosTable";
 import { CartSingleTable } from "../../cart/CartSingleTable";
@@ -93,6 +95,8 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
         return <img src={VNpay_Logo} alt="" className="w-10 h-10" />;
       case 3:
         return <img src={MoMo_Logo} alt="" className="w-10 h-10" />;
+        case 5:
+        return <img src={Cash_Logo} alt="" className="w-10 h-10" />;
 
       default:
         return null;
@@ -135,18 +139,18 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
               </div>
             </div>
             <div className="flex justify-between my-4">
-              <Typography className="text-[#333333] ">
+              <Typography className="text-red-800 font-bold ">
                 Tổng tiền: {formatPrice(total)}
               </Typography>
               <Typography className="text-base"></Typography>
             </div>
             <div className="flex justify-between items-center my-4">
-              <Typography className="text-[#333333] ">
+              <Typography className="text-red-800 font-bold ">
                 Hạn đặt cọc: {dateDeposit}
               </Typography>
               <Typography className="text-base"></Typography>
             </div>
-            <p>
+            <p className="font-bold">
               <i className="fas fa-exclamation-circle"></i> Số tiền đặt cọc sẽ
               được trừ vào bill thanh toán sau khi dùng bữa tại nhà hàng!. Nếu
               sau thời gian này bạn không thanh toán, số tiền đặt cọc sẽ không

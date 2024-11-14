@@ -125,9 +125,7 @@ const ModalReservationWithDish = ({
     }
   }, [selectedCombos, isOpenComboDetail]);
 
-  useEffect(() => {
-    handleDeposit();
-  }, [cartCombo, cart]);
+
   useEffect(() => {
     fetchRangeDeposit();
   }, []);
@@ -209,7 +207,6 @@ const ModalReservationWithDish = ({
   };
 
   const handleDeposit = async () => {
-    if (cartCombo.length > 0 || cart.length > 0) {
       const data = await callApi(
         `${OrderApi.CALCULATE_RESERVATION}`,
         "POST",
@@ -226,7 +223,6 @@ const ModalReservationWithDish = ({
       } else {
         showError(data.messages);
       }
-    }
   };
 
   const renderDishCard = (dish) => (
@@ -253,7 +249,9 @@ const ModalReservationWithDish = ({
       key={"cardcombo"}
     />
   );
-
+  useEffect(() => {
+    handleDeposit();
+  }, [cartCombo, cart]);
   return (
     <div className=" p-4 bg-gray-50 min-h-screen">
       {visible && (
