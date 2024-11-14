@@ -65,14 +65,14 @@ npm run dev
    4. Front End Web Repository: https://github.com/FA24-Capstone/TPRestaurent.FrontEnd
 
 9. **Contributor**
-1. **Back End**: **NET CORE API** V6.0
-- [duong-hong-quan](https://github.com/duong-hong-quan) (Leader)
-- [KhangPhamBM](https://github.com/KhangPhamBM)
-- [ha-minh-quan](https://github.com/ha-minh-quan)
-  
-**Front End**: **ReactJS + ViteJS**
-- [duong-hong-quan](https://github.com/duong-hong-quan)
-- [bich-phuong](https://github.com/phuong1304)
+   **Back End**: **NET CORE API** V6.0
+   - [duong-hong-quan](https://github.com/duong-hong-quan) (Leader)
+   - [KhangPhamBM](https://github.com/KhangPhamBM)
+   - [ha-minh-quan](https://github.com/ha-minh-quan)
+   
+   **Front End**: **ReactJS + ViteJS**
+   - [duong-hong-quan](https://github.com/duong-hong-quan)
+   - [bich-phuong](https://github.com/phuong1304)
 
 **React Native**:
 - [bich-phuong](https://github.com/phuong1304)
