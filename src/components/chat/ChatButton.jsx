@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import AI from "../../assets/imgs/AI.png";
 import useCallApi from "../../api/useCallApi";
+import { ChatBotApi } from "../../api/endpoint";
 
 // Fake chat data
 const initialMessages = [
@@ -36,7 +37,7 @@ const ChatButton = () => {
 
       try {
         const response = await callApi(
-          `chatbot/ai-response?message=${newMessage}`,
+          `${ChatBotApi.AI_RESPONSE}?message=${newMessage}`,
           "POST"
         );
         setMessages((prev) => [
@@ -87,12 +88,12 @@ const ChatButton = () => {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`mb-2 ${
-                  message.sender === "user" ? "text-right" : "text-left"
+                className={`mb-2  ${
+                  message.sender === "user" ? "text-right " : "text-left"
                 }`}
               >
                 <span
-                  className={`inline-block p-2 rounded-lg ${
+                  className={`inline-block max- w-[80%] p-2 break-words rounded-lg ${
                     message.sender === "user" ? "bg-gray-100" : "bg-red-100"
                   }`}
                 >
