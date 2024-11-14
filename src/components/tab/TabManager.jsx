@@ -38,7 +38,7 @@ function TabMananger({ items, activeTab, setActiveTab, enableCount = false }) {
   };
 
   return (
-    <div className="flex border-b border-gray-200 overflow-x-auto my-1">
+    <div className="flex border-b border-gray-200 overflow-x-auto my-4 py-4">
       {renderItems()}
     </div>
   );

@@ -1,5 +1,5 @@
 import { Typography } from "@material-tailwind/react";
-import { Button, Card, Input, message, Skeleton } from "antd";
+import { Button, Card, Input, message, Modal, Skeleton } from "antd";
 import {
   AlertTriangle,
   BellRing,
@@ -205,7 +205,46 @@ const OrderCard = ({
             <div className="flex gap-1">
               <Button
                 className="bg-[#2ecc71] text-white px-2 py-4"
-                onClick={() => updateStatus(id, 4)}
+                onClick={() => {
+                  Modal.confirm({
+                    title: "Xác nhận",
+                    content:
+                      "Bạn hãy đảm bảo rằng tất cả món ăn đã hoàn thành?",
+                    onOk: () => updateStatus(id, 4),
+                  });
+                }}
+              >
+                <CheckCircle size={24} />
+              </Button>
+              <Button
+                className="bg-[#7F7F7F] text-white  px-2 py-4"
+                onClick={() => updateStatus(id, 5)}
+              >
+                <X size={24} />
+              </Button>
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="flex justify-between p-2 ">
+            <Button
+              className="bg-pink-50  border-none"
+              onClick={fetchOrderDetail}
+            >
+              <Eye size={24} className="h-6 w-6 text-red-800" />
+            </Button>
+            <div className="flex gap-1">
+              <Button
+                className="bg-[#2ecc71] text-white px-2 py-4"
+                onClick={() => {
+                  Modal.confirm({
+                    title: "Xác nhận",
+                    content:
+                      "Bạn hãy đảm bảo rằng tất cả món ăn đã hoàn thành?",
+                    onOk: () => updateStatus(id, 4),
+                  });
+                }}
               >
                 <CheckCircle size={24} />
               </Button>
