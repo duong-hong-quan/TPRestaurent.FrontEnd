@@ -139,18 +139,18 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
               </div>
             </div>
             <div className="flex justify-between my-4">
-              <Typography className="text-[#333333] ">
+              <Typography className="text-red-800 font-bold ">
                 Tổng tiền: {formatPrice(total)}
               </Typography>
               <Typography className="text-base"></Typography>
             </div>
             <div className="flex justify-between items-center my-4">
-              <Typography className="text-[#333333] ">
+              <Typography className="text-red-800 font-bold ">
                 Hạn đặt cọc: {dateDeposit}
               </Typography>
               <Typography className="text-base"></Typography>
             </div>
-            <p>
+            <p className="font-bold">
               <i className="fas fa-exclamation-circle"></i> Số tiền đặt cọc sẽ
               được trừ vào bill thanh toán sau khi dùng bữa tại nhà hàng!. Nếu
               sau thời gian này bạn không thanh toán, số tiền đặt cọc sẽ không
