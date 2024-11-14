@@ -1,17 +1,8 @@
 # ROMS - Restaurant Order Management System
+![Vercel](https://vercelbadge.vercel.app/api/duong-hong-quan/TPRestaurent.FrontEnd)
 
-## Overview
-
-This project is a web application built with React, utilizing various libraries and tools such as Redux, Firebase, Tailwind CSS, and more. The application includes features like authentication, notifications, and a responsive design.
-
-## Table of Contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Folder Structure](#folder-structure)
-- [Contributing](#contributing)
-- [License](#license)
+**Key feature**
+Developed a comprehensive restaurant order management system with two mobile apps, one web interface, and a backend. The system manages restaurant operations from reservations to delivery, utilizing AI to enhance customer and kitchen efficiency. Key features include AI-driven dish recommendations, table availability search, location-based delivery options, and optimized table and kitchen management.
 
 ## Installation
 
@@ -49,24 +40,7 @@ npm run dev
 5. **Features**
    `Waiting for update...`
 
-6. **Folder structure**
-   restaurant-order-management-system/
-   ├── public/
-   ├── src/
-   │ ├── components/
-   │ ├── contexts/
-   │ ├── firebase.js
-   │ ├── hooks/
-   │ ├── pages/
-   │ ├── styles/
-   │ ├── App.js
-   │ ├── index.js
-   │ └── ...
-   ├── .env
-   ├── .gitignore
-   ├── package.json
-   ├── README.md
-   └── ...
+
 
 7. **Contribute**
 
@@ -84,3 +58,21 @@ npm run dev
 
       git push origin feature-branch
       Open a pull request.
+8. **Other repository associated**
+   1. Back End Core: https://github.com/FA24-Capstone/TPRestaurent.BackEndCore
+   2. Shipper App Repository: https://github.com/FA24-Capstone/TPRestaurant.Mobile.Shipper
+   3. Tablet App Repository: https://github.com/FA24-Capstone/TPRestaurant.Mobile.Tablet
+   4. Front End Web Repository: https://github.com/FA24-Capstone/TPRestaurent.FrontEnd
+
+9. **Contributor**
+   **Back End**: **NET CORE API** V6.0
+   - [duong-hong-quan](https://github.com/duong-hong-quan) (Leader)
+   - [KhangPhamBM](https://github.com/KhangPhamBM)
+   - [ha-minh-quan](https://github.com/ha-minh-quan)
+   
+   **Front End**: **ReactJS + ViteJS**
+   - [duong-hong-quan](https://github.com/duong-hong-quan)
+   - [bich-phuong](https://github.com/phuong1304)
+
+**React Native**:
+- [bich-phuong](https://github.com/phuong1304)
