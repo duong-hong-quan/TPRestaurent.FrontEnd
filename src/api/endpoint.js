@@ -171,3 +171,7 @@ export const InvoiceApi = {
 export const RatingApi = {
   CREATE: "/rating/create-rating",
 };
+
+export const ChatBotApi = {
+  AI_RESPONSE: "chatbot/ai-response",
+};

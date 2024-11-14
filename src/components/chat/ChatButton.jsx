@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import AI from "../../assets/imgs/AI.png";
 import useCallApi from "../../api/useCallApi";
+import { ChatBotApi } from "../../api/endpoint";
 
 // Fake chat data
 const initialMessages = [
@@ -36,7 +37,7 @@ const ChatButton = () => {
 
       try {
         const response = await callApi(
-          `chatbot/ai-response?message=${newMessage}`,
+          `${ChatBotApi.AI_RESPONSE}?message=${newMessage}`,
           "POST"
         );
         setMessages((prev) => [
