@@ -3,6 +3,8 @@ import { Send } from "lucide-react";
 import AI from "../../assets/imgs/AI.png";
 import useCallApi from "../../api/useCallApi";
 import { ChatBotApi } from "../../api/endpoint";
+import { useSelector } from "react-redux";
+import { isEmptyObject } from "../../util/Utility";
 
 // Fake chat data
 const initialMessages = [
@@ -23,7 +25,7 @@ const ChatButton = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const chatContainerRef = useRef(null);
-
+  const user = useSelector((state) => state.user.user || {});
   const toggleChat = () => setIsOpen(!isOpen);
   const { callApi, loading } = useCallApi();
 
@@ -36,15 +38,19 @@ const ChatButton = () => {
       setNewMessage("");
 
       try {
-        const response = await callApi(
-          `${ChatBotApi.AI_RESPONSE}?message=${newMessage}`,
-          "POST"
-        );
+        const response = await callApi(`${ChatBotApi.AI_RESPONSE}`, "POST", {
+          customerId: isEmptyObject(user) ? undefined : user.id,
+          message: newMessage,
+          isFirstCall: false,
+        });
         setMessages((prev) => [
           ...prev,
           {
             id: prev.length + 1,
-            text: response.result,
+            text:
+              response.result === null
+                ? "Xin lỗi, tôi chưa có câu trả lời cho bạn."
+                : response.result,
             sender: "bot",
           },
         ]);
@@ -54,7 +60,7 @@ const ChatButton = () => {
           ...prev,
           {
             id: prev.length + 1,
-            text: "Failed to get response from AI. Please try again.",
+            text: "Rất tiếc, tôi không thể kết nối với trợ lý ảo. Vui lòng thử lại sau.",
             sender: "bot",
           },
         ]);
@@ -62,6 +68,36 @@ const ChatButton = () => {
     }
   };
 
+  const fetchData = async () => {
+    try {
+      const response = await callApi(`${ChatBotApi.AI_RESPONSE}`, "POST", {
+        customerId: isEmptyObject(user) ? undefined : user.id,
+        message: undefined,
+        isFirstCall: true,
+      });
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          text: response.result,
+          sender: "bot",
+        },
+      ]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          text: "Rất tiếc, tôi không thể kết nối với trợ lý ảo. Vui lòng thử lại sau.",
+          sender: "bot",
+        },
+      ]);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
