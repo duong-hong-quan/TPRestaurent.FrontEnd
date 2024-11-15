@@ -81,7 +81,7 @@ const TransactionTable = ({ data, loading, handleOpenModal }) => {
       title: "Số tiền",
       dataIndex: "amount",
       key: "amount",
-      align: "center",
+      align: "right",
 
       render: (amount) => `${formatPrice(amount)} `,
     },
