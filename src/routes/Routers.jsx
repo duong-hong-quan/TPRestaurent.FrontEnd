@@ -10,7 +10,7 @@ import PersonalOrder from "../pages/common/personal-information/PersonalOrder";
 import PersonalTransaction from "../pages/common/personal-information/PersonalTransaction";
 import ManagerLayout from "../layouts/common/ManagerLayout";
 import CommonLayout from "../layouts/common/CommonLayout";
-import { AdminOrderHistoryPage } from "../pages/admin/AdminOrderHistoryPage";
+import { AdminOrderHistoryPage } from "../pages/admin/order-shipping/AdminOrderHistoryPage";
 import { AdminReservationPage } from "../pages/admin/AdminReservationPage";
 import MessengerApp from "../pages/common/chat/ChatComponent";
 import SettingsPage from "../pages/admin/SettingsPage";
@@ -48,6 +48,7 @@ import TiviShow from "../pages/common/tivi/tivi-show";
 import DiningArea from "../pages/admin/table-management/DiningArea";
 import CreateEmployeeAccount from "../pages/admin/user/CreateEmployeeAccount";
 import PersonalFeedback from "../pages/common/personal-information/PersonalFeedback";
+import AdminOrderOverview from "../pages/admin/order-overview/AdminOrderOverview";
 
 function Routers() {
   const routing = useRoutes([
@@ -186,6 +187,10 @@ function Routers() {
         {
           path: "order-history",
           element: <AdminOrderHistoryPage />,
+        },
+        {
+          path: "order-overview",
+          element: <AdminOrderOverview />,
         },
         {
           path: "dish-management",
