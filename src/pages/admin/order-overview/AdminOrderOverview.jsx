@@ -122,6 +122,16 @@ const AdminOrderOverview = () => {
       ),
     },
     {
+      title: "Loại đơn",
+      dataIndex: "orderTypeId",
+      key: "orderTypeId",
+      render: (_, record) => (
+        <Typography className=" cursor-pointer">
+          {record.orderType.vietnameseName}
+        </Typography>
+      ),
+    },
+    {
       title: "Khách hàng",
       dataIndex: "customerInfo",
       key: "customerInfo",
@@ -392,6 +402,7 @@ const AdminOrderOverview = () => {
                   pagination={false}
                   rowKey="orderId"
                   loading={loading}
+                  rowHoverable:true
                 />
               </div>
             </div>
