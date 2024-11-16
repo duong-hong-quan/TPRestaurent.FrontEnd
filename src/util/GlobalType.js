@@ -89,3 +89,21 @@ export const TransactionType = [
     value: "4",
   },
 ];
+export const OrderType = [
+  {
+    label: "Tất cả",
+    value: 0,
+  },
+  {
+    label: "Đặt chỗ",
+    value: 1,
+  },
+  {
+    label: "Giao hàng",
+    value: 2,
+  },
+  {
+    label: "Không đặt chỗ",
+    value: 3,
+  },
+];
