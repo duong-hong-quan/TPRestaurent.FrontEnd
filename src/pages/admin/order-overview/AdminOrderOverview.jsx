@@ -3,7 +3,6 @@ import { EyeIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
-  Input,
   Typography,
   Button,
   CardBody,
@@ -20,6 +19,7 @@ import {
   Calendar,
   Tag,
   Modal,
+  Input,
 } from "antd";
 import { formatDateTime, formatPrice, showError } from "../../../util/Utility";
 import useCallApi from "../../../api/useCallApi";
@@ -29,18 +29,19 @@ import { AccountApi, OrderApi } from "../../../api/endpoint";
 import OrderTag from "../../../components/tag/OrderTag";
 import ModalReservationDetail from "../../../components/order/modal/ModalReservationDetail";
 import { StyledTable } from "../../../components/custom-ui/StyledTable";
-import { OrderStatus } from "../../../util/GlobalType";
+import { OrderStatus, OrderType } from "../../../util/GlobalType";
 import dayjs from "dayjs";
 import { configCalendar } from "../AdminMealHistoryPage";
 import ModalOrderDetailAdmin from "../../../components/order/modal/ModalOrderDetailAdmin";
 import { X, XCircle } from "lucide-react";
-
-const TABS = OrderStatus.filter((item) => item.value > 3 && item.value < 10);
-TABS.unshift({ value: 0, label: "Tất cả" });
+import { uniqueId } from "lodash";
 
 const { RangePicker } = DatePicker;
 const AdminOrderOverview = () => {
+  const TABS = OrderStatus.filter((item) => item.value > 3 && item.value < 10);
+  TABS.unshift({ value: 0, label: "Tất cả" });
   const [activeTab, setActiveTab] = useState(0);
+  const [selectedType, setSelectedType] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -156,7 +157,9 @@ const AdminOrderOverview = () => {
       dataIndex: "orderDate",
       key: "orderDate",
       render: (_, record) => (
-        <Typography>{formatDateTime(record.mealTime)}</Typography>
+        <Typography>
+          {record.orderTypeId !== 2 ? formatDateTime(record.mealTime) : "N/A"}
+        </Typography>
       ),
     },
     {
@@ -170,6 +173,7 @@ const AdminOrderOverview = () => {
               {table.table?.tableName}
             </Tag>
           ))}
+          {record.orderTypeId === 2 && "N/A"}
         </div>
       ),
     },
@@ -270,6 +274,7 @@ const AdminOrderOverview = () => {
         startDate: selectedRange[0].format("YYYY-MM-DD"),
         endDate: selectedRange[1].format("YYYY-MM-DD"),
         status: activeTab || undefined,
+        type: selectedType || undefined,
       }
     );
     if (response?.isSuccess) {
@@ -283,7 +288,7 @@ const AdminOrderOverview = () => {
     if (activeTab === 6) {
       fetchShipperAvailable();
     }
-  }, [activeTab, currentPage, selectedShipper, selectedRange]);
+  }, [activeTab, currentPage, selectedShipper, selectedRange, selectedType]);
 
   const fetchOrderDetail = async (orderId) => {
     const response = await callApi(`${OrderApi.GET_DETAIL}/${orderId}`, "GET");
@@ -292,7 +297,7 @@ const AdminOrderOverview = () => {
       handleOpen();
     }
   };
-
+  console.log(OrderType);
   return (
     <>
       <Card className="h-full w-full">
@@ -319,8 +324,18 @@ const AdminOrderOverview = () => {
         </CardHeader>
         <CardBody>
           <div className="col-span-1 xl:col-span-2 max-h-[650px] overflow-y-auto">
-            <div className="flex items-center ">
+            <div className="flex items-center justify-end">
               <div className="flex flex-col my-2">
+                <span className="inline-block font-bold text-red-800 py-2">
+                  Tìm kiếm
+                </span>
+                <Input
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Tìm kiếm theo số điện thoại"
+                  className="min-w-60  px-2"
+                />
+              </div>
+              <div className="flex flex-col my-2 mx-4">
                 <span className="inline-block font-bold text-red-800 py-2">
                   Chọn ngày
                 </span>
@@ -333,16 +348,37 @@ const AdminOrderOverview = () => {
                   showNow={true}
                 />
               </div>
-              <div className="flex flex-col my-2 ml-10">
+              <div className="flex flex-col my-2">
                 <span className="inline-block font-bold text-red-800 py-2">
                   Chọn trạng thái
                 </span>
                 <Select
-                  onChange={(value) => setActiveTab(value)}
+                  value={activeTab}
+                  onChange={(value) => {
+                    setActiveTab(value);
+                  }}
                   className="min-w-60"
                 >
                   {TABS.map((tab) => (
                     <Select.Option key={tab.value} value={Number(tab.value)}>
+                      {tab.label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+              <div className="flex flex-col my-2">
+                <span className="inline-block font-bold text-red-800 py-2">
+                  Chọn loại đơn
+                </span>
+                <Select
+                  value={selectedType}
+                  onChange={(value) => {
+                    setSelectedType(value);
+                  }}
+                  className="min-w-60"
+                >
+                  {OrderType.map((tab) => (
+                    <Select.Option key={uniqueId()} value={Number(tab.value)}>
                       {tab.label}
                     </Select.Option>
                   ))}
