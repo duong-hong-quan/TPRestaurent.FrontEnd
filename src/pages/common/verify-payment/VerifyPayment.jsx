@@ -27,7 +27,7 @@ const VerifyPayment = () => {
     const vnpResponseCode = searchParams.get("vnp_ResponseCode");
     const partnerCode = searchParams.get("partnerCode");
     const resultCode = searchParams.get("resultCode");
-    const orderInfo = searchParams.get("vnp_OrderInfo");
+    const idMomo = searchParams.get("extraData");
     const id = searchParams.get("vnp_TxnRef");
     const getOS = () => {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -87,7 +87,9 @@ const VerifyPayment = () => {
           );
           setIsSuccess(true);
           if (getOS() === "Android") {
-            window.location.href = `thienphurestaurant://transaction?isSuccess=true&transactionId=${id}`;
+            window.location.href = `thienphurestaurant://transaction?isSuccess=true&transactionId=${
+              id || idMomo
+            }`;
           }
         }
       } else {
