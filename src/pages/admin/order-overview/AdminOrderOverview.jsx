@@ -53,18 +53,11 @@ const AdminOrderOverview = () => {
   const [shipperAvailable, setShipperAvailable] = useState([]);
   const [selectedShipper, setSelectedShipper] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(dayjs());
   const [selectedRange, setSelectedRange] = useState([dayjs(), dayjs()]);
-  const [showCalendar, setShowCalendar] = useState(true);
   const handleRangeChange = (dates) => {
     setSelectedRange(dates);
   };
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
-  const toggleCalendar = () => {
-    setShowCalendar(!showCalendar);
-  };
+
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
@@ -274,12 +267,8 @@ const AdminOrderOverview = () => {
       `${OrderApi.GET_ORDER_WITH_FILTER}`,
       "POST",
       {
-        startDate: !showCalendar
-          ? selectedRange[0].format("YYYY-MM-DD")
-          : selectedDate.format("YYYY-MM-DD"),
-        endDate: !showCalendar
-          ? selectedRange[1].format("YYYY-MM-DD")
-          : selectedDate.format("YYYY-MM-DD"),
+        startDate: selectedRange[0].format("YYYY-MM-DD"),
+        endDate: selectedRange[1].format("YYYY-MM-DD"),
         status: activeTab || undefined,
       }
     );
@@ -294,7 +283,7 @@ const AdminOrderOverview = () => {
     if (activeTab === 6) {
       fetchShipperAvailable();
     }
-  }, [activeTab, currentPage, selectedShipper, selectedDate, selectedRange]);
+  }, [activeTab, currentPage, selectedShipper, selectedRange]);
 
   const fetchOrderDetail = async (orderId) => {
     const response = await callApi(`${OrderApi.GET_DETAIL}/${orderId}`, "GET");
