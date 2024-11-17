@@ -144,7 +144,7 @@ const CartSummary = ({ handleClose }) => {
     if (response.isSuccess) {
       dispatch(login(response.result));
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const handleCheckOut = async () => {
@@ -179,7 +179,7 @@ const CartSummary = ({ handleClose }) => {
         navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
       }
     } else {
-      showError(error);
+      showError(response.messages);
       setIsAgree(false);
     }
   };
@@ -191,7 +191,7 @@ const CartSummary = ({ handleClose }) => {
     if (response.isSuccess) {
       setDeliveryOrder(response.result);
     } else {
-      showError(error);
+      showError(response.messages);
       setIsAgree(false);
       Console.log(isAgree);
     }
@@ -217,7 +217,7 @@ const CartSummary = ({ handleClose }) => {
     if (response.isSuccess) {
       setCouponsData(response.result?.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const renderPreviewCoupon = () => {

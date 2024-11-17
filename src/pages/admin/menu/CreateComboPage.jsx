@@ -185,7 +185,7 @@ const CreateComboPage = () => {
       if (response.isSuccess) {
         message.success("Cập nhật combo thành công");
       } else {
-        showError(error);
+        showError(response.messages);
       }
     } else {
       const [startDate, endDate] = values.dateRange || [];
@@ -256,7 +256,7 @@ const CreateComboPage = () => {
       if (response.isSuccess) {
         message.success("Tạo combo thành công");
       } else {
-        showError(error);
+        showError(response.messages);
       }
     }
   };
@@ -304,7 +304,7 @@ const CreateComboPage = () => {
       message.success("Cập nhật ảnh thành công");
       await fetchDetailCombo();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   return (

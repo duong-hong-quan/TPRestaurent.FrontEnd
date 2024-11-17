@@ -43,7 +43,7 @@ const AddressModal = ({
         }))
       );
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -128,7 +128,7 @@ const AddressModal = ({
         setIsModalVisible(false);
         fetchData();
       } else {
-        showError(error);
+        showError(response.messages);
       }
     });
   };
@@ -234,7 +234,7 @@ const AddressModal = ({
                     toast.success("Xóa địa chỉ thành công!");
                     fetchData();
                   } else {
-                    showError(error);
+                    showError(response.messages);
                   }
                 }}
               >

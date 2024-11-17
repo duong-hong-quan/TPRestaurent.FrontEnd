@@ -70,7 +70,7 @@ const ReservationRequestItem = ({ reservation }) => {
         window.location.href = data.result;
       }, 2000);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   function getBadgeColor(status) {

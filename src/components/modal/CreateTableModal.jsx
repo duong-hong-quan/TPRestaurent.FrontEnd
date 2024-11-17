@@ -37,7 +37,7 @@ const CreateTableModal = ({ isModalOpen, handleCloseModal }) => {
       message.success("Tạo bàn mới thành công");
       handleCloseModal();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 

@@ -108,7 +108,7 @@ const AdminDishPage = ({ initData, tab }) => {
       message.success("Xóa món thành công");
       await fetchDishes();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const deleteCombo = async (comboId) => {
@@ -120,7 +120,7 @@ const AdminDishPage = ({ initData, tab }) => {
       message.success("Xóa combo thành công");
       await fetchDishes();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   return (

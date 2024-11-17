@@ -44,7 +44,7 @@ const HeaderManager = ({ userName = "Admin" }) => {
     if (response.isSuccess) {
       setNotifications(response.result?.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   useEffect(() => {

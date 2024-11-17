@@ -71,7 +71,7 @@ export const HomePage = () => {
     if (response.isSuccess) {
       setDishes(response?.result?.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 

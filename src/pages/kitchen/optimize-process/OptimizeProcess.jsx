@@ -247,7 +247,7 @@ const OptimizeProcess = () => {
       message.success("Cập nhật trạng thái thành công");
       await fetchData();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   useEffect(() => {

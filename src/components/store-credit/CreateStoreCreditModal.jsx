@@ -26,11 +26,9 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
     if (response.isSuccess) {
       if (response.result) {
         window.location.href = response.result;
-      } else {
-        showError(["Có lỗi xảy ra"]);
       }
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   return (
