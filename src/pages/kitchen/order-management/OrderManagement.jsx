@@ -395,7 +395,7 @@ const OrderManagement = () => {
 
       setTotalPages(response.result?.totalPages);
     } else {
-      showError(error);
+      showError(response.messages);
       setOrderSession([]);
       setTotalPages(0);
     }

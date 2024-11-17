@@ -79,7 +79,7 @@ const ModalReservationWithDish = ({
       const formattedDate = date.format("DD/MM/YYYY HH:mm");
       setDateDeposit(formattedDate);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const caculatorItems = () => {
@@ -124,7 +124,6 @@ const ModalReservationWithDish = ({
       fetchComboDetail();
     }
   }, [selectedCombos, isOpenComboDetail]);
-
 
   useEffect(() => {
     fetchRangeDeposit();
@@ -207,22 +206,22 @@ const ModalReservationWithDish = ({
   };
 
   const handleDeposit = async () => {
-      const data = await callApi(
-        `${OrderApi.CALCULATE_RESERVATION}`,
-        "POST",
-        mergeCartData(cart, cartCombo, {
-          reservationDate: information.startTime,
-          endTime: information.endTime,
-          customerInfoId: information.customerId,
-          numberOfPeople: information.numberOfPeople,
-          deposit: 0,
-        })
-      );
-      if (data.isSuccess) {
-        setDeposit(data?.result);
-      } else {
-        showError(data.messages);
-      }
+    const data = await callApi(
+      `${OrderApi.CALCULATE_RESERVATION}`,
+      "POST",
+      mergeCartData(cart, cartCombo, {
+        reservationDate: information.startTime,
+        endTime: information.endTime,
+        customerInfoId: information.customerId,
+        numberOfPeople: information.numberOfPeople,
+        deposit: 0,
+      })
+    );
+    if (data.isSuccess) {
+      setDeposit(data?.result);
+    } else {
+      showError(data.messages);
+    }
   };
 
   const renderDishCard = (dish) => (

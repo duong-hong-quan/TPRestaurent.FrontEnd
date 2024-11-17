@@ -69,7 +69,7 @@ const ModalReservationWithoutDish = ({ show, handleClose, information }) => {
         navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
       }
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   return (

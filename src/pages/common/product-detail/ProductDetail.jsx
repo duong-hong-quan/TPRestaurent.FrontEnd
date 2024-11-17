@@ -50,7 +50,7 @@ const useDishData = (id) => {
           setNumberOfRating(response.result.numberOfRating);
           console.log(dishTags);
         } else {
-          showError(error);
+          showError(response.messages);
         }
       } catch (error) {
         toast.error("Có lỗi xảy ra khi lấy dữ liệu");

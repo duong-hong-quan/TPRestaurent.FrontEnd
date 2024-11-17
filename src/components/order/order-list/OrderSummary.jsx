@@ -83,7 +83,7 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
         navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
       }
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -95,7 +95,7 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
         return <img src={VNpay_Logo} alt="" className="w-10 h-10" />;
       case 3:
         return <img src={MoMo_Logo} alt="" className="w-10 h-10" />;
-        case 5:
+      case 5:
         return <img src={Cash_Logo} alt="" className="w-10 h-10" />;
 
       default:

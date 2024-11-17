@@ -58,7 +58,7 @@ export function AdminDevicePage() {
       setIsModalVisible(false);
       await fetchData();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const handleCurrentPageChange = (page) => {
@@ -84,7 +84,7 @@ export function AdminDevicePage() {
       message.success("Xóa bàn thành công");
       await fetchData();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   useEffect(() => {

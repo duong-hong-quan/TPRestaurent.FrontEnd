@@ -68,7 +68,7 @@ const SettingsPage = () => {
     if (response?.isSuccess) {
       setSelectedHistories(response.result.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
     form.setFieldsValue({
       configurationId: record.configurationId,
@@ -135,7 +135,7 @@ const SettingsPage = () => {
       await fetchData();
       message.success("Cấu hình thành công");
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const handleSubmitUpdateConfigService = async (values) => {
@@ -151,7 +151,7 @@ const SettingsPage = () => {
       await fetchData();
       message.success("Cập nhật cấu hình thành công");
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   return (

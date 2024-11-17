@@ -19,7 +19,7 @@ const CreateEmployeeAccount = () => {
     if (response.isSuccess) {
       navigate("/admin/user-management");
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 

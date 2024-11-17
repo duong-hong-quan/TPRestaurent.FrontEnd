@@ -71,7 +71,7 @@ export function OrderHistory() {
       setReservations(responseReservation?.result?.items);
       setOrders(orderResponse?.result?.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 

@@ -97,7 +97,7 @@ const DailySellManagement = () => {
       message.success("Cập nhật thành công");
       await fetchDishes();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const handleUpdate = async () => {

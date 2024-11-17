@@ -189,7 +189,7 @@ export function AdminMealHistoryPage() {
     if (response?.isSuccess) {
       setTables(response?.result?.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   useEffect(() => {
