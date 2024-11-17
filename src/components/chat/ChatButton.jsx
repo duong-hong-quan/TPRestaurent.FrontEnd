@@ -5,6 +5,7 @@ import useCallApi from "../../api/useCallApi";
 import { ChatBotApi } from "../../api/endpoint";
 import { useSelector } from "react-redux";
 import { isEmptyObject } from "../../util/Utility";
+import dayjs from "dayjs";
 
 // Fake chat data
 const initialMessages = [
@@ -22,7 +23,10 @@ const initialMessages = [
 
 const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState(initialMessages);
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = localStorage.getItem("chatMessages");
+    return savedMessages ? JSON.parse(savedMessages) : initialMessages;
+  });
   const [newMessage, setNewMessage] = useState("");
   const chatContainerRef = useRef(null);
   const user = useSelector((state) => state.user.user || {});
@@ -41,7 +45,7 @@ const ChatButton = () => {
         const response = await callApi(`${ChatBotApi.AI_RESPONSE}`, "POST", {
           customerId: isEmptyObject(user) ? undefined : user.id,
           message: newMessage,
-          isFirstCall: false,
+          isFirstCall: localStorage.getItem("chatMessages") === null,
         });
         setMessages((prev) => [
           ...prev,
@@ -95,9 +99,11 @@ const ChatButton = () => {
       ]);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
+
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -105,10 +111,14 @@ const ChatButton = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
+  }, [messages]);
+
   return (
     <div className="fixed z-50 bottom-[0.5rem] right-[0.5rem]">
       {isOpen ? (
-        <div className="bg-white rounded-lg shadow-lg w-[400px] h-[550px]  flex flex-col">
+        <div className="bg-white rounded-lg shadow-lg w-[400px] h-[650px]  flex flex-col">
           <div
             onClick={toggleChat}
             className="bg-red-900 flex justify-start items-center text-white rounded-tr-lg rounded-tl-lg px-4 py-2 cursor-pointer"
@@ -119,7 +129,7 @@ const ChatButton = () => {
           </div>
           <div
             ref={chatContainerRef}
-            className="flex-grow p-4 overflow-y-auto bg-[#FFF9EF]"
+            className="flex-grow p-4 overflow-y-auto h-[60%] bg-[#FFF9EF]"
           >
             {messages.map((message) => (
               <div
@@ -141,13 +151,34 @@ const ChatButton = () => {
               <div className="mb-2 text-left">
                 <div className="inline-block p-2 text-black rounded-lg bg-red-100">
                   <div className="flex space-x-1">
-                    <div class="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                    <div class="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                    <div class="h-2 w-2 bg-black rounded-full animate-bounce"></div>
+                    <div className="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="h-2 w-2 bg-black rounded-full animate-bounce"></div>
                   </div>
                 </div>
               </div>
             )}
+          </div>
+          <div className="overflow-x-scroll px-2 py-4">
+            <div className="flex space-x-2 ">
+              {[
+                "Có món chay không?",
+                `Có lịch đặt bàn cho 10 người vào lúc ${dayjs()
+                  .add(1, "day")
+                  .format("HH:mm DD/MM/YYYY")} không ?`,
+                "Có món salad không?",
+                "Có giao tới nhà tôi không?",
+              ].map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => setNewMessage(suggestion)}
+                  style={{ width: "fit-content" }}
+                  className="bg-gray-200 h-12   text-black p-2  text-nowrap rounded-lg hover:bg-gray-300 whitespace-nowrap"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="p-4 border-t flex">
             <input
