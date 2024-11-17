@@ -7,6 +7,7 @@ import TabMananger from "../../../components/tab/TabManager";
 import { OrderApi } from "../../../api/endpoint";
 import OrderHistoryList from "../../../components/order/order-history/OrderHistoryList";
 import { OrderStatus } from "../../../util/GlobalType";
+import { tab } from "@material-tailwind/react";
 
 const PersonalOrder = () => {
   const { callApi, error, loading } = useCallApi();
@@ -15,7 +16,7 @@ const PersonalOrder = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
-  const [activeTab, setActiveTab] = useState(4);
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
@@ -35,8 +36,9 @@ const PersonalOrder = () => {
     fetchData();
   }, [user, currentPage, activeTab]);
   const tabs = OrderStatus.filter(
-    (item) => item.value !== 1&& item.value != 2
+    (item) => item.value !== 1 && item.value != 2
   );
+  tabs.unshift({ label: "Tất cả", value: 0 });
 
   return (
     <div className="w-full max-w-3xl mx-auto">
