@@ -39,7 +39,9 @@ function DishCard({
             {dish?.dish?.name}
           </Typography>
           <Typography className="text-gray-600 text-sm text-center">
-            {dish?.dish?.description}
+            <div
+              dangerouslySetInnerHTML={{ __html: dish?.dish?.description }}
+            />
           </Typography>
         </CardBody>
         <CardFooter className="pt-0 pb-4">
