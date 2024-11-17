@@ -36,7 +36,7 @@ const PersonalTransaction = () => {
       if (res.isSuccess) {
         setTransactions(res.result.items);
       } else {
-        showError(error);
+        showError(response.messages);
       }
     } else {
       const res = await callApi(
@@ -46,7 +46,7 @@ const PersonalTransaction = () => {
       if (res.isSuccess) {
         setStoreCreditTransactions(res.result.items);
       } else {
-        showError(error);
+        showError(response.messages);
       }
     }
   };

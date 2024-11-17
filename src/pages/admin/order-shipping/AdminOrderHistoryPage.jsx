@@ -68,7 +68,7 @@ export function AdminOrderHistoryPage() {
     if (response?.isSuccess) {
       setShipperAvailable(response?.result?.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -91,7 +91,7 @@ export function AdminOrderHistoryPage() {
       await fetchOrder();
       setSelectedOrders([]);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 

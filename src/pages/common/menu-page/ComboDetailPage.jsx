@@ -15,7 +15,7 @@ export function ComboDetailPage() {
     if (response?.isSuccess) {
       setComboData(response?.result);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   useEffect(() => {

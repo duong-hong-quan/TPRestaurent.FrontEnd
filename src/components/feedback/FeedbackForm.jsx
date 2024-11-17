@@ -58,7 +58,7 @@ const FeedbackForm = ({ orderDetailId, accountId, onHide }) => {
       setFileList([]);
       onHide();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   useEffect(() => {

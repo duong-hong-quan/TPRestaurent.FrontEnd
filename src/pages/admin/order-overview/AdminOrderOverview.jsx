@@ -71,7 +71,7 @@ const AdminOrderOverview = () => {
     if (response?.isSuccess) {
       setShipperAvailable(response?.result?.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -94,7 +94,7 @@ const AdminOrderOverview = () => {
       await fetchOrder();
       setSelectedOrders([]);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -224,7 +224,7 @@ const AdminOrderOverview = () => {
                       message.success("Hủy đơn hàng thành công");
                       await fetchOrder();
                     } else {
-                      showError(error);
+                      showError(response.messages);
                     }
                   },
                   onCancel: async () => {
