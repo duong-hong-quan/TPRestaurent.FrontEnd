@@ -11,11 +11,16 @@ export const DishCard = ({
   handleSizeClick,
   selectedSizes,
   handleAddToCart,
+  isYellow,
 }) => {
   const navigate = useNavigate();
   return (
     <div className="mt-16">
-      <div className="relative pt-20 pb-4 px-4 bg-white rounded-lg shadow-2xl my-4 mx-2 text-center">
+      <div
+        className={`relative pt-20 pb-4 px-4 ${
+          isYellow ? "bg-[#FFC682A8]" : "bg-white"
+        } rounded-lg  my-4 mx-2 text-center`}
+      >
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <img
             src={dish?.dish.image}
