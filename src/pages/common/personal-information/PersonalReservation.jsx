@@ -6,6 +6,7 @@ import Pagination from "../../../components/pagination/Pagination";
 import TabMananger from "../../../components/tab/TabManager";
 import { OrderApi } from "../../../api/endpoint";
 import ReservationList from "../../../components/order/order-list/ReservationList";
+import { OrderStatus, OrderType } from "../../../util/GlobalType";
 
 const PersonalReservation = () => {
   const { callApi, error, loading } = useCallApi();
@@ -14,7 +15,7 @@ const PersonalReservation = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
-  const [activeTab, setActiveTab] = useState("");
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
@@ -32,14 +33,8 @@ const PersonalReservation = () => {
   useEffect(() => {
     fetchData();
   }, [user, currentPage, activeTab]);
-  const tabs = [
-    { value: "", label: "Tất cả" },
-    { value: 1, label: "Đã xếp bàn" },
-    { value: 2, label: "Đã thanh toán cọc" },
-    { value: 3, label: "Đang dùng bữa" },
-    { value: 8, label: "Đã huỷ" },
-  ];
-
+  const tabs = OrderStatus.filter((item) => item.value !== 4);
+  tabs.unshift({ label: "Tất cả", value: 0 });
   return (
     <div className="w-full max-w-3xl mx-auto">
       <LoadingOverlay isLoading={loading} />
