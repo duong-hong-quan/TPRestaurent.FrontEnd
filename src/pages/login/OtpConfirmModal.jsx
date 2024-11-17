@@ -51,7 +51,7 @@ const OtpConfirmModal = ({
                 if (response.isSuccess) {
                   localStorage.setItem("device_token", permission);
                 } else {
-                  showError(error);
+                  showError(response.messages);
                 }
               }
             }
@@ -75,7 +75,7 @@ const OtpConfirmModal = ({
           handleSuccess(true);
           onClose();
         } else {
-          showError(error);
+          showError(data.messages);
         }
         break;
       case 9:

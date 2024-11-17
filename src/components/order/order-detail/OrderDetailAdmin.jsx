@@ -66,7 +66,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
       fetchData();
       onClose();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 

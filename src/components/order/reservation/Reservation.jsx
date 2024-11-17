@@ -188,7 +188,7 @@ const Reservation = () => {
         });
       }
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -237,7 +237,7 @@ const Reservation = () => {
         start.add(30, "minutes");
       }
     } else {
-      showError(error);
+      showError(response.messages);
     }
     return times;
   };
@@ -296,7 +296,7 @@ const Reservation = () => {
         message.success("Tài khoản của bạn đã được tạo thành công.");
         setIsOtpModalVisible(true);
       } else {
-        showError(error);
+        showError(response.messages);
       }
     }
   };

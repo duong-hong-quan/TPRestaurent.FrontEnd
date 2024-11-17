@@ -41,7 +41,7 @@ const PersonalSetting = () => {
     if (response.isSuccess) {
       setDevices(response.result?.items);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   console.log(devices);
@@ -63,7 +63,7 @@ const PersonalSetting = () => {
           setNotificationsEnabled(true);
           await fetchDevices();
         } else {
-          showError(error);
+          showError(response.messages);
         }
       }
     } else {
@@ -85,7 +85,7 @@ const PersonalSetting = () => {
       console.log(data);
       // fetchDevices();
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -102,7 +102,7 @@ const PersonalSetting = () => {
           fetchDevices();
           dispatch(logout());
         } else {
-          showError(error);
+          showError(response.messages);
         }
       },
     });

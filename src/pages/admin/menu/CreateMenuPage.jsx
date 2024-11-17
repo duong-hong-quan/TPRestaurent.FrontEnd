@@ -113,7 +113,7 @@ const CreateMenuPage = ({ back }) => {
       if (response?.isSuccess) {
         message.success("Cập nhật món ăn thành công");
       } else {
-        showError(error);
+        showError(response.messages);
       }
     } else {
       const formData = new FormData();
@@ -160,7 +160,7 @@ const CreateMenuPage = ({ back }) => {
         message.success("Tạo món ăn thành công");
         back();
       } else {
-        showError(error);
+        showError(response.messages);
       }
     }
   };
@@ -217,7 +217,7 @@ const CreateMenuPage = ({ back }) => {
       message.success("Cập nhật ảnh thành công");
       await fetchDataById(id);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const renderPriceText = (index) => {

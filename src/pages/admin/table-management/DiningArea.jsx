@@ -220,7 +220,9 @@ const DiningArea = () => {
                       height: tableSize.height,
                     }}
                   >
-                    <span className="text-sm block text-nowrap">{table.name}</span>
+                    <span className="text-sm block text-nowrap">
+                      {table.name}
+                    </span>
                     <span className="text-xs block">
                       Bàn {table.tableSizeId} người
                     </span>
@@ -279,7 +281,7 @@ const DiningArea = () => {
                                   "Lưu thay đổi sơ đồ bàn thành công"
                                 );
                               } else {
-                                showError(error);
+                                showError(response.messages);
                               }
                             },
                             onCancel: async () => {

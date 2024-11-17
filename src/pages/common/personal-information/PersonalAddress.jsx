@@ -45,7 +45,7 @@ const PersonalAddress = () => {
     if (response.isSuccess) {
       dispatch(login(response.result));
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const handleSearch = async (value) => {
@@ -63,7 +63,7 @@ const PersonalAddress = () => {
         }))
       );
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -144,7 +144,7 @@ const PersonalAddress = () => {
         setIsModalVisible(false);
         await fetchData();
       } else {
-        showError(error);
+        showError(response.messages);
       }
     });
   };
@@ -232,7 +232,7 @@ const PersonalAddress = () => {
                   message.success("Cập nhật địa chỉ chính thành công!");
                   await fetchData();
                 } else {
-                  showError(error);
+                  showError(response.messages);
                 }
               }}
             />
@@ -271,7 +271,7 @@ const PersonalAddress = () => {
                     message.success("Xóa địa chỉ thành công!");
                     await fetchData();
                   } else {
-                    showError(error);
+                    showError(response.messages);
                   }
                 }}
               >

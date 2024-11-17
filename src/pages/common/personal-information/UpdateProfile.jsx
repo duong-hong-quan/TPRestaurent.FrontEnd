@@ -74,7 +74,7 @@ const UpdateProfile = () => {
       await fetchUser();
       message.success("Đã cập nhật thông tin thành công!");
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
@@ -136,7 +136,7 @@ const UpdateProfile = () => {
       message.success("Đã gửi yêu cầu xác nhận email!");
       setShowOtpModal(true);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
   const handleOtpSubmit = async () => {
@@ -151,7 +151,7 @@ const UpdateProfile = () => {
       message.success("Email đã được xác nhận!");
       setShowOtpModal(false);
     } else {
-      showError(error);
+      showError(response.messages);
     }
   };
 
