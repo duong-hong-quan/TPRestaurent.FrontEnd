@@ -1,6 +1,7 @@
 # ROMS - Restaurant Order Management System
 ![Vercel](https://vercelbadge.vercel.app/api/duong-hong-quan/TPRestaurent.FrontEnd)
 
+
 **Key feature**
 Developed a comprehensive restaurant order management system with two mobile apps, one web interface, and a backend. The system manages restaurant operations from reservations to delivery, utilizing AI to enhance customer and kitchen efficiency. Key features include AI-driven dish recommendations, table availability search, location-based delivery options, and optimized table and kitchen management.
 

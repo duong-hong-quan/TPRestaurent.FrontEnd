@@ -26,7 +26,7 @@ import {
   DishApi,
   OrderApi,
 } from "../../../api/endpoint";
-import DishCard from "../../dish/DishCard";
+import DishCard from "../../menu-dish/dish-card/DishCard";
 import ComboCard from "../../combo/ComboCard";
 import OrderSummary from "../order-list/OrderSummary";
 import LoadingOverlay from "../../loading/LoadingOverlay";
@@ -233,6 +233,7 @@ const ModalReservationWithDish = ({
       handleSizeClick={handleSizeClick}
       selectedSizes={selectedSizes}
       key={"card"}
+      isYellow={true}
     />
   );
 
