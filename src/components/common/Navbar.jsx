@@ -210,90 +210,94 @@ export const Navbar = () => {
                   </Badge>
                 </NavLink>
               ))}
-            <div className="relative" ref={notificationRef}>
-              {icons
-                .filter((i) => i.name === "Thông báo")
-                .map((item, index) => (
-                  <Badge
-                    count={notifications.filter((item) => !item.isRead).length}
-                    key={index}
-                  >
-                    <IconButton
-                      className="bg-transparent rounded-full shadow-none mx-0 px-0"
-                      onClick={toggleNotification}
+
+            {!isEmptyObject(user) && (
+              <div className="relative" ref={notificationRef}>
+                {icons
+                  .filter((i) => i.name === "Thông báo")
+                  .map((item, index) => (
+                    <Badge
+                      count={
+                        notifications.filter((item) => !item.isRead).length
+                      }
+                      key={index}
                     >
-                      <i
-                        className={`fa-solid ${item.icon} text-xl text-white`}
-                      ></i>
-                    </IconButton>
-                  </Badge>
-                ))}
-              {isNotificationOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-2 z-20">
-                  <div className="p-2  bg-white rounded-lg ">
-                    <Typography variant="h3" className="text-red-800 ">
-                      Thông báo
-                    </Typography>
-                    <hr />
-                    <div className="h-[400px] overflow-auto ">
-                      {notifications.map((notification) => (
-                        <MenuItem
-                          key={notification.notificationId}
+                      <IconButton
+                        className="bg-transparent rounded-full shadow-none mx-0 px-0"
+                        onClick={toggleNotification}
+                      >
+                        <i
+                          className={`fa-solid ${item.icon} text-xl text-white`}
+                        ></i>
+                      </IconButton>
+                    </Badge>
+                  ))}
+                {isNotificationOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-2 z-20">
+                    <div className="p-2  bg-white rounded-lg ">
+                      <Typography variant="h3" className="text-red-800 ">
+                        Thông báo
+                      </Typography>
+                      <hr />
+                      <div className="h-[400px] overflow-auto ">
+                        {notifications.map((notification) => (
+                          <MenuItem
+                            key={notification.notificationId}
+                            onClick={async () => {
+                              const response = await callApi(
+                                `${NotificationApi.MARK_AS_READ}/${notification.notificationId}`,
+                                "POST"
+                              );
+                              if (response.isSuccess) {
+                                await fetchNotifications();
+                              }
+                            }}
+                            className={`flex flex-col  gap-2 p-2 rounded-md transition-all duration-300 ${
+                              notification?.read
+                                ? "opacity-50 bg-gray-100"
+                                : "hover:bg-blue-50"
+                            }`}
+                          >
+                            <Typography
+                              variant="lead"
+                              className="font-bold text-lg text-gray-700"
+                            >
+                              {notification.notificationName}
+                            </Typography>
+                            <Typography className="font-normal text-gray-700 text-sm flex items-center">
+                              {notification.messages}
+                              {!notification.isRead && (
+                                <span className="text-blue-600 animate-pulse">
+                                  <Dot size={40} />
+                                </span>
+                              )}
+                            </Typography>
+                          </MenuItem>
+                        ))}
+                      </div>
+
+                      <MenuItem className="flex items-center gap-2 justify-center mt-2 p-2 rounded-md hover:bg-blue-50 transition-all duration-300">
+                        <Typography
+                          variant="small"
+                          className="font-medium text-blue-500 hover:text-blue-700 cursor-pointer"
                           onClick={async () => {
                             const response = await callApi(
-                              `${NotificationApi.MARK_AS_READ}/${notification.notificationId}`,
+                              `${NotificationApi.MARK_ALL_AS_READ}/${user.id}`,
                               "POST"
                             );
                             if (response.isSuccess) {
                               await fetchNotifications();
                             }
                           }}
-                          className={`flex flex-col  gap-2 p-2 rounded-md transition-all duration-300 ${
-                            notification?.read
-                              ? "opacity-50 bg-gray-100"
-                              : "hover:bg-blue-50"
-                          }`}
                         >
-                          <Typography
-                            variant="lead"
-                            className="font-bold text-lg text-gray-700"
-                          >
-                            {notification.notificationName}
-                          </Typography>
-                          <Typography className="font-normal text-gray-700 text-sm flex items-center">
-                            {notification.messages}
-                            {!notification.isRead && (
-                              <span className="text-blue-600 animate-pulse">
-                                <Dot size={40} />
-                              </span>
-                            )}
-                          </Typography>
-                        </MenuItem>
-                      ))}
+                          Đánh dấu đọc tất cả
+                        </Typography>
+                      </MenuItem>
                     </div>
-
-                    <MenuItem className="flex items-center gap-2 justify-center mt-2 p-2 rounded-md hover:bg-blue-50 transition-all duration-300">
-                      <Typography
-                        variant="small"
-                        className="font-medium text-blue-500 hover:text-blue-700 cursor-pointer"
-                        onClick={async () => {
-                          const response = await callApi(
-                            `${NotificationApi.MARK_ALL_AS_READ}/${user.id}`,
-                            "POST"
-                          );
-                          if (response.isSuccess) {
-                            await fetchNotifications();
-                          }
-                        }}
-                      >
-                        Đánh dấu đọc tất cả
-                      </Typography>
-                    </MenuItem>
                   </div>
-                </div>
-              )}
-            </div>
-
+                )}
+              </div>
+            )}
             {isOpen && (
               <div
                 className="left-1/2 -translate-x-1/2 top-20 absolute w-full px-4 sm:px-6 lg:px-8 z-50"
@@ -392,17 +396,19 @@ export const Navbar = () => {
                   </NavLink>
                 </li>
               ))}
-              {icons.map((item) => (
-                <li key={item.icon}>
-                  <NavLink
-                    to={item.path}
-                    className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
-                    onClick={toggleMenu}
-                  >
-                    {item.name}
-                  </NavLink>
-                </li>
-              ))}
+              {icons
+                .filter((i) => i.name !== "Thông báo")
+                .map((item) => (
+                  <li key={item.icon}>
+                    <NavLink
+                      to={item.path}
+                      className="block py-2 px-4 text-md hover:bg-red-700 transition duration-300 ease-in-out text-center"
+                      onClick={toggleMenu}
+                    >
+                      {item.name}
+                    </NavLink>
+                  </li>
+                ))}
               {isEmptyObject(user) ? (
                 <li>
                   <NavLink
