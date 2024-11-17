@@ -22,7 +22,9 @@ function ComboCard({ formatPrice, formatDate, onClick, combo }) {
         <Typography variant="h5" className="mb-2">
           {combo?.name}
         </Typography>
-        <Typography>{combo?.description}</Typography>
+        <Typography>
+          <div dangerouslySetInnerHTML={{ __html: combo?.description }} />
+        </Typography>
         <Typography className="mt-4">
           <span className="font-bold">Giá:</span> {formatPrice(combo?.price)}
         </Typography>
