@@ -264,11 +264,18 @@ const ModalReservationWithDish = ({
           {dishes.map(renderDishCard)}
         </div>
       );
-    } else {
+    } else if (activeTab === 1 && !isOpenComboDetail) {
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {combos.map(renderComboCard)}
         </div>
+      );
+    } else {
+      return (
+        <ComboDetail2
+          comboData={combo}
+          handleBack={() => setIsOpenComboDetail(false)}
+        />
       );
     }
   };
