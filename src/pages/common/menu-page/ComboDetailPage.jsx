@@ -28,7 +28,7 @@ export function ComboDetailPage() {
 
   return (
     <div>
-      <LoadingOverlay loading={loading} />
+      <LoadingOverlay isLoading={loading} />
       <ComboDetail
         comboData={comboData}
         key={`combodetail`}
