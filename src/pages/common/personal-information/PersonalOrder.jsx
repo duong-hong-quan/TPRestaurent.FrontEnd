@@ -23,7 +23,9 @@ const PersonalOrder = () => {
   };
   const fetchData = async () => {
     const res = await callApi(
-      `${OrderApi.GET_BY_PHONE}/${currentPage}/${totalItems}?phoneNumber=${user.phoneNumber}&status=${activeTab}&orderType=2`,
+      `${OrderApi.GET_BY_PHONE}/${currentPage}/${totalItems}?phoneNumber=${
+        user.phoneNumber
+      }&${activeTab !== 0 && `status=${activeTab}`}&orderType=2`,
       "GET"
     );
     if (res.isSuccess) {
