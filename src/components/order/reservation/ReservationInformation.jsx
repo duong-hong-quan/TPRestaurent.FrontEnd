@@ -20,7 +20,10 @@ const ReservationInformation = ({ reservation }) => {
     <div className="w-full">
       <Card className="shadow-none border-none">
         <CardBody>
-          <Typography variant="h5" className="mb-4 text-center">
+          <Typography
+            variant="h5"
+            className="mb-4 text-center uppercase text-red-900"
+          >
             Thông tin đặt bàn
           </Typography>
           <div className="  gap-4">
