@@ -290,6 +290,7 @@ const ModalReservationWithDish = ({
 
   return (
     <div className=" p-4 bg-gray-50 min-h-screen">
+      <LoadingOverlay isLoading={loading} />
       {visible && (
         <div className="mx-10">
           {!isSummary ? (
