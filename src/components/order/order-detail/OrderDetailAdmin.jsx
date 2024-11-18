@@ -340,7 +340,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
           Thông Tin Đơn Hàng
         </Typography>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div>
+          <div className="max-h-[550px] overflow-y-scroll">
             <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
               <Typography
                 variant="h5"
@@ -471,7 +471,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
               </>
             </div>
           </div>
-          <div>
+          <div className="max-h-[550px] overflow-y-scroll">
             <Typography
               variant="h5"
               color="blue-gray"
