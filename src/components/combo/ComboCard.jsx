@@ -1,24 +1,17 @@
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Typography,
-} from "@material-tailwind/react";
+import { Typography } from "@material-tailwind/react";
 import { Button } from "antd";
-import React from "react";
 
 function ComboCard({ formatPrice, formatDate, onClick, combo }) {
   return (
-    <Card key={combo.comboId} className="m-4">
-      <CardHeader color="blue" className="relative h-56">
+    <div key={combo.comboId} className="m-4 shadow-lg rounded-lg">
+      <div color="blue" className="relative h-56">
         <img
           src={combo?.image}
           alt={combo?.name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover rounded-lg"
         />
-      </CardHeader>
-      <CardBody>
+      </div>
+      <div className="p-4">
         <Typography variant="h5" className="mb-2">
           {combo?.name}
         </Typography>
@@ -41,8 +34,8 @@ function ComboCard({ formatPrice, formatDate, onClick, combo }) {
           <span className="font-bold">Ngày kết thúc:</span>{" "}
           {formatDate(combo?.endDate)}
         </Typography>
-      </CardBody>
-      <CardFooter className="pt-0 mt-auto">
+      </div>
+      <div className="p-4">
         <div className="flex justify-center">
           <Button
             className="bg-red-700 text-white py-2 px-4 rounded-md"
@@ -51,8 +44,8 @@ function ComboCard({ formatPrice, formatDate, onClick, combo }) {
             Đặt ngay
           </Button>
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
 
