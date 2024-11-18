@@ -22,7 +22,9 @@ const PersonalReservation = () => {
   };
   const fetchData = async () => {
     const res = await callApi(
-      `${OrderApi.GET_BY_PHONE}/${currentPage}/${totalItems}?phoneNumber=${user.phoneNumber}&status=${activeTab}&orderType=1`,
+      `${OrderApi.GET_BY_PHONE}/${currentPage}/${totalItems}?phoneNumber=${
+        user.phoneNumber
+      }&${activeTab !== 0 && `status=${activeTab}`}&orderType=1`,
       "GET"
     );
     if (res.isSuccess) {
