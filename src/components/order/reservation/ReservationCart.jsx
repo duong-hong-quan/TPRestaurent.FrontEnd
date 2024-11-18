@@ -71,7 +71,10 @@ export function ReservationCart() {
   }, []);
   return (
     <div className=" mx-auto bg-white ">
-      <Typography variant="h4" className="mb-4 text-center">
+      <Typography
+        variant="h4"
+        className="mb-4 text-center uppercase text-red-900"
+      >
         Danh sách món order
       </Typography>
 
