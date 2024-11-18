@@ -12,7 +12,7 @@ const ModalOrderDetailAdmin = ({
 }) => {
   return (
     <Modal open={visible} onCancel={onClose} footer={null} width={1400}>
-      <div className="h-[650px] overflow-y-scroll">
+      <div className="max-h-[750px] overflow-y-scroll">
         <OrderDetailAdmin
           reservationData={reservation}
           onClose={onClose}

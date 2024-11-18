@@ -15,6 +15,7 @@ import { logout } from "../../redux/features/authSlice";
 import { Dot, Search, SearchIcon } from "lucide-react";
 import useCallApi from "../../api/useCallApi";
 import { NotificationApi, TokenApi } from "../../api/endpoint";
+import LoadingOverlay from "../loading/LoadingOverlay";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,7 +30,7 @@ export const Navbar = () => {
   const user = useSelector((state) => state.user.user || {});
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { callApi, error } = useCallApi();
+  const { callApi, error, loading } = useCallApi();
   const [notifications, setNotifications] = useState([]);
 
   const menuRef = useRef(null);
@@ -157,6 +158,7 @@ export const Navbar = () => {
 
   return (
     <nav className="bg-[#9A0E1D] text-white shadow-lg sticky top-0 z-50">
+      <LoadingOverlay isLoading={loading} />
       <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between h-20">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
@@ -239,7 +241,7 @@ export const Navbar = () => {
                         Thông báo
                       </Typography>
                       <hr />
-                      <div className="h-[400px] overflow-auto ">
+                      <div className="max-h-[400px] overflow-auto ">
                         {notifications.map((notification) => (
                           <MenuItem
                             key={notification.notificationId}
