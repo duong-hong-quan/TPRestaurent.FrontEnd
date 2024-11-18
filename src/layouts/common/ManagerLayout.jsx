@@ -12,6 +12,7 @@ import {
 import { GiCampCookingPot } from "react-icons/gi";
 import { TbTransactionDollar } from "react-icons/tb";
 import { useSelector } from "react-redux";
+import { Ticket } from "lucide-react";
 
 const menuItems = [
   {
@@ -44,6 +45,11 @@ const menuItems = [
       { title: "Đơn hàng online", path: "/admin/order-history" },
       { title: "Đặt món tại quán", path: "/admin/meal-history" },
     ],
+  },
+  {
+    title: "Quản lý mã giảm giá",
+    icon: <Ticket className="h-5 w-5 text-white" />,
+    path: "/admin/discount-codes",
   },
   {
     title: "Quản lý giao dịch",

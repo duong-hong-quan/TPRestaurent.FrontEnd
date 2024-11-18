@@ -49,6 +49,7 @@ import DiningArea from "../pages/admin/table-management/DiningArea";
 import CreateEmployeeAccount from "../pages/admin/user/CreateEmployeeAccount";
 import PersonalFeedback from "../pages/common/personal-information/PersonalFeedback";
 import AdminOrderOverview from "../pages/admin/order-overview/AdminOrderOverview";
+import AdminVoucherPage from "../pages/admin/voucher/AdminVoucherPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -183,6 +184,10 @@ function Routers() {
         {
           index: true,
           element: <AdminDashboardPage />,
+        },
+        {
+          path: "discount-codes",
+          element: <AdminVoucherPage />,
         },
         {
           path: "order-history",
