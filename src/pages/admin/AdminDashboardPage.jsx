@@ -492,7 +492,7 @@ const AdminDashboardPage = ({}) => {
       </div>
       <div className="col-span-1 xl:col-span-3 p-4 max-h-[900px] overflow-y-auto bg-gray-50">
         <Typography className="text-lg uppercase text-red-800 font-semibold my-2">
-          Lịch đặt bàn hôm nay
+          Lịch đặt bàn
         </Typography>
         {reservations?.map((item, index) => (
           <div
@@ -515,25 +515,25 @@ const AdminDashboardPage = ({}) => {
             </div>
 
             {/* Content Section */}
-            <div className="flex space-x-4">
+            <div className="flex items-center space-x-4 relative ">
               {/* Time Indicator */}
-              <div className="relative flex flex-col items-center">
+              <span className="bg-white z-10 px-3 py-1 rounded-full text-lg font-semibold text-gray-700 border border-gray-200">
+                {dayjs(item?.mealTime).format("HH:mm")}
+              </span>
+              <div className="">
                 <div
-                  className={`w-2 h-full absolute top-0 left-1/2 transform -translate-x-1/2 rounded-full ${
-                    item.statusId == 4
+                  className={`w-1 h-full absolute top-0 rounded-full ${
+                    item.statusId === 4
                       ? "bg-blue-500"
-                      : item.statusId == 10
+                      : item.statusId === 10
                       ? "bg-red-700"
                       : "bg-green-800"
                   }`}
                 />
-                <span className="bg-white z-10 px-3 py-1 rounded-full text-sm font-semibold text-gray-700 border border-gray-200">
-                  {dayjs(item?.mealTime).format("HH:mm")}
-                </span>
               </div>
 
               {/* Booking Details */}
-              <div className="flex-1">
+              <div className="flex-1 ">
                 <div className="space-y-3">
                   {/* Customer Name */}
                   <div className="flex items-center space-x-2">
@@ -543,7 +543,7 @@ const AdminDashboardPage = ({}) => {
                   {/* Table Information */}
                   <div className="flex items-center space-x-2 text-gray-600">
                     <MapPin className="w-4 h-4" />
-                    {item.tables.map((item) => (
+                    {item.tables?.map((item) => (
                       <span className="text-sm font-bold mx-2 block">
                         {item.table.tableName}
                       </span>
