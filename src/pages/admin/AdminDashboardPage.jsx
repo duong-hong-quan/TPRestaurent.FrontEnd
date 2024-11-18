@@ -30,6 +30,8 @@ import LoadingOverlay from "../../components/loading/LoadingOverlay";
 import { StyledTable } from "../../components/custom-ui/StyledTable";
 import { Button, DatePicker, Select } from "antd";
 import { configCalendar } from "./AdminMealHistoryPage";
+import { OrderStatus } from "../../util/GlobalType";
+import TabMananger from "../../components/tab/TabManager";
 const { RangePicker } = DatePicker;
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -43,6 +45,7 @@ const AdminDashboardPage = ({}) => {
   const [ordersData, setOrdersData] = useState([]);
   const [statistics, setStatistics] = useState({});
   const [statisticChart, setStatisticChart] = useState({});
+  const [activeTab, setActiveTab] = useState(0);
   const [dateChoose, setDateChoose] = useState([
     dayjs().subtract(1, "month"),
     dayjs(),
@@ -55,6 +58,10 @@ const AdminDashboardPage = ({}) => {
       setIsModalOpen(true);
     }
   };
+  const tabs = OrderStatus.filter(
+    (item) => item.value !== 1 && item.value != 2
+  );
+  tabs.unshift({ label: "Tất cả", value: 0 });
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -127,7 +134,7 @@ const AdminDashboardPage = ({}) => {
           data: {
             startDate: dateChoose[0].format("YYYY-MM-DD"),
             endDate: dateChoose[1].format("YYYY-MM-DD"),
-            status: 4 || 5,
+            status: activeTab === 0 ? undefined : activeTab,
             type: 2,
           },
         },
@@ -172,6 +179,25 @@ const AdminDashboardPage = ({}) => {
   useEffect(() => {
     fetchAllData();
   }, [dateChoose]);
+  const fetchOrderShipping = async () => {
+    const response = await callApi(
+      `${OrderApi.GET_ORDER_WITH_FILTER}`,
+      "POST",
+      {
+        startDate: dateChoose[0].format("YYYY-MM-DD"),
+        endDate: dateChoose[1].format("YYYY-MM-DD"),
+        status: activeTab === 0 ? undefined : activeTab,
+        type: 2,
+      }
+    );
+    if (response?.isSuccess) {
+      setOrdersData(response?.result?.items);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrderShipping();
+  }, [activeTab]);
   const monthlyRevenueData = statisticChart?.monthlyRevenue
     ? Object.keys(statisticChart.monthlyRevenue).map((month) => ({
         name: month,
@@ -480,6 +506,11 @@ const AdminDashboardPage = ({}) => {
             </Typography>
           </CardHeader>
           <CardBody className="overflow-y-scroll max-h-[300px] pb-2">
+            <TabMananger
+              activeTab={activeTab}
+              items={tabs}
+              setActiveTab={setActiveTab}
+            />
             <StyledTable
               columns={columns}
               dataSource={ordersData}
