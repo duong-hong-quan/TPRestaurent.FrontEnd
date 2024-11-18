@@ -246,7 +246,11 @@ const ProductDetail = () => {
                 <span className="w-12 text-sm">{star} sao</span>
                 <div className="flex-grow mx-2 bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-yellow-400 h-2 rounded-full"
+                    className={`${
+                      starCounts[5 - star] == 0
+                        ? `bg-gray-200`
+                        : `bg-yellow-400`
+                    } h-2 rounded-full`}
                     style={{
                       width: `${
                         (starCounts[5 - star] / numberOfRating) * 100
