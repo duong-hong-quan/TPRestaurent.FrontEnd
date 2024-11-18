@@ -61,7 +61,7 @@ const OtpConfirmModal = ({
           navigate("/");
           onClose();
         } else {
-          message.error("Đăng nhập thất bại");
+          showError(resposne.messages);
         }
         break;
       case 1:
