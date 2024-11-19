@@ -275,6 +275,7 @@ const AdminOrderOverview = () => {
         endDate: selectedRange[1].format("YYYY-MM-DD"),
         status: activeTab || undefined,
         type: selectedType || undefined,
+        phoneNumber: searchQuery || undefined,
       }
     );
     if (response?.isSuccess) {
@@ -288,7 +289,14 @@ const AdminOrderOverview = () => {
     if (activeTab === 6) {
       fetchShipperAvailable();
     }
-  }, [activeTab, currentPage, selectedShipper, selectedRange, selectedType]);
+  }, [
+    activeTab,
+    currentPage,
+    selectedShipper,
+    selectedRange,
+    selectedType,
+    searchQuery,
+  ]);
 
   const fetchOrderDetail = async (orderId) => {
     const response = await callApi(`${OrderApi.GET_DETAIL}/${orderId}`, "GET");
@@ -333,6 +341,7 @@ const AdminOrderOverview = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Tìm kiếm theo số điện thoại"
                   className="min-w-60  px-2"
+                  prefix={"+84"}
                 />
               </div>
               <div className="flex flex-col my-2 mx-4">
