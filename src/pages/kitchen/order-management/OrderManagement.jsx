@@ -21,6 +21,7 @@ import * as signalR from "@microsoft/signalr";
 import { baseUrl } from "../../../api/config/axios";
 import notification_sound from "../../../assets/sound/kitchen.mp3";
 import TabMananger from "../../../components/tab/TabManager";
+import { SignalRMethod } from "../../../util/GlobalType";
 
 const menuItems = [
   { value: "all", label: "Tất cả" },
@@ -358,27 +359,30 @@ const OrderManagement = () => {
     setConnection(newConnection);
   }, []);
   useEffect(() => {
-    if (connection) {
-      // Start the connection
-      connection
-        .start()
-        .then(() => {
-          console.log("Connected to SignalR");
-          message.success("Connected to SignalR");
-          // Subscribe to SignalR events
-          connection.on("LOAD_ORDER_SESIONS", (data) => {
-            fetchData();
-            if (audioRef.current) {
-              audioRef.current.play().catch((error) => {
-                console.error("Error playing audio:", error);
-              });
+    let retryCount = 0;
+    const MAX_RETRIES = 5;
+    const RETRY_DELAY = 3000; // 3 seconds
+    const startConnection = async () => {
+      if (connection) {
+        connection
+          .start()
+          .then(() => {
+            message.success("Connected to SignalR");
+            connection.on(SignalRMethod.LOAD_ORDER_SESIONS, async () => {
+              await fetchData();
+            });
+          })
+          .catch((error) => {
+            if (retryCount < MAX_RETRIES) {
+              retryCount++;
+              setTimeout(startConnection, RETRY_DELAY);
+            } else {
+              console.log("Max retries reached. Could not connect to SignalR.");
             }
           });
-        })
-        .catch((error) => console.log("Connection failed: ", error));
-    }
-
-    // Cleanup on component unmount
+      }
+    };
+    startConnection();
     return () => {
       if (connection) {
         connection.stop();
