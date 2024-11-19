@@ -9,6 +9,7 @@ export const StyledTable = styled(Table)`
     background-color: #ad0303;
     color: white;
     height: 70px;
+    white-space: nowrap; /* Prevent text wrapping */
   }
   .ant-table-tbody > tr > td {
     text-align: center;
