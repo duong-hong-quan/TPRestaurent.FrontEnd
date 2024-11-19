@@ -309,9 +309,12 @@ const OrderCard = ({
               <h3 className="font-semibold">
                 {item?.combo?.name || item?.dishSizeDetail.dish?.name}
               </h3>
-              <p className="text-sm text-gray-500">
-                {item.dishSizeDetail?.dish.description}
-              </p>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: item.dishSizeDetail?.dish.description,
+                }}
+              />
+
               <div className="flex justify-between mt-1">
                 <span>{formatPrice(item?.price)}</span>
                 <span>Số lượng: {item?.quantity}</span>
