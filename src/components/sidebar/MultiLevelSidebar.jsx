@@ -105,7 +105,7 @@ export function MultiLevelSidebar({ menuItems }) {
   }, [location, dispatch]);
 
   return (
-    <div className="flex min-h-full bg-gray-100 ">
+    <div className="flex min-h-full bg-gray-100 sticky ">
       <div
         ref={sidebarRef}
         className={`fixed min-h-full inset-y-0 left-0 z-50 w-64 bg-[#970C1A] rounded-tr-2xl rounded-br-2xl text-white transition-transform duration-300 ease-in-out ${
