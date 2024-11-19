@@ -299,6 +299,18 @@ const OptimizeProcess = () => {
     const dishes = JSON.parse(item.groupedDishJson).SingleOrderDishes;
     return dishes.length > 0;
   });
+  const handleTriggerGroupedDish = async () => {
+    const result = await callApi(
+      `${GroupedDishCraftApi.ADD_GROUPED_DISH}`,
+      "POST"
+    );
+    if (result.isSuccess) {
+      message.success("Gom món thành công");
+      fetchData();
+    } else {
+      showError(result.messages);
+    }
+  };
 
   return (
     <div className="px-10 bg-white rounded-lg py-4 shadow-lg">
@@ -315,8 +327,16 @@ const OptimizeProcess = () => {
           tục trên list.
         </Text>
 
-        <Title level={3}>BẢNG ƯU TIÊN MÓN CẦN CHẾ BIẾN</Title>
-
+        <div className="flex">
+          <Title level={3}>BẢNG ƯU TIÊN MÓN CẦN CHẾ BIẾN</Title>
+          <Button
+            className="bg-red-800 text-white"
+            loading={loading}
+            onClick={handleTriggerGroupedDish}
+          >
+            Gom món ngay
+          </Button>
+        </div>
         <div className="grid  grid-cols-1 xl:grid-cols-2 gap-4 ">
           <div className="">
             <h3 className="bg-[#E3B054] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
