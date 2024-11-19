@@ -257,7 +257,6 @@ const ModalReservationWithDish = ({
     handleDeposit();
   }, [cartCombo, cart]);
   const renderTab = () => {
-    debugger;
     if (activeTab === 0) {
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
