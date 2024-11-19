@@ -19,6 +19,7 @@ export const AccountApi = {
   BAN_USER: "/api/account/ban-user",
   GET_ACCOUNT_BY_PHONENUMBER_KEYWORD:
     "/api/account/get-account-by-phone-number-keyword",
+  GET_ALL_ACCOUNT: "/api/account/get-all-account",
 };
 
 export const ComboApi = {

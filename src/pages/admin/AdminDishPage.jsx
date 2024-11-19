@@ -171,7 +171,7 @@ const AdminDishPage = ({ initData, tab }) => {
       >
         Cập nhật số lượng món ăn
       </NavLink>
-      <CardBody key={uniqueId()} className="overflow-y-scroll h-[500px]">
+      <CardBody key={uniqueId()} className="">
         {Number(selectedMenuTab) === 1 ? (
           <DishTable
             key={uniqueId()}
