@@ -91,6 +91,7 @@ const AdminDashboardPage = ({}) => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      width: 250,
       render: (_, record) => <OrderTag orderStatusId={record.statusId} />,
     },
     {
