@@ -168,7 +168,10 @@ const Reservation = () => {
         });
         message.success("Hệ thống chúng tôi đã tìm ra bàn phù hợp với bạn");
         setIsReservationModalVisible(true);
-      } else if (responseSuggessTable?.result?.length > 0) {
+      } else if (
+        responseSuggessTable?.result?.length > 0 &&
+        responseSuggessTable?.result?.messages > 0
+      ) {
         Modal.confirm({
           title: "Xác nhận",
           content: responseSuggessTable?.messages.join("\n"),
