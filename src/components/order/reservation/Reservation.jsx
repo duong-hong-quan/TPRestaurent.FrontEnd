@@ -123,7 +123,6 @@ const Reservation = () => {
   };
 
   const onFinish = async () => {
-    debugger;
     const date = form.getFieldValue("date");
     const startTime = form.getFieldValue("startTime");
     const endTime = form.getFieldValue("endTime");
