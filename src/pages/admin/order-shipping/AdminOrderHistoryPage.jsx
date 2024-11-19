@@ -254,7 +254,7 @@ export function AdminOrderHistoryPage() {
           </div>
         </CardHeader>
         <CardBody className="grid grid-cols-1  xl:grid-cols-3 gap-2">
-          <div className="col-span-1  overflow-auto">
+          <div className="col-span-1 ">
             {activeTab !== 6 && (
               <>
                 <Typography className="text-red-800 uppercase font-semibold">
@@ -326,7 +326,7 @@ export function AdminOrderHistoryPage() {
             )}
           </div>
 
-          <div className="col-span-1 xl:col-span-2 max-h-[650px] overflow-y-auto">
+          <div className="col-span-1 xl:col-span-2">
             <div className="mb-4">
               <TabMananger
                 items={TABS}
@@ -340,6 +340,7 @@ export function AdminOrderHistoryPage() {
               pagination={false}
               rowKey="orderId"
               loading={loading}
+              scroll={{ x: 768, y: 700 }}
             />
           </div>
         </CardBody>

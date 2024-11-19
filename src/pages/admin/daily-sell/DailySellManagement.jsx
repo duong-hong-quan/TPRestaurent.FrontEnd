@@ -14,10 +14,6 @@ const DailySellManagement = () => {
       label: "Món lẻ",
       value: "1",
     },
-    {
-      label: "Món Combo",
-      value: "2",
-    },
   ];
   const [dishes, setDishes] = useState([]);
   const [combos, setCombos] = useState([]);
@@ -177,49 +173,6 @@ const DailySellManagement = () => {
               </Button>
             </Space>
           )}
-
-          {selectedCombo && (
-            <Space direction="vertical" className="w-full">
-              <Space>
-                <h1>Cấu hình tự động:</h1>
-                <Switch
-                  checked={isAutoUpdate}
-                  onChange={(checked) => {
-                    setIsAutoUpdate(checked);
-                    if (!checked) {
-                      setDailyCountdown(null);
-                    }
-                  }}
-                />
-              </Space>
-              <Card size="small" className="w-full">
-                <Space direction="vertical" className="w-full">
-                  {isAutoUpdate ? (
-                    <Input
-                      type="number"
-                      value={dailyCountdown}
-                      addonBefore="Số lượng"
-                      onChange={(e) => setDailyCountdown(e.target.value)}
-                    />
-                  ) : (
-                    <Input
-                      type="number"
-                      value={quantityLeft}
-                      addonBefore="Số lượng"
-                      onChange={(e) => setQuantityLeft(e.target.value)}
-                    />
-                  )}
-                </Space>
-              </Card>
-              <Button
-                onClick={handleUpdate}
-                className="mt-4 bg-red-800 text-white"
-                loading={loading}
-              >
-                Cập nhật ngay
-              </Button>
-            </Space>
-          )}
         </Card>
         <div className="col-span-3">
           <h4 className="text-center font-bold mb-4 text-red-800">
@@ -234,7 +187,7 @@ const DailySellManagement = () => {
           </Space>
 
           {Number(selectedMenuTab) === 1 ? (
-            <div className="max-h-[700px] overflow-y-scroll">
+            <div className="">
               <DishTable
                 key={uniqueId()}
                 dishes={dishes}
@@ -249,7 +202,7 @@ const DailySellManagement = () => {
                   key={uniqueId()}
                   data={combos}
                   loading={loading}
-                  handleSelectRow={handleSelectRowCombo}
+                  // handleSelectRow={handleSelectRowCombo}
                 />
               </div>
             )

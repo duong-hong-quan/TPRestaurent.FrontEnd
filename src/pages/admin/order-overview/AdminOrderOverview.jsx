@@ -275,6 +275,7 @@ const AdminOrderOverview = () => {
         endDate: selectedRange[1].format("YYYY-MM-DD"),
         status: activeTab || undefined,
         type: selectedType || undefined,
+        phoneNumber: searchQuery || undefined,
       }
     );
     if (response?.isSuccess) {
@@ -288,7 +289,14 @@ const AdminOrderOverview = () => {
     if (activeTab === 6) {
       fetchShipperAvailable();
     }
-  }, [activeTab, currentPage, selectedShipper, selectedRange, selectedType]);
+  }, [
+    activeTab,
+    currentPage,
+    selectedShipper,
+    selectedRange,
+    selectedType,
+    searchQuery,
+  ]);
 
   const fetchOrderDetail = async (orderId) => {
     const response = await callApi(`${OrderApi.GET_DETAIL}/${orderId}`, "GET");
@@ -323,7 +331,7 @@ const AdminOrderOverview = () => {
           </div>
         </CardHeader>
         <CardBody>
-          <div className="col-span-1 xl:col-span-2 max-h-[650px] overflow-y-auto">
+          <div className="col-span-1 xl:col-span-2">
             <div className="flex items-center justify-end">
               <div className="flex flex-col my-2">
                 <span className="inline-block font-bold text-red-800 py-2">
@@ -333,6 +341,7 @@ const AdminOrderOverview = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Tìm kiếm theo số điện thoại"
                   className="min-w-60  px-2"
+                  prefix={"+84"}
                 />
               </div>
               <div className="flex flex-col my-2 mx-4">
@@ -419,7 +428,7 @@ const AdminOrderOverview = () => {
               <div
                 className={`${
                   activeTab == 6 ? `col-span-9` : `col-span-12`
-                } shadow-lg h-[550px] overflow-y-scroll`}
+                } shadow-lg`}
               >
                 <StyledTable
                   columns={columns}
@@ -427,7 +436,7 @@ const AdminOrderOverview = () => {
                   pagination={false}
                   rowKey="orderId"
                   loading={loading}
-                  rowHoverable:true
+                  scroll={{ y: 700 }}
                 />
               </div>
             </div>

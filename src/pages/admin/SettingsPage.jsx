@@ -22,6 +22,7 @@ import { EditIcon, ShowerHead } from "lucide-react";
 import dayjs from "dayjs";
 import { formatDateTime, showError } from "../../util/Utility";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
+import TabMananger from "../../components/tab/TabManager";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -37,7 +38,7 @@ const SettingsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 100;
-
+  const [activeTab, setActiveTab] = useState(1);
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
   };
@@ -154,6 +155,77 @@ const SettingsPage = () => {
       showError(response.messages);
     }
   };
+  const renderTab = () => {
+    if (activeTab === 1) {
+      return (
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmitUpdateConfigService}
+        >
+          <Form.Item hidden label="ID" name="configurationId">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Tên cấu hình" name="name">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Gía trị hiện tại" name="currentValue">
+            <Input />
+          </Form.Item>
+          <Form.Item hidden label="Đơn vị" name="unit">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item>
+            <Button className="bg-red-800 text-white" htmlType="submit">
+              Cập nhật
+            </Button>
+          </Form.Item>
+        </Form>
+      );
+    } else {
+      return (
+        <Form
+          form={form2}
+          layout="vertical"
+          onFinish={handleCreateConfigService}
+        >
+          <Form.Item hidden label="ID" name="configurationId">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item
+            label="Gía trị cấu hình tiếp theo"
+            name="activeValue"
+            rules={[
+              {
+                required: true,
+                message: "Please input the Active Value!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Ngày áp dụng"
+            name="activeDate"
+            rules={[
+              {
+                required: true,
+                message: "Please select the Active Date!",
+              },
+            ]}
+          >
+            <DatePicker needConfirm={false} format={"DD/MM/YYYY"} showTime />
+          </Form.Item>
+
+          <Form.Item>
+            <Button className="bg-red-800 text-white" htmlType="submit">
+              Cấu hình
+            </Button>
+          </Form.Item>
+        </Form>
+      );
+    }
+  };
   return (
     <Card className="max-w-7xl mx-auto my-8">
       <LoadingOverlay isLoading={loading} />
@@ -162,7 +234,7 @@ const SettingsPage = () => {
           Cấu hình hệ thống
         </h3>
       </div>
-      <div className="overflow-y-scroll h-[650px]">
+      <div>
         {loading && <Skeleton active />}
         {!loading && (
           <StyledTable
@@ -170,6 +242,7 @@ const SettingsPage = () => {
             dataSource={data}
             pagination={false}
             loading={loading}
+            scroll={{ x: 768, y: 700 }}
           />
         )}
       </div>
@@ -180,88 +253,32 @@ const SettingsPage = () => {
         onPageChange={handleCurrentPageChange}
       />
       <Modal
-        title="Config Service"
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
-        width={1200}
+        width={1400}
       >
         <div style={{ display: "flex" }}>
-          <Tabs>
-            <TabPane tab="Cập nhật cấu hình hiện tại" key="1">
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleSubmitUpdateConfigService}
-              >
-                <Form.Item hidden label="ID" name="configurationId">
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item label="Tên cấu hình" name="name">
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item label="Gía trị hiện tại" name="currentValue">
-                  <Input />
-                </Form.Item>
-                <Form.Item label="Đơn vị" name="unit">
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item>
-                  <Button type="primary" htmlType="submit">
-                    Cập nhật
-                  </Button>
-                </Form.Item>
-              </Form>
-            </TabPane>
-            <TabPane tab="Cập nhật cấu hình theo lịch " key="2">
-              <Form
-                form={form2}
-                layout="vertical"
-                onFinish={handleCreateConfigService}
-              >
-                <Form.Item hidden label="ID" name="configurationId">
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item
-                  label="Gía trị cấu hình tiếp theo"
-                  name="activeValue"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input the Active Value!",
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  label="Ngày áp dụng"
-                  name="activeDate"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select the Active Date!",
-                    },
-                  ]}
-                >
-                  <DatePicker
-                    needConfirm={false}
-                    format={"DD/MM/YYYY"}
-                    showTime
-                  />
-                </Form.Item>
+          <div>
+            <TabMananger
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              items={[
+                {
+                  label: "Cập nhật cấu hình hiện tại",
+                  value: 1,
+                },
+                {
+                  label: "Cập nhật cấu hình theo lịch",
+                  value: 2,
+                },
+              ]}
+            />
 
-                <Form.Item>
-                  <Button type="primary" htmlType="submit">
-                    Cấu hình
-                  </Button>
-                </Form.Item>
-              </Form>
-            </TabPane>
-          </Tabs>
-
-          <div className="flex-1 ml-4">
-            <h3 className="font-semibold text-red-800 uppercase text-center">
+            {renderTab()}
+          </div>
+          <div className="flex-1 ml-4 overflow-auto">
+            <h3 className="font-semibold text-red-800 uppercase my-4 text-lg text-center">
               Lịch sử cấu hình
             </h3>
             <StyledTable
@@ -288,6 +305,7 @@ const SettingsPage = () => {
                   key: "unit",
                 },
               ]}
+              scroll={{ x: 768, y: 700 }}
               dataSource={selectedHistories}
               pagination={false}
             />

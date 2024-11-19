@@ -194,7 +194,7 @@ const ComboTable = ({
       rowKey="comboId"
       pagination={false}
       loading={loading}
-      scroll={{ x: 600 }}
+      scroll={{ x: 768, y: 700 }}
       onRow={(record) => {
         return {
           onClick: () => {

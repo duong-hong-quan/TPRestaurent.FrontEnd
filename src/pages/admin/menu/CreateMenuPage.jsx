@@ -19,6 +19,7 @@ import { numberToWords, showError } from "../../../util/Utility";
 import { useNavigate, useParams } from "react-router-dom";
 import "react-quill/dist/quill.snow.css"; // import styles
 import ReactQuill from "react-quill";
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 
 const { TextArea } = Input;
 
@@ -233,6 +234,7 @@ const CreateMenuPage = ({ back }) => {
   };
   return (
     <div className="max-w-6xl mx-auto my-8 ">
+      <LoadingOverlay isLoading={loading} />
       <div className=" border-none p-4 bg-white">
         <Typography className="text-red-800 mb-6 text-xl font-bold uppercase text-center">
           {id ? "Chỉnh sửa" : "Thêm "} món ăn
