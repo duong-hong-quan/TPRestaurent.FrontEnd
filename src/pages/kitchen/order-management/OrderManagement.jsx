@@ -24,13 +24,13 @@ import TabMananger from "../../../components/tab/TabManager";
 import { SignalRMethod } from "../../../util/GlobalType";
 
 const menuItems = [
-  { value: "all", label: "Tất cả" },
-  { value: "0", label: "Đặt trước" },
-  { value: "1", label: "Đã tiếp nhận" },
-  { value: "2", label: "Đang nấu" },
-  { value: "3", label: "Cảnh báo nấu trễ" },
-  { value: "4", label: "Hoàn thành" },
-  { value: "5", label: "Đã huỷ" },
+  { value: -1, label: "Tất cả" },
+  { value: 0, label: "Đặt trước" },
+  { value: 1, label: "Đã tiếp nhận" },
+  { value: 2, label: "Đang nấu" },
+  { value: 3, label: "Cảnh báo nấu trễ" },
+  { value: 4, label: "Hoàn thành" },
+  { value: 5, label: "Đã huỷ" },
 ];
 
 const OrderTag = ({ status, index }) => {
@@ -333,7 +333,7 @@ const OrderCard = ({
 
 const OrderManagement = () => {
   const [orderSession, setOrderSession] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState("1");
+  const [selectedStatus, setSelectedStatus] = useState(-1);
   const { callApi, error, loading } = useCallApi();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderSessionData, setOrderSessionData] = useState({});
@@ -390,10 +390,12 @@ const OrderManagement = () => {
     };
   }, [connection]);
   const fetchData = async () => {
-    const response = await callApi(
-      `${OrderSessionApi.GET_ALL_ORDER_SESSION}?status=${selectedStatus}&pageNumber=${currentPage}&pageSize=${pageSize}`,
-      "GET"
-    );
+    const url = `${
+      OrderSessionApi.GET_ALL_ORDER_SESSION
+    }?pageNumber=${currentPage}&pageSize=${pageSize}${
+      selectedStatus !== -1 ? `&status=${selectedStatus}` : ""
+    }`;
+    const response = await callApi(`${url}`, "GET");
     if (response.isSuccess) {
       setOrderSession(response.result.items);
 
