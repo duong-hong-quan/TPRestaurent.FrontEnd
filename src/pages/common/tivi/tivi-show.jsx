@@ -12,6 +12,7 @@ import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import * as signalR from "@microsoft/signalr";
 import { baseUrl } from "../../../api/config/axios";
 import { message } from "antd";
+import { SignalRMethod } from "../../../util/GlobalType";
 
 const TiviShow = () => {
   const [orderSessions, setOrderSessions] = useState([]);
@@ -61,42 +62,36 @@ const TiviShow = () => {
   }, []);
 
   useEffect(() => {
-    if (connection) {
-      // Start the connection
-      connection
-        .start()
-        .then(() => {
-          console.log("Connected to SignalR");
-          message.success("Connected to SignalR");
-          // Subscribe to SignalR events
-          connection.on("LOAD_ORDER_SESIONS", () => {
-            message.success("Có một phiên mới được tạo");
-
-            fetchData();
-            if (audioRef.current) {
-              audioRef.current.play();
+    let retryCount = 0;
+    const MAX_RETRIES = 5;
+    const RETRY_DELAY = 3000; // 3 seconds
+    const startConnection = async () => {
+      if (connection) {
+        connection
+          .start()
+          .then(() => {
+            message.success("Connected to SignalR");
+            connection.on(SignalRMethod.LOAD_ORDER_SESIONS, async () => {
+              message.success("Có một phiên mới được tạo");
+            });
+          })
+          .catch((error) => {
+            if (retryCount < MAX_RETRIES) {
+              retryCount++;
+              setTimeout(startConnection, RETRY_DELAY);
+            } else {
+              console.log("Max retries reached. Could not connect to SignalR.");
             }
           });
-
-          // Listen for the 'LOAD_FINISHED_DISHES' event
-          connection.on("LOAD_FINISHED_DISHES", () => {
-            message.success("Có món đã hoàn thành");
-            fetchData(); // Refetch data when finished dishes event is received
-            if (audioRef.current) {
-              audioRef.current.play();
-            }
-          });
-        })
-        .catch((error) => console.log("Connection failed: ", error));
-    }
-
+      }
+    };
+    startConnection();
     return () => {
       if (connection) {
         connection.stop();
       }
     };
   }, [connection]);
-
   // Hàm gọi API
   // Hàm gọi API tất cả phiên
   const fetchDataAllOrderSession = async () => {

@@ -19,7 +19,7 @@ import styled from "styled-components";
 import { EyeOutlined } from "@ant-design/icons";
 import OrderDetailModal from "./OrderDetailModal";
 import { combineTimes, showError } from "../../../util/Utility";
-import { set } from "lodash";
+import { SignalRMethod } from "../../../util/GlobalType";
 
 const { Title, Text } = Typography;
 
@@ -255,7 +255,6 @@ const OptimizeProcess = () => {
   }, []);
 
   useEffect(() => {
-    // Create connection
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${baseUrl}/notifications`)
       .withAutomaticReconnect()
@@ -265,24 +264,30 @@ const OptimizeProcess = () => {
   }, []);
 
   useEffect(() => {
-    if (connection) {
-      // Start the connection
-      connection
-        .start()
-        .then(() => {
-          console.log("Connected to SignalR");
-          message.success("Connected to SignalR");
-          // Subscribe to SignalR events
-          connection.on("LOAD_ORDER_SESIONS", () => {
-            fetchData();
-            if (audioRef.current) {
-              audioRef.current.play();
+    let retryCount = 0;
+    const MAX_RETRIES = 5;
+    const RETRY_DELAY = 3000; // 3 seconds
+    const startConnection = async () => {
+      if (connection) {
+        connection
+          .start()
+          .then(() => {
+            message.success("Connected to SignalR");
+            connection.on(SignalRMethod.LOAD_ORDER, async () => {
+              await fetchData();
+            });
+          })
+          .catch((error) => {
+            if (retryCount < MAX_RETRIES) {
+              retryCount++;
+              setTimeout(startConnection, RETRY_DELAY);
+            } else {
+              console.log("Max retries reached. Could not connect to SignalR.");
             }
           });
-        })
-        .catch((error) => console.log("Connection failed: ", error));
-    }
-
+      }
+    };
+    startConnection();
     return () => {
       if (connection) {
         connection.stop();
@@ -300,16 +305,9 @@ const OptimizeProcess = () => {
     return dishes.length > 0;
   });
   const handleTriggerGroupedDish = async () => {
-    const result = await callApi(
-      `${GroupedDishCraftApi.ADD_GROUPED_DISH}`,
-      "POST"
-    );
-    if (result.isSuccess) {
-      message.success("Gom món thành công");
-      fetchData();
-    } else {
-      showError(result.messages);
-    }
+    await callApi(`${GroupedDishCraftApi.ADD_GROUPED_DISH}`, "POST");
+    await fetchData();
+    message.success("Gom món thành công");
   };
 
   return (
@@ -327,12 +325,12 @@ const OptimizeProcess = () => {
           tục trên list.
         </Text>
 
-        <div className="flex">
+        <div className="flex justify-between items-center">
           <Title level={3}>BẢNG ƯU TIÊN MÓN CẦN CHẾ BIẾN</Title>
           <Button
             className="bg-red-800 text-white"
             loading={loading}
-            onClick={handleTriggerGroupedDish}
+            onClick={async () => await handleTriggerGroupedDish()}
           >
             Gom món ngay
           </Button>
@@ -342,35 +340,30 @@ const OptimizeProcess = () => {
             <h3 className="bg-[#E3B054] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
               Món trùng đơn
             </h3>
-            <div className="w-full max-h-[550px] overflow-y-auto">
-              {loading && <Skeleton />}
-              {!loading && (
-                <StyledTable
-                  dataSource={filteredData}
-                  columns={columns}
-                  pagination={false}
-                  rowKey={(record) => record.id}
-                  loading={loading}
-                  scroll={{ x: 600 }}
-                />
-              )}
+            <div className="w-full">
+              <StyledTable
+                dataSource={filteredData}
+                columns={columns}
+                pagination={false}
+                rowKey={(record) => record.id}
+                scroll={{ x: 600, y: 500 }}
+                loading={loading}
+              />
             </div>
           </div>
           <div className="">
             <h3 className="bg-[#C40519] text-white px-4 py-6 text-center rounded-lg shadow-lg uppercase font-bold">
               Món lẻ đơn
             </h3>
-            <div className="w-full max-h-[550px] overflow-y-auto">
-              {loading && <Skeleton />}
-              {!loading && (
-                <StyledTable
-                  dataSource={filteredSingleData}
-                  columns={columnSingle}
-                  pagination={false}
-                  scroll={{ x: 600 }}
-                  rowKey={(record) => record.id}
-                />
-              )}
+            <div className="w-full ">
+              <StyledTable
+                dataSource={filteredSingleData}
+                columns={columnSingle}
+                pagination={false}
+                scroll={{ x: 600, y: 500 }}
+                rowKey={(record) => record.id}
+                loading={loading}
+              />
             </div>
           </div>
         </div>

@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/authSlice";
 import { Dot } from "lucide-react";
 import { formatDateTime } from "../../util/Utility";
+import { SignalRMethod } from "../../util/GlobalType";
 const HeaderManager = ({ userName = "Admin" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -50,28 +51,37 @@ const HeaderManager = ({ userName = "Admin" }) => {
   useEffect(() => {
     // Create connection
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl}/notifications`) // Replace with your SignalR hub URL
+      .withUrl(`${baseUrl}/notifications`)
       .withAutomaticReconnect()
       .build();
 
     setConnection(newConnection);
   }, []);
   useEffect(() => {
-    if (connection) {
-      // Start the connection
-      connection
-        .start()
-        .then(() => {
-          console.log("Connected to SignalR");
-          message.success("Connected to SignalR");
-          connection.on("LOAD_ORDER", (data) => {
-            fetchNotifications();
+    let retryCount = 0;
+    const MAX_RETRIES = 5;
+    const RETRY_DELAY = 3000; // 3 seconds
+    const startConnection = async () => {
+      if (connection) {
+        connection
+          .start()
+          .then(() => {
+            message.success("Connected to SignalR");
+            connection.on(SignalRMethod.LOAD_ORDER, async () => {
+              await fetchNotifications();
+            });
+          })
+          .catch((error) => {
+            if (retryCount < MAX_RETRIES) {
+              retryCount++;
+              setTimeout(startConnection, RETRY_DELAY);
+            } else {
+              console.log("Max retries reached. Could not connect to SignalR.");
+            }
           });
-        })
-        .catch((error) => console.log("Connection failed: ", error));
-    }
-
-    // Cleanup on component unmount
+      }
+    };
+    startConnection();
     return () => {
       if (connection) {
         connection.stop();
