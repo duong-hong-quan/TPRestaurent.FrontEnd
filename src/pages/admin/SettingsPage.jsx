@@ -162,7 +162,7 @@ const SettingsPage = () => {
           Cấu hình hệ thống
         </h3>
       </div>
-      <div className="overflow-y-scroll h-[650px]">
+      <div>
         {loading && <Skeleton active />}
         {!loading && (
           <StyledTable
@@ -170,6 +170,7 @@ const SettingsPage = () => {
             dataSource={data}
             pagination={false}
             loading={loading}
+            scroll={{ x: 768, y: 700 }}
           />
         )}
       </div>
@@ -288,6 +289,7 @@ const SettingsPage = () => {
                   key: "unit",
                 },
               ]}
+              scroll={{ x: 768, y: 700 }}
               dataSource={selectedHistories}
               pagination={false}
             />

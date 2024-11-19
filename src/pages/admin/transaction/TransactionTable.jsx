@@ -117,6 +117,7 @@ const TransactionTable = ({ data, loading, handleOpenModal }) => {
       key: "transactionType",
       dataIndex: ["transactionTypeId"],
       align: "center",
+
       render: (transactionTypeId) =>
         transactionTypeMap[transactionTypeId] ? (
           <Tag
@@ -142,20 +143,20 @@ const TransactionTable = ({ data, loading, handleOpenModal }) => {
   ];
 
   return (
-    <div>
-      <StyledTable
-        columns={columns}
-        dataSource={data}
-        loading={loading}
-        rowKey={(record) => record.id}
-        onRow={(record) => {
-          return {
-            onClick: () => handleOpenModal(record),
-          };
-        }}
-        pagination={false}
-      />
-    </div>
+    <StyledTable
+      columns={columns}
+      dataSource={data}
+      loading={loading}
+      rowKey={(record) => record.id}
+      onRow={(record) => {
+        return {
+          onClick: () => handleOpenModal(record),
+        };
+      }}
+      scroll={{ x: 768, y: 600 }}
+      pagination={false}
+      size="small"
+    />
   );
 };
 

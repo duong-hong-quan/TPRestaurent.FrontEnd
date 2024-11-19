@@ -24,7 +24,7 @@ import OrderDetailView from "../pages/common/customer/OrderDetailView";
 import VerifyPayment from "../pages/common/verify-payment/VerifyPayment";
 import { AdminDevicePage } from "../pages/admin/AdminDevicePage";
 import RestaurantCheckout from "../pages/common/customer/RestaurentCheckout";
-import { TransactionPage } from "../pages/admin/TransactionPage";
+import TransactionPage from "../pages/admin/TransactionPage";
 import KitchenLayout from "../layouts/common/KitchenLayout";
 import OrderManagement from "../pages/kitchen/order-management/OrderManagement";
 import DishManagement from "../pages/kitchen/dish-management/DishManagement";

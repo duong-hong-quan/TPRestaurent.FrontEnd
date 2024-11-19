@@ -1,8 +1,5 @@
 import { Modal } from "antd";
-import OrderDetail from "../order-detail/OrderDetail";
 import OrderDetailAdmin from "../order-detail/OrderDetailAdmin";
-import useCallApi from "../../../api/useCallApi";
-import { OrderApi } from "../../../api/endpoint";
 
 const ModalOrderDetailAdmin = ({
   reservation,

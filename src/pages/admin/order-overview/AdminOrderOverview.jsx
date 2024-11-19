@@ -323,7 +323,7 @@ const AdminOrderOverview = () => {
           </div>
         </CardHeader>
         <CardBody>
-          <div className="col-span-1 xl:col-span-2 max-h-[650px] overflow-y-auto">
+          <div className="col-span-1 xl:col-span-2">
             <div className="flex items-center justify-end">
               <div className="flex flex-col my-2">
                 <span className="inline-block font-bold text-red-800 py-2">
@@ -419,7 +419,7 @@ const AdminOrderOverview = () => {
               <div
                 className={`${
                   activeTab == 6 ? `col-span-9` : `col-span-12`
-                } shadow-lg h-[550px] overflow-y-scroll`}
+                } shadow-lg`}
               >
                 <StyledTable
                   columns={columns}
@@ -427,7 +427,7 @@ const AdminOrderOverview = () => {
                   pagination={false}
                   rowKey="orderId"
                   loading={loading}
-                  rowHoverable:true
+                  scroll={{ y: 700 }}
                 />
               </div>
             </div>

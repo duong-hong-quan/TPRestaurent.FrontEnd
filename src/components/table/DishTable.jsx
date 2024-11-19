@@ -230,7 +230,7 @@ const DishTable = ({
           },
         };
       }}
-      scroll={{ x: 768 }}
+      scroll={{ x: 768, y: 700 }}
     />
   );
 };
