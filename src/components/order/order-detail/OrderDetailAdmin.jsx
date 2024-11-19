@@ -1,15 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import {
-  Button,
-  Image,
-  Input,
-  message,
-  Modal,
-  Radio,
-  Select,
-  Table,
-} from "antd";
+import { Button, Image, Input, message, Modal, Radio, Select } from "antd";
 import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
@@ -17,11 +8,7 @@ import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import { PaymentMethod } from "../../../util/GlobalType";
 import { formatDateTime, formatPrice, showError } from "../../../util/Utility";
 import { StyledTable } from "../../custom-ui/StyledTable";
-import {
-  DollarOutlined,
-  WalletOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+import { DollarOutlined, WalletOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
 import { AccountApi, ConfigurationApi, OrderApi } from "../../../api/endpoint";
 import dayjs from "dayjs";
@@ -516,7 +503,6 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
                         className="my-2 h-12 w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         showSearch
                         onSearch={debouncedHandleSearchAccount}
-                        defaultOpen={true}
                         loading={loading}
                         placeholder="Nhập số điện thoại"
                       >

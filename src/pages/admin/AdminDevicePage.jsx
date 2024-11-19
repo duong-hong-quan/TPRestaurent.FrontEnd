@@ -1,5 +1,5 @@
 import { Button, Typography } from "@material-tailwind/react";
-import { message } from "antd";
+import { message, Modal } from "antd";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import useCallApi from "../../api/useCallApi";
@@ -66,16 +66,25 @@ export function AdminDevicePage() {
     }
   };
   const handleDeleteClick = async (record) => {
-    const response = await callApi(
-      `${TableApi.DELETE_TABLE}/${record.id}`,
-      "POST"
-    );
-    if (response?.isSuccess) {
-      message.success("Xóa bàn thành công");
-      await fetchData();
-    } else {
-      showError(response.messages);
-    }
+    Modal.confirm({
+      title: "Xác nhận xóa bàn ăn",
+      content: `Bạn có chắc chắn muốn xóa bàn ăn ${record.name} không?`,
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk: async () => {
+        const response = await callApi(
+          `${TableApi.DELETE_TABLE}/${record.id}`,
+          "POST"
+        );
+        if (response?.isSuccess) {
+          message.success("Xóa bàn thành công");
+          await fetchData();
+        } else {
+          showError(response.messages);
+        }
+      },
+    });
   };
   useEffect(() => {
     fetchData();

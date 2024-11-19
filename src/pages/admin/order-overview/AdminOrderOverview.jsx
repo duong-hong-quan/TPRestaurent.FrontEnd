@@ -192,6 +192,7 @@ const AdminOrderOverview = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      width: 250,
       render: (_, record) => <OrderTag orderStatusId={record.statusId} />,
     },
     {
@@ -208,34 +209,36 @@ const AdminOrderOverview = () => {
               <EyeIcon className="h-4 w-4 text-blue-600" />
             </IconButton>
           </Tooltip>
-          <Tooltip content="Hủy">
-            <IconButton
-              variant="text"
-              onClick={() => {
-                Modal.confirm({
-                  title: "Xác nhận hủy đơn hàng",
-                  content: "Bạn có chắc chắn muốn hủy đơn hàng này?",
-                  onOk: async () => {
-                    const response = await callApi(
-                      `${OrderApi.UPDATE_ORDER_STATUS}/${record.orderId}?isSuccessful=true&status=10&asCustomer=false`,
-                      "PUT"
-                    );
-                    if (response?.isSuccess) {
-                      message.success("Hủy đơn hàng thành công");
+          {record.statusId != 10 && (
+            <Tooltip content="Hủy">
+              <IconButton
+                variant="text"
+                onClick={() => {
+                  Modal.confirm({
+                    title: "Xác nhận hủy đơn hàng",
+                    content: "Bạn có chắc chắn muốn hủy đơn hàng này?",
+                    onOk: async () => {
+                      const response = await callApi(
+                        `${OrderApi.UPDATE_ORDER_STATUS}/${record.orderId}?isSuccessful=true&status=10&asCustomer=false`,
+                        "PUT"
+                      );
+                      if (response?.isSuccess) {
+                        message.success("Hủy đơn hàng thành công");
+                        await fetchOrder();
+                      } else {
+                        showError(response.messages);
+                      }
+                    },
+                    onCancel: async () => {
                       await fetchOrder();
-                    } else {
-                      showError(response.messages);
-                    }
-                  },
-                  onCancel: async () => {
-                    await fetchOrder();
-                  },
-                });
-              }}
-            >
-              <XCircle className="h-4 w-4 text-red-600" />
-            </IconButton>
-          </Tooltip>
+                    },
+                  });
+                }}
+              >
+                <XCircle className="h-4 w-4 text-red-600" />
+              </IconButton>
+            </Tooltip>
+          )}
         </div>
       ),
     },
@@ -332,7 +335,7 @@ const AdminOrderOverview = () => {
         </CardHeader>
         <CardBody>
           <div className="col-span-1 xl:col-span-2">
-            <div className="flex items-center justify-end">
+            <div className="xl:flex-row flex flex-col items-center justify-end">
               <div className="flex flex-col my-2">
                 <span className="inline-block font-bold text-red-800 py-2">
                   Tìm kiếm
@@ -344,7 +347,7 @@ const AdminOrderOverview = () => {
                   prefix={"+84"}
                 />
               </div>
-              <div className="flex flex-col my-2 mx-4">
+              <div className="flex flex-col my-2 md:mx-4">
                 <span className="inline-block font-bold text-red-800 py-2">
                   Chọn ngày
                 </span>
@@ -357,7 +360,7 @@ const AdminOrderOverview = () => {
                   showNow={true}
                 />
               </div>
-              <div className="flex flex-col my-2">
+              <div className="flex flex-col xl:mx-2 my-2">
                 <span className="inline-block font-bold text-red-800 py-2">
                   Chọn trạng thái
                 </span>
