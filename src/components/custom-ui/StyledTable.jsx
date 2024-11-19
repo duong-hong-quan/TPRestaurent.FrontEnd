@@ -8,6 +8,7 @@ export const StyledTable = styled(Table)`
     border-bottom: none;
     background-color: #ad0303;
     color: white;
+    height: 70px;
   }
   .ant-table-tbody > tr > td {
     text-align: center;

@@ -182,7 +182,7 @@ export function AdminReservationPage() {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="grid grid-cols-1 xl:grid-cols-3 max-h-[650px] overflow-y-scroll gap-2">
+      <CardBody className="grid grid-cols-1 xl:grid-cols-3 gap-2">
         <div className="col-span-1  overflow-auto">
           <Typography className="text-red-800 uppercase font-semibold">
             Chọn khoảng thời gian
@@ -233,6 +233,7 @@ export function AdminReservationPage() {
             rowKey="reservationId"
             pagination={false}
             loading={loading}
+            scroll={{ x: 768, y: 700 }}
           />
         </div>
       </CardBody>

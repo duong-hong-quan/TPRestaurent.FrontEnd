@@ -505,7 +505,7 @@ const AdminDashboardPage = ({}) => {
               Đơn hàng gần đây
             </Typography>
           </CardHeader>
-          <CardBody className="overflow-y-scroll max-h-[300px] pb-2">
+          <CardBody className="pb-2">
             <TabMananger
               activeTab={activeTab}
               items={tabs}
@@ -517,6 +517,7 @@ const AdminDashboardPage = ({}) => {
               pagination={false}
               rowKey="orderId"
               loading={loading}
+              scroll={{ x: 768, y: 700 }}
             />
           </CardBody>
         </Card>

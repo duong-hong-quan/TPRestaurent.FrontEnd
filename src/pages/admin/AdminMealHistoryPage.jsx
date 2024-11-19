@@ -266,7 +266,7 @@ export function AdminMealHistoryPage() {
             </div>
           </div>
         </CardHeader>
-        <CardBody className="grid grid-cols-1 xl:grid-cols-3 max-h-[900px] overflow-y-scroll ">
+        <CardBody className="grid grid-cols-1 xl:grid-cols-3 ">
           <div className="col-span-1 p-4">
             <div className="w-full  overflow-auto">
               <Typography className="text-red-800 uppercase font-semibold">
@@ -368,6 +368,7 @@ export function AdminMealHistoryPage() {
                 pagination={false}
                 rowKey="orderId"
                 loading={loading}
+                scroll={{ y: 768 }}
               />
             </div>
           </div>

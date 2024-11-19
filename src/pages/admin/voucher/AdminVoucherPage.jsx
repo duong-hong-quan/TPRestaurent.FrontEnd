@@ -109,7 +109,7 @@ const AdminVoucherPage = () => {
     },
   ];
   return (
-    <div className="container bg-white rounded-lg shadow-lg p-4">
+    <div className="w-full bg-white rounded-lg shadow-lg p-4">
       <LoadingOverlay isLoading={loading} />
       <div className="mb-8 flex items-center justify-between gap-8">
         <div>
@@ -129,7 +129,12 @@ const AdminVoucherPage = () => {
           </Button>
         </div>
       </div>
-      <StyledTable loading={loading} columns={columns} dataSource={coupons} />
+      <StyledTable
+        loading={loading}
+        columns={columns}
+        dataSource={coupons}
+        pagination={false}
+      />
     </div>
   );
 };

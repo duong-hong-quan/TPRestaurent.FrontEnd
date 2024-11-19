@@ -1,16 +1,7 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Input,
-  Typography,
-} from "@material-tailwind/react";
-import { message, Skeleton, Table } from "antd";
-import { ArrowPathIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { Button, Typography } from "@material-tailwind/react";
+import { message } from "antd";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
-import { FaLock } from "react-icons/fa";
-import { MdEditNote } from "react-icons/md";
 import useCallApi from "../../api/useCallApi";
 import Pagination from "../../components/pagination/Pagination";
 import LoadingOverlay from "../../components/loading/LoadingOverlay";
@@ -19,7 +10,6 @@ import { NavLink } from "react-router-dom";
 import CreateTableModal from "../../components/modal/CreateTableModal";
 import { Edit, PlusIcon, SettingsIcon, TrashIcon } from "lucide-react";
 import { TableApi } from "../../api/endpoint";
-import { render } from "react-dom";
 import UpdateTableModal from "../../components/modal/UpdateTableModal";
 import { showError } from "../../util/Utility";
 
@@ -95,11 +85,14 @@ export function AdminDevicePage() {
       title: "Tên bàn",
       dataIndex: "name",
       key: "name",
+      width: 100,
     },
     {
       title: " Loại bàn",
       dataIndex: "tableSizeId",
       key: "tableSizeId",
+      width: 200,
+
       render: (tableSizeId) => {
         switch (tableSizeId) {
           case 1:
@@ -130,10 +123,13 @@ export function AdminDevicePage() {
     {
       title: "Loại phòng",
       dataIndex: ["room", "name"],
+      width: 200,
     },
     {
       title: "Riêng tư",
       dataIndex: ["room", "isPrivate"],
+      width: 200,
+
       render: (isPrivate) => {
         return isPrivate ? "Có" : "Không";
       },
@@ -165,9 +161,9 @@ export function AdminDevicePage() {
   ];
 
   return (
-    <Card className="h-full w-full">
+    <div className="w-full p-4 bg-white rounded-lg">
       <LoadingOverlay isLoading={loading} />
-      <CardHeader floated={false} shadow={false} className="rounded-none">
+      <div floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray">
@@ -201,15 +197,16 @@ export function AdminDevicePage() {
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardBody className="overflow-auto h-[550px]">
+      </div>
+      <div>
         <StyledTable
           dataSource={devices}
           columns={columns}
           rowKey="deviceId"
           pagination={false}
+          scroll={{ x: 768, y: 700 }}
         />
-      </CardBody>
+      </div>
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -227,6 +224,6 @@ export function AdminDevicePage() {
         isModalVisible={isModalVisible}
         loading={loading}
       />
-    </Card>
+    </div>
   );
 }
