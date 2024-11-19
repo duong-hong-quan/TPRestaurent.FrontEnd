@@ -231,7 +231,7 @@ const CartSummary = ({ handleClose }) => {
   };
   return (
     <div className="container my-4 p-6 bg-white">
-      <LoadingOverlay loading={loading} />
+      <LoadingOverlay isLoading={loading} />
       <Title level={3} className="uppercase text-center mb-6">
         Xác nhận đơn hàng
       </Title>
@@ -435,7 +435,11 @@ const CartSummary = ({ handleClose }) => {
       <div className="flex justify-center">
         {isAgree && (
           <>
-            <Button className="bg-red-900 text-white" onClick={handleCheckOut}>
+            <Button
+              className="bg-red-900 text-white"
+              loading={loading}
+              onClick={handleCheckOut}
+            >
               Xác nhận thanh toán
             </Button>
           </>
