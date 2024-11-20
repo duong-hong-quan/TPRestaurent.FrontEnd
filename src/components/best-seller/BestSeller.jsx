@@ -109,7 +109,7 @@ const BestSeller = () => {
   const hasBestSellers = bestDishes.length > 0 || bestCombos.length > 0;
 
   return (
-    <div className="bg-gray-50 px-2 py-4 border-y-4 border-red-600 my-10 container mx-auto px-4">
+    <div className="py-4 border-y-4 border-red-600 my-10 container mx-auto px-4">
       <h1 className="font-bold text-center text-4xl text-red-600 my-4">
         BEST SELLER
       </h1>
