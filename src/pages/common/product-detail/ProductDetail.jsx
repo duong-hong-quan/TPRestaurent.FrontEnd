@@ -201,6 +201,7 @@ const ProductDetail = () => {
     } else {
       dispatch(addToCart({ dish: dish, size: size, note: note }));
     }
+    message.success("Đã thêm vào giỏ hàng");
   };
   const renderRatingTab = () => {
     const starCounts = [5, 4, 3, 2, 1].map(
