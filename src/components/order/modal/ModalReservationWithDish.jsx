@@ -279,13 +279,6 @@ const ModalReservationWithDish = ({
     }
   };
 
-  useEffect(() => {
-    if (cart.length > 0 || cartCombo.items.length > 0) {
-      window.onbeforeunload = function () {
-        return "Data will be lost if you leave the page, are you sure?";
-      };
-    }
-  }, [cart, cartCombo]);
 
   return (
     <div className=" p-4 bg-gray-50 min-h-screen">
