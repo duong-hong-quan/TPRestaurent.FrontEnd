@@ -16,6 +16,7 @@ import { Dot, Search, SearchIcon } from "lucide-react";
 import useCallApi from "../../api/useCallApi";
 import { NotificationApi, TokenApi } from "../../api/endpoint";
 import LoadingOverlay from "../loading/LoadingOverlay";
+import MarqueeText from "./MarqueeText";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -458,6 +459,7 @@ export const Navbar = () => {
           </div>
         )}
       </div>
+      <MarqueeText />
     </nav>
   );
 };
