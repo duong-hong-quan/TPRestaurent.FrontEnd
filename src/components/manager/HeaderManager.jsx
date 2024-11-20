@@ -23,10 +23,10 @@ import useCallApi from "../../api/useCallApi";
 import { NotificationApi, TokenApi } from "../../api/endpoint";
 import * as signalR from "@microsoft/signalr";
 import { baseUrl } from "../../api/config/axios";
-import { message } from "antd";
+import { message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/authSlice";
-import { Dot } from "lucide-react";
+import { CheckCheck, Dot } from "lucide-react";
 import { formatDateTime } from "../../util/Utility";
 import { SignalRMethod } from "../../util/GlobalType";
 const HeaderManager = ({ userName = "Admin" }) => {
@@ -146,11 +146,32 @@ const HeaderManager = ({ userName = "Admin" }) => {
               </Badge>
             </MenuHandler>
             <MenuList className="p-2 mt-8 shadow-2xl border border-gray-500 bg-white rounded-lg ">
-              <Typography variant="h3" className="text-red-800 ">
-                Thông báo
-              </Typography>
+              <div className="flex items-center justify-between">
+                <Typography variant="h5" className="text-red-800 ">
+                  Thông báo
+                </Typography>
+
+                <IconButton
+                  className="  font-medium shadow-none rounded-full text-sm bg-white text-black cursor-pointer"
+                  onClick={async () => {
+                    const response = await callApi(
+                      `${NotificationApi.MARK_ALL_AS_READ}/${user.id}`,
+                      "POST"
+                    );
+                    if (response.isSuccess) {
+                      await fetchNotifications();
+                    }
+                  }}
+                >
+                  <div className="flex">
+                    {loading && <Spin />}
+                    <CheckCheck className="text-blue-500" />
+                  </div>
+                </IconButton>
+              </div>
+
               <hr />
-              <div className="w-80 h-[400px] overflow-auto ">
+              <div className="max-w-80 max-h-[400px] overflow-y-scroll p-2 shadow-lg rounded-lg border-2 ">
                 {notifications.map((notification) => (
                   <MenuItem
                     key={notification.notificationId}
@@ -163,7 +184,7 @@ const HeaderManager = ({ userName = "Admin" }) => {
                         await fetchNotifications();
                       }
                     }}
-                    className={`flex flex-col  gap-2 p-2 rounded-md transition-all duration-300 ${
+                    className={`flex flex-col  gap-2 p-2 rounded-md transition-all border-b-2 duration-300 ${
                       notification?.read
                         ? "opacity-50 bg-gray-100"
                         : "hover:bg-blue-50"
@@ -192,23 +213,7 @@ const HeaderManager = ({ userName = "Admin" }) => {
                 ))}
               </div>
 
-              <MenuItem className="flex items-center gap-2 justify-center mt-2 p-2 rounded-md hover:bg-blue-50 transition-all duration-300">
-                <Typography
-                  variant="small"
-                  className="font-medium text-blue-500 hover:text-blue-700 cursor-pointer"
-                  onClick={async () => {
-                    const response = await callApi(
-                      `${NotificationApi.MARK_ALL_AS_READ}/${user.id}`,
-                      "POST"
-                    );
-                    if (response.isSuccess) {
-                      await fetchNotifications();
-                    }
-                  }}
-                >
-                  Đánh dấu đọc tất cả
-                </Typography>
-              </MenuItem>
+           
             </MenuList>
           </Menu>
 
