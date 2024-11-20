@@ -217,32 +217,57 @@ const Reservation = () => {
   };
 
   const generateTimeSlots = async () => {
-    const times = [];
-    let startTime = 0;
-    let endTime = 0;
-    const response = await callApi(
-      `${ConfigurationApi.GET_CONFIG_BY_NAME}/OPEN_TIME`,
-      "GET"
-    );
-    if (response?.isSuccess) {
-    }
-    const responseEndTime = await callApi(
-      `${ConfigurationApi.GET_CONFIG_BY_NAME}/CLOSED_TIME`,
-      "GET"
-    );
-    if (response?.isSuccess && responseEndTime?.isSuccess) {
-      endTime = responseEndTime?.result?.currentValue;
-      startTime = response?.result?.currentValue;
-      const start = moment().startOf("day").hour(startTime); // Start at 10:00
-      const end = moment().startOf("day").hour(endTime); // End at 22:00
+    try {
+      // Fetch opening time
+      const openTimeResponse = await callApi(
+        `${ConfigurationApi.GET_CONFIG_BY_NAME}/OPEN_TIME`,
+        "GET"
+      );
+
+      // Fetch closing time
+      const closeTimeResponse = await callApi(
+        `${ConfigurationApi.GET_CONFIG_BY_NAME}/CLOSED_TIME`,
+        "GET"
+      );
+
+      if (!openTimeResponse?.isSuccess || !closeTimeResponse?.isSuccess) {
+        showError(openTimeResponse.messages || closeTimeResponse.messages);
+        return [];
+      }
+
+      // Convert API values to hours and minutes
+      const parseTimeValue = (timeValue) => {
+        const hours = Math.floor(parseFloat(timeValue));
+        const minutes = (parseFloat(timeValue) % 1) * 60;
+        return { hours, minutes };
+      };
+
+      const startTime = parseTimeValue(openTimeResponse.result.currentValue);
+      const endTime = parseTimeValue(closeTimeResponse.result.currentValue);
+
+      const times = [];
+      const start = moment()
+        .startOf("day")
+        .hour(startTime.hours)
+        .minute(startTime.minutes);
+
+      const end = moment()
+        .startOf("day")
+        .hour(endTime.hours)
+        .minute(endTime.minutes);
+
+      // Generate time slots
       while (start <= end) {
         times.push(start.format("HH:mm"));
         start.add(30, "minutes");
       }
-    } else {
-      showError(response.messages);
+
+      return times;
+    } catch (error) {
+      console.error("Error generating time slots:", error);
+      showError("Failed to generate time slots");
+      return [];
     }
-    return times;
   };
 
   const generateEndTimeSlots = (startTime) => {
