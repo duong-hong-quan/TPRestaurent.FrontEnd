@@ -78,7 +78,7 @@ export const HomePage = () => {
   return (
     <>
       <>
-        <div className="contain-content">
+        <div className="contain-content bg-gray-100 ">
           <SliderHome />
         </div>
 
