@@ -7,12 +7,12 @@ import {
   MenuItem,
   Typography,
 } from "@material-tailwind/react";
-import { Badge } from "antd";
+import { Badge, Spin } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { isEmptyObject } from "../../util/Utility";
 import { FaUser } from "react-icons/fa";
 import { logout } from "../../redux/features/authSlice";
-import { Dot, Search, SearchIcon } from "lucide-react";
+import { CheckCheck, Dot, Search, SearchIcon } from "lucide-react";
 import useCallApi from "../../api/useCallApi";
 import { NotificationApi, TokenApi } from "../../api/endpoint";
 import LoadingOverlay from "../loading/LoadingOverlay";
@@ -159,7 +159,6 @@ export const Navbar = () => {
 
   return (
     <nav className="bg-[#9A0E1D] text-white shadow-lg sticky top-0 z-50">
-      <LoadingOverlay isLoading={loading} />
       <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between h-20">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
@@ -238,11 +237,32 @@ export const Navbar = () => {
                 {isNotificationOpen && (
                   <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-2 z-20">
                     <div className="p-2  bg-white rounded-lg ">
-                      <Typography variant="h3" className="text-red-800 ">
-                        Thông báo
-                      </Typography>
+                      <div className="flex items-center justify-between">
+                        <Typography variant="h5" className="text-red-800 ">
+                          Thông báo
+                        </Typography>
+
+                        <IconButton
+                          className="  font-medium shadow-none rounded-full text-sm bg-white text-black cursor-pointer"
+                          onClick={async () => {
+                            const response = await callApi(
+                              `${NotificationApi.MARK_ALL_AS_READ}/${user.id}`,
+                              "POST"
+                            );
+                            if (response.isSuccess) {
+                              await fetchNotifications();
+                            }
+                          }}
+                        >
+                          <div className="flex">
+                            {loading && <Spin />}
+                            <CheckCheck className="text-blue-500" />
+                          </div>
+                        </IconButton>
+                      </div>
+
                       <hr />
-                      <div className="max-h-[400px] overflow-auto ">
+                      <div className="max-h-[400px] overflow-y-scroll p-2 ">
                         {notifications.map((notification) => (
                           <MenuItem
                             key={notification.notificationId}
@@ -255,9 +275,9 @@ export const Navbar = () => {
                                 await fetchNotifications();
                               }
                             }}
-                            className={`flex flex-col  gap-2 p-2 rounded-md transition-all duration-300 ${
+                            className={`flex flex-col  gap-2 p-2 rounded-md transition-all border-b-2 duration-300 ${
                               notification?.read
-                                ? "opacity-50 bg-gray-100"
+                                ? "opacity-50 bg-red-100"
                                 : "hover:bg-blue-50"
                             }`}
                           >
@@ -278,24 +298,6 @@ export const Navbar = () => {
                           </MenuItem>
                         ))}
                       </div>
-
-                      <MenuItem className="flex items-center gap-2 justify-center mt-2 p-2 rounded-md hover:bg-blue-50 transition-all duration-300">
-                        <Typography
-                          variant="small"
-                          className="font-medium text-blue-500 hover:text-blue-700 cursor-pointer"
-                          onClick={async () => {
-                            const response = await callApi(
-                              `${NotificationApi.MARK_ALL_AS_READ}/${user.id}`,
-                              "POST"
-                            );
-                            if (response.isSuccess) {
-                              await fetchNotifications();
-                            }
-                          }}
-                        >
-                          Đánh dấu đọc tất cả
-                        </Typography>
-                      </MenuItem>
                     </div>
                   </div>
                 )}
