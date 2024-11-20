@@ -77,7 +77,7 @@ const ChatButton = () => {
       const response = await callApi(`${ChatBotApi.AI_RESPONSE}`, "POST", {
         customerId: isEmptyObject(user) ? undefined : user.id,
         message: undefined,
-        isFirstCall: true,
+        isFirstCall: localStorage.getItem("chatMessages") === null,
       });
 
       setMessages((prev) => [
