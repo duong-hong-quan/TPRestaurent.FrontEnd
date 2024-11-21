@@ -1,6 +1,6 @@
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { Typography } from "@material-tailwind/react";
-import { Edit, TrashIcon } from "lucide-react";
+import { Edit, TrashIcon, UserRoundCheck } from "lucide-react";
 import useCallApi from "../../../api/useCallApi";
 import { CouponApi } from "../../../api/endpoint";
 import { formatDateTime, formatPrice, showError } from "../../../util/Utility";
@@ -16,6 +16,7 @@ import {
   Input,
   Button,
   Modal,
+  Tooltip,
 } from "antd";
 import { StyledTable } from "../../../components/custom-ui/StyledTable";
 import { useSelector } from "react-redux";
@@ -179,40 +180,49 @@ const AdminVoucherPage = () => {
       key: "",
       width: 100,
       render: (_, record) => (
-        <div className="flex ">
-          <Button
-            size="sm"
-            className="bg-white text-red-800"
-            onClick={() => handleEdit(record)}
-          >
-            <Edit size={12} />
-          </Button>
-          <Button
-            size="sm"
-            className="bg-white text-red-800"
-            onClick={async () => {
-              Modal.confirm({
-                title: "Xác nhận xóa",
-                content: "Bạn có chắc chắn muốn xóa mã giảm giá này không?",
-                okText: "Xóa",
-                okType: "danger",
-                cancelText: "Hủy",
-                onOk: async () => {
-                  const response = await callApi(
-                    `${CouponApi.DELETE_COUPON_PROGRAM}?couponId=${record.couponProgramId}`,
-                    "PUT"
-                  );
-                  if (response?.isSuccess) {
-                    await fetchData();
-                  } else {
-                    showError(response.messages);
-                  }
-                },
-              });
-            }}
-          >
-            <TrashIcon size={12} />
-          </Button>
+        <div className="flex">
+          <Tooltip title="Chỉnh sửa">
+            <Button
+              size="sm"
+              className="bg-white text-red-800"
+              onClick={() => handleEdit(record)}
+            >
+              <Edit size={12} />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Xoá">
+            <Button
+              size="sm"
+              className="bg-white text-red-800"
+              onClick={async () => {
+                Modal.confirm({
+                  title: "Xác nhận xóa",
+                  content: "Bạn có chắc chắn muốn xóa mã giảm giá này không?",
+                  okText: "Xóa",
+                  okType: "danger",
+                  cancelText: "Hủy",
+                  onOk: async () => {
+                    const response = await callApi(
+                      `${CouponApi.DELETE_COUPON_PROGRAM}?couponId=${record.couponProgramId}`,
+                      "PUT"
+                    );
+                    if (response?.isSuccess) {
+                      await fetchData();
+                    } else {
+                      showError(response.messages);
+                    }
+                  },
+                });
+              }}
+            >
+              <TrashIcon size={12} />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Cấp phát coupon cho người dùng">
+            <Button size="sm" className="bg-white text-red-800">
+              <UserRoundCheck size={12} />
+            </Button>
+          </Tooltip>
         </div>
       ),
     },
@@ -240,9 +250,9 @@ const AdminVoucherPage = () => {
         }}
         className="  flex items-center justify-center shadow-lg py-4 px-4 sm:px-6 rounded-lg my-2 lg:px-  8"
       >
-        <div className="max-w-7xl w-full bg-white rounded-lg p-8">
-          <h2 className="text-center uppercase text-3xl font-extrabold  mb-8">
-            Tạo mã giảm giá
+        <div className="max-w-7xl w-full bg-white rounded-lg p-4">
+          <h2 className="text-center uppercase text-lg font-extrabold text-red-800  mb-8">
+            {editingCoupon ? "Chỉnh sửa" : "Tạo"} mã giảm giá
           </h2>
           <Form
             form={form}
