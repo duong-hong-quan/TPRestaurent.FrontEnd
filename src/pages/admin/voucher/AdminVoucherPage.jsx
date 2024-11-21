@@ -1,6 +1,6 @@
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { Typography } from "@material-tailwind/react";
-import { Edit, TrashIcon, UserRoundCheck } from "lucide-react";
+import { Edit, PlusIcon, TrashIcon, UserRoundCheck } from "lucide-react";
 import useCallApi from "../../../api/useCallApi";
 import { CouponApi } from "../../../api/endpoint";
 import { formatDateTime, formatPrice, showError } from "../../../util/Utility";
@@ -22,7 +22,13 @@ import { StyledTable } from "../../../components/custom-ui/StyledTable";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 const { RangePicker } = DatePicker;
-
+import {
+  Award as BronzeMedal,
+  Star as SilverStar,
+  Crown as GoldCrown,
+  Gem as DiamondGem,
+} from "lucide-react";
+import RankTiers from "../rank/RankTiers";
 const AdminVoucherPage = () => {
   const [coupons, setCoupons] = useState([]);
   const { callApi, error, loading } = useCallApi();
@@ -32,6 +38,7 @@ const AdminVoucherPage = () => {
   const user = useSelector((state) => state.user.user || {});
   const [form] = Form.useForm();
   const [editingCoupon, setEditingCoupon] = useState(null);
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   const onFinish = async (values) => {
     try {
@@ -77,6 +84,7 @@ const AdminVoucherPage = () => {
     }
   };
   const handleEdit = (record) => {
+    setIsFormVisible(true);
     setEditingCoupon(record);
     form.setFieldsValue({
       code: record.code,
@@ -230,10 +238,67 @@ const AdminVoucherPage = () => {
   const handleCancelEdit = () => {
     form.resetFields();
     setEditingCoupon(null);
+    setIsFormVisible(false);
   };
+  const ranks = [
+    {
+      id: 1,
+      name: "BRONZE",
+      icon: <BronzeMedal className="w-12 h-12 text-[#CD7F32]" />,
+      color: "bg-[#CD7F32]",
+      textColor: "text-[#CD7F32]",
+      description: "Entry-level membership with basic perks",
+      benefits: [
+        "Standard discounts",
+        "Basic loyalty points",
+        "Welcome offers",
+      ],
+    },
+    {
+      id: 2,
+      name: "SILVER",
+      icon: <SilverStar className="w-12 h-12 text-[#C0C0C0]" />,
+      color: "bg-[#C0C0C0]",
+      textColor: "text-[#C0C0C0]",
+      description: "Enhanced membership with more benefits",
+      benefits: [
+        "Better discounts",
+        "Increased loyalty points",
+        "Priority customer support",
+      ],
+    },
+    {
+      id: 3,
+      name: "GOLD",
+      icon: <GoldCrown className="w-12 h-12 text-[#FFD700]" />,
+      color: "bg-[#FFD700]",
+      textColor: "text-[#FFD700]",
+      description: "Premium membership with exclusive perks",
+      benefits: [
+        "Significant discounts",
+        "High loyalty point multiplier",
+        "Exclusive event invitations",
+      ],
+    },
+    {
+      id: 4,
+      name: "DIAMOND",
+      icon: <DiamondGem className="w-12 h-12 text-[#B9F2FF]" />,
+      color: "bg-[#B9F2FF]",
+      textColor: "text-[#B9F2FF]",
+      description: "Top-tier membership with ultimate privileges",
+      benefits: [
+        "Maximum discounts",
+        "Highest loyalty point rewards",
+        "VIP customer service",
+      ],
+    },
+  ];
   return (
     <div className="w-full px-4 max-h-[900px] overflow-y-scroll bg-white rounded-lg shadow-lg ">
       <LoadingOverlay isLoading={loading} />
+      <RankTiers />
+
       <div className="mb-8 px-2 py-4 flex items-center justify-between gap-8">
         <div>
           <Typography variant="h5" color="blue-gray">
@@ -243,150 +308,169 @@ const AdminVoucherPage = () => {
             Xem và quản lý tất cả các mã giảm giá tại nhà hàng
           </Typography>
         </div>
+        <Button
+          className="flex items-center bg-red-800 gap-3 text-white"
+          size="sm"
+          onClick={() => setIsFormVisible(!isFormVisible)}
+        >
+          <PlusIcon strokeWidth={2} className="h-4 w-4" />
+          {editingCoupon ? "Chỉnh sửa" : "Tạo"} chương trình mã giảm giá
+        </Button>
       </div>
-      <div
-        style={{
-          border: "1px solid #e5e7eb",
-        }}
-        className="  flex items-center justify-center shadow-lg py-4 px-4 sm:px-6 rounded-lg my-2 lg:px-  8"
-      >
-        <div className="max-w-7xl w-full bg-white rounded-lg p-4">
-          <h2 className="text-center uppercase text-lg font-extrabold text-red-800  mb-8">
-            {editingCoupon ? "Chỉnh sửa" : "Tạo"} mã giảm giá
-          </h2>
-          <Form
-            form={form}
-            onFinish={onFinish}
-            layout="vertical"
-            className="space-y-6"
-          >
-            <div className="flex space-x-6">
-              <Form.Item
-                name="code"
-                label="Mã code"
-                className="flex-1"
-                rules={[
-                  { required: true, message: "Vui lòng điền mã code của bạn" },
-                ]}
-              >
-                <Input placeholder="Nhập mã giảm giá" className="w-full" />
-              </Form.Item>
 
-              <Form.Item
-                name="title"
-                label="Nội dung"
-                className="flex-1"
-                rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
-              >
-                <Input placeholder="Nhập nội dung" className="w-full" />
-              </Form.Item>
-
-              <Form.Item
-                name="couponProgramType"
-                label="Chương trình áp dụng"
-                className="flex-1"
-                initialValue={1}
-              >
-                <Select>
-                  <Select.Option value={1}>Sinh nhật</Select.Option>
-                  <Select.Option value={2}>Người mới</Select.Option>
-                  <Select.Option value={3}>Xếp hạng</Select.Option>
-                </Select>
-              </Form.Item>
-            </div>
-
-            <div className="flex space-x-6">
-              <Form.Item
-                name="discountPercent"
-                label="Phần trăm giảm giá"
-                className="flex-1"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập phần trăm giảm giá",
-                  },
-                ]}
-              >
-                <InputNumber
-                  min={0}
-                  max={100}
-                  className="w-full"
-                  placeholder="Nhập phần trăm"
-                />
-              </Form.Item>
-
-              <Form.Item
-                name="minimumAmount"
-                label="Hạn chi tiêu tối thiểu"
-                className="flex-1"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập hạn chi tiêu tối thiểu",
-                  },
-                ]}
-              >
-                <InputNumber
-                  min={0}
-                  className="w-full"
-                  placeholder="Nhập hạn chi tiêu tối thiểu"
-                />
-              </Form.Item>
-
-              <Form.Item
-                name="quantity"
-                label="Số lượng"
-                className="flex-1"
-                rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
-              >
-                <InputNumber
-                  min={0}
-                  className="w-full"
-                  placeholder="Nhập số lượng"
-                />
-              </Form.Item>
-            </div>
-
-            <Form.Item
-              name="startDate"
-              label="Ngày bắt đầu áp dụng và kết thúc"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ngày bắt đầu và kết thúc",
-                },
-              ]}
+      {isFormVisible && (
+        <div
+          style={{
+            border: "1px solid #e5e7eb",
+          }}
+          className="flex items-center justify-center shadow-lg py-4 px-4 sm:px-6 rounded-lg my-2 lg:px-8"
+        >
+          <div className="max-w-7xl w-full bg-white rounded-lg p-4">
+            <h2 className="text-center uppercase text-lg font-extrabold text-red-800 mb-8">
+              {editingCoupon ? "Chỉnh sửa" : "Tạo"} mã giảm giá
+            </h2>
+            <Form
+              form={form}
+              onFinish={onFinish}
+              layout="vertical"
+              className="space-y-6"
             >
-              <RangePicker
-                needConfirm={false}
-                showTime
-                format="DD/MM/YYYY HH:mm"
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button
-                htmlType="submit"
-                className="text-sm bg-red-800 text-white"
-              >
-                {editingCoupon ? "Cập nhật" : "Tạo chương trình mã giảm giá"}
-              </Button>
-              {editingCoupon && (
-                <Button
-                  type="default"
-                  onClick={handleCancelEdit}
-                  className="text-sm"
+              <div className="flex space-x-6">
+                <Form.Item
+                  name="code"
+                  label="Mã code"
+                  className="flex-1"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng điền mã code của bạn",
+                    },
+                  ]}
                 >
-                  Hủy
+                  <Input placeholder="Nhập mã giảm giá" className="w-full" />
+                </Form.Item>
+
+                <Form.Item
+                  name="title"
+                  label="Nội dung"
+                  className="flex-1"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập nội dung" },
+                  ]}
+                >
+                  <Input placeholder="Nhập nội dung" className="w-full" />
+                </Form.Item>
+
+                <Form.Item
+                  name="couponProgramType"
+                  label="Chương trình áp dụng"
+                  className="flex-1"
+                  initialValue={1}
+                >
+                  <Select>
+                    <Select.Option value={1}>Sinh nhật</Select.Option>
+                    <Select.Option value={2}>Người mới</Select.Option>
+                    <Select.Option value={3}>Xếp hạng</Select.Option>
+                  </Select>
+                </Form.Item>
+              </div>
+
+              <div className="flex space-x-6">
+                <Form.Item
+                  name="discountPercent"
+                  label="Phần trăm giảm giá"
+                  className="flex-1"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập phần trăm giảm giá",
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    max={100}
+                    className="w-full"
+                    placeholder="Nhập phần trăm"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="minimumAmount"
+                  label="Hạn chi tiêu tối thiểu"
+                  className="flex-1"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập hạn chi tiêu tối thiểu",
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    className="w-full"
+                    placeholder="Nhập hạn chi tiêu tối thiểu"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="quantity"
+                  label="Số lượng"
+                  className="flex-1"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số lượng" },
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    className="w-full"
+                    placeholder="Nhập số lượng"
+                  />
+                </Form.Item>
+              </div>
+
+              <Form.Item
+                name="startDate"
+                label="Ngày bắt đầu áp dụng và kết thúc"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn ngày bắt đầu và kết thúc",
+                  },
+                ]}
+              >
+                <RangePicker
+                  needConfirm={false}
+                  showTime
+                  format="DD/MM/YYYY HH:mm"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  htmlType="submit"
+                  className="text-sm bg-red-800 text-white"
+                >
+                  {editingCoupon ? "Cập nhật" : "Tạo chương trình mã giảm giá"}
                 </Button>
-              )}
-            </Form.Item>
-          </Form>
+                {editingCoupon && (
+                  <Button
+                    type="default"
+                    onClick={handleCancelEdit}
+                    className="text-sm"
+                  >
+                    Hủy
+                  </Button>
+                )}
+              </Form.Item>
+            </Form>
+          </div>
         </div>
-      </div>
+      )}
+
       <div className="flex justify-end my-2">
         <Button
-          className="flex items-center bg-red-800 gap-3  text-white"
+          className="flex items-center bg-red-800 gap-3 text-white"
           size="sm"
           onClick={fetchData}
           loading={loading}
@@ -394,6 +478,7 @@ const AdminVoucherPage = () => {
           <ArrowPathIcon strokeWidth={2} className="h-4 w-4" /> Làm mới
         </Button>
       </div>
+
       <StyledTable
         loading={loading}
         columns={columns}
