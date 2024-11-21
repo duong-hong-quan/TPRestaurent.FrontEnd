@@ -232,7 +232,7 @@ const AdminVoucherPage = () => {
     setEditingCoupon(null);
   };
   return (
-    <div className="w-full px-4 max-h-[750px] overflow-y-scroll bg-white rounded-lg shadow-lg ">
+    <div className="w-full px-4 max-h-[900px] overflow-y-scroll bg-white rounded-lg shadow-lg ">
       <LoadingOverlay isLoading={loading} />
       <div className="mb-8 px-2 py-4 flex items-center justify-between gap-8">
         <div>
