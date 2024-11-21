@@ -75,7 +75,7 @@ const ManagerLayout = () => {
         <div className="mx-2">
           <HeaderManager userName={user.lastName} />
         </div>
-        <div className="m-2 mt-8">
+        <div className="m-2 mt-8 h-[1019px] bg-white overflow-y-scroll">
           <Outlet />
         </div>
       </div>

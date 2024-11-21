@@ -43,6 +43,8 @@ export const CouponApi = {
   CREATE_COUPON_PROGRAM: "/coupon/create-coupon-program",
   DELETE_COUPON_PROGRAM: "/coupon/delete-coupon-program",
   UPDATE_COUPON_PROGRAM: "/coupon/update-coupon",
+  GET_USER_BY_RANK: "/coupon/get-user-by-rank",
+  ASSIGN_COUPON: "/coupon/assign-coupon",
 };
 export const DeviceApi = {
   GET_ALL: "/device/get-all-device",
