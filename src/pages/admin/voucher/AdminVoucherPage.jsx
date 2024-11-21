@@ -17,18 +17,15 @@ import {
   Button,
   Modal,
   Tooltip,
+  message,
 } from "antd";
 import { StyledTable } from "../../../components/custom-ui/StyledTable";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 const { RangePicker } = DatePicker;
-import {
-  Award as BronzeMedal,
-  Star as SilverStar,
-  Crown as GoldCrown,
-  Gem as DiamondGem,
-} from "lucide-react";
 import RankTiers from "../rank/RankTiers";
+import ModalAssignVoucher from "./ModalAssignVoucher";
+import { set } from "lodash";
 const AdminVoucherPage = () => {
   const [coupons, setCoupons] = useState([]);
   const { callApi, error, loading } = useCallApi();
@@ -39,7 +36,11 @@ const AdminVoucherPage = () => {
   const [form] = Form.useForm();
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
-
+  const [couponProgramType, setCouponProgramType] = useState(1);
+  const [selectedRank, setSelectedRank] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [users, setUsers] = useState([]);
   const onFinish = async (values) => {
     try {
       const data = {
@@ -49,10 +50,10 @@ const AdminVoucherPage = () => {
         discountPercent: values.discountPercent,
         minimumAmount: values.minimumAmount,
         quantity: values.quantity,
+        userRank: values.userRank,
         startDate: values.startDate[0].format("YYYY-MM-DDTHH:mm:ss"),
         expiryDate: values.startDate[1].format("YYYY-MM-DDTHH:mm:ss"),
         accountId: user.id,
-        file: "https://static.vecteezy.com/system/resources/previews/024/170/335/non_2x/voucher-discount-3d-icon-free-png.png",
       };
 
       let response;
@@ -65,16 +66,24 @@ const AdminVoucherPage = () => {
           {
             ...data,
             couponProgramId: editingCoupon.couponProgramId,
+            imageFile:
+              "https://static.vecteezy.com/system/resources/previews/024/170/335/non_2x/voucher-discount-3d-icon-free-png.png",
           }
         );
       } else {
         // Create new coupon
-        response = await callApi(CouponApi.CREATE_COUPON_PROGRAM, "POST", data);
+        response = await callApi(CouponApi.CREATE_COUPON_PROGRAM, "POST", {
+          ...data,
+          file: "https://static.vecteezy.com/system/resources/previews/024/170/335/non_2x/voucher-discount-3d-icon-free-png.png",
+        });
       }
 
       if (response?.isSuccess) {
         form.resetFields();
         setEditingCoupon(null);
+        message.success(
+          `${editingCoupon ? "Cập nhật thành công" : "Tạo thành công"}!`
+        );
         await fetchData();
       } else {
         showError(response.messages);
@@ -86,6 +95,7 @@ const AdminVoucherPage = () => {
   const handleEdit = (record) => {
     setIsFormVisible(true);
     setEditingCoupon(record);
+    console.log(record);
     form.setFieldsValue({
       code: record.code,
       title: record.title,
@@ -183,6 +193,26 @@ const AdminVoucherPage = () => {
       ),
     },
     {
+      title: "Loại",
+      key: "userRankId",
+      dataIndex: "userRankId",
+      width: 100,
+      render: (userRankId) => {
+        switch (userRankId) {
+          case 1:
+            return "Đồng";
+          case 2:
+            return "Bạc";
+          case 3:
+            return "Vàng";
+          case 4:
+            return "Kim cương";
+          default:
+            return "Không xác định";
+        }
+      },
+    },
+    {
       title: "Hành động",
       dataIndex: "",
       key: "",
@@ -226,11 +256,17 @@ const AdminVoucherPage = () => {
               <TrashIcon size={12} />
             </Button>
           </Tooltip>
-          <Tooltip title="Cấp phát coupon cho người dùng">
-            <Button size="sm" className="bg-white text-red-800">
-              <UserRoundCheck size={12} />
-            </Button>
-          </Tooltip>
+          {record.userRankId && (
+            <Tooltip title="Cấp phát coupon cho người dùng">
+              <Button
+                size="sm"
+                className="bg-white text-red-800"
+                onClick={() => handleSelectRank(record)}
+              >
+                <UserRoundCheck size={12} />
+              </Button>
+            </Tooltip>
+          )}
         </div>
       ),
     },
@@ -240,62 +276,22 @@ const AdminVoucherPage = () => {
     setEditingCoupon(null);
     setIsFormVisible(false);
   };
-  const ranks = [
-    {
-      id: 1,
-      name: "BRONZE",
-      icon: <BronzeMedal className="w-12 h-12 text-[#CD7F32]" />,
-      color: "bg-[#CD7F32]",
-      textColor: "text-[#CD7F32]",
-      description: "Entry-level membership with basic perks",
-      benefits: [
-        "Standard discounts",
-        "Basic loyalty points",
-        "Welcome offers",
-      ],
-    },
-    {
-      id: 2,
-      name: "SILVER",
-      icon: <SilverStar className="w-12 h-12 text-[#C0C0C0]" />,
-      color: "bg-[#C0C0C0]",
-      textColor: "text-[#C0C0C0]",
-      description: "Enhanced membership with more benefits",
-      benefits: [
-        "Better discounts",
-        "Increased loyalty points",
-        "Priority customer support",
-      ],
-    },
-    {
-      id: 3,
-      name: "GOLD",
-      icon: <GoldCrown className="w-12 h-12 text-[#FFD700]" />,
-      color: "bg-[#FFD700]",
-      textColor: "text-[#FFD700]",
-      description: "Premium membership with exclusive perks",
-      benefits: [
-        "Significant discounts",
-        "High loyalty point multiplier",
-        "Exclusive event invitations",
-      ],
-    },
-    {
-      id: 4,
-      name: "DIAMOND",
-      icon: <DiamondGem className="w-12 h-12 text-[#B9F2FF]" />,
-      color: "bg-[#B9F2FF]",
-      textColor: "text-[#B9F2FF]",
-      description: "Top-tier membership with ultimate privileges",
-      benefits: [
-        "Maximum discounts",
-        "Highest loyalty point rewards",
-        "VIP customer service",
-      ],
-    },
-  ];
+  const handleSelectRank = async (rank) => {
+    setSelectedRank(rank.userRankId);
+    setIsModalOpen(true);
+    setSelectedCoupon(rank.couponProgramId);
+    const response = await callApi(
+      `${CouponApi.GET_USER_BY_RANK}?userRank=${rank.userRankId}`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+      setUsers(response.result?.items);
+    } else {
+      showError(response.messages);
+    }
+  };
   return (
-    <div className="w-full px-4 max-h-[900px] overflow-y-scroll bg-white rounded-lg shadow-lg ">
+    <div className="w-full px-4 h-[1080px]  overflow-y-scroll bg-white rounded-lg shadow-lg ">
       <LoadingOverlay isLoading={loading} />
       <RankTiers />
 
@@ -326,7 +322,7 @@ const AdminVoucherPage = () => {
           className="flex items-center justify-center shadow-lg py-4 px-4 sm:px-6 rounded-lg my-2 lg:px-8"
         >
           <div className="max-w-7xl w-full bg-white rounded-lg p-4">
-            <h2 className="text-center uppercase text-lg font-extrabold text-red-800 mb-8">
+            <h2 className="text-center uppercase text-lg font-bold text-red-800 mb-8">
               {editingCoupon ? "Chỉnh sửa" : "Tạo"} mã giảm giá
             </h2>
             <Form
@@ -351,6 +347,74 @@ const AdminVoucherPage = () => {
                 </Form.Item>
 
                 <Form.Item
+                  name="couponProgramType"
+                  label="Chương trình áp dụng"
+                  className="flex-1"
+                  initialValue={1}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn chương trình áp dụng",
+                    },
+                  ]}
+                >
+                  <Select
+                    onChange={(value) => setCouponProgramType(value)}
+                    value={couponProgramType}
+                  >
+                    <Select.Option value={1}>Sinh nhật</Select.Option>
+                    <Select.Option value={2}>Người mới</Select.Option>
+                    <Select.Option value={3}>Xếp hạng</Select.Option>
+                  </Select>
+                </Form.Item>
+                {couponProgramType === 3 && !editingCoupon && (
+                  <Form.Item
+                    name="userRank"
+                    label="Hạng người dùng"
+                    className="flex-1"
+                    initialValue={1}
+                    rules={[
+                      couponProgramType === 3 &&
+                        !editingCoupon && {
+                          required: true,
+                          message: "Vui lòng chọn hạng người dùng",
+                        },
+                    ]}
+                  >
+                    <Select>
+                      <Select.Option value={1}>Đồng</Select.Option>
+                      <Select.Option value={2}>Bạc</Select.Option>
+                      <Select.Option value={3}>Vàng</Select.Option>
+                      <Select.Option value={4}>Kim cương</Select.Option>
+                    </Select>
+                  </Form.Item>
+                )}
+
+                {editingCoupon?.userRank && (
+                  <Form.Item
+                    name="userRank"
+                    label="Hạng người dùng"
+                    className="flex-1"
+                    initialValue={1}
+                    rules={[
+                      editingCoupon?.userRank && {
+                        required: true,
+                        message: "Vui lòng chọn hạng người dùng",
+                      },
+                    ]}
+                  >
+                    <Select>
+                      <Select.Option value={1}>Đồng</Select.Option>
+                      <Select.Option value={2}>Bạc</Select.Option>
+                      <Select.Option value={3}>Vàng</Select.Option>
+                      <Select.Option value={4}>Kim cương</Select.Option>
+                    </Select>
+                  </Form.Item>
+                )}
+              </div>
+
+              <div className="flex space-x-6">
+                <Form.Item
                   name="title"
                   label="Nội dung"
                   className="flex-1"
@@ -360,22 +424,6 @@ const AdminVoucherPage = () => {
                 >
                   <Input placeholder="Nhập nội dung" className="w-full" />
                 </Form.Item>
-
-                <Form.Item
-                  name="couponProgramType"
-                  label="Chương trình áp dụng"
-                  className="flex-1"
-                  initialValue={1}
-                >
-                  <Select>
-                    <Select.Option value={1}>Sinh nhật</Select.Option>
-                    <Select.Option value={2}>Người mới</Select.Option>
-                    <Select.Option value={3}>Xếp hạng</Select.Option>
-                  </Select>
-                </Form.Item>
-              </div>
-
-              <div className="flex space-x-6">
                 <Form.Item
                   name="discountPercent"
                   label="Phần trăm giảm giá"
@@ -485,6 +533,29 @@ const AdminVoucherPage = () => {
         dataSource={coupons}
         pagination={false}
         scroll={{ x: 768, y: 600 }}
+      />
+      <ModalAssignVoucher
+        show={isModalOpen}
+        handleClose={() => {
+          setIsModalOpen(!isModalOpen);
+          setSelectedRank(null);
+        }}
+        userRankId={selectedRank}
+        users={users}
+        assignVoucher={async () => {
+          const response = await callApi(`${CouponApi.ASSIGN_COUPON}`, "POST", {
+            couponProgramId: selectedCoupon,
+            customerIds: users.map((user) => user.id),
+          });
+          if (response?.isSuccess) {
+            message.success("Phân phối mã giảm giá thành công!");
+            setIsModalOpen(false);
+            setSelectedRank(null);
+          } else {
+            showError(response.messages);
+          }
+        }}
+        loading={loading}
       />
     </div>
   );

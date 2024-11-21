@@ -263,9 +263,9 @@ const AdminDashboardPage = ({}) => {
   });
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-12">
+    <div className="grid   grid-cols-1 xl:grid-cols-12">
       <LoadingOverlay isLoading={loadingPromise} />
-      <div className="p-6  bg-white col-span-1 xl:col-span-9 max-h-[900px] overflow-y-auto">
+      <div className="p-6  bg-white col-span-1 xl:col-span-9  h-[900px] overflow-auto   ">
         <Typography className="mr-2 text-red-800 font-semibold text-2xl">
           TRANG THỐNG KÊ TỔNG QUAN HỆ THỐNG
         </Typography>
@@ -523,7 +523,7 @@ const AdminDashboardPage = ({}) => {
           </CardBody>
         </Card>
       </div>
-      <div className="col-span-1 xl:col-span-3 p-4 max-h-[900px] overflow-y-auto bg-gray-50">
+      <div className="col-span-1 xl:col-span-3 p-4 h-[900px] overflow-auto  bg-gray-50">
         <Typography className="text-lg uppercase text-red-800 font-semibold my-2">
           Lịch đặt bàn
         </Typography>
