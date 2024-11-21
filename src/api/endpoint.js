@@ -39,7 +39,10 @@ export const ConfigurationApi = {
   CREATE_CONFIG_SERVICE: "/configuration/create-config-service",
 };
 export const CouponApi = {
-  GET_ALL: "/coupon/get-available-coupon",
+  GET_AVAILABLE_COUPON_PROGRAM: "/coupon/get-available-coupon-program",
+  CREATE_COUPON_PROGRAM: "/coupon/create-coupon-program",
+  DELETE_COUPON_PROGRAM: "/coupon/delete-coupon-program",
+  UPDATE_COUPON_PROGRAM: "/coupon/update-coupon",
 };
 export const DeviceApi = {
   GET_ALL: "/device/get-all-device",
