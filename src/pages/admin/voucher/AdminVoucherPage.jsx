@@ -291,7 +291,7 @@ const AdminVoucherPage = () => {
     }
   };
   return (
-    <div className="w-full px-4 h-[1080px]  overflow-y-scroll bg-white rounded-lg shadow-lg ">
+    <div className="w-full px-4 bg-white rounded-lg shadow-lg ">
       <LoadingOverlay isLoading={loading} />
       <RankTiers />
 
