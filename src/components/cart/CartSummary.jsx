@@ -28,7 +28,12 @@ import {
   increaseComboQuantity,
   removeCombo,
 } from "../../redux/features/cartSlice";
-import { formatPrice, mergeCartData, showError } from "../../util/Utility";
+import {
+  caculateFinalPrice,
+  formatPrice,
+  mergeCartData,
+  showError,
+} from "../../util/Utility";
 
 import Card_Logo from "../../assets/imgs/payment-icon/Cash_Logo.png";
 import MoMo_Logo from "../../assets/imgs/payment-icon/MoMo_Logo.png";
@@ -132,6 +137,13 @@ const CartSummary = ({ handleClose }) => {
   const handleRemoveCombo = (comboId, selectedDishes) => {
     dispatch(removeCombo({ comboId, selectedDishes }));
   };
+  const totalPercentDiscount = () => {
+    return couponsData
+      .filter((coupon) => selectedCoupons.includes(coupon.couponId))
+      .reduce((acc, coupon) => {
+        return acc + coupon.couponProgram.discountPercent;
+      }, 0);
+  };
   const currentAddress = user.addresses?.filter(
     (address) => address.isCurrentUsed
   )[0];
@@ -149,7 +161,7 @@ const CartSummary = ({ handleClose }) => {
   };
   const handleCheckOut = async () => {
     const { reservationDishDtos } = mergeCartData(cartReservation, cart);
-
+    debugger;
     const updatedData = {
       customerId: user.id,
       orderType: 2,
@@ -158,7 +170,7 @@ const CartSummary = ({ handleClose }) => {
 
       deliveryOrder: {
         couponIds: selectedCoupons,
-        loyalPointToUse: isLoyaltyEnabled ? user.loyaltyPoint : 0,
+        loyalPointToUse: isLoyaltyEnabled == true ? user.loyalPoint : 0,
         paymentMethod: selectedMethod,
       },
     };
@@ -204,16 +216,22 @@ const CartSummary = ({ handleClose }) => {
   const totalPrice = cart.total ? cart.total + (cartTotal || 0) : cartTotal;
 
   const renderAfterPrice = () => {
-    let totalBefore = cart.total + (cartTotal || 0) + deliveryOrder;
-    if (isLoyaltyEnabled) {
-      totalBefore -= user.loyalPoint;
-    }
-
-    return totalBefore;
+    let totalBefore = cart.total ? cart.total + (cartTotal || 0) : cartTotal;
+    return caculateFinalPrice(
+      totalBefore,
+      totalPercentDiscount(),
+      deliveryOrder,
+      isLoyaltyEnabled ? user.loyalPoint : 0,
+      0
+    );
   };
+
   const handleCoupons = async () => {
     setIsModalCouponVisible(true);
-    const response = await callApi(`${CouponApi.GET_ALL}/1/100`, "GET");
+    const response = await callApi(
+      `${CouponApi.GET_AVAILABLE_COUPON_BY_ACCOUNT_ID}/${user.id}/1/100`,
+      "GET"
+    );
     if (response.isSuccess) {
       setCouponsData(response.result?.items);
     } else {
@@ -222,13 +240,14 @@ const CartSummary = ({ handleClose }) => {
   };
   const renderPreviewCoupon = () => {
     return couponsData
-      .filter((coupon) => selectedCoupons.includes(coupon.couponProgramId))
+      .filter((coupon) => selectedCoupons.includes(coupon.couponId))
       .map((coupon) => (
-        <Tag color="volcano-inverse" key={coupon.couponProgramId}>
-          {`Giảm ${coupon.discountPercent}% `}
+        <Tag className="bg-red-800 text-white" key={coupon.couponId}>
+          {`Giảm ${coupon.couponProgram.discountPercent}% `}
         </Tag>
       ));
   };
+
   return (
     <div className="container my-4 p-6 bg-white">
       <LoadingOverlay isLoading={loading} />
@@ -396,7 +415,7 @@ const CartSummary = ({ handleClose }) => {
             variant="h2"
             className="font-bold text-red-700 text-center"
           >
-            {`${formatPrice(deliveryOrder)}`}
+            {`+${formatPrice(deliveryOrder)}`}
           </Typography>
         </div>
         {isLoyaltyEnabled && (
@@ -407,6 +426,17 @@ const CartSummary = ({ handleClose }) => {
               className="font-bold text-red-700 text-center"
             >
               {`- ${formatPrice(user.loyalPoint)}`}
+            </Typography>
+          </div>
+        )}
+        {selectedCoupons.length > 0 && (
+          <div className="flex justify-between items-center  bg-gray-100 shadow-md py-6 px-4">
+            <span className="text-lg">Voucher:</span>
+            <Typography
+              variant="h2"
+              className="font-bold text-red-700 text-center"
+            >
+              {`-${formatPrice((totalPrice * totalPercentDiscount()) / 100)}`}
             </Typography>
           </div>
         )}

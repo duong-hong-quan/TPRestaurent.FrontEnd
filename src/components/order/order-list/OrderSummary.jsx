@@ -1,13 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Card, CardBody } from "@material-tailwind/react";
-import { formatPrice, showError } from "../../../util/Utility";
+import {
+  caculateFinalPrice,
+  formatPrice,
+  showError,
+} from "../../../util/Utility";
 import ReservationInformation from "../reservation/ReservationInformation";
-import { Button, message, Modal, Typography } from "antd";
+import { Button, message, Modal, Tag, Typography } from "antd";
 import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
 import { useState } from "react";
 import useCallApi from "../../../api/useCallApi";
 import LoadingOverlay from "../../loading/LoadingOverlay";
-import { OrderApi } from "../../../api/endpoint";
+import { CouponApi, OrderApi } from "../../../api/endpoint";
 import { useNavigate } from "react-router-dom";
 import {
   clearCart,
@@ -26,6 +30,7 @@ import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import CartCombosTable from "../../cart/CartCombosTable";
 import { CartSingleTable } from "../../cart/CartSingleTable";
+import CouponSelectionModal from "../../coupon/CouponSelectionModal";
 const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
   const cartReservation = useSelector((state) => state.cartReservation);
   const cartCombos = useSelector((state) => state.cart);
@@ -34,6 +39,57 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
   const { callApi, error, loading } = useCallApi();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [isModalCouponVisible, setIsModalCouponVisible] = useState(false);
+  const [couponsData, setCouponsData] = useState([]);
+  const [selectedCoupons, setSelectedCoupons] = useState([]);
+  const cartTotal = useSelector(getTotal);
+
+  const user = useSelector((state) => state.user.user || {});
+  const handleSelectCoupons = (coupons) => {
+    setSelectedCoupons(coupons);
+  };
+
+  const totalPercentDiscount = () => {
+    return couponsData
+      .filter((coupon) => selectedCoupons.includes(coupon.couponId))
+      .reduce((acc, coupon) => {
+        return acc + coupon.couponProgram.discountPercent;
+      }, 0);
+  };
+  const renderPreviewCoupon = () => {
+    return couponsData
+      .filter((coupon) => selectedCoupons.includes(coupon.couponId))
+      .map((coupon) => (
+        <Tag className="bg-red-800 text-white" key={coupon.couponId}>
+          {`Giảm ${coupon.couponProgram.discountPercent}% `}
+        </Tag>
+      ));
+  };
+
+  const renderAfterPrice = () => {
+    let totalBefore = cartCombos.total
+      ? cartCombos.total + (cartTotal || 0)
+      : cartTotal;
+    return caculateFinalPrice(
+      totalBefore,
+      totalPercentDiscount(),
+      0,
+      0,
+      deposit
+    );
+  };
+  const handleCoupons = async () => {
+    setIsModalCouponVisible(true);
+    const response = await callApi(
+      `${CouponApi.GET_AVAILABLE_COUPON_BY_ACCOUNT_ID}/${user.id}/1/100`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setCouponsData(response.result?.items);
+    } else {
+      showError(response.messages);
+    }
+  };
   const handleDecreaseComboQuantity = (comboId, selectedDishes) => {
     dispatch(decreaseComboQuantity({ comboId, selectedDishes }));
   };
@@ -117,9 +173,9 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
             </Typography>
             <div className="flex justify-between my-4">
               <Typography className="text-[#333333] ">
-                Số tiền đặt cọc:
+                Số tiền đặt cọc (đã kèm tiền đặt bàn và tiền cọc cho đồ ăn):
               </Typography>
-              <Typography className="text-base">
+              <Typography className="text-base font-bold">
                 {formatPrice(data.reservationOrder.deposit) ||
                   formatPrice(deposit)}
               </Typography>
@@ -138,11 +194,26 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
                 </Button>
               </div>
             </div>
+            {/* <div className="flex justify-between items-center my-4">
+              <Typography className="text-[#333333] ">Voucher</Typography>
+              <div className="flex items-center">
+                {renderPreviewCoupon()}
+                <button
+                  className="bg-red-800 hover:bg-red-800 text-white px-4 py-1 rounded-md transition duration-300"
+                  onClick={() => handleCoupons()}
+                >
+                  Chọn
+                </button>
+              </div>
+            </div> */}
+
             <div className="flex justify-between my-4">
               <Typography className="text-red-800 font-bold ">
-                Tổng tiền: {formatPrice(total)}
+                Tổng tiền sau khi trừ cọc và khuyến mãi:{" "}
               </Typography>
-              <Typography className="text-base"></Typography>
+              <Typography className="text-base">
+                {formatPrice(renderAfterPrice())}
+              </Typography>
             </div>
             <div className="flex justify-between items-center my-4">
               <Typography className="text-red-800 font-bold ">
@@ -204,6 +275,13 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
           <PaymentMethodSelector handleChange={handleChangeMethod} />
         </Modal>
       </div>
+      <CouponSelectionModal
+        visible={isModalCouponVisible}
+        onClose={() => setIsModalCouponVisible(false)}
+        coupons={couponsData}
+        onSelectCoupons={handleSelectCoupons}
+        totalPrice={renderAfterPrice()}
+      />
     </div>
   );
 };
