@@ -343,6 +343,7 @@ const OrderDetailModal = ({
                           dishId: selectedDish.dish.dishId,
                         }))
                       );
+                      setSelectedRowKeys([]);
                     }}
                     loading={loading}
                     className="h-10 px-8 text-base font-medium bg-red-800 text-white"
