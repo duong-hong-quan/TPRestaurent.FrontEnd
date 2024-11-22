@@ -118,13 +118,12 @@ const VerifyPayment = () => {
   const closeModal = () => {
     setModalIsOpen(false);
   };
-  if (loading) {
-    <LoadingOverlay isLoading={loading} />;
-  }
+
   return (
     <>
+      <LoadingOverlay isLoading={loading} />
       <HomePage />
-      {modalIsOpen && (
+      {!loading && modalIsOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <Card className="w-[500px] shadow-xl">
             <CardBody className="flex flex-col items-center px-6">

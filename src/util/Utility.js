@@ -239,9 +239,8 @@ const caculateFinalPrice = (
   loyalPoint,
   deposit
 ) => {
-  console.log("price", price);
-  const discount = price * (discountPercent / 100);
-  return price - discount + shippingFee - loyalPoint - deposit;
+  const discount = (price - deposit) * (discountPercent / 100);
+  return price - deposit + shippingFee - discount - loyalPoint;
 };
 export {
   formatPrice,
