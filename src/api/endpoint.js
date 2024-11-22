@@ -45,6 +45,8 @@ export const CouponApi = {
   UPDATE_COUPON_PROGRAM: "/coupon/update-coupon",
   GET_USER_BY_RANK: "/coupon/get-user-by-rank",
   ASSIGN_COUPON: "/coupon/assign-coupon",
+  GET_AVAILABLE_COUPON_BY_ACCOUNT_ID:
+    "/coupon/get-available-coupon-by-account-id",
 };
 export const DeviceApi = {
   GET_ALL: "/device/get-all-device",

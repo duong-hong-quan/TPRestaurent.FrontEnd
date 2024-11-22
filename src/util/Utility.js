@@ -232,6 +232,17 @@ const combineTimes = (mealTime, endTime) => {
   }
   return "Invalid Date";
 };
+const caculateFinalPrice = (
+  price,
+  discountPercent,
+  shippingFee,
+  loyalPoint,
+  deposit
+) => {
+  console.log("price", price);
+  const discount = price * (discountPercent / 100);
+  return price - discount + shippingFee - loyalPoint - deposit;
+};
 export {
   formatPrice,
   formatDateTime,
@@ -242,4 +253,5 @@ export {
   showError,
   numberToWords,
   combineTimes,
+  caculateFinalPrice,
 };
