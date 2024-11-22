@@ -21,6 +21,7 @@ const CouponSelectionModal = ({
         : [...prev, couponId]
     );
   };
+  console.log(selectedCoupons);
 
   const handleConfirm = () => {
     onSelectCoupons(selectedCoupons);
@@ -47,35 +48,39 @@ const CouponSelectionModal = ({
         renderItem={(coupon) => (
           <List.Item
             className={
-              totalPrice < coupon.minimumAmount
+              totalPrice < coupon.couponProgram?.minimumAmount
                 ? `flex  bg-gray-50  items-center `
                 : `bg-white flex items-center`
             }
           >
             <Checkbox
-              onChange={() => handleSelectCoupon(coupon.couponProgramId)}
-              checked={selectedCoupons.includes(coupon.couponProgramId)}
+              onChange={() => handleSelectCoupon(coupon?.couponId)}
+              checked={selectedCoupons.includes(coupon?.couponId)}
               disabled={totalPrice < coupon.minimumAmount}
             >
               <div className="flex items-center">
                 <img
-                  src={coupon.img}
-                  alt={coupon.code}
+                  src={coupon?.couponProgram?.img}
+                  alt={coupon?.couponProgram?.code}
                   className="w-16 h-16 mr-4 object-cover rounded"
                 />
                 <div>
+                  <Text className="uppercase font-bold">
+                    Chương trình {coupon?.couponProgram?.title}{" "}
+                  </Text>
                   <Text strong>{coupon.code}</Text>
                   <div className="flex items-center">
                     <Ticket className="w-4 h-4 mr-1" />
-                    <Text>Giảm {coupon.discountPercent}% </Text>
+                    <Text>Giảm {coupon?.couponProgram?.discountPercent}% </Text>
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
-                    <Text>{formatDate(coupon.expiryDate)}</Text>
+                    <Text>{formatDate(coupon?.couponProgram?.expiryDate)}</Text>
                   </div>
                   <div className="flex items-center">
                     <Text>
-                      Mua sắm tổi thiểu {formatPrice(coupon.minimumAmount)}
+                      Mua sắm tổi thiểu{" "}
+                      {formatPrice(coupon?.couponProgram.minimumAmount)}
                     </Text>
                   </div>
                 </div>
