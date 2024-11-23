@@ -12,7 +12,7 @@ const UserInfo = ({ userData, handleOpenUpdate }) => {
           <img
             src={userData.avatar || avt}
             alt=""
-            className="rounded-full object-contain w-32 h-32"
+            className="rounded-full object-cover bg-white p-4 w-32 h-32"
           />
         </div>
         <div className="ml-10 md:col-span-5 space-y-2">
