@@ -13,11 +13,13 @@ const initialMessages = [
     id: 1,
     text: "Chào bạn tôi là trợ lý ảo AI của nhà hàng Thiên Phú",
     sender: "bot",
+    date: dayjs().subtract(1, "day").format("DD/MM/YYYY"),
   },
   {
     id: 2,
     text: "Bạn cần tôi giúp đỡ gì không?",
     sender: "bot",
+    date: dayjs().subtract(1, "day").format("DD/MM/YYYY"),
   },
 ];
 
@@ -35,9 +37,20 @@ const ChatButton = () => {
 
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
+      if (newMessage == "/clear") {
+        setMessages([]);
+        setNewMessage("");
+        localStorage.removeItem("chatMessages");
+        return;
+      }
       setMessages([
         ...messages,
-        { id: messages.length + 1, text: newMessage, sender: "user" },
+        {
+          id: messages.length + 1,
+          text: newMessage,
+          sender: "user",
+          date: dayjs().format("DD/MM/YYYY"),
+        },
       ]);
       setNewMessage("");
 
@@ -56,6 +69,7 @@ const ChatButton = () => {
                 ? "Xin lỗi, tôi chưa có câu trả lời cho bạn."
                 : response.result,
             sender: "bot",
+            date: dayjs().format("DD/MM/YYYY"),
           },
         ]);
       } catch (err) {
@@ -66,6 +80,7 @@ const ChatButton = () => {
             id: prev.length + 1,
             text: "Rất tiếc, tôi không thể kết nối với trợ lý ảo. Vui lòng thử lại sau.",
             sender: "bot",
+            date: dayjs().format("DD/MM/YYYY"),
           },
         ]);
       }
@@ -86,6 +101,7 @@ const ChatButton = () => {
           id: prev.length + 1,
           text: response.result,
           sender: "bot",
+          date: dayjs().format("DD/MM/YYYY"),
         },
       ]);
     } catch (err) {
@@ -95,14 +111,26 @@ const ChatButton = () => {
           id: prev.length + 1,
           text: "Rất tiếc, tôi không thể kết nối với trợ lý ảo. Vui lòng thử lại sau.",
           sender: "bot",
+          date: dayjs().format("DD/MM/YYYY"),
         },
       ]);
     }
   };
 
+  const checkAndFetchData = async () => {
+    const today = dayjs().format("DD/MM/YYYY");
+    const hasMessageToday = messages.filter(
+      (message) => message.date == today && message.sender == "bot"
+    );
+
+    if (!hasMessageToday.length > 0) {
+      await fetchData();
+    }
+  };
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    checkAndFetchData();
+  }, [messages]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
