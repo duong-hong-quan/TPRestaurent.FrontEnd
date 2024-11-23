@@ -317,7 +317,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
 
   return (
     <Card className="w-full shadow-none border-none">
-      <LoadingOverlay loading={loading} />
+      <LoadingOverlay isLoading={loading} />
       <CardBody className="p-6">
         <Typography
           variant="h4"
