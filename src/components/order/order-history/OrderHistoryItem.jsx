@@ -39,7 +39,7 @@ const OrderHistoryItem = ({ order }) => {
   };
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-4">
-      <LoadingOverlay loading={loading} />
+      <LoadingOverlay isLoading={loading} />
       <div>
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
           <div className="flex items-center mb-2 md:mb-0">

@@ -264,7 +264,7 @@ const AdminDashboardPage = ({}) => {
 
   return (
     <div className="grid   grid-cols-1 xl:grid-cols-12">
-      <LoadingOverlay isLoading={loadingPromise} />
+      <LoadingOverlay isLoading={loadingPromise || loading} />
       <div className="p-6  bg-white col-span-1 xl:col-span-9  h-[900px] overflow-auto   ">
         <Typography className="mr-2 text-red-800 font-semibold text-2xl">
           TRANG THỐNG KÊ TỔNG QUAN HỆ THỐNG

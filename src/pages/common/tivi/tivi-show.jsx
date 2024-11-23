@@ -230,7 +230,7 @@ const TiviShow = () => {
   return (
     <div className="h-screen flex flex-col  overflow-hidden">
       {loading && !processingOrders && !completedOrders && (
-        <LoadingOverlay loading={loading} />
+        <LoadingOverlay isLoading={loading} />
       )}
 
       {/* Fixed Header */}

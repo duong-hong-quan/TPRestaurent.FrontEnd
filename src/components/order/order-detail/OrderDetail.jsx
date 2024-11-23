@@ -1,5 +1,5 @@
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { Button, Modal, Table } from "antd";
+import { Button, Image, Modal, Table } from "antd";
 import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
@@ -418,11 +418,11 @@ const OrderDetail = ({ reservationData, fetchData }) => {
             <Typography className="font-bold my-2">
               Ảnh shipper xác nhận giao hàng:
             </Typography>
-            <div className="w-20 h-20 rounded-lg shadow-sm ">
-              <img
+            <div className="w-20 h-20 overflow-hidden rounded-lg shadow-sm ">
+              <Image
                 src={order?.validatingImg}
                 alt="Validating Image"
-                className="w-full h-full"
+                className="object-cover w-20 h-20"
               />
             </div>
           </div>
