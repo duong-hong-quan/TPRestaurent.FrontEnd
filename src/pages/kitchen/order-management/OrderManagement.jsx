@@ -33,7 +33,7 @@ const menuItems = [
   { value: 5, label: "Đã huỷ" },
 ];
 
-const OrderTag = ({ status, index }) => {
+const OrderTag = ({ status, index, handleOpen }) => {
   const [textColor, setTextColor] = useState("");
 
   const baseClass =
@@ -78,7 +78,11 @@ const OrderTag = ({ status, index }) => {
   };
 
   return (
-    <div className={`${baseClass} hover:brightness-110`} style={tagStyle}>
+    <div
+      onClick={handleOpen}
+      className={`${baseClass} hover:brightness-110`}
+      style={tagStyle}
+    >
       {statusIcons[status]}
       <span>#{index}</span>
     </div>
@@ -458,11 +462,14 @@ const OrderManagement = () => {
         <div className="mb-6">
           <div className=" flex flex-wrap  w-full pb-2">
             {orderSession?.map((order, idx) => (
-              <div className="mx-1 my-1">
+              <div className="mx-1 my-1 cursor-pointer">
                 <OrderTag
                   key={idx}
                   status={order.orderSession.orderSessionStatusId}
                   index={order.orderSession.orderSessionNumber}
+                  handleOpen={async () =>
+                    await fetchOrderDetail(order.orderSession.orderSessionId)
+                  }
                 />
               </div>
             ))}
