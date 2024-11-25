@@ -31,9 +31,9 @@ const ModalAssignVoucher = ({
     {
       id: 2,
       name: "BẠC",
-      icon: <SilverStar className="w-12 h-12 text-[#C0C0C0]" />,
-      color: "bg-[#C0C0C0]",
-      textColor: "text-[#C0C0C0]",
+      icon: <SilverStar className="w-12 h-12 text-[#5e3e3e]" />,
+      color: "bg-[#5e3e3e]",
+      textColor: "text-[#5e3e3e]",
       description:
         "Hạng bạc đối với những người dùng có điểm từ 100,000 đến 299,999",
       minPoints: 100000,

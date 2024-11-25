@@ -13,6 +13,7 @@ import LoadingOverlay from "../../loading/LoadingOverlay";
 import { Button, message, Modal } from "antd";
 import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
 import OrderDetail from "../order-detail/OrderDetail";
+import { useSelector } from "react-redux";
 
 const ReservationRequestItem = ({ reservation }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -21,7 +22,7 @@ const ReservationRequestItem = ({ reservation }) => {
   const [selectedMethod, setSelectedMethod] = useState(2);
   const { callApi, error, loading } = useCallApi();
   const [reservationData, setReservationData] = useState({});
-
+  const user = useSelector((state) => state.user?.user || {});
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -131,14 +132,15 @@ const ReservationRequestItem = ({ reservation }) => {
       </div>
       <div className="flex flex-col md:flex-row justify-end items-center">
         <div className="flex justify-end">
-          {reservation?.statusId === 9 && (
-            <button
-              onClick={() => handleClickOpen()}
-              className=" text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
-            >
-              Thanh toán ngay
-            </button>
-          )}
+          {reservation?.statusId === 9 &&
+            reservation.account.id === user.id && (
+              <button
+                onClick={() => handleClickOpen()}
+                className=" text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Thanh toán ngay
+              </button>
+            )}
 
           <button
             onClick={() => handleChange(reservation.orderId)}

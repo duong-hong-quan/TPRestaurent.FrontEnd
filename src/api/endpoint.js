@@ -20,6 +20,7 @@ export const AccountApi = {
   GET_ACCOUNT_BY_PHONENUMBER_KEYWORD:
     "/api/account/get-account-by-phone-number-keyword",
   GET_ALL_ACCOUNT: "/api/account/get-all-account",
+  GET_ACCOUNT_BY_ID: "/api/account/get-account-by-user-id",
 };
 
 export const ComboApi = {
@@ -47,6 +48,7 @@ export const CouponApi = {
   ASSIGN_COUPON: "/coupon/assign-coupon",
   GET_AVAILABLE_COUPON_BY_ACCOUNT_ID:
     "/coupon/get-available-coupon-by-account-id",
+  GET_TOTAL_USER_BY_RANK: "/coupon/get-total-user-by-rank",
 };
 export const DeviceApi = {
   GET_ALL: "/device/get-all-device",

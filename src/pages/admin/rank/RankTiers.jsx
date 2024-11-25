@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Award as BronzeMedal,
   Star as SilverStar,
@@ -5,62 +6,45 @@ import {
   Gem as DiamondGem,
   Users as UserIcon,
 } from "lucide-react";
+import { formatPrice } from "../../../util/Utility";
 
-const RankTiers = () => {
+const RankTiers = ({ rankData, handleViewRankDetail }) => {
   const ranks = [
     {
-      id: 1,
+      userRankId: 1,
       name: "ĐỒNG",
-      icon: <BronzeMedal className="w-12 h-12 text-[#CD7F32]" />,
-      color: "bg-[#CD7F32]",
+      icon: <BronzeMedal className="w-12 h-12" />,
+      color: "border-[#CD7F32]",
       textColor: "text-[#CD7F32]",
-      description: "Hạng đồng đối với những người dùng có điểm từ 0 đến 99,999",
-      minPoints: 0,
-      maxPoints: 99999,
+      stats: rankData?.find((r) => r.userRank === 1),
     },
     {
-      id: 2,
+      userRankId: 2,
       name: "BẠC",
-      icon: <SilverStar className="w-12 h-12 text-[#C0C0C0]" />,
-      color: "bg-[#C0C0C0]",
+      icon: <SilverStar className="w-12 h-12" />,
+      color: "border-[#C0C0C0]",
       textColor: "text-[#C0C0C0]",
-      description:
-        "Hạng bạc đối với những người dùng có điểm từ 100,000 đến 299,999",
-      minPoints: 100000,
-      maxPoints: 299999,
+
+      stats: rankData.find((r) => r.userRank === 2),
     },
     {
-      id: 3,
+      userRankId: 3,
       name: "VÀNG",
-      icon: <GoldCrown className="w-12 h-12 text-[#FFD700]" />,
-      color: "bg-[#FFD700]",
+      icon: <GoldCrown className="w-12 h-12" />,
+      color: "border-[#FFD700]",
       textColor: "text-[#FFD700]",
-      description:
-        "Hạng vàng đối với những người dùng có điểm từ 300,000 đến 499,999",
-      minPoints: 300000,
-      maxPoints: 499999,
+
+      stats: rankData.find((r) => r.userRank === 3),
     },
     {
-      id: 4,
+      userRankId: 4,
       name: "KIM CƯƠNG",
-      icon: <DiamondGem className="w-12 h-12 text-[#6ccde3]" />,
-      color: "bg-[#54c1d9]",
+      icon: <DiamondGem className="w-12 h-12" />,
+      color: "border-[#6ccde3]",
       textColor: "text-[#6ccde3]",
-      description:
-        "Hạng kim cương đối với những người dùng có điểm từ 500,000 trở lên",
-      minPoints: 500000,
-      maxPoints: Infinity,
+      stats: rankData.find((r) => r.userRank === 4),
     },
   ];
-
-  const handleRankSelect = (rank) => {
-    setSelectedRank(rank);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   return (
     <div className="container mx-auto p-4">
@@ -72,18 +56,30 @@ const RankTiers = () => {
           <div
             key={rank.id}
             className={`
-              border-2 ${rank.color}/20 border-opacity-50 rounded-lg 
-              p-6 text-center transform transition-all cursor-pointer
+              border-2 ${rank.color} rounded-lg 
+              p-6 text-center transform hover:scale-105 
+              transition-all duration-200 cursor-pointer
+              hover:shadow-lg
             `}
+            onClick={() => handleViewRankDetail(rank)}
           >
-            <div className="flex justify-center mb-4">{rank.icon}</div>
+            <div className={`flex justify-center mb-4 ${rank.textColor}`}>
+              {rank.icon}
+            </div>
             <h3 className={`text-2xl font-bold mb-2 ${rank.textColor}`}>
               {rank.name}
             </h3>
-            <p className="text-gray-600 mb-4">{rank.description}</p>
-            <div className="flex items-center justify-center">
-              <UserIcon className="w-5 h-5 mr-2 text-gray-600" />
-              <span className="text-sm text-gray-700"></span>
+            <p className="text-gray-600 text-sm mb-4">{rank.description}</p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-center">
+                <UserIcon className="w-5 h-5 mr-2 text-gray-600" />
+                <span className="text-sm text-gray-700">
+                  {rank.stats?.total || 0} thành viên
+                </span>
+              </div>
+              <div className="text-sm text-gray-600">
+                Chi tiêu tối thiểu: {formatPrice(rank.stats?.minimumSpent)}
+              </div>
             </div>
           </div>
         ))}

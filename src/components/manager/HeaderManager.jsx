@@ -118,9 +118,12 @@ const HeaderManager = ({ userName = "Admin" }) => {
         </button>
         <Typography
           variant="h4"
-          className="flex justify-center items-center mr-4 cursor-pointer py-1.5 lg:ml-2 font-bold text-red-900 "
+          className="flex flex-col  justify-start items-start mr-4 cursor-pointer py-1.5 lg:ml-2 font-bold text-red-900 "
         >
-          Welcome, {userName}
+          Chào {user.firstName} {user.lastName},
+          <span className="block text-sm">
+            Vai trò: {user.mainRole.toLowerCase()}
+          </span>
         </Typography>
 
         <div className="flex items-center gap-4">
@@ -212,8 +215,6 @@ const HeaderManager = ({ userName = "Admin" }) => {
                   </MenuItem>
                 ))}
               </div>
-
-           
             </MenuList>
           </Menu>
 
