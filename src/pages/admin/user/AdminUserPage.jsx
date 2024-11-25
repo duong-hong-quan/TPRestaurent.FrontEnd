@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import styled from "styled-components";
+import ModalUser from "../../../components/user/user-modal/ModalUser";
 
 const AdminUserPage = () => {
   const { callApi, error, loading } = useCallApi();
@@ -28,8 +29,10 @@ const AdminUserPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [keyword, setKeyword] = useState("");
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const navigate = useNavigate();
   const totalItems = 20;
+  const [selectedUser, setSelectedUser] = useState(null);
   const menu = [
     { label: "Người dùng", value: "0" },
     { label: "Nhân viên bếp", value: "1" },
@@ -159,6 +162,8 @@ const AdminUserPage = () => {
                 },
               });
             } else {
+              setSelectedUser(record);
+              setIsOpenModal(true);
             }
           }}
         >
@@ -223,6 +228,11 @@ const AdminUserPage = () => {
         onPageChange={setCurrentPage}
         totalPages={totalPages}
         key={"pagination"}
+      />
+      <ModalUser
+        onClose={() => setIsOpenModal(false)}
+        open={isOpenModal}
+        user={selectedUser}
       />
     </div>
   );

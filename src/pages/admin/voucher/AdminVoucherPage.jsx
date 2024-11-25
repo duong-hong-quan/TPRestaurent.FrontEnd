@@ -28,7 +28,8 @@ import ModalAssignVoucher from "./ModalAssignVoucher";
 import { set } from "lodash";
 const AdminVoucherPage = () => {
   const [coupons, setCoupons] = useState([]);
-  const { callApi, error, loading } = useCallApi();
+  const { callApi, error, loading, callMultipleApis, loadingPromise } =
+    useCallApi();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const totalItems = 10;
@@ -41,6 +42,7 @@ const AdminVoucherPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [users, setUsers] = useState([]);
+  const [rankData, setRankData] = useState([]);
   const onFinish = async (values) => {
     try {
       const data = {
@@ -110,15 +112,36 @@ const AdminVoucherPage = () => {
     setCurrentPage(page);
   };
   const fetchData = async () => {
-    const response = await callApi(
-      `${CouponApi.GET_AVAILABLE_COUPON_PROGRAM}/1/100`,
-      "GET"
-    );
+    // const response = await callApi(
+    //   `${CouponApi.GET_AVAILABLE_COUPON_PROGRAM}/1/100`,
+    //   "GET"
+    // );
+    // if (response?.isSuccess) {
+    //   setCoupons(response.result.items);
+    //   setTotalPages(response.totalPages);
+    // } else {
+    //   showError(response.messages);
+    // }
+    const [response, rankData] = await callMultipleApis([
+      {
+        endpoint: `${CouponApi.GET_AVAILABLE_COUPON_PROGRAM}/1/100`,
+        method: "GET",
+      },
+      {
+        endpoint: `${CouponApi.GET_TOTAL_USER_BY_RANK}`,
+        method: "GET",
+      },
+    ]);
     if (response?.isSuccess) {
       setCoupons(response.result.items);
       setTotalPages(response.totalPages);
     } else {
       showError(response.messages);
+    }
+    if (rankData?.isSuccess) {
+      setRankData(rankData.result);
+    } else {
+      showError(rankData.messages);
     }
   };
   useEffect(() => {
@@ -288,12 +311,14 @@ const AdminVoucherPage = () => {
       setUsers(response.result?.items);
     } else {
       showError(response.messages);
+      setUsers([]);
     }
   };
+
   return (
     <div className="w-full px-4 bg-white rounded-lg shadow-lg ">
       <LoadingOverlay isLoading={loading} />
-      <RankTiers />
+      <RankTiers rankData={rankData} handleViewRankDetail={handleSelectRank} />
 
       <div className="mb-8 px-2 py-4 flex items-center justify-between gap-8">
         <div>
