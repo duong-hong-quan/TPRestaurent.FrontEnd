@@ -10,13 +10,27 @@ const OrderDetailsView = ({ data, isHorizontal }) => {
   const dishColumns = [
     {
       title: "Món",
-      dataIndex: ["dishSizeDetail", "dish", "name"],
-      key: "dishName",
+      dataIndex: ["dishSizeDetail", "dish", "name"] || ["comboDish", "combo","name"],
+      key: "dishName" || "comboName",
+      render: (text, record) => {
+        if (record?.dishSizeDetail?.dish) {
+          return record?.dishSizeDetail?.dish?.name;
+        } else {
+          return record?.comboDish?.combo?.name;
+        }
+      }
     },
     {
-      title: "Size",
+      title: "Size/ Món",
       dataIndex: ["dishSizeDetail", "dishSize", "vietnameseName"],
       key: "dishSize",
+      render: (_, record) => {
+        if (record?.dishSizeDetail) {
+          return record?.dishSizeDetail?.dishSize?.vietnameseName;
+        } else {
+          return "Combo";
+        }
+      }
     },
     {
       title: "Số lượng",
@@ -27,7 +41,13 @@ const OrderDetailsView = ({ data, isHorizontal }) => {
       title: "Gía",
       dataIndex: ["dishSizeDetail", "price"],
       key: "price",
-      render: (price) => `${formatPrice(price)}`,
+      render: (_, record) => {
+        if (record?.dishSizeDetail) {
+          return formatPrice(record?.dishSizeDetail?.price);
+        } else {
+          return formatPrice(record?.comboDish?.combo?.price);
+        }
+      }
     },
     {
       title: "Trạng thái",

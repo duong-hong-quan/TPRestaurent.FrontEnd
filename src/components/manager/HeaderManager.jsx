@@ -136,7 +136,7 @@ const HeaderManager = ({ userName = "Admin" }) => {
               <Badge
                 content={unreadCount}
                 color="red"
-                className="animate-pulse"
+                className="animate-pulse w-6 h-6"
               >
                 <IconButton
                   variant="text"
