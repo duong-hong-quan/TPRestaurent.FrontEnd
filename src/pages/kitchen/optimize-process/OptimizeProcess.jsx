@@ -9,6 +9,7 @@ import {
   Space,
   Button,
   Image,
+  Checkbox,
 } from "antd";
 import useCallApi from "../../../api/useCallApi";
 import { GroupedDishCraftApi, OrderApi } from "../../../api/endpoint";
@@ -20,6 +21,7 @@ import { EyeOutlined } from "@ant-design/icons";
 import OrderDetailModal from "./OrderDetailModal";
 import { combineTimes, showError } from "../../../util/Utility";
 import { SignalRMethod } from "../../../util/GlobalType";
+import { set } from "lodash";
 
 const { Title, Text } = Typography;
 
@@ -37,7 +39,7 @@ const StyledTable = styled(Table)`
 `;
 
 const QuantityBadge = ({ label, count, color }) => (
-  <div className="flex items-center space-x-2">
+  <div className="flex items-center space-x-1">
     <Badge
       count={count}
       showZero
@@ -50,7 +52,6 @@ const QuantityBadge = ({ label, count, color }) => (
     </Badge>
   </div>
 );
-
 const DishSizeInfo = ({
   sizeData,
   dishData,
@@ -59,58 +60,91 @@ const DishSizeInfo = ({
   type,
   setType,
   setSelectedGroupedDishId,
-}) => (
-  <div
-    className={`flex w-full items-center justify-start rounded-lg p-4 my-1 ${
-      dishData.IsLate ? "bg-yellow-700 bg-opacity-40" : "bg-white"
-    }`}
-    style={{
-      border: "1px solid #ccc",
-    }}
-  >
-    <Text strong className="text-wrap  w-[150px]">
-      {dishData?.Dish?.Name}
-    </Text>
-    <div>
-      {sizeData.map((item, index) => (
-        <div key={index} className="grid grid-cols-5 p-2 rounded">
-          <Image
-            src={dishData.Dish.Image}
-            width={50}
-            height={50}
-            className="rounded-full"
-          />
-          <Text strong className="text-wrap max-w-[150px] my-auto">
-            {item.DishSize.VietnameseName}:
-          </Text>
-          <Space>
-            <QuantityBadge
-              label="Chưa đọc"
-              count={item.UncheckedQuantity}
-              color="#a8181c"
-            />
-            <QuantityBadge
-              label="Đang nấu"
-              count={item.ProcessingQuantity}
-              color="#1890ff"
-            />
-          </Space>
-        </div>
-      ))}
-    </div>
-    <Button
-      className="ml-4"
-      onClick={async () => {
-        setType(type);
-        setSelectedGroupedDishId(groupedDishId);
-        await fetchDetail(groupedDishId, dishData?.Dish.DishId, type);
+  selectedDishes,
+  setSelectedDishes,
+}) => {
+  const handleCheckboxChange = (e, dishId, groupedDishId) => {
+    const isChecked = e.target.checked;
+    if (isChecked) {
+      setSelectedDishes([...selectedDishes, { dishId, groupedDishId }]);
+    } else {
+      setSelectedDishes(
+        selectedDishes.filter(
+          (dish) =>
+            dish.dishId !== dishId || dish.groupedDishId !== groupedDishId
+        )
+      );
+    }
+  };
+
+  return (
+    <div
+      className={`flex w-full items-center justify-start rounded-lg p-4 my-1 ${
+        dishData.IsLate ? "bg-yellow-700 bg-opacity-40" : "bg-white"
+      }`}
+      style={{
+        border: "1px solid #ccc",
       }}
     >
-      <EyeOutlined />
-    </Button>
-  </div>
-);
-
+      <Checkbox
+        onChange={(e) =>
+          handleCheckboxChange(e, dishData?.Dish?.DishId, groupedDishId)
+        }
+        checked={selectedDishes?.some(
+          (dish) =>
+            dish.dishId === dishData?.Dish?.DishId &&
+            dish.groupedDishId === groupedDishId
+        )}
+      />
+      <Text strong className="ml-2 text-nowrap">
+        {dishData?.Dish?.Name}
+      </Text>
+      <div>
+        {sizeData.map((item, index) => (
+          <div
+            key={index}
+            className="grid grid-cols-8 items-center gap-1 p-2 rounded"
+          >
+            <div className="col-span-1">
+              <Image
+                src={dishData.Dish.Image}
+                alt="dish"
+                width={30}
+                height={30}
+                className="rounded-full w-full h-full"
+              />
+            </div>
+            <span strong className="text-nowrap col-span-1 text-sm my-auto">
+              {item.DishSize.VietnameseName}:
+            </span>
+            <Space className="flex flex-wrap col-span-4">
+              <QuantityBadge
+                label="Chưa đọc"
+                count={item.UncheckedQuantity}
+                color="#a8181c"
+              />
+              <QuantityBadge
+                label="Đang nấu"
+                count={item.ProcessingQuantity}
+                color="#1890ff"
+              />
+            </Space>
+            {/* <Button
+              className="col-span-2"
+              onClick={async () => {
+                setType(type);
+                setSelectedGroupedDishId(groupedDishId);
+                await fetchDetail(groupedDishId, dishData?.Dish.DishId, type);
+              }}
+            >
+              <EyeOutlined />
+            </Button> */}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 const OptimizeProcess = () => {
   const [connection, setConnection] = useState(null);
   const audioRef = useRef(null);
@@ -158,12 +192,15 @@ const OptimizeProcess = () => {
               type={true}
               setType={setType}
               setSelectedGroupedDishId={setSelectedGroupedDishId}
+              selectedDishes={selectedDishes}
+              setSelectedDishes={setSelectedDishes}
             />
           ))
         );
       },
     },
   ];
+  const [selectedDishes, setSelectedDishes] = useState([]);
 
   const columnSingle = [
     {
@@ -203,6 +240,8 @@ const OptimizeProcess = () => {
               type={false}
               setSelectedGroupedDishId={setSelectedGroupedDishId}
               setType={setType}
+              selectedDishes={selectedDishes}
+              setSelectedDishes={setSelectedDishes}
             />
           ))
         );
@@ -309,7 +348,7 @@ const OptimizeProcess = () => {
     await fetchData();
     message.success("Gom món thành công");
   };
-
+  console.log(selectedDishes);
   return (
     <div className="px-10 bg-white rounded-lg py-4 shadow-lg">
       <h5 className="text-center text-red-800 font-bold text-2xl">
@@ -345,7 +384,7 @@ const OptimizeProcess = () => {
                 dataSource={filteredData}
                 columns={columns}
                 pagination={false}
-                rowKey={(record) => record.id}
+                rowKey={(record) => record.groupedDishCraftId}
                 scroll={{ x: 600, y: 500 }}
                 loading={loading}
               />
@@ -361,12 +400,32 @@ const OptimizeProcess = () => {
                 columns={columnSingle}
                 pagination={false}
                 scroll={{ x: 600, y: 500 }}
-                rowKey={(record) => record.id}
+                rowKey={(record) => record.groupedDishCraftId}
                 loading={loading}
               />
             </div>
           </div>
         </div>
+      </div>
+      <div className="flex justify-center my-2">
+        <Button
+          loading={loading}
+          className="bg-red-800 text-white"
+          onClick={async () => {
+            const response = await callApi(
+              `${GroupedDishCraftApi.UPDATE_GROUPED_DISH}`,
+              "POST",
+              selectedDishes
+            );
+            if (response.isSuccess) {
+              message.success("Cập nhật trạng thái thành công");
+              setSelectedDish(null);
+              await fetchData();
+            }
+          }}
+        >
+          Cập nhật
+        </Button>
       </div>
       <OrderDetailModal
         handleUpdateStatus={handleUpdateStatus}

@@ -41,6 +41,9 @@ const StyledList = styled(List)`
     margin-bottom: 8px;
     transition: all 0.3s ease;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     &:hover {
       background-color: #ffe6e6;
     }
@@ -277,7 +280,7 @@ const AdminShipperPage = () => {
                 className={selectedShipper?.id === item.id ? "selected" : ""}
               >
                 <List.Item.Meta
-                  avatar={<Avatar icon={item.avatar} />}
+                  avatar={<Avatar src={item.avatar} />}
                   title={`${item.firstName} ${item.lastName}`}
                   description={`0${item.phoneNumber}`}
                 />
