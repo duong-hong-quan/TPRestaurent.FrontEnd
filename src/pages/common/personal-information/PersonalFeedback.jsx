@@ -3,12 +3,13 @@ import TabMananger from "../../../components/tab/TabManager";
 import useCallApi from "../../../api/useCallApi";
 import { OrderApi } from "../../../api/endpoint";
 import { useSelector } from "react-redux";
-import { Badge, Card, Image, Modal, Tag } from "antd";
+import { Badge, Button, Card, Image, Modal, Tag } from "antd";
 import FeedbackForm from "../../../components/feedback/FeedbackForm";
 import { formatDateTime, formatPrice } from "../../../util/Utility";
 import { MoveDownIcon } from "lucide-react";
 import { DownCircleFilled } from "@ant-design/icons";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import { useNavigate } from "react-router-dom";
 
 const PersonalFeedback = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -17,6 +18,7 @@ const PersonalFeedback = () => {
   const user = useSelector((state) => state.user.user || {});
   const [isShowModal, setIsShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const navigate = useNavigate();
   const items = [
     {
       value: 0,
@@ -120,6 +122,20 @@ const PersonalFeedback = () => {
                         </Tag>
                       )}
                       <p>Thời gian đặt đơn: {formatDateTime(item.orderTime)}</p>
+                      {item.isRated && (
+                        <Button
+                          onClick={() =>
+                            navigate(
+                              `/${item.dishSizeDetail ? "product" : "combo"}/${
+                                item.dishSizeDetail?.dishId ||
+                                item.comboDish?.comboId
+                              }`
+                            )
+                          }
+                        >
+                          Xem lại đánh giá
+                        </Button>
+                      )}
                     </div>
                   </div>
                   {!item.isRated && (

@@ -51,6 +51,7 @@ import PersonalFeedback from "../pages/common/personal-information/PersonalFeedb
 import AdminOrderOverview from "../pages/admin/order-overview/AdminOrderOverview";
 import AdminVoucherPage from "../pages/admin/voucher/AdminVoucherPage";
 import OrderViewPage from "../pages/kitchen/order-management/OrderViewPage";
+import Unauthorized from "../pages/common/exception/Unauthorized";
 
 function Routers() {
   const routing = useRoutes([
@@ -125,6 +126,10 @@ function Routers() {
         {
           path: "landing",
           element: <Landing />,
+        },
+        {
+          path: "unauthorized",
+          element: <Unauthorized />,
         },
       ],
     },
@@ -295,7 +300,7 @@ function Routers() {
         {
           path: "order-management",
           element: <OrderViewPage />,
-        }
+        },
       ],
     },
   ]);
