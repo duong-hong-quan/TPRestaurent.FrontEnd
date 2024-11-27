@@ -569,12 +569,16 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                   </div>
                 ))}
             </div>
-            <div className="col-span-3  max-h-[300px] overflow-auto">
+            <div
+              className={`${
+                orderSessions ? "col-span-4" : "col-span-3 "
+              }  max-h-[300px] overflow-auto`}
+            >
               {orderDishes?.length > 0 &&
                 orderDishes
                   .filter(
                     (dish) =>
-                      dish.orderSession.orderSessionId === selectedOrderSession
+                      dish.orderSession?.orderSessionId === selectedOrderSession
                   )
                   .map((dish) => (
                     <div className="bg-gray-100 mb-2 px-2 rounded-lg">
