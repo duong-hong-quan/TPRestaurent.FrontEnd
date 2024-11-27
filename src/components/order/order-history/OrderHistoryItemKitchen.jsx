@@ -96,7 +96,7 @@ const OrderHistoryItemKitchen = ({ order }) => {
           </p>
           <button
             onClick={() => setShowDetails(!showDetails)}
-            className="flex items-center mx-2 text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+            className="flex cursor-pointer items-center mx-2 text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
           >
             {showDetails ? <FaAngleUp /> : <FaAngleDown />}
             Xem chi tiết
