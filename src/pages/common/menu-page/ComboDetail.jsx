@@ -7,10 +7,12 @@ import { addCombo } from "../../../redux/features/cartSlice";
 import { message } from "antd";
 import { CategoryTag } from "../../../components/badge/RestaurantCategoryBadges";
 import { CarTaxiFrontIcon, ShoppingCart } from "lucide-react";
+import RatingTab from "../../../components/rating/RatingTab";
 
 const ComboDetail = ({ comboData, handleBack }) => {
-  const { combo, dishCombo, imgs } = comboData;
+  const { combo, dishCombo, imgs, comboRatings } = comboData;
   const dispatch = useDispatch();
+  const [selectedStarFilter, setSelectedStarFilter] = useState(null);
 
   const [selectedDishes, setSelectedDishes] = useState({});
   const [mainImageIndex, setMainImageIndex] = useState(0);
@@ -225,6 +227,13 @@ const ComboDetail = ({ comboData, handleBack }) => {
           </div>
         </div>
       </div>
+      <RatingTab
+        averageRating={combo?.averageRating}
+        numberOfRating={combo?.numberOfRating}
+        reviews={comboRatings}
+        selectedStarFilter={selectedStarFilter}
+        setSelectedStarFilter={setSelectedStarFilter}
+      />
     </div>
   );
 };
