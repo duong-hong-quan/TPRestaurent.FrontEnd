@@ -50,6 +50,7 @@ import CreateEmployeeAccount from "../pages/admin/user/CreateEmployeeAccount";
 import PersonalFeedback from "../pages/common/personal-information/PersonalFeedback";
 import AdminOrderOverview from "../pages/admin/order-overview/AdminOrderOverview";
 import AdminVoucherPage from "../pages/admin/voucher/AdminVoucherPage";
+import OrderViewPage from "../pages/kitchen/order-management/OrderViewPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -280,7 +281,7 @@ function Routers() {
           element: <OrderManagement />,
         },
         {
-          path: "order-management",
+          path: "session-management",
           element: <OrderManagement />,
         },
         {
@@ -291,6 +292,10 @@ function Routers() {
           path: "dish-management",
           element: <DishManagement />,
         },
+        {
+          path: "order-management",
+          element: <OrderViewPage />,
+        }
       ],
     },
   ]);
