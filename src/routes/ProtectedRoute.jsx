@@ -9,6 +9,7 @@ import { logout } from "../redux/features/authSlice";
 
 export const ProtectedRoute = ({ children, role }) => {
   const user = useSelector((state) => state.user.user || {});
+  const mainRole = useSelector((state) => state.user.role || {});
   const { callApi, error, loading } = useCallApi();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -28,20 +29,19 @@ export const ProtectedRoute = ({ children, role }) => {
       navigate("/");
     } else {
       fetchCurrentToken();
+      debugger;
+
       switch (role) {
         case "admin":
           if (user.mainRole !== "ADMIN") {
-            navigate("/");
+            navigate("/unauthorized");
           }
           break;
         case "user":
-          if (localStorage.getItem("token") === null) {
-            navigate("/");
-          }
           break;
         case "kitchen":
           if (user.mainRole !== "CHEF") {
-            navigate("/");
+            navigate("/unauthorized");
           }
           break;
         default:

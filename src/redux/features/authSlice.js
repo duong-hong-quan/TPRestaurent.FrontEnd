@@ -18,6 +18,7 @@ export const authSlice = createSlice({
       state.role = null;
       message.success("Đăng xuất thành công");
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
     },
     author: (state, action) => {
       state.role = action.payload;
