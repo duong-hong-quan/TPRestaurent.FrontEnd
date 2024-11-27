@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
 const sidebarItems = [
@@ -33,10 +34,19 @@ const SidebarItem = ({ icon, text, href }) => (
 );
 
 const UserSidebar = () => {
+  const user = useSelector((state) => state.user?.user || {});
+  const userRole = user?.mainRole;
+
+  // Only show the first item if the role is admin, chef, or shipper
+  const filteredSidebarItems =
+    userRole === "ADMIN" || userRole === "CHEF" || userRole === "SHIPPER"
+      ? [sidebarItems[0]] // Show only the first item
+      : sidebarItems; // Show all items
+
   return (
     <nav className="p-4 rounded-lg shadow-md w-full min-h-full xl:w-64">
       <ul className="space-y-2">
-        {sidebarItems.map((item, index) => (
+        {filteredSidebarItems.map((item, index) => (
           <SidebarItem key={index} {...item} />
         ))}
       </ul>
