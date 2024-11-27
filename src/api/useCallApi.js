@@ -31,6 +31,7 @@ const useCallApi = () => {
       }
       return result.data;
     } catch (err) {
+      debugger;
       if (err instanceof Error) {
         setError([err.message]);
       } else {
