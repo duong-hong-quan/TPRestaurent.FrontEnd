@@ -1,5 +1,5 @@
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { Button, Image, Modal, Table } from "antd";
+import { Button, Image, Modal } from "antd";
 import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
@@ -15,11 +15,20 @@ import {
 } from "../../../api/endpoint";
 import dayjs from "dayjs";
 import OrderTag from "../../tag/OrderTag";
-import FeedbackForm from "../../feedback/FeedbackForm";
+import { useSelector } from "react-redux";
+import OrderSessionTag from "../../tag/OrderSessionTag";
+import { useState } from "react";
+import { Clock, ListChecks, TagIcon, Timer } from "lucide-react";
 
 const OrderDetail = ({ reservationData, fetchData }) => {
-  const { order, orderDishes, orderTables } = reservationData;
+  const { order, orderDishes, orderTables, orderSessions } = reservationData;
   const { callApi, error, loading } = useCallApi();
+  const [selectedOrderSession, setSelectedOrderSession] = useState(
+    orderDishes?.[0]?.orderSession?.orderSessionId
+  );
+  const user = useSelector((state) => state.user.user || {});
+  const [orderSessionData, setOrderSessionData] = useState([]);
+
   const renderPaymentMethod = () => {
     switch (order?.transaction?.paymentMethodId) {
       case PaymentMethod.MOMO:
@@ -259,6 +268,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
       onCancel() {},
     });
   };
+
   return (
     <Card className="w-full shadow-none border-none">
       <CardBody className="p-6">
@@ -328,7 +338,18 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                 }
               />
             )}
-
+            {order?.orderTypeId != 2 && (
+              <InfoItem
+                label="Bàn"
+                value={
+                  orderTables && orderTables.length > 0
+                    ? orderTables
+                        .map((item, index) => `Bàn ${item.table?.tableName}`)
+                        .join(", ")
+                    : "Chưa có thông tin"
+                }
+              />
+            )}
             <InfoItem
               label="Ghi chú"
               value={order?.note || "Không có ghi chú"}
@@ -400,66 +421,191 @@ const OrderDetail = ({ reservationData, fetchData }) => {
             </>
           </div>
         </div>
-        <Typography
-          variant="h5"
-          color="blue-gray"
-          className="mb-4 font-semibold"
-        >
-          Chi Tiết Đơn Hàng
-        </Typography>
-        <StyledTable
-          columns={columns}
-          dataSource={dataSource}
-          pagination={false}
-          className="border border-gray-200 rounded-lg overflow-hidden"
-        />
-        {order?.validatingImg && (
-          <div className="flex flex-col items-start ">
-            <Typography className="font-bold my-2">
-              Ảnh shipper xác nhận giao hàng:
-            </Typography>
-            <div className="w-20 h-20 overflow-hidden rounded-lg shadow-sm ">
-              <Image
-                src={order?.validatingImg}
-                alt="Validating Image"
-                className="object-cover w-20 h-20"
-              />
-            </div>
-          </div>
-        )}
 
-        {renderIsPayment() && (
-          <div className="flex justify-center my-4">
-            <Button
-              className="bg-red-900 text-white mx-auto"
-              loading={loading}
-              onClick={async () => {
-                const response = await callApi(
-                  `${TransactionApi.CREATE_PAYMENT}`,
-                  "POST",
-                  {
-                    orderId: order?.orderId,
-                    paymentMethod: order?.transaction?.paymentMethodId,
-                  }
-                );
-                if (response?.isSuccess) {
-                  window.location.href = response.result;
-                }
-              }}
+        {user.id === order?.accountId ? (
+          <>
+            <Typography
+              variant="h5"
+              color="blue-gray"
+              className="mb-4 font-semibold"
             >
-              Thanh toán ngay
-            </Button>
-          </div>
-        )}
-        {order?.statusId == 2 && (
-          <div
-            className="p-4 flex items-center gap-1 cursor-pointer"
-            onClick={() => handleCancelOrder(order?.orderId)}
-          >
-            <WarningOutlined className="text-yellow-800 text-2xl " />
-            <Typography variant="h6" className="font-semibold text-yellow-800">
-              Tôi muốn hủy đơn hàng
+              Chi Tiết Đơn Hàng
             </Typography>
+            <StyledTable
+              columns={columns}
+              dataSource={dataSource}
+              pagination={false}
+              className="border border-gray-200 rounded-lg overflow-hidden"
+            />
+            {order?.validatingImg && (
+              <div className="flex flex-col items-start ">
+                <Typography className="font-bold my-2">
+                  Ảnh shipper xác nhận giao hàng:
+                </Typography>
+                <div className="w-20 h-20 overflow-hidden rounded-lg shadow-sm ">
+                  <Image
+                    src={order?.validatingImg}
+                    alt="Validating Image"
+                    className="object-cover w-20 h-20"
+                  />
+                </div>
+              </div>
+            )}
+
+            {renderIsPayment() && user.id === order.accountId && (
+              <div className="flex justify-center my-4">
+                <Button
+                  className="bg-red-900 text-white mx-auto"
+                  loading={loading}
+                  onClick={async () => {
+                    const response = await callApi(
+                      `${TransactionApi.CREATE_PAYMENT}`,
+                      "POST",
+                      {
+                        orderId: order?.orderId,
+                        paymentMethod: order?.transaction?.paymentMethodId,
+                      }
+                    );
+                    if (response?.isSuccess) {
+                      window.location.href = response.result;
+                    }
+                  }}
+                >
+                  Thanh toán ngay
+                </Button>
+              </div>
+            )}
+            {order?.statusId == 2 && (
+              <div
+                className="p-4 flex items-center gap-1 cursor-pointer"
+                onClick={() => handleCancelOrder(order?.orderId)}
+              >
+                <WarningOutlined className="text-yellow-800 text-2xl " />
+                <Typography
+                  variant="h6"
+                  className="font-semibold text-yellow-800"
+                >
+                  Tôi muốn hủy đơn hàng
+                </Typography>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="grid grid-cols-4 gap-2">
+            <div className="col-span-1 max-h-[300px] overflow-auto">
+              {orderSessions?.length > 0 &&
+                orderSessions?.map((session) => (
+                  <div
+                    onClick={() =>
+                      setSelectedOrderSession(session.orderSessionId)
+                    }
+                    className={`
+                              group
+                              relative
+                              border 
+                              rounded-lg 
+                              p-4 
+                              transition-all 
+                              duration-300 
+                              ease-in-out 
+                              cursor-pointer 
+                              hover:shadow-md
+                              ${
+                                selectedOrderSession === session.orderSessionId
+                                  ? "border-red-500 bg-red-50 shadow-md"
+                                  : "border-gray-200 hover:border-red-300 bg-white"
+                              }
+                     `}
+                  >
+                    {/* Decorative corner accent */}
+                    <div
+                      className={`
+                        absolute 
+                        top-0 
+                        right-0 
+                        w-0 
+                        h-0 
+                        border-t-[24px] 
+                        border-l-[24px] 
+                        border-t-transparent 
+                        transition-colors 
+                        duration-300
+                        ${
+                          selectedOrderSession === session.orderSessionId
+                            ? "border-l-red-500"
+                            : "border-l-transparent group-hover:border-l-red-300"
+                        }`}
+                    />
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <ListChecks size={16} className="text-gray-500" />
+                        <span className="font-semibold">
+                          Phiên số: {session.orderSessionNumber}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Clock size={16} className="text-gray-500" />
+                        <span>
+                          Tạo lúc: {formatDateTime(session.orderSessionTime)}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Timer size={16} className="text-gray-500" />
+                        <span>
+                          Thời gian chuẩn bị: {session.preparationTime} phút
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <TagIcon size={16} className="text-gray-500" />
+                        <span className="flex items-center gap-2">
+                          Trạng thái: <OrderSessionTag orderSession={session} />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+            <div className="col-span-3  max-h-[300px] overflow-auto">
+              {orderDishes?.length > 0 &&
+                orderDishes
+                  .filter(
+                    (dish) =>
+                      dish.orderSession.orderSessionId === selectedOrderSession
+                  )
+                  .map((dish) => (
+                    <div className="bg-gray-100 mb-2 px-2 rounded-lg">
+                      <div className="flex items-center gap-2 p-2 border-b border-gray-200">
+                        <img
+                          src={
+                            dish.dishSizeDetail?.dish?.image ||
+                            dish.comboDish?.combo?.image
+                          }
+                          alt=""
+                          className="w-16 h-16 object-cover rounded-md"
+                        />
+                        <div>
+                          <p className="font-semibold">
+                            {dish.dishSizeDetail?.dish?.name ||
+                              dish.comboDish?.combo?.name}
+                          </p>
+                          <p className="text-gray-600">
+                            {`Số lượng: ${dish.quantity}`}
+                          </p>
+                          <p className="text-gray-800 font-medium">
+                            {formatPrice(
+                              dish.dishSizeDetail?.price ||
+                                dish.comboDish?.combo?.price
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+            </div>
           </div>
         )}
       </CardBody>

@@ -26,7 +26,7 @@ export const OrderStatus = [
     value: 4,
   },
   {
-    label: "Đang nấu",
+    label: "Đang dùng bữa",
     value: 5,
   },
 
@@ -120,3 +120,30 @@ export const SignalRMethod = {
   LOAD_USER_ORDER: "LOAD_USER_ORDER",
   LOAD_FINISHED_DISHES: "LOAD_FINISHED_DISHES",
 };
+
+export const OrderSessionStatus = [
+  {
+    label: "Đặt trước",
+    value: 0,
+  },
+  {
+    label: "Đã tiếp nhận món",
+    value: 1,
+  },
+  {
+    label: "Đang nấu",
+    value: 2,
+  },
+  {
+    label: "Cảnh báo nấu trễ",
+    value: 3,
+  },
+  {
+    label: "Đã xong",
+    value: 4,
+  },
+  {
+    label: "Đã hủy",
+    value: 5,
+  },
+];

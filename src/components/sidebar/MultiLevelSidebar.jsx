@@ -46,7 +46,7 @@ const AccordionItem = ({ item, open, handleOpen, index, navigate }) => (
       >
         <NavLink className="flex items-center w-full text-white">
           <ListItemPrefix>{item.icon}</ListItemPrefix>
-          <Typography className="mr-auto text-white font-bold text-nowrap">
+          <Typography className="mr-auto text-white font-bold text-wrap">
             {item.title}
           </Typography>
         </NavLink>
