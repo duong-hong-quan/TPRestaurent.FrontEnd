@@ -270,7 +270,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
   };
 
   return (
-    <Card className="w-full shadow-none border-none">
+    <Card className="w-full shadow-none border-none max-h-[550px] overflow-auto">
       <CardBody className="p-6">
         <Typography
           variant="h4"
@@ -592,6 +592,21 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                             {dish.dishSizeDetail?.dish?.name ||
                               dish.comboDish?.combo?.name}
                           </p>
+                          {dish.comboDish &&
+                            dish.comboDish?.dishCombos?.length > 0 && (
+                              <ul className="text-sm text-gray-600 my-1">
+                                {dish.comboDish?.dishCombos.map((comboDish) => (
+                                  <li key={comboDish.dishComboId}>
+                                    + {comboDish.dishSizeDetail.dish.name} (
+                                    {
+                                      comboDish.dishSizeDetail.dishSize
+                                        .vietnameseName
+                                    }
+                                    )
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
                           <p className="text-gray-600">
                             {`Số lượng: ${dish.quantity}`}
                           </p>

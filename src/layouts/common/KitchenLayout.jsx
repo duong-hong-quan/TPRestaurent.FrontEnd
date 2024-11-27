@@ -1,20 +1,13 @@
-import React from "react";
 import { MultiLevelSidebar } from "../../components/sidebar/MultiLevelSidebar";
 import { Outlet } from "react-router-dom";
 import HeaderManager from "../../components/manager/HeaderManager";
-import {
-  FaChartBar,
-  FaCog,
-  FaEnvelope,
-  FaMoneyBill,
-  FaNewspaper,
-  FaSignOutAlt,
-} from "react-icons/fa";
+import { FaChartBar } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { ListOrdered, TimerReset } from "lucide-react";
 const menuItems = [
   {
     title: "Tối ưu chế biến",
-    icon: <FaNewspaper className="h-5 w-5 text-white" />,
+    icon: <TimerReset className="h-5 w-5 text-white" />,
     path: "/kitchen/optimize-process",
   },
   {
@@ -25,12 +18,12 @@ const menuItems = [
 
   {
     title: "Xem đơn đặt món",
-    icon: <FaMoneyBill className="h-5 w-5 text-white" />,
+    icon: <ListOrdered className="h-5 w-5 text-white" />,
     path: "/kitchen/order-management",
   },
 ];
 const KitchenLayout = () => {
-  const user= useSelector((state) => state.user?.user || {});
+  const user = useSelector((state) => state.user?.user || {});
   return (
     <div className="flex">
       <MultiLevelSidebar menuItems={menuItems} />
