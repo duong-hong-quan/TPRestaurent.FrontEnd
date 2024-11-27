@@ -10,6 +10,7 @@ import {
   Button,
   Image,
   Checkbox,
+  Modal,
 } from "antd";
 import useCallApi from "../../../api/useCallApi";
 import { GroupedDishCraftApi, OrderApi } from "../../../api/endpoint";
@@ -114,7 +115,7 @@ const DishSizeInfo = ({
                 className="rounded-full w-full h-full"
               />
             </div>
-            <span strong className="text-nowrap col-span-1 text-sm my-auto">
+            <span className="text-nowrap col-span-1 text-sm my-auto">
               {item.DishSize.VietnameseName}:
             </span>
             <Space className="flex flex-wrap col-span-4">
@@ -289,50 +290,6 @@ const OptimizeProcess = () => {
       showError(response.messages);
     }
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl}/notifications`)
-      .withAutomaticReconnect()
-      .build();
-
-    setConnection(newConnection);
-  }, []);
-
-  useEffect(() => {
-    let retryCount = 0;
-    const MAX_RETRIES = 5;
-    const RETRY_DELAY = 3000; // 3 seconds
-    const startConnection = async () => {
-      if (connection) {
-        connection
-          .start()
-          .then(() => {
-            message.success("Connected to SignalR");
-            connection.on(SignalRMethod.LOAD_ORDER, async () => {
-              await fetchData();
-            });
-          })
-          .catch((error) => {
-            if (retryCount < MAX_RETRIES) {
-              retryCount++;
-              setTimeout(startConnection, RETRY_DELAY);
-            } else {
-              console.log("Max retries reached. Could not connect to SignalR.");
-            }
-          });
-      }
-    };
-    startConnection();
-    return () => {
-      if (connection) {
-        connection.stop();
-      }
-    };
-  }, [connection]);
 
   const filteredData = groupedDishCraft.filter((item) => {
     const dishes = JSON.parse(item.groupedDishJson).MutualOrderDishes;
@@ -348,7 +305,63 @@ const OptimizeProcess = () => {
     await fetchData();
     message.success("Gom món thành công");
   };
-  console.log(selectedDishes);
+
+  const renderConfrimModal = () => {};
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl(`${baseUrl}/notifications`, {
+        transport: signalR.HttpTransportType.WebSockets,
+      })
+      .withAutomaticReconnect()
+      .withStatefulReconnect()
+      .build();
+
+    setConnection(newConnection);
+  }, []);
+
+  useEffect(() => {
+    const startConnection = async () => {
+      if (connection) {
+        try {
+          await connection.start();
+          message.success("Connected to SignalR");
+          connection.on(SignalRMethod.LOAD_ORDER, async () => {
+            await fetchData();
+          });
+        } catch (error) {
+          console.error("SignalR connection error:", error);
+          message.error("Unable to connect to SignalR server.");
+        }
+      }
+    };
+
+    const MAX_RETRIES = 5;
+    let retryCount = 0;
+    const RETRY_DELAY = 3000;
+
+    const attemptReconnect = () => {
+      if (retryCount < MAX_RETRIES) {
+        retryCount++;
+        setTimeout(() => startConnection(), RETRY_DELAY);
+      } else {
+        message.error("Maximum retry attempts reached. Please check server.");
+      }
+    };
+
+    startConnection();
+
+    // Cleanup the connection on component unmount
+    return () => {
+      if (connection) {
+        connection.stop();
+      }
+    };
+  }, [connection]);
+
   return (
     <div className="px-10 bg-white rounded-lg py-4 shadow-lg">
       <h5 className="text-center text-red-800 font-bold text-2xl">
@@ -412,16 +425,25 @@ const OptimizeProcess = () => {
           loading={loading}
           className="bg-red-800 text-white"
           onClick={async () => {
-            const response = await callApi(
-              `${GroupedDishCraftApi.UPDATE_GROUPED_DISH}`,
-              "POST",
-              selectedDishes
-            );
-            if (response.isSuccess) {
-              message.success("Cập nhật trạng thái thành công");
-              setSelectedDish(null);
-              await fetchData();
-            }
+            Modal.confirm({
+              title: "Xác nhận",
+              content: "Bạn có chắc chắn muốn cập nhật trạng thái món ăn?",
+              onOk: async () => {
+                const response = await callApi(
+                  `${GroupedDishCraftApi.UPDATE_GROUPED_DISH}`,
+                  "POST",
+                  selectedDishes
+                );
+                if (response.isSuccess) {
+                  message.success("Cập nhật trạng thái thành công");
+                  setSelectedDishes([]);
+                  await fetchData();
+                }
+              },
+              onCancel() {
+                console.log("Cancel");
+              },
+            });
           }}
         >
           Cập nhật
