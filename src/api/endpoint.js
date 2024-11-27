@@ -156,7 +156,7 @@ export const GroupedDishCraftApi = {
   GET_ALL: "/grouped-dish-craft/get-all-grouped-dish",
   GET_BY_ID: "/grouped-dish-craft/get-grouped-dish-by-id",
   ADD_GROUPED_DISH: "/grouped-dish-craft/add-grouped-dish",
-  UPDATE_GROUPED_DISH: "/grouped-dish-craft/update-grouped-dish", 
+  UPDATE_GROUPED_DISH: "/grouped-dish-craft/update-grouped-dish",
 };
 export const TableApi = {
   GET_ALL: "/table/get-all-table",
@@ -182,6 +182,8 @@ export const InvoiceApi = {
 
 export const RatingApi = {
   CREATE: "/rating/create-rating",
+  GET_ALL_RATING_FOUR_TO_FIVE_STAR:
+    "/rating/get-all-rating-of-between-four-and-five-stars",
 };
 
 export const ChatBotApi = {
