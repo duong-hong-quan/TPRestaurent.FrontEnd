@@ -569,61 +569,65 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                   </div>
                 ))}
             </div>
-            <div
-              className={`${
-                orderSessions ? "col-span-4" : "col-span-3 "
-              }  max-h-[300px] overflow-auto`}
-            >
-              {orderDishes?.length > 0 &&
-                orderDishes
-                  .filter(
-                    (dish) =>
-                      dish.orderSession?.orderSessionId === selectedOrderSession
-                  )
-                  .map((dish) => (
-                    <div className="bg-gray-100 mb-2 px-2 rounded-lg">
-                      <div className="flex items-center gap-2 p-2 border-b border-gray-200">
-                        <img
-                          src={
-                            dish.dishSizeDetail?.dish?.image ||
-                            dish.comboDish?.combo?.image
-                          }
-                          alt=""
-                          className="w-16 h-16 object-cover rounded-md"
-                        />
-                        <div>
-                          <p className="font-semibold">
-                            {dish.dishSizeDetail?.dish?.name ||
-                              dish.comboDish?.combo?.name}
-                          </p>
-                          {dish.comboDish &&
-                            dish.comboDish?.dishCombos?.length > 0 && (
-                              <ul className="text-sm text-gray-600 my-1">
-                                {dish.comboDish?.dishCombos.map((comboDish) => (
-                                  <li key={comboDish.dishComboId}>
-                                    + {comboDish.dishSizeDetail.dish.name} (
-                                    {
-                                      comboDish.dishSizeDetail.dishSize
-                                        .vietnameseName
-                                    }
+            <div className={`${orderSessions ? "col-span-3" : "col-span-4 "} `}>
+              <h3 className="text-center uppercase text-red-800 my-1 font-semibold">
+                Các món ăn trong phiên gọi món
+              </h3>
+              <div className=" max-h-[300px] overflow-auto">
+                {orderDishes?.length > 0 &&
+                  orderDishes
+                    .filter(
+                      (dish) =>
+                        dish.orderSession?.orderSessionId ===
+                        selectedOrderSession
+                    )
+                    .map((dish) => (
+                      <div className="bg-gray-100 mb-2 px-2 rounded-lg">
+                        <div className="flex items-center gap-2 p-2 border-b border-gray-200">
+                          <img
+                            src={
+                              dish.dishSizeDetail?.dish?.image ||
+                              dish.comboDish?.combo?.image
+                            }
+                            alt=""
+                            className="w-16 h-16 object-cover rounded-md"
+                          />
+                          <div>
+                            <p className="font-semibold">
+                              {dish.dishSizeDetail?.dish?.name ||
+                                dish.comboDish?.combo?.name}
+                            </p>
+                            {dish.comboDish &&
+                              dish.comboDish?.dishCombos?.length > 0 && (
+                                <ul className="text-sm text-gray-600 my-1">
+                                  {dish.comboDish?.dishCombos.map(
+                                    (comboDish) => (
+                                      <li key={comboDish.dishComboId}>
+                                        + {comboDish.dishSizeDetail.dish.name} (
+                                        {
+                                          comboDish.dishSizeDetail.dishSize
+                                            .vietnameseName
+                                        }
+                                        )
+                                      </li>
                                     )
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          <p className="text-gray-600">
-                            {`Số lượng: ${dish.quantity}`}
-                          </p>
-                          <p className="text-gray-800 font-medium">
-                            {formatPrice(
-                              dish.dishSizeDetail?.price ||
-                                dish.comboDish?.combo?.price
-                            )}
-                          </p>
+                                  )}
+                                </ul>
+                              )}
+                            <p className="text-gray-600">
+                              {`Số lượng: ${dish.quantity}`}
+                            </p>
+                            <p className="text-gray-800 font-medium">
+                              {formatPrice(
+                                dish.dishSizeDetail?.price ||
+                                  dish.comboDish?.combo?.price
+                              )}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+              </div>
             </div>
           </div>
         )}
