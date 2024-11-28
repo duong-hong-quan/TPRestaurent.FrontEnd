@@ -104,9 +104,9 @@ const DishSizeInfo = ({
         {sizeData.map((item, index) => (
           <div
             key={index}
-            className="grid grid-cols-8 items-center gap-1 p-2 rounded"
+            className="grid grid-cols-8 items-center gap-1 p- rounded"
           >
-            <div className="col-span-1">
+            <div className="col-span-4 mx-2 flex items-center">
               <Image
                 src={dishData.Dish.Image}
                 alt="dish"
@@ -114,11 +114,12 @@ const DishSizeInfo = ({
                 height={30}
                 className="rounded-full w-full h-full"
               />
+              <span className="text-nowrap text-sm ml-1">
+                {item.DishSize.VietnameseName}:
+              </span>
             </div>
-            <span className="text-nowrap col-span-1 text-sm my-auto">
-              {item.DishSize.VietnameseName}:
-            </span>
-            <Space className="flex flex-wrap col-span-4">
+
+            <Space className="flex flex-wrap  col-span-4">
               <QuantityBadge
                 label="Chưa đọc"
                 count={item.UncheckedQuantity}
