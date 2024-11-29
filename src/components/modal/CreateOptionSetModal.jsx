@@ -32,15 +32,17 @@ const CreateOptionSetModal = ({
   setSelectedDish,
   setListDishSizeDetail,
   setPreviewDishes,
+  handleSelect,
 }) => {
   const [form] = Form.useForm();
   const [dishs, setDishs] = useState([]);
   const { callApi } = useCallApi();
   const [selectedType, setSelectedType] = useState(null);
+
   const fetchDataDish = async () => {
     const response = await callApi(
       `${DishApi.GET_ALL}/1/1000?type=${
-        form.getFieldValue("dishItemType") || initData?.values?.dishItemType
+        form.getFieldValue("dishItemType") || initData?.dishItemType
       }`,
       "GET"
     );
@@ -49,16 +51,110 @@ const CreateOptionSetModal = ({
       setDishs(response.result.items);
     }
   };
-  const handleSelect = (value) => {
-    const dish = dishs.find((dish) => dish.dish.dishId === value);
-    // setSelectedDish(dish);
-  };
+
   useEffect(() => {
     fetchDataDish();
   }, [selectedType]);
+
+  const handleSelectedDish = (value, indexList) => {
+    // Update selected dishes
+    const updatedSelectedDish = [...selectedDish];
+    if (!updatedSelectedDish[index]) {
+      updatedSelectedDish[index] = [];
+    }
+    updatedSelectedDish[index][indexList] = value;
+    setSelectedDish(updatedSelectedDish);
+
+    // Update dish size details
+    const handleUpdateDishSizeDetails = () => {
+      const selectedDishData = dishs.find(
+        (dishItem) => dishItem.dish.dishId === value
+      );
+
+      const updatedListDishSizeDetail = [...listDishSizeDetail];
+      if (!updatedListDishSizeDetail[index]) {
+        updatedListDishSizeDetail[index] = [];
+      }
+
+      const currentDishSizeDetails = selectedDishData
+        ? selectedDishData.dishSizeDetails
+        : [];
+
+      updatedListDishSizeDetail[index][indexList] = currentDishSizeDetails;
+      setListDishSizeDetail(updatedListDishSizeDetail);
+    };
+
+    handleUpdateDishSizeDetails();
+  };
+
+  const handlePreview = (dishSizeDetailId, quantity) => {
+    const updatedPreviewDishes = [...previewDishes];
+    if (!updatedPreviewDishes[index]) {
+      updatedPreviewDishes[index] = [];
+    }
+
+    // Find the dish and size detail
+    const dishWithSizeDetail = dishs.find((dish) =>
+      dish.dishSizeDetails.some(
+        (detail) => detail.dishSizeDetailId === dishSizeDetailId
+      )
+    );
+
+    if (dishWithSizeDetail) {
+      const dishSizeDetail = dishWithSizeDetail.dishSizeDetails.find(
+        (detail) => detail.dishSizeDetailId === dishSizeDetailId
+      );
+
+      // Check if dish already exists in preview
+      const existingDishIndex = updatedPreviewDishes[index].findIndex(
+        (preview) => preview.dish.dishId === dishWithSizeDetail.dish.dishId
+      );
+
+      if (existingDishIndex !== -1) {
+        // Update existing dish
+        updatedPreviewDishes[index][existingDishIndex] = {
+          dish: dishWithSizeDetail.dish,
+          dishSizeDetail: dishSizeDetail,
+          quantity: quantity,
+        };
+      } else {
+        // Add new dish
+        updatedPreviewDishes[index].push({
+          dish: dishWithSizeDetail.dish,
+          dishSizeDetail: dishSizeDetail,
+          quantity: quantity,
+        });
+      }
+
+      setPreviewDishes(updatedPreviewDishes);
+    }
+  };
+
+  const handleRemoveDish = (index, indexList) => {
+    // Remove from selected dishes
+    const updatedSelectedDish = [...selectedDish];
+    if (updatedSelectedDish[index]) {
+      updatedSelectedDish[index].splice(indexList, 1);
+    }
+    setSelectedDish(updatedSelectedDish);
+
+    // Remove from dish size details
+    const updatedListDishSizeDetail = [...listDishSizeDetail];
+    if (updatedListDishSizeDetail[index]) {
+      updatedListDishSizeDetail[index].splice(indexList, 1);
+    }
+    setListDishSizeDetail(updatedListDishSizeDetail);
+
+    // Remove from preview dishes
+    const updatedPreviewDishes = [...previewDishes];
+    if (updatedPreviewDishes[index]) {
+      updatedPreviewDishes[index].splice(indexList, 1);
+    }
+    setPreviewDishes(updatedPreviewDishes);
+  };
+
   const handleSubmit = () => {
     form.validateFields().then(() => {
-      console.log(form.getFieldsValue());
       onSubmit(
         index,
         form.getFieldsValue(),
@@ -70,87 +166,12 @@ const CreateOptionSetModal = ({
       onClose();
     });
   };
-  const mapData = async () => {
-    await fetchDataDish();
 
+  useEffect(() => {
     if (initData) {
       form.setFieldsValue(initData);
-    } else {
-      form.resetFields();
     }
-  };
-  useEffect(() => {
-    mapData();
   }, [initData]);
-  const handleSelectedDish = async (value, indexList) => {
-    let selectedDishs = [...selectedDish];
-    let selecterDishIndex = selectedDishs[index] || [];
-    selecterDishIndex[indexList] = value;
-    selectedDishs[index] = selecterDishIndex;
-    setSelectedDish(selectedDishs);
-    handleSelectedDishSizeDetail(value, indexList);
-  };
-
-  const handleSelectedDishSizeDetail = (value, indexList) => {
-    let listDishSizeDetails = [...listDishSizeDetail];
-    let dishSizeDetailIndex = listDishSizeDetails[index] || [];
-    const dataFilter = dishs.filter((dish) => dish.dish.dishId === value);
-    dishSizeDetailIndex[indexList] = dataFilter[0]?.dishSizeDetails || [];
-    listDishSizeDetails[index] = dishSizeDetailIndex;
-    setListDishSizeDetail(listDishSizeDetails);
-  };
-  const getDishBaseDishDetailId = (dishSizeDetailId) => {
-    const dataFilter = dishs.filter((dish) =>
-      dish.dishSizeDetails.find(
-        (detail) => detail.dishSizeDetailId === dishSizeDetailId
-      )
-    );
-    return dataFilter[0]?.dish;
-  };
-  const getDishSizeDetail = (dishSizeDetailId) => {
-    return listDishSizeDetail[index]?.flat().filter((dishItem) => {
-      return dishItem.dishSizeDetailId === dishSizeDetailId;
-    })[0];
-  };
-
-  const handlePreview = (value, quantity) => {
-    let previewDish = [...previewDishes];
-    let previewDishIndex = previewDish[index] || [];
-    const dish = previewDishIndex.find(
-      (dish) => dish.dish.dishId === getDishBaseDishDetailId(value).dishId
-    );
-    if (dish && getDishSizeDetail(value)) {
-      dish.quantity = quantity;
-    } else {
-      previewDishIndex.push({
-        dish: getDishBaseDishDetailId(value),
-        quantity: quantity,
-        dishSizeDetail: getDishSizeDetail(value),
-      });
-    }
-    previewDish[index] = previewDishIndex;
-    setPreviewDishes(previewDish);
-  };
-  const handleRemoveDish = (index, indexList) => {
-    let selectedDishs = [...selectedDish];
-    let selecterDishIndex = selectedDishs[index] || [];
-    selecterDishIndex.splice(indexList, 1);
-    selectedDishs[index] = selecterDishIndex;
-    setSelectedDish(selectedDishs);
-
-    let listDishSizeDetails = [...listDishSizeDetail];
-    let dishSizeDetailIndex = listDishSizeDetails[index] || [];
-    dishSizeDetailIndex.splice(indexList, 1);
-    listDishSizeDetails[index] = dishSizeDetailIndex;
-    setListDishSizeDetail(listDishSizeDetails);
-
-    let previewDish = [...previewDishes];
-    let previewDishIndex = previewDish[index] || [];
-    previewDishIndex.splice(indexList, 1);
-    previewDish[index] = previewDishIndex;
-    setPreviewDishes(previewDish);
-  };
-  console.log(initData);
   return (
     <Modal
       open={isOpen}
@@ -325,12 +346,11 @@ const CreateOptionSetModal = ({
                               min={1}
                               className="w-full"
                               onChange={(value) => {
-                                handlePreview(
-                                  listDishSizeDetail[index]?.[
-                                    indexDishSizeDetails
-                                  ]?.[0]?.dishSizeDetailId,
-                                  value
-                                );
+                                const currentDishSizeDetail =
+                                  form.getFieldValue([name, "dishSizeDetail"]);
+                                if (currentDishSizeDetail) {
+                                  handlePreview(currentDishSizeDetail, value);
+                                }
                               }}
                             />
                           </Form.Item>
