@@ -152,7 +152,7 @@ const AdminDishPage = ({ initData, tab }) => {
             </Button>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row ">
           <div className="mb-4">{renderMenuTab()}</div>
 
           <div className="w-full md:w-72">
@@ -171,7 +171,7 @@ const AdminDishPage = ({ initData, tab }) => {
       >
         Cập nhật số lượng món ăn
       </NavLink>
-      <CardBody key={uniqueId()} className="">
+      <div key={uniqueId()} className="">
         {Number(selectedMenuTab) === 1 ? (
           <DishTable
             key={uniqueId()}
@@ -191,7 +191,7 @@ const AdminDishPage = ({ initData, tab }) => {
             />
           )
         )}
-      </CardBody>
+      </div>
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
