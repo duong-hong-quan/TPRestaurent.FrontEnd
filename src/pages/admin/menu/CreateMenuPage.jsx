@@ -15,11 +15,12 @@ import {
 import { Typography } from "@material-tailwind/react";
 import useCallApi from "../../../api/useCallApi";
 import { DishApi } from "../../../api/endpoint";
-import { numberToWords, showError } from "../../../util/Utility";
+import { formatPrice, numberToWords, showError } from "../../../util/Utility";
 import { useNavigate, useParams } from "react-router-dom";
 import "react-quill/dist/quill.snow.css"; // import styles
 import ReactQuill from "react-quill";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import { set } from "lodash";
 
 const { TextArea } = Input;
 
@@ -34,6 +35,7 @@ const getBase64 = (file) =>
 const CreateMenuPage = ({ back }) => {
   const { id } = useParams();
   const [initData, setInitData] = useState(null);
+  const [discountedPrices, setDiscountedPrices] = useState({});
 
   const [form] = Form.useForm();
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -45,8 +47,18 @@ const CreateMenuPage = ({ back }) => {
   const [dishSizes, setDishSizes] = useState([]);
   const navigate = useNavigate();
   const [priceText, setPriceText] = useState([]);
-  const [description, setDescription] = useState(""); // new state for rich text description
-
+  const [priceDiscounts, setPriceDiscounts] = useState([]);
+  const caculateDiscountPriceChange = (index) => {
+    debugger;
+    const data = form.getFieldValue(`DishSizeDetailDtos`);
+    let price = data[index]?.price;
+    let discount = data[index]?.discount;
+    let discountPrice = price - (price * discount) / 100;
+    setPriceDiscounts((prev) => {
+      prev[index] = discountPrice;
+      return [...prev];
+    });
+  };
   const fetchDataById = async (id) => {
     const response = await callApi(`${DishApi.GET_BY_ID}/${id}`, "GET");
     if (response?.isSuccess) {
@@ -181,6 +193,19 @@ const CreateMenuPage = ({ back }) => {
           discount: size.discount,
         })),
       });
+      setPriceText((prev) => {
+        initData?.dish?.dishSizeDetails?.forEach((size, index) => {
+          prev[index] = numberToWords(size.price);
+        });
+        return [...prev];
+      });
+      setPriceDiscounts((prev) => {
+        initData?.dish?.dishSizeDetails?.forEach((size, index) => {
+          let discountPrice = size.price - (size.price * size.discount) / 100;
+          prev[index] = discountPrice;
+        });
+        return [...prev];
+      });
     }
   }, [initData]);
   const uploadButton = () => {
@@ -239,7 +264,7 @@ const CreateMenuPage = ({ back }) => {
         <Typography className="text-red-800 mb-6 text-xl font-bold uppercase text-center">
           {id ? "Chỉnh sửa" : "Thêm "} món ăn
         </Typography>
-        <div className="h-[700px] overflow-y-scroll">
+        <div className="max-h-[900px] overflow-y-scroll">
           <Form
             form={form}
             layout="vertical"
@@ -272,7 +297,11 @@ const CreateMenuPage = ({ back }) => {
                     ))}
                 </Select>
               </Form.Item>
-              <Form.Item name="PreparationTime" label="Thời gian ước tính">
+              <Form.Item
+                required
+                name="PreparationTime"
+                label="Thời gian ước tính (phút)"
+              >
                 <Input type="number" className="max-w-[200px]" />
               </Form.Item>
               <Form.Item name="TagIds" label="Tag món ăn">
@@ -315,87 +344,104 @@ const CreateMenuPage = ({ back }) => {
                     </Button>
                   </Form.Item>
                   {fields.map(({ key, name, ...restField }, index) => (
-                    <Space
-                      key={key}
-                      style={{ display: "flex", marginBottom: 8 }}
-                      align="baseline"
-                    >
-                      <Form.Item
-                        {...restField}
-                        name={[name, "dishSize"]}
-                        rules={[
-                          { required: true, message: "Vui lòng chọn size" },
-                        ]}
-                        label="Size"
+                    <>
+                      <Space
+                        key={key}
+                        style={{ display: "flex", marginBottom: 8 }}
+                        align="baseline"
+                        className="my-4"
                       >
-                        <Select
-                          style={{ width: 120 }}
-                          placeholder="Chọn size"
-                          name={`dishSizeDetailDtos[${name}].size`}
-                        >
-                          {dishSizes &&
-                            dishSizes.length > 0 &&
-                            dishSizes.map((size) => (
-                              <Select.Option key={size.id} value={size.id}>
-                                {size.vietnameseName}
-                              </Select.Option>
-                            ))}
-                        </Select>
-                      </Form.Item>
-                      <div className="flex flex-col">
                         <Form.Item
                           {...restField}
-                          name={[name, "price"]}
+                          name={[name, "dishSize"]}
                           rules={[
-                            { required: true, message: "Vui lòng nhập giá" },
+                            { required: true, message: "Vui lòng chọn size" },
                           ]}
-                          label="Giá"
+                          label="Size"
+                        >
+                          <Select
+                            style={{ width: 120 }}
+                            placeholder="Chọn size"
+                            name={`dishSizeDetailDtos[${name}].size`}
+                          >
+                            {dishSizes &&
+                              dishSizes.length > 0 &&
+                              dishSizes.map((size) => (
+                                <Select.Option key={size.id} value={size.id}>
+                                  {size.vietnameseName}
+                                </Select.Option>
+                              ))}
+                          </Select>
+                        </Form.Item>
+                        <div className="flex flex-col">
+                          <Form.Item
+                            {...restField}
+                            name={[name, "price"]}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng nhập giá gốc",
+                              },
+                            ]}
+                            label="Giá gốc"
+                          >
+                            <Input
+                              placeholder="Nhập giá"
+                              style={{ width: 120 }}
+                              name={`dishSizeDetailDtos[${name}].price`}
+                              type="number"
+                              onChange={() => {
+                                renderPriceText(index);
+                                caculateDiscountPriceChange(index);
+                              }}
+                            />
+                          </Form.Item>
+                        </div>
+
+                        <Form.Item
+                          {...restField}
+                          name={[name, "dishSizeDetailId"]}
+                          hidden
                         >
                           <Input
                             placeholder="Nhập giá"
                             style={{ width: 120 }}
-                            name={`dishSizeDetailDtos[${name}].price`}
-                            type="number"
-                            onChange={() => renderPriceText(index)}
+                            name={`dishSizeDetailDtos[${name}].dishSizeDetailId`}
                           />
                         </Form.Item>
-                        <span className="max-w-32 break-words">
-                          {priceText[index]}
-                        </span>
-                      </div>
+                        <Form.Item
+                          {...restField}
+                          name={[name, "discount"]}
+                          rules={[
+                            { required: true, message: "Vui lòng nhập giá" },
+                          ]}
+                          label="Giảm (%)"
+                        >
+                          <Input
+                            placeholder="Nhập giá"
+                            style={{ width: 120 }}
+                            name={`dishSizeDetailDtos[${name}].discount`}
+                            type="number"
+                            onChange={() => {
+                              caculateDiscountPriceChange(index);
+                            }}
+                          />
+                        </Form.Item>
 
-                      <Form.Item
-                        {...restField}
-                        name={[name, "dishSizeDetailId"]}
-                        hidden
-                      >
-                        <Input
-                          placeholder="Nhập giá"
-                          style={{ width: 120 }}
-                          name={`dishSizeDetailDtos[${name}].dishSizeDetailId`}
+                        <MinusCircleOutlined
+                          onClick={() => remove(name)}
+                          className="text-red-500"
                         />
-                      </Form.Item>
-                      <Form.Item
-                        {...restField}
-                        name={[name, "discount"]}
-                        rules={[
-                          { required: true, message: "Vui lòng nhập giá" },
-                        ]}
-                        label="Giảm (%)"
-                      >
-                        <Input
-                          placeholder="Nhập giá"
-                          style={{ width: 120 }}
-                          name={`dishSizeDetailDtos[${name}].discount`}
-                          type="number"
-                        />
-                      </Form.Item>
-
-                      <MinusCircleOutlined
-                        onClick={() => remove(name)}
-                        className="text-red-500"
-                      />
-                    </Space>
+                      </Space>
+                      <span className="items-center font-bold block text-red-800  my-2">
+                        Gía sau khi giảm:{" "}
+                        {priceDiscounts[index] &&
+                          formatPrice(priceDiscounts[index])}
+                      </span>
+                      <span className="items-center font-bold  my-2">
+                        Bằng chữ: {priceText[index]}
+                      </span>
+                    </>
                   ))}
                 </>
               )}
@@ -406,6 +452,7 @@ const CreateMenuPage = ({ back }) => {
               label="Hình ảnh món ăn"
               valuePropName="fileList"
               getValueFromEvent={(e) => e.fileList}
+              required
             >
               {!initData && (
                 <Upload

@@ -85,7 +85,10 @@ const Reservation = () => {
     const startTime = form.getFieldValue("startTime");
     const endTime = form.getFieldValue("endTime");
     const date = form.getFieldValue("date");
-
+    const numOfPeople = form.getFieldValue("numberOfPeople");
+    if (numOfPeople < 1 || numOfPeople > 50) {
+      return message.error("Số lượng người không hợp lệ");
+    }
     const [startHour, startMinute] = startTime.split(":").map(Number);
     const [endHour, endMinute] = endTime.split(":").map(Number);
     let combinedStartTime = moment(date)
@@ -126,7 +129,6 @@ const Reservation = () => {
     const date = form.getFieldValue("date");
     const startTime = form.getFieldValue("startTime");
     const endTime = form.getFieldValue("endTime");
-
     const [startHour, startMinute] = startTime.split(":").map(Number);
     const [endHour, endMinute] = endTime.split(":").map(Number);
     const combinedStartTime = moment(date)
@@ -189,6 +191,11 @@ const Reservation = () => {
             close();
           },
         });
+      } else if (
+        responseSuggessTable?.result?.length > 0 &&
+        responseSuggessTable?.result == null
+      ) {
+        showError(responseSuggessTable.messages);
       }
     } else {
       showError(responseSuggessTable.messages);
