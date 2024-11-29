@@ -5,7 +5,6 @@ import {
   InputNumber,
   DatePicker,
   Button,
-  Space,
   Select,
   Card,
   Typography,
@@ -17,11 +16,9 @@ import {
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
 import { ComboApi, DishApi } from "../../../api/endpoint";
-import { uniqueId } from "lodash";
 import {
   formatLocalDateTime,
   formatPrice,
-  isEmptyObject,
   showError,
 } from "../../../util/Utility";
 import CreateOptionSetModal from "../../../components/modal/CreateOptionSetModal";
@@ -135,6 +132,7 @@ const CreateComboPage = () => {
     setPreviewDishes(previewDishs);
     setValuesOptionSet(valuesOptionSets);
   };
+
   const disabledDate = (current) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -271,6 +269,8 @@ const CreateComboPage = () => {
     listDishSizeDetail,
     previewDishes
   ) => {
+    debugger;
+
     setPreviewDishes(previewDishes);
     setListDishSizeDetail(listDishSizeDetail);
     setSelectedDish(selectedDish);
