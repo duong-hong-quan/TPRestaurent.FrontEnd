@@ -1,4 +1,3 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { EyeIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
 import {
   Card,
@@ -9,37 +8,32 @@ import {
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
-import {
-  message,
-  Table,
-  Checkbox,
-  Select,
-  DatePicker,
-  Calendar,
-  Tag,
-  Modal,
-  Input,
-} from "antd";
+import { act, useEffect, useState } from "react";
+import { message, Checkbox, Select, DatePicker, Tag, Modal, Input } from "antd";
 import { formatDateTime, formatPrice, showError } from "../../../util/Utility";
 import useCallApi from "../../../api/useCallApi";
 import Pagination from "../../../components/pagination/Pagination";
-import TabMananger from "../../../components/tab/TabManager";
 import { AccountApi, OrderApi } from "../../../api/endpoint";
 import OrderTag from "../../../components/tag/OrderTag";
-import ModalReservationDetail from "../../../components/order/modal/ModalReservationDetail";
 import { StyledTable } from "../../../components/custom-ui/StyledTable";
 import { OrderStatus, OrderType } from "../../../util/GlobalType";
 import dayjs from "dayjs";
 import { configCalendar } from "../AdminMealHistoryPage";
 import ModalOrderDetailAdmin from "../../../components/order/modal/ModalOrderDetailAdmin";
-import { X, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import { uniqueId } from "lodash";
+import ModalWarningRefund from "../../../components/modal/ModalWarningRefund";
+import { warning } from "framer-motion";
 
 const { RangePicker } = DatePicker;
 const AdminOrderOverview = () => {
   const TABS = OrderStatus.filter((item) => item.value > 3 && item.value < 10);
+
   TABS.unshift({ value: 0, label: "Tất cả" });
+  TABS.push({
+    value: 11,
+    label: "Cảnh báo thanh toán hai lần",
+  });
   const [activeTab, setActiveTab] = useState(0);
   const [selectedType, setSelectedType] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,6 +49,8 @@ const AdminOrderOverview = () => {
   const [selectedShipper, setSelectedShipper] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectedRange, setSelectedRange] = useState([dayjs(), dayjs()]);
+  const [showWarningRefund, setShowWarningRefund] = useState(false);
+  const [selectedWarningRefund, setSelectedWarningRefund] = useState(null);
   const handleRangeChange = (dates) => {
     setSelectedRange(dates);
   };
@@ -121,7 +117,7 @@ const AdminOrderOverview = () => {
       key: "orderTypeId",
       render: (_, record) => (
         <Typography className=" cursor-pointer">
-          {record.orderType.vietnameseName}
+          {record.orderType?.vietnameseName}
         </Typography>
       ),
     },
@@ -168,7 +164,7 @@ const AdminOrderOverview = () => {
       key: "tableName",
       render: (_, record) => (
         <div className="space-y-1">
-          {record.tables.map((table) => (
+          {record.tables?.map((table) => (
             <Tag color="magenta" key={table.table?.tableName}>
               {table.table?.tableName}
             </Tag>
@@ -204,12 +200,19 @@ const AdminOrderOverview = () => {
           <Tooltip content="Xem chi tiết">
             <IconButton
               variant="text"
-              onClick={() => fetchOrderDetail(record.orderId)}
+              onClick={() => {
+                if (activeTab != 11) {
+                  fetchOrderDetail(record.orderId);
+                } else {
+                  setSelectedWarningRefund(record);
+                  setShowWarningRefund(true);
+                }
+              }}
             >
               <EyeIcon className="h-4 w-4 text-blue-600" />
             </IconButton>
           </Tooltip>
-          {record.statusId != 10 && (
+          {record.statusId != 10 && record.statusId != 9 && (
             <Tooltip content="Hủy">
               <IconButton
                 variant="text"
@@ -269,6 +272,17 @@ const AdminOrderOverview = () => {
       ),
     });
   }
+  const fetchOrderRequireRefund = async () => {
+    debugger;
+    const response = await callApi(
+      `${OrderApi.GET_ALL_ORDER_REQUIRE_REFUND}`,
+      "GET"
+    );
+    if (response?.isSuccess) {
+      setData(response?.result);
+      // setTotalPages(response?.result?.totalPages);
+    }
+  };
   const fetchOrder = async () => {
     const response = await callApi(
       `${OrderApi.GET_ORDER_WITH_FILTER}`,
@@ -292,6 +306,9 @@ const AdminOrderOverview = () => {
     if (activeTab === 6) {
       fetchShipperAvailable();
     }
+    if (activeTab === 11) {
+      fetchOrderRequireRefund();
+    }
   }, [
     activeTab,
     currentPage,
@@ -308,7 +325,6 @@ const AdminOrderOverview = () => {
       handleOpen();
     }
   };
-  console.log(OrderType);
   return (
     <>
       <Card className="h-full w-full">
@@ -434,7 +450,11 @@ const AdminOrderOverview = () => {
                 } shadow-lg`}
               >
                 <StyledTable
-                  columns={columns}
+                  columns={
+                    activeTab === 11
+                      ? columns.filter((column) => column.key !== "tableName")
+                      : columns
+                  }
                   dataSource={data}
                   pagination={false}
                   rowKey="orderId"
@@ -456,6 +476,11 @@ const AdminOrderOverview = () => {
         onClose={() => setOpen(!open)}
         reservation={orderSelected}
         fetchData={fetchOrder}
+      />
+      <ModalWarningRefund
+        show={showWarningRefund}
+        payments={selectedWarningRefund?.paymentHistories}
+        handleClose={() => showWarningRefund(false)}
       />
     </>
   );
