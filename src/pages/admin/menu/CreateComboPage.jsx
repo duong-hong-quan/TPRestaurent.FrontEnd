@@ -269,8 +269,6 @@ const CreateComboPage = () => {
     listDishSizeDetail,
     previewDishes
   ) => {
-    debugger;
-
     setPreviewDishes(previewDishes);
     setListDishSizeDetail(listDishSizeDetail);
     setSelectedDish(selectedDish);

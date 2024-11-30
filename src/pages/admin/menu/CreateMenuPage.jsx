@@ -49,7 +49,6 @@ const CreateMenuPage = ({ back }) => {
   const [priceText, setPriceText] = useState([]);
   const [priceDiscounts, setPriceDiscounts] = useState([]);
   const caculateDiscountPriceChange = (index) => {
-    debugger;
     const data = form.getFieldValue(`DishSizeDetailDtos`);
     let price = data[index]?.price;
     let discount = data[index]?.discount;

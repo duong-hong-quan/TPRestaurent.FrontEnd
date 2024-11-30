@@ -161,7 +161,6 @@ const CartSummary = ({ handleClose }) => {
   };
   const handleCheckOut = async () => {
     const { reservationDishDtos } = mergeCartData(cartReservation, cart);
-    debugger;
     const updatedData = {
       customerId: user.id,
       orderType: 2,

@@ -16,7 +16,6 @@ const handleBefore = (config) => {
 };
 
 const handleError = (error) => {
-  debugger;
   if (
     error.response &&
     (error.response.status === 401 || error.response.status === 403)
