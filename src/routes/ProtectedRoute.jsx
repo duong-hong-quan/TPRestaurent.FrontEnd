@@ -29,7 +29,6 @@ export const ProtectedRoute = ({ children, role }) => {
       navigate("/");
     } else {
       fetchCurrentToken();
-      debugger;
 
       switch (role) {
         case "admin":

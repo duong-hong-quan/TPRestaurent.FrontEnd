@@ -79,6 +79,9 @@ export const OrderApi = {
   GET_BEST_SELLER_DISH_AND_COMBO: "/order/get-best-seller-dishes-and-combo",
   GET_ALL_ORDER_DETAIL_BY_ACCOUNT_ID:
     "/order/get-all-order-detail-by-account-id",
+  GET_ALL_ORDER_REQUIRE_REFUND: "/order/get-all-orders-require-refund",
+  CREATE_DUPPLICATED_ORDER_REFUND:
+    "/transaction/create-duplicated-paid-order-refund",
 };
 
 export const ReservationApi = {
