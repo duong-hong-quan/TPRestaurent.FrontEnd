@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import OtpConfirmModal from "./OtpConfirmModal";
 import loginImage from "../../assets/imgs/login.png";
 import useCallApi from "../../api/useCallApi";
+import { useLocation } from "react-router-dom";
 
 const LoginPage = () => {
   const [phone, setPhone] = useState("");
@@ -10,6 +11,7 @@ const LoginPage = () => {
   const [countdown, setCountdown] = useState(60);
   const [resOtp, setResOtp] = useState(null);
   const { callApi, error, loading } = useCallApi();
+  const location = useLocation();
 
   const handleLogin = async (values) => {
     const { phone } = values; // Get phone number from the form values
@@ -23,7 +25,14 @@ const LoginPage = () => {
       setCountdown(60);
     }
   };
-
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const query = searchParams.get("phoneNumber");
+    if (query) {
+      setPhone(query);
+      handleLogin({ phone: query });
+    }
+  }, [location.search]);
   useEffect(() => {
     let timer;
     if (isOtpModalVisible && countdown > 0) {
