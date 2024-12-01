@@ -47,7 +47,6 @@ const Reservation = () => {
   const [show, setShow] = useState(false);
   const [showModalWithoutDish, setShowModalWithoutDish] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
-  console.log(endTimeSlots);
 
   const handleCloseModalWithoutDish = () => {
     setShowModalWithoutDish(false);
@@ -295,12 +294,37 @@ const Reservation = () => {
 
   const handleValidatePhone = async () => {
     const data = await callApi(
-      `${AccountApi.GET_BY_PHONE}?phoneNumber=${form
+      `${AccountApi.IS_EXIST_ACCOUNT}/${form
         .getFieldValue("phone")
         .replace(/\s+/g, "")}`,
       "GET"
     );
     if (data.isSuccess) {
+      if (data.result == null) {
+        const responseCreate = await callApi(
+          `${AccountApi.CREATE_ACCOUNT}`,
+          "POST",
+          {
+            email: form.getFieldValue("email"),
+            firstName: form.getFieldValue("firstName"),
+            lastName: form.getFieldValue("lastName"),
+            gender: true,
+            phoneNumber: form.getFieldValue("phone").replace(/\s+/g, ""),
+          }
+        );
+        if (responseCreate?.isSuccess) {
+          message.success("Tài khoản của bạn đã được tạo thành công.");
+          message.success("Vui lòng đăng nhập vào hệ thống để đặt bàn.");
+          setTimeout(() => {
+            window.location.href =
+              "/login?phoneNumber=" +
+              form.getFieldValue("phone").replace(/\s+/g, "");
+          }, 2000);
+        } else {
+          showError(response.messages);
+        }
+        return;
+      }
       if (!data.result?.isVerified) {
         setIsOtpModalVisible(true);
       }
@@ -316,27 +340,14 @@ const Reservation = () => {
       setIsValid(true);
       setIsValidatePhone(true);
     } else {
-      const responseCreate = await callApi(
-        `${AccountApi.CREATE_ACCOUNT}`,
-        "POST",
-        {
-          email: form.getFieldValue("email"),
-          firstName: form.getFieldValue("firstName"),
-          lastName: form.getFieldValue("lastName"),
-          gender: true,
-          phoneNumber: form.getFieldValue("phone").replace(/\s+/g, ""),
-        }
-      );
-      if (responseCreate?.isSuccess) {
-        message.success("Tài khoản của bạn đã được tạo thành công.");
-        setIsOtpModalVisible(true);
-      } else {
-        showError(response.messages);
-      }
     }
   };
 
   useEffect(() => {
+    if (!isEmptyObject(user) && user.isVerified) {
+      setIsValidatePhone(true);
+      setIsValid(true);
+    }
     initData();
     const now = moment();
     const roundedStartTime = now
@@ -414,24 +425,27 @@ const Reservation = () => {
             initialValues={{ remember: true }}
             onFinish={onChoosePolicy}
           >
-            <div className="flex justify-between">
-              <Form.Item
-                label="Họ"
-                name="lastName"
-                className="w-1/2"
-                rules={[{ required: true, message: "Vui lòng nhập họ" }]}
-              >
-                <Input prefix={<UserOutlined />} placeholder="Họ" />
-              </Form.Item>
-              <Form.Item
-                label="Tên"
-                name="firstName"
-                className="w-1/2 mx-2"
-                rules={[{ required: true, message: "Vui lòng nhập tên" }]}
-              >
-                <Input prefix={<UserOutlined />} placeholder="Tên" />
-              </Form.Item>
-            </div>
+            {isEmptyObject(user) && (
+              <div className="flex justify-between">
+                <Form.Item
+                  label="Họ"
+                  name="lastName"
+                  className="w-1/2"
+                  rules={[{ required: true, message: "Vui lòng nhập họ" }]}
+                >
+                  <Input prefix={<UserOutlined />} placeholder="Họ" />
+                </Form.Item>
+                <Form.Item
+                  label="Tên"
+                  name="firstName"
+                  className="w-1/2 mx-2"
+                  rules={[{ required: true, message: "Vui lòng nhập tên" }]}
+                >
+                  <Input prefix={<UserOutlined />} placeholder="Tên" />
+                </Form.Item>
+              </div>
+            )}
+
             <Form.Item
               label="Số điện thoại"
               name="phone"
@@ -448,17 +462,20 @@ const Reservation = () => {
                 placeholder="Số điện thoại"
                 onChange={handlePhoneChange}
                 onBlur={handlePhoneBlur}
+                disabled={isValidatePhone}
               />
             </Form.Item>
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[{ type: "email", message: "Email không hợp lệ" }]}
-            >
-              <Input prefix={<MailOutlined />} placeholder="Email" />
-            </Form.Item>
+            {isEmptyObject(user) && (
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[{ type: "email", message: "Email không hợp lệ" }]}
+              >
+                <Input prefix={<MailOutlined />} placeholder="Email" />
+              </Form.Item>
+            )}
 
-            {!isValid && (
+            {isEmptyObject(user) && (
               <Button
                 onClick={handleValidatePhone}
                 className="bg-red-800 text-white mb-4"

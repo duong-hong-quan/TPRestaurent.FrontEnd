@@ -21,6 +21,7 @@ export const AccountApi = {
     "/api/account/get-account-by-phone-number-keyword",
   GET_ALL_ACCOUNT: "/api/account/get-all-account",
   GET_ACCOUNT_BY_ID: "/api/account/get-account-by-user-id",
+  IS_EXIST_ACCOUNT: "/api/account/is-exist-account",
 };
 
 export const ComboApi = {
