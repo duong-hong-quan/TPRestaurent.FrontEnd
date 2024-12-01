@@ -176,7 +176,7 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
                 Số tiền đặt cọc (đã kèm tiền đặt bàn và tiền cọc cho đồ ăn):
               </Typography>
               <Typography className="text-base font-bold">
-                {formatPrice(data.reservationOrder.deposit) ||
+                {formatPrice(data.reservationOrder?.deposit) ||
                   formatPrice(deposit)}
               </Typography>
             </div>
