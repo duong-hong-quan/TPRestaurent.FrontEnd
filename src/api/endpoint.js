@@ -193,3 +193,8 @@ export const RatingApi = {
 export const ChatBotApi = {
   AI_RESPONSE: "chatbot/ai-response",
 };
+
+export const LogsApi = {
+  READ_LOG: "/read-log",
+  READ_LOG_BY_ID: "/read-log",
+};
