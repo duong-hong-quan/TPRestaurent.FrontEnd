@@ -64,6 +64,15 @@ const Reservation = () => {
       form.setFieldValue("numberOfPeople", 1);
       form.setFieldValue("note", "");
       form.setFieldValue("date", dayjs(momentDate, "DD/MM/YYYY"));
+      setInformation({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        email: user.email,
+        note: "",
+        isPrivate: false,
+        customerId: user.id,
+      });
     }
   };
 
@@ -394,7 +403,7 @@ const Reservation = () => {
           resOtp={null}
           phoneNumber={form.getFieldValue("phone")?.replace(/\s+/g, "")}
           otpType={1}
-          handleSuccess={handleSuccess}
+          // handleSuccess={handleSuccess}
         />
       </>
     );
