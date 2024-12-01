@@ -63,6 +63,7 @@ const menuItems = [
       { title: "Cài đặt", path: "/admin/settings" },
       { title: "Quản lý bàn ăn", path: "/admin/manage-devices" },
       { title: "Quản lý sơ đồ bàn ăn", path: "/admin/dining-area" },
+      { title: "Logs", path: "/admin/logs" },
     ],
   },
 ];
@@ -75,7 +76,7 @@ const ManagerLayout = () => {
         <div className="mx-2">
           <HeaderManager userName={user.lastName} />
         </div>
-        <div className="m-2 mt-8 h-[1019px] bg-white overflow-y-scroll">
+        <div className="m-2 mt-8 h-[1019px] bg-white overflow-y-scroll rounded-lg ">
           <Outlet />
         </div>
       </div>

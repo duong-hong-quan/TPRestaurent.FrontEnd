@@ -52,6 +52,7 @@ import AdminOrderOverview from "../pages/admin/order-overview/AdminOrderOverview
 import AdminVoucherPage from "../pages/admin/voucher/AdminVoucherPage";
 import OrderViewPage from "../pages/kitchen/order-management/OrderViewPage";
 import Unauthorized from "../pages/common/exception/Unauthorized";
+import Viewlogs from "../pages/admin/view-logs/ViewLogs";
 
 function Routers() {
   const routing = useRoutes([
@@ -270,6 +271,10 @@ function Routers() {
         {
           path: "dining-area",
           element: <DiningArea />,
+        },
+        {
+          path: "logs",
+          element: <Viewlogs />,
         },
       ],
     },
