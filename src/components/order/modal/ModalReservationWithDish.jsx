@@ -171,20 +171,20 @@ const ModalReservationWithDish = ({
     }
   };
   const handleCheckout = async () => {
-    if (!information.customerId || information.isVerified === false) {
-      const response = await callApi(
-        `/api/account/send-customer-info-otp?phoneNumber=${
-          information.phone
-        }&otpType=${1}`,
-        "POST"
-      );
-      if (response?.isSuccess) {
-        handleOpenOtp();
-        return;
-      } else {
-        message.error("Failed to send OTP");
-      }
-    }
+    // if (!information.customerId || information.isVerified === false) {
+    //   const response = await callApi(
+    //     `/api/account/send-customer-info-otp?phoneNumber=${
+    //       information.phone
+    //     }&otpType=${1}`,
+    //     "POST"
+    //   );
+    //   if (response?.isSuccess) {
+    //     handleOpenOtp();
+    //     return;
+    //   } else {
+    //     message.error("Failed to send OTP");
+    //   }
+    // }
 
     const data = mergeCartData(cart, cartCombo, {
       reservationDate: information?.startTime,
@@ -278,7 +278,6 @@ const ModalReservationWithDish = ({
       );
     }
   };
-
 
   return (
     <div className=" p-4 bg-gray-50 min-h-screen">
