@@ -38,7 +38,7 @@ const CreateOptionSetModal = ({
   const [dishs, setDishs] = useState([]);
   const { callApi } = useCallApi();
   const [selectedType, setSelectedType] = useState(null);
-
+  console.log("listDishSizeDetail", listDishSizeDetail);
   const fetchDataDish = async () => {
     const response = await callApi(
       `${DishApi.GET_ALL}/1/1000?type=${
@@ -51,9 +51,16 @@ const CreateOptionSetModal = ({
       setDishs(response.result.items);
     }
   };
+  useEffect(() => {
+    if (isOpen) {
+      fetchDataDish();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
-    fetchDataDish();
+    if (selectedType) {
+      fetchDataDish();
+    }
   }, [selectedType]);
 
   const handleSelectedDish = (value, indexList) => {
