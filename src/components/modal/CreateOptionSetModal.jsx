@@ -38,7 +38,7 @@ const CreateOptionSetModal = ({
   const [dishs, setDishs] = useState([]);
   const { callApi } = useCallApi();
   const [selectedType, setSelectedType] = useState(null);
-  console.log("listDishSizeDetail", listDishSizeDetail);
+  // console.log("listDishSizeDetail", listDishSizeDetail);
   const fetchDataDish = async () => {
     const response = await callApi(
       `${DishApi.GET_ALL}/1/1000?type=${
@@ -159,7 +159,7 @@ const CreateOptionSetModal = ({
     }
     setPreviewDishes(updatedPreviewDishes);
   };
-
+  console.log("listDishSizeDetails", listDishSizeDetail);
   const handleSubmit = () => {
     form.validateFields().then(() => {
       onSubmit(
@@ -322,16 +322,18 @@ const CreateOptionSetModal = ({
                                 ]
                               }
                             >
-                              {listDishSizeDetail[index]?.[
-                                indexDishSizeDetails
-                              ]?.map((dish) => (
-                                <Option
-                                  key={dish.dishSizeDetailId}
-                                  value={dish.dishSizeDetailId}
-                                >
-                                  {dish.dishSize.vietnameseName}
-                                </Option>
-                              ))}
+                              {listDishSizeDetail[index]?.[indexDishSizeDetails]
+                                .length > 0 &&
+                                listDishSizeDetail[index]?.[
+                                  indexDishSizeDetails
+                                ]?.map((dish) => (
+                                  <Option
+                                    key={dish?.dishSizeDetailId}
+                                    value={dish?.dishSizeDetailId}
+                                  >
+                                    {dish?.dishSize?.vietnameseName}
+                                  </Option>
+                                ))}
                             </Select>
                           </Form.Item>
                         </div>
