@@ -104,7 +104,7 @@ const DishSizeInfo = ({
         {sizeData.map((item, index) => (
           <div
             key={index}
-            className="grid grid-cols-8 items-center gap-1 p- rounded"
+            className="grid grid-cols-9 items-center gap-1 p- rounded"
           >
             <div className="col-span-4 mx-2 flex items-center">
               <Image
@@ -131,8 +131,8 @@ const DishSizeInfo = ({
                 color="#1890ff"
               />
             </Space>
-            {/* <Button
-              className="col-span-2"
+            <Button
+              className="col-span-1"
               onClick={async () => {
                 setType(type);
                 setSelectedGroupedDishId(groupedDishId);
@@ -140,7 +140,7 @@ const DishSizeInfo = ({
               }}
             >
               <EyeOutlined />
-            </Button> */}
+            </Button>
           </div>
         ))}
       </div>
