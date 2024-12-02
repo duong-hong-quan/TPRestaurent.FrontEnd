@@ -333,6 +333,15 @@ const Reservation = () => {
           showError(response.messages);
         }
         return;
+      } else {
+        message.success(
+          "Số điện thoại đã tồn tại trong hệ thống. Bạn vui lòng đăng nhập để đặt bàn."
+        );
+        setTimeout(() => {
+          window.location.href =
+            "/login?phoneNumber=" +
+            form.getFieldValue("phone").replace(/\s+/g, "");
+        }, 3000);
       }
       if (!data.result?.isVerified) {
         setIsOtpModalVisible(true);
