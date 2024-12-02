@@ -95,38 +95,73 @@ const CreateComboPage = () => {
     mapOptionSetToForm();
   }, [comboData]);
   const mapOptionSetToForm = async () => {
-    console.log(comboData);
     let selectedDishs = [...selectedDish];
-    let listDishSizeDetails = [...listDishSizeDetail];
+    let listDishSizeDetails = JSON.parse(JSON.stringify(listDishSizeDetail)); // Deep clone
     let previewDishs = [...previewDishes];
     let valuesOptionSets = [...valuesOptionSet];
 
-    comboData?.dishCombo?.forEach((combo, index) => {
-      selectedDishs[index] = combo.dishCombo.map(
-        (dish) => dish.dishSizeDetail.dishId
-      );
-      combo.dishCombo.forEach(async (dish, index) => {
-        const response = await callApi(
-          `${DishApi.GET_BY_ID}/${dish.dishSizeDetail.dish.dishId}`,
-          "GET"
+    // Use Promise.all to handle async operations
+    await Promise.all(
+      comboData?.dishCombo?.map(async (combo, index) => {
+        // Initialize the nested array if it doesn't exist
+        if (!listDishSizeDetails[index]) {
+          listDishSizeDetails[index] = [];
+        }
+
+        // Update selected dishes
+        selectedDishs[index] = combo.dishCombo.map(
+          (dish) => dish.dishSizeDetail.dishId
         );
-        listDishSizeDetails[index].push(response.result.dish.dishSizeDetails);
-      });
-      previewDishs[index] = combo.dishCombo.map((dish) => ({
-        dish: dish.dishSizeDetail.dish,
-        dishSizeDetail: dish.dishSizeDetail,
-        quantity: dish.quantity,
-      }));
-      valuesOptionSets[index] = {
-        dishItemType: combo?.dishItemTypeId,
-        numberOfChoices: combo.numOfChoice,
-        dishSizeDetails: combo.dishCombo.map((dish) => ({
-          dishSizeDetail: dish.dishSizeDetail.dishSizeDetailId,
+
+        // Fetch dish details for each dish in the combo
+        const dishDetailsPromises = combo.dishCombo.map(async (dish, idx) => {
+          try {
+            const response = await callApi(
+              `${DishApi.GET_BY_ID}/${dish.dishSizeDetail.dish.dishId}`,
+              "GET"
+            );
+
+            if (response && response.result) {
+              // Ensure the nested array exists before pushing
+              if (!listDishSizeDetails[index][idx]) {
+                listDishSizeDetails[index][idx] = [];
+              }
+              console.log({ index, idx });
+              listDishSizeDetails[index][idx].push(
+                ...response.result.dish.dishSizeDetails
+              );
+            }
+          } catch (error) {
+            console.error(
+              `Error fetching dish details for index ${idx}:`,
+              error
+            );
+          }
+        });
+
+        await Promise.all(dishDetailsPromises);
+
+        // Update preview dishes
+        previewDishs[index] = combo.dishCombo.map((dish) => ({
+          dish: dish.dishSizeDetail.dish,
+          dishSizeDetail: dish.dishSizeDetail,
           quantity: dish.quantity,
-          dishSelected: dish.dishSizeDetail.dish.dishId,
-        })),
-      };
-    });
+        }));
+
+        // Update values option sets
+        valuesOptionSets[index] = {
+          dishItemType: combo?.dishItemTypeId,
+          numberOfChoices: combo.numOfChoice,
+          dishSizeDetails: combo.dishCombo.map((dish) => ({
+            dishSizeDetail: dish.dishSizeDetail.dishSizeDetailId,
+            quantity: dish.quantity,
+            dishSelected: dish.dishSizeDetail.dish.dishId,
+          })),
+        };
+      })
+    );
+
+    // Update state after all async operations are complete
     setSelectedDish(selectedDishs);
     setListDishSizeDetail(listDishSizeDetails);
     setPreviewDishes(previewDishs);
