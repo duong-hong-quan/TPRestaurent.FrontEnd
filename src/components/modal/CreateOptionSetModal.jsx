@@ -322,8 +322,12 @@ const CreateOptionSetModal = ({
                                 ]
                               }
                             >
-                              {listDishSizeDetail[index]?.[indexDishSizeDetails]
-                                .length > 0 &&
+                              {listDishSizeDetail[index]?.[
+                                indexDishSizeDetails
+                              ] &&
+                                listDishSizeDetail[index]?.[
+                                  indexDishSizeDetails
+                                ].length > 0 &&
                                 listDishSizeDetail[index]?.[
                                   indexDishSizeDetails
                                 ]?.map((dish) => (
