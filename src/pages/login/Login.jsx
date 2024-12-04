@@ -104,6 +104,7 @@ const LoginPage = () => {
         resOtp={resOtp}
         phoneNumber={phone}
         otpType={0}
+        resend={() => handleLogin({ phone })}
       />
     </div>
   );

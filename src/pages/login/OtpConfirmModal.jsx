@@ -16,6 +16,7 @@ const OtpConfirmModal = ({
   phoneNumber,
   otpType,
   handleSuccess,
+  resend,
 }) => {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
@@ -111,9 +112,12 @@ const OtpConfirmModal = ({
         <p className="text-center mt-4 text-gray-600">
           Không nhận được mã OTP?
           <p>Vui lòng nhập mã OTP được gửi đến số điện thoại của bạn.</p>
-          <a href="#" className="text-[rgb(192,29,46)] hover:underline">
+          <Button
+            onClick={resend}
+            className="text-[rgb(192,29,46)] hover:underline"
+          >
             Gửi lại OTP
-          </a>
+          </Button>
         </p>
       </div>
     </Modal>
