@@ -69,12 +69,15 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Typography className="text-sm font-bold">
-                {formatPrice(user.storeCredit) || formatPrice(0)}
+                {formatPrice(user.amount) || formatPrice(0)}
               </Typography>
             </div>
           </div>
         </div>
-        <PaymentMethodSelector handleChange={handleChangeMethod} />
+        <PaymentMethodSelector
+          handleChange={handleChangeMethod}
+          isEnableWallet={false}
+        />
 
         <Input
           placeholder="Nhập số tiền cần nạp"

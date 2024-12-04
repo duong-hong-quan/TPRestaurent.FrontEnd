@@ -412,6 +412,7 @@ const Reservation = () => {
           resOtp={null}
           phoneNumber={form.getFieldValue("phone")?.replace(/\s+/g, "")}
           otpType={1}
+          resend={handleValidatePhone}
           // handleSuccess={handleSuccess}
         />
       </>
@@ -618,7 +619,7 @@ const Reservation = () => {
         resOtp={null}
         phoneNumber={form.getFieldValue("phone")?.replace(/\s+/g, "")}
         otpType={1}
-        handleSuccess={handleSuccess}
+        // handleSuccess={handleSuccess}
       />
     </div>
   );

@@ -319,11 +319,11 @@ const CartSummary = ({ handleClose }) => {
               </ActionItem>
             )}
 
-            {user.storeCredit > 0 && (
+            {user.amount > 0 && (
               <ActionItem icon={<DollarOutlined />} label="Sử dụng số dư">
                 <div className="flex">
                   <Typography className="text-[#333333] mx-2">
-                    {user.storeCredit} coin
+                    {user.amount}
                   </Typography>
                   <Switch />
                 </div>
