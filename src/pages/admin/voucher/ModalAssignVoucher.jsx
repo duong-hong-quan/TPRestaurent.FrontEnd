@@ -17,51 +17,42 @@ const ModalAssignVoucher = ({
   assignVoucher,
   loading,
 }) => {
-  const ranks = [
-    {
-      id: 1,
-      name: "ĐỒNG",
-      icon: <BronzeMedal className="w-12 h-12 text-[#CD7F32]" />,
-      color: "bg-[#CD7F32]",
-      textColor: "text-[#CD7F32]",
-      description: "Hạng đồng đối với những người dùng có điểm từ 0 đến 99,999",
-      minPoints: 0,
-      maxPoints: 99999,
-    },
-    {
-      id: 2,
-      name: "BẠC",
-      icon: <SilverStar className="w-12 h-12 text-[#5e3e3e]" />,
-      color: "bg-[#5e3e3e]",
-      textColor: "text-[#5e3e3e]",
-      description:
-        "Hạng bạc đối với những người dùng có điểm từ 100,000 đến 299,999",
-      minPoints: 100000,
-      maxPoints: 299999,
-    },
-    {
-      id: 3,
-      name: "VÀNG",
-      icon: <GoldCrown className="w-12 h-12 text-[#FFD700]" />,
-      color: "bg-[#FFD700]",
-      textColor: "text-[#FFD700]",
-      description:
-        "Hạng vàng đối với những người dùng có điểm từ 300,000 đến 499,999",
-      minPoints: 300000,
-      maxPoints: 499999,
-    },
-    {
-      id: 4,
-      name: "KIM CƯƠNG",
-      icon: <DiamondGem className="w-12 h-12 text-[#6ccde3]" />,
-      color: "bg-[#54c1d9]",
-      textColor: "text-[#6ccde3]",
-      description:
-        "Hạng kim cương đối với những người dùng có điểm từ 500,000 trở lên",
-      minPoints: 500000,
-      maxPoints: Infinity,
-    },
-  ];
+   const ranks = [
+     {
+       userRankId: 1,
+       name: "ĐỒNG",
+       icon: <BronzeMedal className="w-12 h-12" />,
+       color: "border-[#CD7F32]",
+       textColor: "text-[#CD7F32]",
+       stats: rankData?.find((r) => r.userRank === 1),
+     },
+     {
+       userRankId: 2,
+       name: "BẠC",
+       icon: <SilverStar className="w-12 h-12" />,
+       color: "border-[#C0C0C0]",
+       textColor: "text-[#C0C0C0]",
+
+       stats: rankData.find((r) => r.userRank === 2),
+     },
+     {
+       userRankId: 3,
+       name: "VÀNG",
+       icon: <GoldCrown className="w-12 h-12" />,
+       color: "border-[#FFD700]",
+       textColor: "text-[#FFD700]",
+
+       stats: rankData.find((r) => r.userRank === 3),
+     },
+     {
+       userRankId: 4,
+       name: "KIM CƯƠNG",
+       icon: <DiamondGem className="w-12 h-12" />,
+       color: "border-[#6ccde3]",
+       textColor: "text-[#6ccde3]",
+       stats: rankData.find((r) => r.userRank === 4),
+     },
+   ];
   const rank = ranks.find((rank) => rank.id === userRankId);
   const columns = [
     {

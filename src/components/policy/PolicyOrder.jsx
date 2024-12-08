@@ -74,9 +74,8 @@ fetchData();
           </li>
 
           <li>
-            Đối với trường hợp huỷ đơn hàng bạn sẽ nhận lại được{" "}
-            <strong> {configData.refundPercentageAsCustomer * 100}%</strong> số
-            tiền đã thanh toán.
+            Đối với trường hợp huỷ đơn hàng bạn sẽ không nhận lại số tiền đã
+            thanh toán.
           </li>
           <li>
             Đối với trường hợp đơn hàng bị huỷ do về phía chúng tôi bạn sẽ nhận

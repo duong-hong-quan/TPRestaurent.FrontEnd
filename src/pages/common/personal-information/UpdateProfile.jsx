@@ -157,7 +157,7 @@ const UpdateProfile = () => {
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden">
+      <div className="max-w-5xl mx-auto bg-white overflow-hidden">
         <div className="px-6 py-8 sm:p-10">
           <div className="flex flex-col lg:flex-row gap-10">
             <div className="w-full lg:w-2/3">
