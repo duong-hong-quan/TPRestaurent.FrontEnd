@@ -12,7 +12,7 @@ const PersonalInformation = ({ activeTab = 0, setActiveTab }) => {
   ];
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto">
       <h1 className="uppercase text-red-700 font-bold text-2xl mb-6">
         Thông tin của tôi
       </h1>

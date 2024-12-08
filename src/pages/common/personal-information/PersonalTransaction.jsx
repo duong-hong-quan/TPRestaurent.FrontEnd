@@ -10,6 +10,7 @@ import { formatPrice, showError } from "../../../util/Utility";
 import StoreCreditHistory from "../../../components/store-credit/StoreCreditHistory";
 import CreateStoreCreditModal from "../../../components/store-credit/CreateStoreCreditModal";
 import { login } from "../../../redux/features/authSlice";
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 
 const PersonalTransaction = () => {
   const user = useSelector((state) => state.user.user || {});
@@ -68,7 +69,8 @@ const PersonalTransaction = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
+      <LoadingOverlay isLoading={loading} />
       <h1 className="uppercase text-red-900 font-bold text-2xl mb-6">
         TÀI KHOẢN VÀ ĐIỂM HỘI VIÊN
       </h1>
@@ -93,7 +95,7 @@ const PersonalTransaction = () => {
             <div className="flex items-center space-x-2">
               <Coins className="text-white " size={32} />
               <span className="text-white text-3xl font-bold">
-                {user.loyalPoint.toLocaleString()}
+                {Number(user.loyalPoint).toLocaleString()}
               </span>
             </div>
           </div>
@@ -118,7 +120,7 @@ const PersonalTransaction = () => {
                 <span>Số dư tài khoản</span>
               </div>
               <span className="text-white text-2xl font-bold">
-                {formatPrice(user.amount)}
+                {formatPrice(Number(user.amount))}
               </span>
             </div>
           </div>

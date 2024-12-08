@@ -1,6 +1,7 @@
 import React from "react";
 import { FaArrowUp, FaArrowDown, FaMoneyBillWave } from "react-icons/fa";
 import { formatDateTime } from "../../util/Utility";
+import { Empty } from "antd";
 
 const LoyalPointHistoryItem = ({ transaction }) => {
   const isReceived = transaction.pointChanged > 0;
@@ -58,7 +59,8 @@ const LoyalPointHistoryItem = ({ transaction }) => {
 const LoyalPointHistoryList = ({ transactions }) => {
   return (
     <div className=" p-6 bg-gray-50 border border-gray-100 rounded-md max-h-[650px] overflow-y-scroll">
-      {transactions.map((transaction, index) => (
+      {transactions.length === 0 &&  <Empty/>}
+      {transactions.length >0 && transactions.map((transaction, index) => (
         <LoyalPointHistoryItem key={index} transaction={transaction} />
       ))}
     </div>

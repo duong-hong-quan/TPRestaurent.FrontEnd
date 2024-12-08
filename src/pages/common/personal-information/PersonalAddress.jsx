@@ -312,9 +312,9 @@ const PersonalAddress = () => {
     }
   };
   return (
-    <div className="p-6">
+    <div className="max-w-5xl p-10">
       <PersonalInformation activeTab={1} setActiveTab={handleActiveTab} />
-      <div className="container">
+      <div className="">
         <h1 className="text-3xl font-bold mb-6 text-red-900">
           Địa chỉ của bạn
         </h1>
