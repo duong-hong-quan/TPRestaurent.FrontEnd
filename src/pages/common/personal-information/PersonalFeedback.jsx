@@ -3,7 +3,7 @@ import TabMananger from "../../../components/tab/TabManager";
 import useCallApi from "../../../api/useCallApi";
 import { OrderApi } from "../../../api/endpoint";
 import { useSelector } from "react-redux";
-import { Badge, Button, Card, Image, Modal, Tag } from "antd";
+import { Badge, Button, Card, Empty, Image, Modal, Tag } from "antd";
 import FeedbackForm from "../../../components/feedback/FeedbackForm";
 import { formatDateTime, formatPrice } from "../../../util/Utility";
 import { MoveDownIcon } from "lucide-react";
@@ -53,6 +53,7 @@ const PersonalFeedback = () => {
         setActiveTab={setActiveTab}
       />
       <div className="space-y-4">
+        {data?.length === 0 && (<Empty/>)}
         {data?.length > 0 &&
           data.map((item) => (
             <>
