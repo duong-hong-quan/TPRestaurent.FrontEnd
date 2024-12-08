@@ -43,7 +43,7 @@ import PaymentMethodSelector from "./PaymentMethodSelector";
 import { clearCart, getTotal } from "../../redux/features/cartReservationSlice";
 import useCallApi from "../../api/useCallApi";
 const { Title, Text } = Typography;
-import { AccountApi, CouponApi, OrderApi } from "../../api/endpoint";
+import { AccountApi, ConfigurationApi, CouponApi, OrderApi } from "../../api/endpoint";
 import LoadingOverlay from "../loading/LoadingOverlay";
 import AddressModal from "../user/AddressModal";
 import PolicyOrder from "../policy/PolicyOrder";
@@ -95,6 +95,8 @@ const CartSummary = ({ handleClose }) => {
   const [isModalCouponVisible, setIsModalCouponVisible] = useState(false);
   const [selectedCoupons, setSelectedCoupons] = useState([]);
   const [couponsData, setCouponsData] = useState([]);
+  const [maxApplyLoyalPoint, setMaxApplyLoyalPoint] = useState(0);
+  const [maxApplyCouponPercent, setMaxApplyCouponPercent] = useState(0);
 
   console.log("selectedCoupons", selectedCoupons);
   const handleSelectCoupons = (coupons) => {
@@ -169,7 +171,10 @@ const CartSummary = ({ handleClose }) => {
 
       deliveryOrder: {
         couponIds: selectedCoupons,
-        loyalPointToUse: isLoyaltyEnabled == true ? user.loyalPoint : 0,
+        loyalPointToUse:
+          isLoyaltyEnabled 
+            ? (Math.ceil(user.loyalPoint * maxApplyLoyalPoint) || 0)
+            : 0,
         paymentMethod: selectedMethod,
       },
     };
@@ -246,7 +251,32 @@ const CartSummary = ({ handleClose }) => {
         </Tag>
       ));
   };
-
+useEffect(() => {
+   const fetchMaxApplyLoyalPoint = async () => {
+    const response = await callApi(
+      `${ConfigurationApi.GET_CONFIG_BY_NAME}/MAX_APPLY_LOYALTY_POINT_PERCENT`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setMaxApplyLoyalPoint(response.result.currentValue);
+    } else {
+      showError(response.messages);
+    }
+  };
+  const fetchMaxApplyCouponPercent = async () => {
+    const response = await callApi(
+      `${ConfigurationApi.GET_CONFIG_BY_NAME}/MAX_APPLY_COUPON_PERCENT`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setMaxApplyCouponPercent(response.result.currentValue);
+    } else {
+      showError(response.messages);
+    }
+  };
+  fetchMaxApplyLoyalPoint();
+  fetchMaxApplyCouponPercent();
+  }, [ ]);
   return (
     <div className="container my-4 p-6 bg-white">
       <LoadingOverlay isLoading={loading} />
@@ -281,11 +311,6 @@ const CartSummary = ({ handleClose }) => {
               label="Địa chỉ"
               value={customerInfoAddressName}
             />
-            <InfoItem
-              icon={<FileTextOutlined />}
-              label="Ghi chú"
-              value={note}
-            />
           </div>
 
           <div>
@@ -307,28 +332,29 @@ const CartSummary = ({ handleClose }) => {
 
             {user.loyalPoint > 0 && (
               <ActionItem icon={<StarOutlined />} label="Tích điểm">
-                <div className="flex">
+                <div className="flex flex-col items-end">
                   <Typography className="text-[#333333] mx-2">
-                    {user.loyalPoint} điểm
+                    Điểm hiện có <strong> {user.loyalPoint}</strong> điểm
                   </Typography>
-                  <Switch
-                    checked={isLoyaltyEnabled}
-                    onChange={(e) => handleSwitchChange(e)}
-                  />
+                  <Typography className="text-[#333333] mx-2 my-2">
+                    Tối đa áp dụng <strong> {maxApplyLoyalPoint * 100}%</strong>
+                  </Typography>
+                  <div className="flex">
+                    {isLoyaltyEnabled && (
+                      <span className="text-sm text-red-800 font-semibold mx-2">
+                        {`${user.loyalPoint * maxApplyLoyalPoint} điểm`}
+                      </span>
+                    )}
+                    <Switch
+                      checked={isLoyaltyEnabled}
+                      onChange={(e) => handleSwitchChange(e)}
+                      className="max-w-[2vw]"
+                    />
+                  </div>
                 </div>
               </ActionItem>
             )}
 
-            {user.amount > 0 && (
-              <ActionItem icon={<DollarOutlined />} label="Sử dụng số dư">
-                <div className="flex">
-                  <Typography className="text-[#333333] mx-2">
-                    {user.amount}
-                  </Typography>
-                  <Switch />
-                </div>
-              </ActionItem>
-            )}
             <ActionItem icon={<FileTextOutlined />} label="Ghi chú">
               {isEditing ? (
                 <div className="flex">
@@ -424,7 +450,7 @@ const CartSummary = ({ handleClose }) => {
               variant="h2"
               className="font-bold text-red-700 text-center"
             >
-              {`- ${formatPrice(user.loyalPoint)}`}
+              {`- ${formatPrice(user.loyalPoint * maxApplyLoyalPoint)}`}
             </Typography>
           </div>
         )}
@@ -448,7 +474,15 @@ const CartSummary = ({ handleClose }) => {
             {`${formatPrice(renderAfterPrice())}`}
           </Typography>
         </div>
-
+        <div className="flex justify-between items-center mb-4 bg-gray-100 shadow-md py-6 px-4">
+          <span className="text-lg font-bold">Tổng cộng sau làm tròn đến hàng nghìn:</span>
+          <Typography
+            variant="h2"
+            className="font-bold text-red-700 text-center"
+          >
+            {`${formatPrice(Math.ceil(renderAfterPrice() / 1000) * 1000)}`}
+          </Typography>
+        </div>
         <></>
       </div>
       <Checkbox

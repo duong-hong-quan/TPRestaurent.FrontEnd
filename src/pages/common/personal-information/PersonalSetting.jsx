@@ -143,7 +143,7 @@ const PersonalSetting = () => {
     }
   };
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
+    <div className="max-w-5xl p-10" >
       <PersonalInformation activeTab={2} setActiveTab={handleActiveTab} />
 
       <Title level={2}>Các thiết bị gần đây bạn đã đăng nhập</Title>

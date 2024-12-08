@@ -38,7 +38,7 @@ const PersonalReservation = () => {
   const tabs = OrderStatus.filter((item) => item.value !== 4);
   tabs.unshift({ label: "Tất cả", value: 0 });
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-5xl p-10">
       <LoadingOverlay isLoading={loading} />
       <h1 className="uppercase text-red-700 font-bold text-2xl mb-6">
         Thông tin của tôi

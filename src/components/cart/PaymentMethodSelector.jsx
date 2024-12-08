@@ -23,7 +23,7 @@ const PaymentMethodSelector = ({ handleChange, isEnableWallet = true }) => {
       case "STORE_CREDIT":
         return {
           name: "Số dư Thiên Phú",
-          description: `Số dư Thiên Phú ${formatPrice(user.amount)}`,
+          description: `Số dư Thiên Phú ${formatPrice(Number(user.amount))}`,
         };
 
       default:
