@@ -16,6 +16,7 @@ const ModalAssignVoucher = ({
   users,
   assignVoucher,
   loading,
+  rankData,
 }) => {
    const ranks = [
      {
@@ -24,6 +25,7 @@ const ModalAssignVoucher = ({
        icon: <BronzeMedal className="w-12 h-12" />,
        color: "border-[#CD7F32]",
        textColor: "text-[#CD7F32]",
+       bgColor: "bg-[#CD7F32]",
        stats: rankData?.find((r) => r.userRank === 1),
      },
      {
@@ -32,8 +34,9 @@ const ModalAssignVoucher = ({
        icon: <SilverStar className="w-12 h-12" />,
        color: "border-[#C0C0C0]",
        textColor: "text-[#C0C0C0]",
+       bgColor: "bg-[#C0C0C0]",
 
-       stats: rankData.find((r) => r.userRank === 2),
+       stats: rankData?.find((r) => r.userRank === 2),
      },
      {
        userRankId: 3,
@@ -41,8 +44,9 @@ const ModalAssignVoucher = ({
        icon: <GoldCrown className="w-12 h-12" />,
        color: "border-[#FFD700]",
        textColor: "text-[#FFD700]",
+       bgColor: "bg-[#FFD700]",
 
-       stats: rankData.find((r) => r.userRank === 3),
+       stats: rankData?.find((r) => r.userRank === 3),
      },
      {
        userRankId: 4,
@@ -50,10 +54,12 @@ const ModalAssignVoucher = ({
        icon: <DiamondGem className="w-12 h-12" />,
        color: "border-[#6ccde3]",
        textColor: "text-[#6ccde3]",
-       stats: rankData.find((r) => r.userRank === 4),
+       stats: rankData?.find((r) => r.userRank === 4),
+       bgColor: "bg-[#6ccde3]",
      },
    ];
-  const rank = ranks.find((rank) => rank.id === userRankId);
+   console.log(userRankId)
+  const rank = ranks?.find((rank) => rank.userRankId === userRankId);
   const columns = [
     {
       title: "Top",
@@ -107,6 +113,7 @@ const ModalAssignVoucher = ({
       },
     },
   ];
+  console.log(rank)
   return (
     <Modal
       width={1700}
@@ -121,7 +128,7 @@ const ModalAssignVoucher = ({
               p-6 text-center transform transition-all cursor-pointer
             `}
       >
-        <div className="flex justify-center mb-4">{rank?.icon}</div>
+        <div className={`${rank?.textColor} flex justify-center mb-4`}>{rank?.icon}</div>
         <h3 className={`text-2xl font-bold mb-2 ${rank?.textColor}`}>
           {rank?.name}
         </h3>
@@ -142,7 +149,7 @@ const ModalAssignVoucher = ({
       />
       <div className="flex justify-center my-2">
         <Button
-          className={`${rank?.color} text-white`}
+          className={`${rank?.color} ${rank?.bgColor} text-white`}
           onClick={assignVoucher}
           loading={loading}
         >
