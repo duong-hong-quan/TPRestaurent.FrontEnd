@@ -84,6 +84,9 @@ const MobileCartView = ({ cartItems, formatPrice, isDisabled }) => {
                 <Text type="secondary">
                   Đơn giá: {formatPrice(item.size?.price)}
                 </Text>
+                <Text type="secondary">
+                  Gỉam: {(item.size?.discount )}%
+                </Text>
                 {editingNoteId === item.dishSizeDetailId ? (
                   <Input
                     value={noteValue}
@@ -141,7 +144,7 @@ const MobileCartView = ({ cartItems, formatPrice, isDisabled }) => {
                 )}
               </Space>
               <Text strong className="text-red-600">
-                {formatPrice(item.size.price * item.quantity)}
+                {formatPrice(item.size.price * item.quantity*(1- item.size.discount/100))}
               </Text>
             </Space>
 
@@ -255,11 +258,20 @@ export const CartSingleTable = ({ cartItems, isDisabled }) => {
       ),
     },
     {
+      title: "Giảm giá",
+      key: "discount",
+      render: (_, record) => (
+        <span className="text-red-600">
+          { record.size.discount}%
+        </span>
+      ),
+    },
+    {
       title: "Thành tiền",
       key: "total",
       render: (_, record) => (
         <span className="font-semibold text-red-600">
-          {formatPrice(record.size.price * record.quantity)}
+          {formatPrice(record.size.price * record.quantity * (1- record.size.discount / 100))}
         </span>
       ),
     },

@@ -170,7 +170,7 @@ const ProductDetail = () => {
   useEffect(() => {
     if (dishSizeDetails && dishSizeDetails.length > 0 && !selectedSize) {
       setSelectedSize(dishSizeDetails[0]);
-      setPrice(dishSizeDetails[0].price);
+      setPrice(dishSizeDetails[0].price * (1 - dishSizeDetails[0].discount / 100));
     }
   }, [dishSizeDetails, selectedSize]);
 
@@ -286,7 +286,7 @@ const ProductDetail = () => {
                     key={size.dishSizeDetailId}
                     onClick={() => {
                       setSelectedSize(size);
-                      setPrice(size.price);
+                      setPrice(size.price*(1-size.discount/100));
                     }}
                     className={`flex-1 py-3 h-full my-2 md:mx-2  w-full px-6  rounded-lg text-lg transition duration-300 ${
                       selectedSize?.dishSizeDetailId === size.dishSizeDetailId
@@ -303,7 +303,15 @@ const ProductDetail = () => {
                     `}
                   >
                     <p className="">{size.dishSize?.vietnameseName}</p>
-                    <p className="font-bold">{formatPrice(size.price)}</p>
+                    <p className={`font-bold ${size.discount> 0 ?"line-through" :""}`}>
+                      {formatPrice(size.price)}
+                    </p>
+                    {size.discount > 0 && (
+                      <p className="font-bold ">
+                        {formatPrice(size.price * (1 - size.discount / 100))}
+                      </p>
+                    )}
+
                     {!size.isAvailable && (
                       <p className="font-bold text-sm">Hết hàng</p>
                     )}

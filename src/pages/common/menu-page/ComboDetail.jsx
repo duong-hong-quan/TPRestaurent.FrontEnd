@@ -131,9 +131,14 @@ const ComboDetail = ({ comboData, handleBack }) => {
             </p>
             <hr />
             <p className="mb-4">
-              <span className="text-red-700 text-2xl">
-                {formatPrice(combo?.price)}
+              <span className={`text-red-700 text-2xl ${combo.discount > 0 && "line-through"}`}>
+                {formatPrice(combo?.price )}
               </span>
+              {combo?.discount > 0 && (
+                <span className="text-red-700 text-2xl">
+                  {formatPrice(combo?.price * (1 - combo?.discount / 100))}
+                </span>
+              )}
             </p>
             <div>
               <p className="text-gray-800 text-lg mb-4">Ghi chú của bạn</p>
@@ -205,6 +210,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
                           <span className="font-bold">
                             Giá: {formatPrice(dish.dishSizeDetail.price)}
                           </span>
+
                           <span className="text-red-800 font-semibold">
                             {dish.quantityLeft === 0 || !dish.quantityLeft
                               ? "Hết hàng"
