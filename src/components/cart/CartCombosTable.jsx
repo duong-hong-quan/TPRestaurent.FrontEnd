@@ -267,11 +267,21 @@ const CartCombosTable = ({
       ),
     },
     {
+      title:"Giảm giá",
+      dataIndex: "discount",
+      key: "discount",
+      render: (_, record) => (
+        <Text strong className="text-red-700 font-bold">
+          {record.combo.discount}%
+        </Text>
+      ),
+    },
+    {
       title: "Thành tiền",
       key: "total",
       render: (_, record) => (
         <Text strong className="text-red-700 font-bold">
-          {formatPrice(record.combo.price * record.quantity)}
+          {formatPrice(record.combo.price * record.quantity*(1-record.combo.discount/100))}
         </Text>
       ),
     },
