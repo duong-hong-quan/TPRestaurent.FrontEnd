@@ -1,4 +1,5 @@
 import { Card, CardBody, Typography } from "@material-tailwind/react";
+import dayjs from "dayjs";
 import moment from "moment/moment";
 
 const ReservationInformation = ({ reservation }) => {
@@ -12,9 +13,11 @@ const ReservationInformation = ({ reservation }) => {
     endTime,
     numberOfPeople,
   } = reservation;
-  const startMoment = moment(startTime);
-  const endMoment = moment(endTime);
+  const startMoment = dayjs(startTime);
+  const endMoment = dayjs(endTime);
   const isSameDay = startMoment.isSame(endMoment, "day");
+  console.log("startTime", startMoment);
+  console.log("endTime", startMoment);
 
   return (
     <div className="w-full">
