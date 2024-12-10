@@ -270,9 +270,12 @@ const Reservation = () => {
       let start;
       let end;
       let selectedDate = form.getFieldValue("date");
-      selectedDate = moment(selectedDate, "DD/MM/YYYY");
+      selectedDate = moment()
+        .set("date", selectedDate.date())
+        .set("month", selectedDate.month())
+        .set("year", selectedDate.year());
 
-      if (selectedDate && moment().isSame(selectedDate, "day")) {
+      if (moment().format("DD/MM/YYYY") === selectedDate.format("DD/MM/YYYY")) {
         start = moment()
           .set("hour", startTime.hours)
           .set("minute", startTime.minutes);
@@ -301,7 +304,7 @@ const Reservation = () => {
         start.add(30, "minutes");
       }
 
-      if (selectedDate && moment().isSame(selectedDate, "day")) {
+      if (moment().format("DD/MM/YYYY") === selectedDate.format("DD/MM/YYYY")) {
         return times.filter((time) => moment(time, "HH:mm").isAfter(moment()));
       }
 
@@ -325,6 +328,7 @@ const Reservation = () => {
   const handleStartTimeChange = (value) => {
     generateTimeSlots().then((slots) => {
       setTimeSlots(slots);
+
       const newEndTime = moment(value, "HH:mm").add(1, "hour").format("HH:mm");
       setSelectedEndTime(newEndTime);
       form.setFieldsValue({ endTime: newEndTime });
@@ -401,29 +405,45 @@ const Reservation = () => {
       setIsValid(true);
     }
     initData();
+  }, []);
+  useEffect(() => {
     const now = moment();
-    const roundedStartTime = now
-      .clone()
-      .minute(Math.ceil(now.minute() / 30) * 30)
-      .second(0);
-    const initialStartTime = roundedStartTime.isBefore(now)
-      ? roundedStartTime.add(30, "minutes")
-      : roundedStartTime;
-    const initialEndTime = initialStartTime
-      .clone()
-      .add(1, "hour")
-      .format("HH:mm");
-    form.setFieldsValue({
-      startTime: initialStartTime.format("HH:mm"),
-      endTime: initialEndTime,
-    });
+    const selectedDate = form.getFieldValue("date");
+    let roundedStartTime;
+    let initialStartTime;
+    let initialEndTime;
+    debugger;
+    if (selectedDate.format("DD/MM/YYYY") !== now.format("DD/MM/YYYY")) {
+      if (timeSlots.length > 0) {
+        form.setFieldsValue({ startTime: timeSlots[0] });
+      }
+    } else {
+      console.log(moment().format("HH:mm"));
+      if (!timeSlots.includes(moment().format("HH:mm"))) {
+        form.setFieldsValue({ startTime: "", endTime: "" });
+        return;
+      }
+
+      roundedStartTime = now
+        .clone()
+        .minute(Math.ceil(now.minute() / 30) * 30)
+        .second(0);
+      initialStartTime = roundedStartTime.isBefore(now)
+        ? roundedStartTime.add(30, "minutes")
+        : roundedStartTime;
+      initialEndTime = initialStartTime.clone().add(1, "hour").format("HH:mm");
+      form.setFieldsValue({
+        startTime: initialStartTime.format("HH:mm"),
+        endTime: initialEndTime,
+      });
+    }
+
     setSelectedEndTime(initialEndTime);
     generateTimeSlots().then((slots) => {
       setTimeSlots(slots);
       setEndTimeSlots(generateEndTimeSlots(initialStartTime.format("HH:mm")));
     });
-  }, [form]);
-
+  }, [form.getFieldValue("date")]);
   const filteredTimeSlots = timeSlots?.filter((time) =>
     moment(time, "HH:mm").isAfter(moment())
   );
