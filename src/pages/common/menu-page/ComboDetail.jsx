@@ -131,8 +131,12 @@ const ComboDetail = ({ comboData, handleBack }) => {
             </p>
             <hr />
             <p className="mb-4">
-              <span className={`text-red-700 text-2xl ${combo.discount > 0 && "line-through"}`}>
-                {formatPrice(combo?.price )}
+              <span
+                className={`text-red-700 text-2xl ${
+                  combo?.discount > 0 && "line-through"
+                }`}
+              >
+                {formatPrice(combo?.price)}
               </span>
               {combo?.discount > 0 && (
                 <span className="text-red-700 text-2xl">
