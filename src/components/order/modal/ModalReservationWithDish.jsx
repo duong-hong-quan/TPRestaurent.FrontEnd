@@ -42,6 +42,7 @@ const ModalReservationWithDish = ({
   information,
   handleOpenOtp,
 }) => {
+  console.log("information", information);
   const [dishes, setDishes] = useState([]);
   const [combos, setCombos] = useState([]);
   const [activeTab, setActiveTab] = useState(0);

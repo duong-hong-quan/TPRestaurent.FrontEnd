@@ -359,12 +359,10 @@ const CreateOptionSetModal = ({
                               min={1}
                               className="w-full"
                               onChange={(value) => {
-                                debugger;
                                 const currentDishSizeDetail =
                                   form.getFieldValue("dishSizeDetails");
 
                                 if (currentDishSizeDetail) {
-                                  debugger;
                                   handlePreview(
                                     currentDishSizeDetail?.[
                                       indexDishSizeDetails

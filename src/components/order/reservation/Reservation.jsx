@@ -99,19 +99,22 @@ const Reservation = () => {
     }
     const [startHour, startMinute] = startTime.split(":").map(Number);
     const [endHour, endMinute] = endTime.split(":").map(Number);
-    let combinedStartTime = moment(date)
+    let combinedStartTime = moment()
+      .set("date", form.getFieldValue("date").date())
       .hour(startHour)
       .minute(startMinute)
       .format("YYYY-MM-DDTHH:mm:ss");
     let combinedEndTime;
     if (endHour === 0) {
-      combinedEndTime = moment(date)
+      combinedEndTime = moment()
+        .set("date", form.getFieldValue("date").date())
         .day(1)
         .hour(endHour)
         .minute(endMinute)
         .format("YYYY-MM-DDTHH:mm:ss");
     }
-    combinedEndTime = moment(date)
+    combinedEndTime = moment()
+      .set("date", form.getFieldValue("date").date())
       .hour(endHour)
       .minute(endMinute)
       .format("YYYY-MM-DDTHH:mm:ss");
@@ -139,19 +142,22 @@ const Reservation = () => {
     const endTime = form.getFieldValue("endTime");
     const [startHour, startMinute] = startTime.split(":").map(Number);
     const [endHour, endMinute] = endTime.split(":").map(Number);
-    const combinedStartTime = moment(date)
+    const combinedStartTime = moment()
+      .set("date", form.getFieldValue("date").date())
       .hour(startHour)
       .minute(startMinute)
       .format("YYYY-MM-DDTHH:mm:ss");
     let combinedEndTime;
     if (endHour === 0) {
-      combinedEndTime = moment(date)
-        .day(1)
+      combinedEndTime = moment()
+        .set("date", form.getFieldValue("date").date())
+
         .hour(endHour)
         .minute(endMinute)
         .format("YYYY-MM-DDTHH:mm:ss");
     }
-    combinedEndTime = moment(date)
+    combinedEndTime = moment()
+      .set("date", form.getFieldValue("date").date())
       .hour(endHour)
       .minute(endMinute)
       .format("YYYY-MM-DDTHH:mm:ss");
@@ -230,7 +236,7 @@ const Reservation = () => {
   const disabledDate = (current) => {
     return current && current < moment().startOf("day");
   };
-
+  console.log(timeSlots);
   const generateTimeSlots = async () => {
     try {
       // Fetch opening time
@@ -261,20 +267,42 @@ const Reservation = () => {
       const endTime = parseTimeValue(closeTimeResponse.result.currentValue);
 
       const times = [];
-      const start = moment()
-        .startOf("day")
-        .hour(startTime.hours)
-        .minute(startTime.minutes);
+      let start;
+      let end;
+      let selectedDate = form.getFieldValue("date");
+      selectedDate = moment(selectedDate, "DD/MM/YYYY");
 
-      const end = moment()
-        .startOf("day")
-        .hour(endTime.hours)
-        .minute(endTime.minutes);
+      if (selectedDate && moment().isSame(selectedDate, "day")) {
+        start = moment()
+          .set("hour", startTime.hours)
+          .set("minute", startTime.minutes);
+        end = moment()
+          .set("hour", endTime.hours)
+          .set("minute", endTime.minutes);
+      } else {
+        start = moment()
+          .set("date", form.getFieldValue("date").date())
+          .set("month", form.getFieldValue("date").month() + 1)
+          .set("year", form.getFieldValue("date").year())
+          .set("hour", startTime.hours)
+          .set("minute", startTime.minutes);
+
+        end = moment()
+          .set("date", form.getFieldValue("date").date())
+          .set("month", form.getFieldValue("date").month() + 1)
+          .set("year", form.getFieldValue("date").year())
+          .set("hour", endTime.hours)
+          .set("minute", endTime.minutes);
+      }
 
       // Generate time slots
       while (start <= end) {
         times.push(start.format("HH:mm"));
         start.add(30, "minutes");
+      }
+
+      if (selectedDate && moment().isSame(selectedDate, "day")) {
+        return times.filter((time) => moment(time, "HH:mm").isAfter(moment()));
       }
 
       return times;
@@ -295,11 +323,17 @@ const Reservation = () => {
   };
 
   const handleStartTimeChange = (value) => {
-    const newEndTime = moment(value, "HH:mm").add(1, "hour").format("HH:mm");
-    setSelectedEndTime(newEndTime);
-    form.setFieldsValue({ endTime: newEndTime });
-    setEndTimeSlots(generateEndTimeSlots(value));
+    generateTimeSlots().then((slots) => {
+      setTimeSlots(slots);
+      const newEndTime = moment(value, "HH:mm").add(1, "hour").format("HH:mm");
+      setSelectedEndTime(newEndTime);
+      form.setFieldsValue({ endTime: newEndTime });
+      setEndTimeSlots(generateEndTimeSlots(value));
+    });
   };
+  useEffect(() => {
+    handleStartTimeChange(form.getFieldValue("startTime"));
+  }, [form.getFieldValue("date")]);
 
   const handleValidatePhone = async () => {
     const data = await callApi(
@@ -533,6 +567,10 @@ const Reservation = () => {
                   disabled={!isValidatePhone}
                   allowClear
                   defaultValue={dayjs(momentDate, "DD/MM/YYYY")}
+                  onChange={(date) => {
+                    form.setFieldsValue({ date });
+                    generateTimeSlots();
+                  }}
                 />
               </Form.Item>
               <Form.Item
@@ -549,8 +587,8 @@ const Reservation = () => {
                   onChange={handleStartTimeChange}
                   disabled={!isValidatePhone}
                 >
-                  {filteredTimeSlots?.length > 0 &&
-                    filteredTimeSlots?.map((time) => (
+                  {timeSlots?.length > 0 &&
+                    timeSlots?.map((time) => (
                       <Select.Option key={time} value={time}>
                         {time}
                       </Select.Option>
