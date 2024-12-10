@@ -132,7 +132,8 @@ const ReservationRequestItem = ({ reservation }) => {
       </div>
       <div className="flex flex-col md:flex-row justify-end items-center">
         <div className="flex justify-end">
-          {reservation?.statusId === 9 &&
+          {reservation?.statusId !== 9 &&
+            reservation?.statusId !== 10 &&
             reservation.account.id === user.id && (
               <button
                 onClick={() => handleClickOpen()}
