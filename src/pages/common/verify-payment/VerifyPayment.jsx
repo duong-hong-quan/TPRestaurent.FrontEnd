@@ -13,6 +13,7 @@ import { formatPrice } from "../../../util/Utility";
 import useCallApi from "../../../api/useCallApi";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import { TransactionApi } from "../../../api/endpoint";
+import { set } from "lodash";
 
 const VerifyPayment = () => {
   const location = useLocation();
@@ -45,25 +46,25 @@ const VerifyPayment = () => {
     );
 
     if (vnpResponseCode) {
-      setIsVNPAY(true);
       if (vnpResponseCode === "00") {
+        setIsSuccess(true);
         const data = await callApi(
           `${TransactionApi.UPDATE_STATUS}/${id}/2`,
           "PUT"
         );
         if (data.isSuccess) {
-          setIsSuccess(true);
           if (getOS() === "Android") {
             window.location.href = `thienphurestaurant://transaction?isSuccess=true&transactionId=${id}`;
+          } else {
           }
         }
       } else {
+        setIsSuccess(false);
         const data = await callApi(
           `${TransactionApi.UPDATE_STATUS}/${id}/1`,
           "PUT"
         );
         if (data.isSuccess) {
-          setIsSuccess(false);
           if (getOS() === "Android") {
             window.location.href = `thienphurestaurant://transaction?isSuccess=false&transactionId=${id}`;
           }
@@ -71,12 +72,12 @@ const VerifyPayment = () => {
           setModalMessage(
             `Thanh toán VNPay thất bại . Vui lòng thanh toán lại`
           );
-          setIsSuccess(false);
         }
       }
     } else if (partnerCode === "MOMO") {
       const orderInfo = decodeURIComponent(searchParams.get("orderId"));
       if (resultCode === "0") {
+        setIsSuccess(true);
         const data = await callApi(
           `${TransactionApi.UPDATE_STATUS}/${orderInfo}/2`,
           "PUT"
@@ -93,12 +94,12 @@ const VerifyPayment = () => {
           }
         }
       } else {
+        setIsSuccess(false);
         const data = await callApi(
           `${TransactionApi.UPDATE_STATUS}/${orderInfo}/1`,
           "PUT"
         );
         if (data.isSuccess) {
-          setIsSuccess(false);
           setModalMessage(
             `Thanh toán Momo thất bại cho đơn hàng: ${orderInfo}. Vui lòng thanh toán lại`
           );
@@ -108,7 +109,6 @@ const VerifyPayment = () => {
         }
       }
     }
-
     setModalIsOpen(true);
   };
   useEffect(() => {
