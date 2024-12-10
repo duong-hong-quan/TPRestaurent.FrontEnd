@@ -46,6 +46,7 @@ const VerifyPayment = () => {
     );
 
     if (vnpResponseCode) {
+      setIsVNPAY(true);
       if (vnpResponseCode === "00") {
         setIsSuccess(true);
         const data = await callApi(
