@@ -124,7 +124,7 @@ const AdminDishPage = ({ initData, tab }) => {
     }
   };
   return (
-    <Card className="h-full w-full">
+    <div className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
@@ -197,7 +197,7 @@ const AdminDishPage = ({ initData, tab }) => {
         totalPages={totalPages}
         onPageChange={handleCurrentPageChange}
       />
-    </Card>
+    </div>
   );
 };
 export default AdminDishPage;

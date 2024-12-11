@@ -69,7 +69,7 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Typography className="text-sm font-bold">
-                {formatPrice(user.amount) || formatPrice(0)}
+                {formatPrice(Number(user.amount)) || formatPrice(0)}
               </Typography>
             </div>
           </div>
