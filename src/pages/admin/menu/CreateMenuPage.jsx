@@ -382,14 +382,18 @@ const CreateMenuPage = ({ back }) => {
                                 required: true,
                                 message: "Vui lòng nhập giá gốc",
                               },
+                              {
+                                type: "number",
+                                min: 1000,
+                                message: "Giá không được nhỏ hơn 1000 đồng",
+                              },
                             ]}
                             label="Giá gốc"
                           >
-                            <Input
+                            <InputNumber
                               placeholder="Nhập giá"
                               style={{ width: 120 }}
                               name={`dishSizeDetailDtos[${name}].price`}
-                              type="number"
                               onChange={() => {
                                 renderPriceText(index);
                                 caculateDiscountPriceChange(index);
