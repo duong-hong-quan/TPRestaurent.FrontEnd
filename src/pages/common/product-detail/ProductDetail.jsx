@@ -179,7 +179,7 @@ const ProductDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
+  console.log(dish);
   const renderDescriptionTab = () => (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">Mô tả sản phẩm</h2>
@@ -250,14 +250,23 @@ const ProductDetail = () => {
                   {dish?.name}
                 </h1>
               </div>
-              <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <StarFilled key={star} className="text-[#FF9F43] text-xl" />
-                ))}
-                <span className="ml-2 text-gray-600 text-lg">
-                  {dish?.dish?.averageRating}
-                </span>
-              </div>
+              {averageRating > 0 && (
+                <>
+                  <div className="flex items-center">
+                    {[...Array(Math.floor(averageRating)).keys()].map(
+                      (star) => (
+                        <StarFilled
+                          key={star}
+                          className="text-[#FF9F43] text-xl"
+                        />
+                      )
+                    )}
+                    <span className="ml-2 text-gray-600 text-lg">
+                      ({averageRating})
+                    </span>
+                  </div>
+                </>
+              )}
 
               <div className="border-t-2 border-gray-500 my-2 pt-4">
                 <div className="inline-flex items-center px-4 py-2 rounded-full bg-white  border border-red-800 text-sm">
