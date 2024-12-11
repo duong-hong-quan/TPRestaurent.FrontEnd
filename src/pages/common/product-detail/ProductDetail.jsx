@@ -170,7 +170,9 @@ const ProductDetail = () => {
   useEffect(() => {
     if (dishSizeDetails && dishSizeDetails.length > 0 && !selectedSize) {
       setSelectedSize(dishSizeDetails[0]);
-      setPrice(dishSizeDetails[0].price * (1 - dishSizeDetails[0].discount / 100));
+      setPrice(
+        dishSizeDetails[0].price * (1 - dishSizeDetails[0].discount / 100)
+      );
     }
   }, [dishSizeDetails, selectedSize]);
 
@@ -201,8 +203,8 @@ const ProductDetail = () => {
       );
     } else {
       dispatch(addToCart({ dish: dish, size: size, note: note }));
+      message.success("Đã thêm vào giỏ hàng");
     }
-    message.success("Đã thêm vào giỏ hàng");
   };
   const renderRatingTab = () => {
     const starCounts = [5, 4, 3, 2, 1].map(
@@ -286,7 +288,7 @@ const ProductDetail = () => {
                     key={size.dishSizeDetailId}
                     onClick={() => {
                       setSelectedSize(size);
-                      setPrice(size.price*(1-size.discount/100));
+                      setPrice(size.price * (1 - size.discount / 100));
                     }}
                     className={`flex-1 py-3 h-full my-2 md:mx-2  w-full px-6  rounded-lg text-lg transition duration-300 ${
                       selectedSize?.dishSizeDetailId === size.dishSizeDetailId
@@ -303,7 +305,11 @@ const ProductDetail = () => {
                     `}
                   >
                     <p className="">{size.dishSize?.vietnameseName}</p>
-                    <p className={`font-bold ${size.discount> 0 ?"line-through" :""}`}>
+                    <p
+                      className={`font-bold ${
+                        size.discount > 0 ? "line-through" : ""
+                      }`}
+                    >
                       {formatPrice(size.price)}
                     </p>
                     {size.discount > 0 && (

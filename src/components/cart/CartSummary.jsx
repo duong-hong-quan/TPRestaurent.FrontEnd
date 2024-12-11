@@ -104,7 +104,6 @@ const CartSummary = ({ handleClose }) => {
   const [maxApplyLoyalPoint, setMaxApplyLoyalPoint] = useState(0);
   const [maxApplyCouponPercent, setMaxApplyCouponPercent] = useState(0);
   const navigate = useNavigate();
-  console.log("selectedCoupons", selectedCoupons);
   const handleSelectCoupons = (coupons) => {
     setSelectedCoupons(coupons);
   };
@@ -221,7 +220,6 @@ const CartSummary = ({ handleClose }) => {
     } else {
       showError(response.messages);
       setIsAgree(false);
-      Console.log(isAgree);
     }
   };
   useEffect(() => {
