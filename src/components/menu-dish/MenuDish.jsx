@@ -49,6 +49,7 @@ const MenuDish = ({ dishes, handleAddItem, fetchDishes }) => {
         return;
       }
       dispatch(addToCart({ dish, size, quantity: 1 }));
+      return;
     }
     if (size && !size.isAvailable) {
       message.error("Sản phẩm với size này đã hết hàng");

@@ -43,7 +43,6 @@ const CartPage = () => {
   };
   const handleRemoveCombo = async (comboId, selectedDishes) => {
     dispatch(removeCombo({ comboId, selectedDishes }));
-    await syncCart();
   };
   const handleSummary = () => {
     if (isEmptyObject(user)) {
