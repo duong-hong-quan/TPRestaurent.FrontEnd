@@ -360,9 +360,17 @@ const CreateComboPage = () => {
           <Form.Item
             name="price"
             label="Giá combo"
-            rules={[{ required: true }]}
+            rules={[
+              { required: true },
+
+              {
+                type: "number",
+                min: 1000,
+                message: "Giá combo phải lớn hơn 1000 đồng",
+              },
+            ]}
           >
-            <InputNumber min={1} className="w-full" />
+            <InputNumber className="w-full" />
           </Form.Item>
 
           <Form.Item

@@ -205,6 +205,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
                           variant="small"
                           className="mt-1 text-center"
                         >
+                          <strong className="font-bold">{dish.quantity}</strong>{" "}
                           {dish.dishSizeDetail.dish.name}
                         </Typography>
                         <Typography
@@ -218,7 +219,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
                           <span className="text-red-800 font-semibold">
                             {dish.quantityLeft === 0 || !dish.quantityLeft
                               ? "Hết hàng"
-                              : `Còn ${dish.quantityLeft} món`}
+                              : `Còn lại ${dish.quantityLeft} phần`}
                           </span>
                         </Typography>
                       </div>
