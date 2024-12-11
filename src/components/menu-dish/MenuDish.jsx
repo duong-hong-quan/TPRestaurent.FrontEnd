@@ -38,13 +38,25 @@ const MenuDish = ({ dishes, handleAddItem, fetchDishes }) => {
       size: size,
     }));
   };
-
   const handleAddToCart = (dish, size) => {
-    if (!size.isAvailable) {
+    if (!size) {
+      let filterSize = dishes.find(
+        (dishFilter) => dishFilter.dish.dishId === dish.dishId
+      );
+      size = filterSize.dishSizeDetails[0]; // Set to the first size detail by default
+      if (size.isAvailable === false) {
+        message.error("Sản phẩm với size này đã hết hàng");
+        return;
+      }
+      dispatch(addToCart({ dish, size, quantity: 1 }));
+    }
+    if (size && !size.isAvailable) {
       message.error("Sản phẩm với size này đã hết hàng");
       return;
     }
+
     dispatch(addToCart({ dish, size, quantity: 1 }));
+    message.success("Đã thêm vào giỏ hàng");
   };
 
   const getCurrentPrice = (dishId) => {

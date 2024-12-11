@@ -11,6 +11,7 @@ import {
   message,
   Modal,
   Image,
+  InputNumber,
 } from "antd";
 import { Typography } from "@material-tailwind/react";
 import useCallApi from "../../../api/useCallApi";
@@ -412,18 +413,28 @@ const CreateMenuPage = ({ back }) => {
                           {...restField}
                           name={[name, "discount"]}
                           rules={[
-                            { required: true, message: "Vui lòng nhập giá" },
+                            {
+                              required: true,
+                              message: "Vui lòng nhập phần trăm giảm giá",
+                            },
+                            {
+                              type: "number",
+                              min: 0,
+                              max: 99,
+                              message:
+                                "Phần trăm giảm giá nằm trong khoảng 0 đến 99%",
+                            },
                           ]}
                           label="Giảm (%)"
                         >
-                          <Input
+                          <InputNumber
                             placeholder="Nhập giá"
                             style={{ width: 120 }}
                             name={`dishSizeDetailDtos[${name}].discount`}
-                            type="number"
                             onChange={() => {
                               caculateDiscountPriceChange(index);
                             }}
+                            defaultValue={0}
                           />
                         </Form.Item>
 
