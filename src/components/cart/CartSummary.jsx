@@ -197,6 +197,13 @@ const CartSummary = ({ handleClose }) => {
           window.location.href = response.result.paymentLink;
         }
       } else {
+        const response = await callApi(
+          `${AccountApi.GET_BY_PHONE}?phoneNumber=${user.phoneNumber}`,
+          "GET"
+        );
+        if (response.isSuccess) {
+          dispatch(login(response.result));
+        }
         navigate(`/order-history?phoneNumber=${user.phoneNumber}`);
       }
     } else {
