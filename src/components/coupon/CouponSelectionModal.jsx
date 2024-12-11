@@ -21,13 +21,11 @@ const CouponSelectionModal = ({
         : [...prev, couponId]
     );
   };
-  console.log(selectedCoupons);
 
   const handleConfirm = () => {
     onSelectCoupons(selectedCoupons);
     onClose();
   };
-  console.log(totalPrice);
   return (
     <Modal
       open={visible}

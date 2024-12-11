@@ -39,9 +39,6 @@ const MenuDish = ({ dishes, handleAddItem, fetchDishes }) => {
     }));
   };
   const handleAddToCart = (dish, size) => {
-    debugger;
-    // If no size is selected, fall back to the first available size.
-
     if (!size) {
       let filterSize = dishes.find(
         (dishFilter) => dishFilter.dish.dishId === dish.dishId
