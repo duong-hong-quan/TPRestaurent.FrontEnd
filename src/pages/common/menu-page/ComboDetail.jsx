@@ -212,13 +212,17 @@ const ComboDetail = ({ comboData, handleBack }) => {
                           className="flex flex-col items-center"
                         >
                           <span className="font-bold">
+                            Số lượng: {dish.quantity}{" "}
+                          </span>
+
+                          <span className="font-bold">
                             Giá: {formatPrice(dish.dishSizeDetail.price)}
                           </span>
 
                           <span className="text-red-800 font-semibold">
                             {dish.quantityLeft === 0 || !dish.quantityLeft
                               ? "Hết hàng"
-                              : `Còn ${dish.quantityLeft} món`}
+                              : `Còn lại ${dish.quantityLeft} phần`}
                           </span>
                         </Typography>
                       </div>
