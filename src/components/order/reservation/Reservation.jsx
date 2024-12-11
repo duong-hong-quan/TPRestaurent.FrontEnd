@@ -304,7 +304,9 @@ const Reservation = () => {
         start.add(30, "minutes");
       }
 
-      if (moment().format("DD/MM/YYYY") === selectedDate.format("DD/MM/YYYY")) {
+      if (
+        moment().format("DD/MM/YYYY") === selectedDate?.format("DD/MM/YYYY")
+      ) {
         return times.filter((time) => moment(time, "HH:mm").isAfter(moment()));
       }
 
@@ -412,8 +414,7 @@ const Reservation = () => {
     let roundedStartTime;
     let initialStartTime;
     let initialEndTime;
-    debugger;
-    if (selectedDate.format("DD/MM/YYYY") !== now.format("DD/MM/YYYY")) {
+    if (selectedDate?.format("DD/MM/YYYY") !== now.format("DD/MM/YYYY")) {
       if (timeSlots.length > 0) {
         form.setFieldsValue({ startTime: timeSlots[0] });
       }
