@@ -43,7 +43,12 @@ import PaymentMethodSelector from "./PaymentMethodSelector";
 import { clearCart, getTotal } from "../../redux/features/cartReservationSlice";
 import useCallApi from "../../api/useCallApi";
 const { Title, Text } = Typography;
-import { AccountApi, ConfigurationApi, CouponApi, OrderApi } from "../../api/endpoint";
+import {
+  AccountApi,
+  ConfigurationApi,
+  CouponApi,
+  OrderApi,
+} from "../../api/endpoint";
 import LoadingOverlay from "../loading/LoadingOverlay";
 import AddressModal from "../user/AddressModal";
 import PolicyOrder from "../policy/PolicyOrder";
@@ -171,10 +176,9 @@ const CartSummary = ({ handleClose }) => {
 
       deliveryOrder: {
         couponIds: selectedCoupons,
-        loyalPointToUse:
-          isLoyaltyEnabled 
-            ? (Math.ceil(user.loyalPoint * maxApplyLoyalPoint) || 0)
-            : 0,
+        loyalPointToUse: isLoyaltyEnabled
+          ? Math.ceil(user.loyalPoint * maxApplyLoyalPoint) || 0
+          : 0,
         paymentMethod: selectedMethod,
       },
     };
@@ -192,7 +196,7 @@ const CartSummary = ({ handleClose }) => {
           window.location.href = response.result.paymentLink;
         }
       } else {
-        navigate(`/order-history?phoneNumber=${information.phoneNumber}`);
+        navigate(`/order-history?phoneNumber=${user.phoneNumber}`);
       }
     } else {
       showError(response.messages);
@@ -251,32 +255,32 @@ const CartSummary = ({ handleClose }) => {
         </Tag>
       ));
   };
-useEffect(() => {
-   const fetchMaxApplyLoyalPoint = async () => {
-    const response = await callApi(
-      `${ConfigurationApi.GET_CONFIG_BY_NAME}/MAX_APPLY_LOYALTY_POINT_PERCENT`,
-      "GET"
-    );
-    if (response.isSuccess) {
-      setMaxApplyLoyalPoint(response.result.currentValue);
-    } else {
-      showError(response.messages);
-    }
-  };
-  const fetchMaxApplyCouponPercent = async () => {
-    const response = await callApi(
-      `${ConfigurationApi.GET_CONFIG_BY_NAME}/MAX_APPLY_COUPON_PERCENT`,
-      "GET"
-    );
-    if (response.isSuccess) {
-      setMaxApplyCouponPercent(response.result.currentValue);
-    } else {
-      showError(response.messages);
-    }
-  };
-  fetchMaxApplyLoyalPoint();
-  fetchMaxApplyCouponPercent();
-  }, [ ]);
+  useEffect(() => {
+    const fetchMaxApplyLoyalPoint = async () => {
+      const response = await callApi(
+        `${ConfigurationApi.GET_CONFIG_BY_NAME}/MAX_APPLY_LOYALTY_POINT_PERCENT`,
+        "GET"
+      );
+      if (response.isSuccess) {
+        setMaxApplyLoyalPoint(response.result.currentValue);
+      } else {
+        showError(response.messages);
+      }
+    };
+    const fetchMaxApplyCouponPercent = async () => {
+      const response = await callApi(
+        `${ConfigurationApi.GET_CONFIG_BY_NAME}/MAX_APPLY_COUPON_PERCENT`,
+        "GET"
+      );
+      if (response.isSuccess) {
+        setMaxApplyCouponPercent(response.result.currentValue);
+      } else {
+        showError(response.messages);
+      }
+    };
+    fetchMaxApplyLoyalPoint();
+    fetchMaxApplyCouponPercent();
+  }, []);
   return (
     <div className="container my-4 p-6 bg-white">
       <LoadingOverlay isLoading={loading} />
@@ -475,7 +479,9 @@ useEffect(() => {
           </Typography>
         </div>
         <div className="flex justify-between items-center mb-4 bg-gray-100 shadow-md py-6 px-4">
-          <span className="text-lg font-bold">Tổng cộng sau làm tròn đến hàng nghìn:</span>
+          <span className="text-lg font-bold">
+            Tổng cộng sau làm tròn đến hàng nghìn:
+          </span>
           <Typography
             variant="h2"
             className="font-bold text-red-700 text-center"
