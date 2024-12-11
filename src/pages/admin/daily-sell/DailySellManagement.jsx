@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useCallApi from "../../../api/useCallApi";
 import { uniqueId } from "lodash";
-import { Button, Card, Input, message, Space, Switch } from "antd";
+import { Button, Card, Input, InputNumber, message, Space, Switch } from "antd";
 import { ComboApi, DishApi, DishManagementApi } from "../../../api/endpoint";
 import DishTable from "../../../components/table/DishTable";
 import ComboTable from "../../../components/table/ComboTable";
@@ -68,6 +68,10 @@ const DailySellManagement = () => {
   };
 
   const handleInputChange = (id, field, value) => {
+    debugger;
+    if (Number(value) <= 0) {
+      message.error("Số lượng không được nhỏ hơn 0");
+    }
     setDishSizeDetails(
       dishSizeDetails.map((detail) =>
         detail.dishSize.id === id
@@ -135,29 +139,29 @@ const DailySellManagement = () => {
                   <Space direction="vertical" className="w-full">
                     <h1 strong>{dishSizeDetail?.dishSize?.vietnameseName}</h1>
                     {isAutoUpdate ? (
-                      <Input
-                        type="number"
+                      <InputNumber
                         value={dishSizeDetail.dailyCountdown}
-                        onChange={(e) =>
+                        min={0}
+                        onChange={(value) =>
                           handleInputChange(
                             dishSizeDetail.dishSize.id,
                             "dailyCountdown",
-                            e.target.value
+                            value
                           )
                         }
                         addonBefore="Số lượng"
                       />
                     ) : (
-                      <Input
-                        type="number"
+                      <InputNumber
                         value={dishSizeDetail.quantityLeft}
-                        onChange={(e) =>
+                        min={0}
+                        onChange={(value) => {
                           handleInputChange(
                             dishSizeDetail.dishSize.id,
                             "quantityLeft",
-                            e.target.value
-                          )
-                        }
+                            value
+                          );
+                        }}
                         addonBefore="Số lượng"
                       />
                     )}
