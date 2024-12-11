@@ -132,16 +132,16 @@ const ReservationRequestItem = ({ reservation }) => {
       </div>
       <div className="flex flex-col md:flex-row justify-end items-center">
         <div className="flex justify-end">
-          {reservation?.statusId !== 9 &&
-            reservation?.statusId !== 10 &&
-            reservation.account.id === user.id && (
-              <button
-                onClick={() => handleClickOpen()}
-                className=" text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
-              >
-                Thanh toán ngay
-              </button>
-            )}
+          {reservation?.statusId === 1 ||
+            (reservation?.statusId === 4 &&
+              reservation.account.id === user.id && (
+                <button
+                  onClick={() => handleClickOpen()}
+                  className=" text-red-900 font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Thanh toán ngay
+                </button>
+              ))}
 
           <button
             onClick={() => handleChange(reservation.orderId)}
