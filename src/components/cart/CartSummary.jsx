@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Badge,
   Button,
   Checkbox,
   Input,
@@ -17,7 +16,6 @@ import {
   FileTextOutlined,
   TagOutlined,
   StarOutlined,
-  DollarOutlined,
 } from "@ant-design/icons";
 import CartCombosTable from "./CartCombosTable";
 import { CartSingleTable } from "./CartSingleTable";
@@ -235,7 +233,16 @@ const CartSummary = ({ handleClose }) => {
       totalBefore,
       totalPercentDiscount(),
       deliveryOrder,
-      isLoyaltyEnabled ? user.loyalPoint : 0,
+      isLoyaltyEnabled
+        ? maxApplyLoyalPoint *
+            (cart.total
+              ? cart.total + (cartTotal || 0)
+              : cartTotal + deliveryOrder + totalPercentDiscount()) >
+          user.loyalPoint
+          ? user.loyalPoint
+          : 0
+        : 0,
+
       0
     );
   };
@@ -352,7 +359,14 @@ const CartSummary = ({ handleClose }) => {
                   <div className="flex">
                     {isLoyaltyEnabled && (
                       <span className="text-sm text-red-800 font-semibold mx-2">
-                        {`${user.loyalPoint * maxApplyLoyalPoint} điểm`}
+                        {`Giảm tối đa: ${formatPrice(
+                          maxApplyLoyalPoint *
+                            (cart.total
+                              ? cart.total + (cartTotal || 0)
+                              : cartTotal +
+                                deliveryOrder +
+                                totalPercentDiscount())
+                        )} `}
                       </span>
                     )}
                     <Switch
@@ -460,7 +474,20 @@ const CartSummary = ({ handleClose }) => {
               variant="h2"
               className="font-bold text-red-700 text-center"
             >
-              {`- ${formatPrice(user.loyalPoint * maxApplyLoyalPoint)}`}
+              {`- ${
+                maxApplyLoyalPoint *
+                  (cart.total
+                    ? cart.total + (cartTotal || 0)
+                    : cartTotal + deliveryOrder + totalPercentDiscount()) >
+                user.loyalPoint
+                  ? formatPrice(Number(user.loyalPoint))
+                  : formatPrice(
+                      maxApplyLoyalPoint *
+                        (cart.total
+                          ? cart.total + (cartTotal || 0)
+                          : cartTotal + deliveryOrder + totalPercentDiscount())
+                    )
+              }`}
             </Typography>
           </div>
         )}
