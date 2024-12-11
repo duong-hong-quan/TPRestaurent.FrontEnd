@@ -55,6 +55,7 @@ import PolicyOrder from "../policy/PolicyOrder";
 import { IconButton } from "@material-tailwind/react";
 import { login } from "../../redux/features/authSlice";
 import CouponSelectionModal from "../coupon/CouponSelectionModal";
+import { useNavigate } from "react-router-dom";
 const InfoItem = ({ icon, label, value }) => (
   <div className="flex items-center mb-2">
     {icon}
@@ -102,7 +103,7 @@ const CartSummary = ({ handleClose }) => {
   const [couponsData, setCouponsData] = useState([]);
   const [maxApplyLoyalPoint, setMaxApplyLoyalPoint] = useState(0);
   const [maxApplyCouponPercent, setMaxApplyCouponPercent] = useState(0);
-
+  const navigate = useNavigate();
   console.log("selectedCoupons", selectedCoupons);
   const handleSelectCoupons = (coupons) => {
     setSelectedCoupons(coupons);
