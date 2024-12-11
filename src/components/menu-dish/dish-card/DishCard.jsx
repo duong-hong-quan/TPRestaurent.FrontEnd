@@ -77,11 +77,7 @@ export const DishCard = ({
             </Typography>
             <Button
               onClick={() => {
-                handleAddToCart(
-                  dish.dish,
-                  selectedSizes?.size || dish.dishSizeDetails[0]
-                );
-                message.success("Đã thêm vào giỏ hàng");
+                handleAddToCart(dish.dish, selectedSizes?.size);
               }}
               className="w-full mx-auto bg-red-800 text-white"
             >
