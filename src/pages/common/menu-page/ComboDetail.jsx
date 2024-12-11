@@ -205,16 +205,13 @@ const ComboDetail = ({ comboData, handleBack }) => {
                           variant="small"
                           className="mt-1 text-center"
                         >
+                          <strong className="font-bold">{dish.quantity}</strong>{" "}
                           {dish.dishSizeDetail.dish.name}
                         </Typography>
                         <Typography
                           variant="tiny"
                           className="flex flex-col items-center"
                         >
-                          <span className="font-bold">
-                            Số lượng: {dish.quantity}{" "}
-                          </span>
-
                           <span className="font-bold">
                             Giá: {formatPrice(dish.dishSizeDetail.price)}
                           </span>
