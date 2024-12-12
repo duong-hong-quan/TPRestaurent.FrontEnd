@@ -101,7 +101,7 @@ const ComboDetail = ({ comboData, handleBack }) => {
 
             <div className="mt-4 grid grid-cols-4 gap-2">
               {imgs?.length > 0 &&
-                [...imgs, { path: combo?.image }].map((img, index) => (
+                imgs.map((img, index) => (
                   <img
                     key={index}
                     src={img.path}
