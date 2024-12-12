@@ -13,7 +13,11 @@ import {
   Modal,
 } from "antd";
 import useCallApi from "../../../api/useCallApi";
-import { GroupedDishCraftApi, OrderApi } from "../../../api/endpoint";
+import {
+  ConfigurationApi,
+  GroupedDishCraftApi,
+  OrderApi,
+} from "../../../api/endpoint";
 import * as signalR from "@microsoft/signalr";
 import { baseUrl } from "../../../api/config/axios";
 import notification_sound from "../../../assets/sound/kitchen.mp3";
@@ -156,6 +160,7 @@ const OptimizeProcess = () => {
   const [selectedGroupedDishId, setSelectedGroupedDishId] = useState(null);
   const [type, setType] = useState(true);
   const [isRefresh, setIsRefresh] = useState(false);
+  const [timeConfig, setTimeConfig] = useState(0);
   const columns = [
     {
       dataIndex: "id",
@@ -255,6 +260,13 @@ const OptimizeProcess = () => {
     if (result.isSuccess) {
       setGroupedDishCraft(result.result.items);
     }
+    const response = await callApi(
+      `${ConfigurationApi.GET_CONFIG_BY_NAME}/TIME_FOR_GROUPED_DISH`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setTimeConfig(response.result.currentValue);
+    }
   };
   const fetchDetail = async (groupedDishId, dishId, type) => {
     const result = await callApi(
@@ -307,7 +319,6 @@ const OptimizeProcess = () => {
     message.success("Gom món thành công");
   };
 
-  const renderConfrimModal = () => {};
   useEffect(() => {
     fetchData();
   }, []);
@@ -374,8 +385,8 @@ const OptimizeProcess = () => {
 
       <div>
         <Text type="danger" style={{ display: "block", margin: "16px 0" }}>
-          Note: Sau 3 phút, hệ thống sẽ tự động kiểm tra đơn và tối ưu món liên
-          tục trên list.
+          Note: Sau {timeConfig} phút, hệ thống sẽ tự động kiểm tra đơn và tối
+          ưu món liên tục trên list.
         </Text>
 
         <div className="flex justify-between items-center">
