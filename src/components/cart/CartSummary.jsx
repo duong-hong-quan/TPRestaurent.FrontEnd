@@ -166,6 +166,16 @@ const CartSummary = ({ handleClose }) => {
   };
   const handleCheckOut = async () => {
     const { reservationDishDtos } = mergeCartData(cartReservation, cart);
+    const loyalPointToUse = isLoyaltyEnabled ? 
+    Math.min(
+      maxApplyLoyalPoint *
+      (cart.total
+        ? cart.total + (cartTotal || 0)
+        : cartTotal +
+          deliveryOrder +
+          totalPercentDiscount()), user.loyalPoint
+    )
+    : 0;
     const updatedData = {
       customerId: user.id,
       orderType: 2,
@@ -175,7 +185,7 @@ const CartSummary = ({ handleClose }) => {
       deliveryOrder: {
         couponIds: selectedCoupons,
         loyalPointToUse: isLoyaltyEnabled
-          ? Math.ceil(user.loyalPoint * maxApplyLoyalPoint) || 0
+          ? loyalPointToUse || 0
           : 0,
         paymentMethod: selectedMethod,
       },
@@ -360,12 +370,14 @@ const CartSummary = ({ handleClose }) => {
                     {isLoyaltyEnabled && (
                       <span className="text-sm text-red-800 font-semibold mx-2">
                         {`Giảm tối đa: ${formatPrice(
-                          maxApplyLoyalPoint *
+                          Math.min(
+                            maxApplyLoyalPoint *
                             (cart.total
                               ? cart.total + (cartTotal || 0)
                               : cartTotal +
                                 deliveryOrder +
-                                totalPercentDiscount())
+                                totalPercentDiscount()), user.loyalPoint
+                          )
                         )} `}
                       </span>
                     )}
@@ -467,6 +479,17 @@ const CartSummary = ({ handleClose }) => {
             {`+${formatPrice(deliveryOrder)}`}
           </Typography>
         </div>
+        {selectedCoupons.length > 0 && (
+          <div className="flex justify-between items-center  bg-gray-100 shadow-md py-6 px-4">
+            <span className="text-lg">Voucher:</span>
+            <Typography
+              variant="h2"
+              className="font-bold text-red-700 text-center"
+            >
+              {`-${formatPrice(((totalPrice + deliveryOrder) * totalPercentDiscount()) / 100)}`}
+            </Typography>
+          </div>
+        )}
         {isLoyaltyEnabled && (
           <div className="flex justify-between items-center  bg-gray-100 shadow-md py-6 px-4">
             <span className="text-lg">Điểm thành viên:</span>
@@ -488,17 +511,6 @@ const CartSummary = ({ handleClose }) => {
                           : cartTotal + deliveryOrder + totalPercentDiscount())
                     )
               }`}
-            </Typography>
-          </div>
-        )}
-        {selectedCoupons.length > 0 && (
-          <div className="flex justify-between items-center  bg-gray-100 shadow-md py-6 px-4">
-            <span className="text-lg">Voucher:</span>
-            <Typography
-              variant="h2"
-              className="font-bold text-red-700 text-center"
-            >
-              {`-${formatPrice((totalPrice * totalPercentDiscount()) / 100)}`}
             </Typography>
           </div>
         )}
