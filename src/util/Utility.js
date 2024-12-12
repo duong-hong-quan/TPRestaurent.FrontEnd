@@ -239,7 +239,7 @@ const caculateFinalPrice = (
   loyalPoint,
   deposit
 ) => {
-  const discount = (price - deposit) * (discountPercent / 100);
+  const discount = (price - deposit + shippingFee) * (discountPercent / 100);
   return price - deposit + shippingFee - discount - loyalPoint;
 };
 export {
