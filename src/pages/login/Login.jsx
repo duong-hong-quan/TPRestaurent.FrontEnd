@@ -23,6 +23,8 @@ const LoginPage = () => {
       setResOtp(data?.result);
       setIsOtpModalVisible(true);
       setCountdown(60);
+    } else {
+      showError(data?.messages);
     }
   };
   useEffect(() => {
