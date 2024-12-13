@@ -132,21 +132,21 @@ export const Navbar = () => {
     setIsOpen(false);
   };
 
-const handleClickOutside = (event) => {
-  const isOutsideAllRefs =
-    (!menuRef.current || !menuRef.current.contains(event.target)) &&
-    (!notificationRef.current ||
-      !notificationRef.current.contains(event.target)) &&
-    (!searchRef.current || !searchRef.current.contains(event.target)) &&
-    (!userMenuRef.current || !userMenuRef.current.contains(event.target));
+  const handleClickOutside = (event) => {
+    const isOutsideAllRefs =
+      (!menuRef.current || !menuRef.current.contains(event.target)) &&
+      (!notificationRef.current ||
+        !notificationRef.current.contains(event.target)) &&
+      (!searchRef.current || !searchRef.current.contains(event.target)) &&
+      (!userMenuRef.current || !userMenuRef.current.contains(event.target));
 
-  if (isOutsideAllRefs) {
-    setIsMenuOpen(false);
-    setIsNotificationOpen(false);
-    setIsOpen(false);
-    setIsMenuUserOpen(false);
-  }
-};
+    if (isOutsideAllRefs) {
+      setIsMenuOpen(false);
+      setIsNotificationOpen(false);
+      setIsOpen(false);
+      setIsMenuUserOpen(false);
+    }
+  };
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -292,6 +292,11 @@ const handleClickOutside = (event) => {
                                 </span>
                               )}
                             </Typography>
+                            <div className="flex justify-end">
+                              <span className="text-xs block">
+                                {formatDateTime(notification.notifyTime)}
+                              </span>
+                            </div>
                           </MenuItem>
                         ))}
                       </div>
