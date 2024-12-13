@@ -89,9 +89,7 @@ const VerifyPayment = () => {
           );
           setIsSuccess(true);
           if (getOS() === "Android") {
-            window.location.href = `thienphurestaurant://transaction?isSuccess=true&transactionId=${
-              id || idMomo
-            }`;
+            window.location.href = `thienphurestaurant://transaction?isSuccess=true&transactionId=${idMomo}`;
           }
         }
       } else {
@@ -105,7 +103,7 @@ const VerifyPayment = () => {
             `Thanh toán Momo thất bại cho đơn hàng: ${orderInfo}. Vui lòng thanh toán lại`
           );
           if (getOS() === "Android") {
-            window.location.href = `thienphurestaurant://transaction?isSuccess=false&transactionId=${id}`;
+            window.location.href = `thienphurestaurant://transaction?isSuccess=false&transactionId=${idMomo}`;
           }
         }
       }
