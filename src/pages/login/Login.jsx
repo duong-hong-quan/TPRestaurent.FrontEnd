@@ -52,7 +52,7 @@ const LoginPage = () => {
       <div className="flex flex-col md:flex-row max-w-6xl bg-white rounded-lg shadow-lg w-full">
         <div className="w-full md:w-1/2 p-6">
           <img
-            src={loginImage}
+            src="https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F3c771bba-0fd0-4fa5-8905-29e7a4be739d.jpg.png?alt=media&token=cad2f33d-bf71-479a-be6a-d6dec49a8c39&fbclid=IwY2xjawHJJm9leHRuA2FlbQIxMAABHSYoP-MTcwdq7faGJDo0OXHitbt57z7TdpShIzLKHgFFH0PvPlv9cYnafw_aem_cFI7Wh5oBc54r5LZ50JcWw"
             alt="Login"
             className="w-full h-auto rounded-lg"
           />
