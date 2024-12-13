@@ -40,6 +40,8 @@ const Reservation = () => {
   const [isValid, setIsValid] = useState(false);
   const [information, setInformation] = useState({});
   const [selectedEndTime, setSelectedEndTime] = useState(null);
+  const [selectedStartTime, setSelectedStartTime] = useState(null);
+
   const [endTimeSlots, setEndTimeSlots] = useState([]);
   const [isValidatePhone, setIsValidatePhone] = useState(false);
   const user = useSelector((state) => state.user.user || {});
@@ -330,16 +332,17 @@ const Reservation = () => {
   const handleStartTimeChange = (value) => {
     generateTimeSlots().then((slots) => {
       setTimeSlots(slots);
-
+      debugger;
       const newEndTime = moment(value, "HH:mm").add(1, "hour").format("HH:mm");
       setSelectedEndTime(newEndTime);
+      form.setFieldsValue({ startTime: value });
       form.setFieldsValue({ endTime: newEndTime });
       setEndTimeSlots(generateEndTimeSlots(value));
     });
   };
   useEffect(() => {
-    handleStartTimeChange(form.getFieldValue("startTime"));
-  }, [form.getFieldValue("date")]);
+    handleStartTimeChange(timeSlots[0]);
+  }, [timeSlots.length]);
 
   const handleValidatePhone = async () => {
     const data = await callApi(
@@ -408,6 +411,7 @@ const Reservation = () => {
     }
     initData();
   }, []);
+
   useEffect(() => {
     const now = moment();
     const selectedDate = form.getFieldValue("date");
@@ -438,16 +442,12 @@ const Reservation = () => {
         endTime: initialEndTime,
       });
     }
-
     setSelectedEndTime(initialEndTime);
+    setSelectedStartTime(initialStartTime);
     generateTimeSlots().then((slots) => {
       setTimeSlots(slots);
-      setEndTimeSlots(generateEndTimeSlots(initialStartTime.format("HH:mm")));
     });
   }, [form.getFieldValue("date")]);
-  const filteredTimeSlots = timeSlots?.filter((time) =>
-    moment(time, "HH:mm").isAfter(moment())
-  );
 
   const momentDate = moment().format("DD/MM/YYYY");
 
@@ -607,6 +607,7 @@ const Reservation = () => {
                   placeholder="Chọn giờ bắt đầu"
                   onChange={handleStartTimeChange}
                   disabled={!isValidatePhone}
+                  defaultValue={selectedEndTime}
                 >
                   {timeSlots?.length > 0 &&
                     timeSlots?.map((time) => (
