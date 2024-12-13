@@ -18,7 +18,7 @@ const SliderHome = () => {
   const slides = [
     {
       id: 1,
-      image: banner,
+      image: "banner",
       alt: "Món ăn BBQ ngon",
       title: "Ăn BBQ Thịnh Soạn",
       description:
@@ -47,7 +47,11 @@ const SliderHome = () => {
       <Slider {...settings} className="h-full relative">
         {slides.map((slide) => (
           <div key={slide.id} className="relative lg:h-screen">
-            <img src={slide.image} alt={slide.alt} className="object-cover" />
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2Fd0ef3e2b-2a12-46a5-9c3b-ffe74f4e9676.jpg.png?alt=media&token=1492851d-ec97-4f83-94f6-9c7a89a68450"
+              alt={slide.alt}
+              className="object-cover"
+            />
           </div>
         ))}
       </Slider>
