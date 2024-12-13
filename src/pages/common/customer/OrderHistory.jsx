@@ -53,6 +53,12 @@ export function OrderHistory() {
   }, [location.search]);
 
   const handleSearch = async (phone) => {
+    if (phone != user.phoneNumber) {
+      message.error(
+        "Rất tiếc hệ thống chỉ cho phép bạn xem đơn hàng của chính bạn"
+      );
+      return;
+    }
     const searchPhoneNumber = phone || phoneNumber;
     if (!searchPhoneNumber.trim()) {
       message.error("Vui lòng nhập số điện thoại");
