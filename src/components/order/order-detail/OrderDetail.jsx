@@ -461,7 +461,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                     const response = await callApi(
                       `${
                         TransactionApi.CREATE_PAYMENT
-                      }?returnUrl=${getDomain()}`,
+                      }?returnUrl=${getDomain()}/payment`,
                       "POST",
                       {
                         orderId: order?.orderId,

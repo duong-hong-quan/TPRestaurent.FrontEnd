@@ -61,7 +61,7 @@ const ReservationRequestItem = ({ reservation }) => {
   const statusKey = getKeyByValue(ReservationStatus, reservation.statusId);
   const handlePayment = async () => {
     const data = await callApi(
-      `${TransactionApi.CREATE_PAYMENT}?returnUrl=${getDomain()}`,
+      `${TransactionApi.CREATE_PAYMENT}?returnUrl=${getDomain()}/payment`,
       "POST",
       {
         orderId: reservation.orderId,

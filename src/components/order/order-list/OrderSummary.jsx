@@ -122,7 +122,7 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
         ...data.reservationOrder,
         paymentMethod: selectedMethod,
       },
-      returnUrl: getDomain(),
+      returnUrl: `${getDomain()}/payment`,
     };
     const response = await callApi(
       `${OrderApi.CREATE_ORDER}`,

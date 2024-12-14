@@ -51,7 +51,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
         cashReceived: amount,
         changeReturned: amount - totalAmount,
         chooseCashRefund: refundType === "cash" ? true : false,
-        returnUrl: getDomain(),
+        returnUrl: `${getDomain()}/payment`,
       }
     );
     if (response?.isSuccess) {

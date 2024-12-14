@@ -57,7 +57,7 @@ const ModalReservationWithoutDish = ({ show, handleClose, information }) => {
         deposit: deposit,
         paymentMethod: selectedMethod,
       },
-      returnUrl: getDomain(),
+      returnUrl: `${getDomain()}/payment`,
     };
     const response = await callApi(
       `${OrderApi.CREATE_ORDER}`,

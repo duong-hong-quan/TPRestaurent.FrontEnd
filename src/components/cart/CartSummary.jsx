@@ -187,7 +187,7 @@ const CartSummary = ({ handleClose }) => {
         loyalPointToUse: isLoyaltyEnabled ? loyalPointToUse || 0 : 0,
         paymentMethod: selectedMethod,
       },
-      returnUrl: getDomain(),
+      returnUrl: `${getDomain()}/payment`,
     };
     const response = await callApi(
       `${OrderApi.CREATE_ORDER}`,
