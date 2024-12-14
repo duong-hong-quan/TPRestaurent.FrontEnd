@@ -92,6 +92,35 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
         return <span className="text-gray-600">Không xác định</span>;
     }
   };
+  const renderPaymentMethodRefund = () => {
+    switch (order?.refundTransaction?.paymentMethodId) {
+      case PaymentMethod.MOMO:
+        return (
+          <div className="flex items-center">
+            <img src={Momo_logo} className="h-6 w-6 mr-2" alt="Momo" />
+            <span className="text-pink-600 font-semibold">Momo</span>
+          </div>
+        );
+      case PaymentMethod.VNPAY:
+        return (
+          <div className="flex items-center">
+            <img src={VNPAY_logo} className="h-6 w-6 mr-2" alt="VNPAY" />
+            <span className="text-blue-600 font-semibold">VNPAY</span>
+          </div>
+        );
+      case PaymentMethod.STORE_CREDIT:
+        return (
+          <div className="flex items-center">
+            <img src={Cash_Logo} className="h-6 w-6 mr-2" alt="VNPAY" />
+            <span className="text-yellow-800 font-semibold">
+              Tài khoản Thiên Phú
+            </span>
+          </div>
+        );
+      default:
+        return <span className="text-gray-600">Không xác định</span>;
+    }
+  };
   console.log(reservationData);
   const renderOrderTime = () => {
     switch (order?.orderTypeId) {
@@ -463,6 +492,34 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
                 )}
               </>
             </div>
+            {order?.refundTransaction && (
+              <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <Typography
+                  variant="h5"
+                  color="blue-gray"
+                  className="mb-4 font-semibold"
+                >
+                  Thông Tin Hoàn Tiền
+                </Typography>
+                <InfoItem
+                  label={"Số tiền hoàn lại"}
+                  value={Number(order?.refundTransaction?.amount)}
+                />
+                <>
+                  <InfoItem
+                    label="Phương thức thanh toán"
+                    value={renderPaymentMethodRefund()}
+                    isComponent
+                  />
+                  <InfoItem
+                    label={"Đã hoàn lại tiền vào lúc"}
+                    value={dayjs(order?.refundTransaction?.date).format(
+                      "DD/MM/YYYY HH:mm"
+                    )}
+                  />
+                </>
+              </div>
+            )}
           </div>
           <div className="max-h-[550px] overflow-y-scroll">
             <Typography

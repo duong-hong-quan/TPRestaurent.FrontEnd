@@ -160,8 +160,8 @@ export function AdminReservationPage() {
   ];
 
   return (
-    <Card className="h-full w-full">
-      <CardHeader floated={false} shadow={false} className="rounded-none">
+    <div className="h-full w-full p-4">
+      <div>
         <div className="mb-8 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray">
@@ -181,7 +181,7 @@ export function AdminReservationPage() {
             </Button>
           </div>
         </div>
-      </CardHeader>
+      </div>
       <CardBody className="grid grid-cols-1 xl:grid-cols-3 gap-2">
         <div className="col-span-1  overflow-auto">
           <Typography className="text-red-800 uppercase font-semibold">
@@ -249,6 +249,6 @@ export function AdminReservationPage() {
         }}
         reservation={orderDetail}
       />
-    </Card>
+    </div>
   );
 }
