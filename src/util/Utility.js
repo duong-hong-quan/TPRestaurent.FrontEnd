@@ -242,6 +242,13 @@ const caculateFinalPrice = (
   const discount = (price - deposit + shippingFee) * (discountPercent / 100);
   return price - deposit + shippingFee - discount - loyalPoint;
 };
+
+const getDomain = () => {
+  const { protocol, hostname, port } = window.location;
+
+  // If there's a port, include it in the domain
+  return port ? `${protocol}//${hostname}:${port}` : `${protocol}//${hostname}`;
+};
 export {
   formatPrice,
   formatDateTime,
@@ -253,4 +260,5 @@ export {
   numberToWords,
   combineTimes,
   caculateFinalPrice,
+  getDomain,
 };

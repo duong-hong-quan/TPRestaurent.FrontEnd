@@ -3,6 +3,7 @@ import { Card, CardBody } from "@material-tailwind/react";
 import {
   caculateFinalPrice,
   formatPrice,
+  getDomain,
   showError,
 } from "../../../util/Utility";
 import ReservationInformation from "../reservation/ReservationInformation";
@@ -121,6 +122,7 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
         ...data.reservationOrder,
         paymentMethod: selectedMethod,
       },
+      returnUrl: `${getDomain()}/payment`,
     };
     const response = await callApi(
       `${OrderApi.CREATE_ORDER}`,

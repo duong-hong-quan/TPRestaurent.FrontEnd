@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaCalendar, FaAngleDown, FaAngleUp } from "react-icons/fa";
 import {
   formatDateTime,
+  getDomain,
   getKeyByValue,
   showError,
 } from "../../../util/Utility";
@@ -59,10 +60,14 @@ const ReservationRequestItem = ({ reservation }) => {
 
   const statusKey = getKeyByValue(ReservationStatus, reservation.statusId);
   const handlePayment = async () => {
-    const data = await callApi(`${TransactionApi.CREATE_PAYMENT}`, "POST", {
-      orderId: reservation.orderId,
-      paymentMethod: selectedMethod,
-    });
+    const data = await callApi(
+      `${TransactionApi.CREATE_PAYMENT}?returnUrl=${getDomain()}/payment`,
+      "POST",
+      {
+        orderId: reservation.orderId,
+        paymentMethod: selectedMethod,
+      }
+    );
     if (data.isSuccess) {
       message.success(
         "Chúng tôi sẽ tự động chuyển bạn đến trang cổng thanh toán"

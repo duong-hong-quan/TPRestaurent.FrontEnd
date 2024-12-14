@@ -2,7 +2,12 @@ import { Button, message, Modal } from "antd";
 import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
 import { useEffect, useState } from "react";
 import { OrderApi } from "../../../api/endpoint";
-import { formatPrice, mergeCartData, showError } from "../../../util/Utility";
+import {
+  formatPrice,
+  getDomain,
+  mergeCartData,
+  showError,
+} from "../../../util/Utility";
 import useCallApi from "../../../api/useCallApi";
 import { Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
@@ -52,6 +57,7 @@ const ModalReservationWithoutDish = ({ show, handleClose, information }) => {
         deposit: deposit,
         paymentMethod: selectedMethod,
       },
+      returnUrl: `${getDomain()}/payment`,
     };
     const response = await callApi(
       `${OrderApi.CREATE_ORDER}`,

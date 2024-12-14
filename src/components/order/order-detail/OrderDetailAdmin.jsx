@@ -6,7 +6,12 @@ import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 import { PaymentMethod } from "../../../util/GlobalType";
-import { formatDateTime, formatPrice, showError } from "../../../util/Utility";
+import {
+  formatDateTime,
+  formatPrice,
+  getDomain,
+  showError,
+} from "../../../util/Utility";
 import { StyledTable } from "../../custom-ui/StyledTable";
 import { DollarOutlined, WalletOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
@@ -46,6 +51,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
         cashReceived: amount,
         changeReturned: amount - totalAmount,
         chooseCashRefund: refundType === "cash" ? true : false,
+        returnUrl: `${getDomain()}/payment`,
       }
     );
     if (response?.isSuccess) {
