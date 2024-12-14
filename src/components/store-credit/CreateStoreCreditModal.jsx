@@ -4,7 +4,12 @@ import { useSelector } from "react-redux";
 import { Mail, Phone, DollarSign, CreditCard } from "lucide-react";
 import PaymentMethodSelector from "../cart/PaymentMethodSelector";
 import { Typography } from "@material-tailwind/react";
-import { formatPrice, numberToWords, showError } from "../../util/Utility";
+import {
+  formatPrice,
+  getDomain,
+  numberToWords,
+  showError,
+} from "../../util/Utility";
 import useCallApi from "../../api/useCallApi";
 import { TransactionApi } from "../../api/endpoint";
 
@@ -18,11 +23,15 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
     setSelectedMethod(data);
   };
   const handleSubmit = async () => {
-    const response = await callApi(`${TransactionApi.CREATE_PAYMENT}`, "POST", {
-      accountId: user.id,
-      storeCreditAmount: inputValue,
-      paymentMethod: selectedMethod,
-    });
+    const response = await callApi(
+      `${TransactionApi.CREATE_PAYMENT}?returnUrl=${getDomain()}`,
+      "POST",
+      {
+        accountId: user.id,
+        storeCreditAmount: inputValue,
+        paymentMethod: selectedMethod,
+      }
+    );
     if (response.isSuccess) {
       if (response.result) {
         window.location.href = response.result;

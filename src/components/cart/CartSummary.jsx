@@ -29,6 +29,7 @@ import {
 import {
   caculateFinalPrice,
   formatPrice,
+  getDomain,
   mergeCartData,
   showError,
 } from "../../util/Utility";
@@ -166,16 +167,15 @@ const CartSummary = ({ handleClose }) => {
   };
   const handleCheckOut = async () => {
     const { reservationDishDtos } = mergeCartData(cartReservation, cart);
-    const loyalPointToUse = isLoyaltyEnabled ? 
-    Math.min(
-      maxApplyLoyalPoint *
-      (cart.total
-        ? cart.total + (cartTotal || 0)
-        : cartTotal +
-          deliveryOrder +
-          totalPercentDiscount()), user.loyalPoint
-    )
-    : 0;
+    const loyalPointToUse = isLoyaltyEnabled
+      ? Math.min(
+          maxApplyLoyalPoint *
+            (cart.total
+              ? cart.total + (cartTotal || 0)
+              : cartTotal + deliveryOrder + totalPercentDiscount()),
+          user.loyalPoint
+        )
+      : 0;
     const updatedData = {
       customerId: user.id,
       orderType: 2,
@@ -184,11 +184,10 @@ const CartSummary = ({ handleClose }) => {
 
       deliveryOrder: {
         couponIds: selectedCoupons,
-        loyalPointToUse: isLoyaltyEnabled
-          ? loyalPointToUse || 0
-          : 0,
+        loyalPointToUse: isLoyaltyEnabled ? loyalPointToUse || 0 : 0,
         paymentMethod: selectedMethod,
       },
+      returnUrl: getDomain(),
     };
     const response = await callApi(
       `${OrderApi.CREATE_ORDER}`,
@@ -372,11 +371,12 @@ const CartSummary = ({ handleClose }) => {
                         {`Giảm tối đa: ${formatPrice(
                           Math.min(
                             maxApplyLoyalPoint *
-                            (cart.total
-                              ? cart.total + (cartTotal || 0)
-                              : cartTotal +
-                                deliveryOrder +
-                                totalPercentDiscount()), user.loyalPoint
+                              (cart.total
+                                ? cart.total + (cartTotal || 0)
+                                : cartTotal +
+                                  deliveryOrder +
+                                  totalPercentDiscount()),
+                            user.loyalPoint
                           )
                         )} `}
                       </span>
@@ -486,7 +486,9 @@ const CartSummary = ({ handleClose }) => {
               variant="h2"
               className="font-bold text-red-700 text-center"
             >
-              {`-${formatPrice(((totalPrice + deliveryOrder) * totalPercentDiscount()) / 100)}`}
+              {`-${formatPrice(
+                ((totalPrice + deliveryOrder) * totalPercentDiscount()) / 100
+              )}`}
             </Typography>
           </div>
         )}

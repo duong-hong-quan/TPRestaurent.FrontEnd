@@ -4,7 +4,7 @@ import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import { PaymentMethod } from "../../../util/GlobalType";
-import { formatDateTime, formatPrice } from "../../../util/Utility";
+import { formatDateTime, formatPrice, getDomain } from "../../../util/Utility";
 import { StyledTable } from "../../custom-ui/StyledTable";
 import { WarningOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
@@ -459,7 +459,9 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                   loading={loading}
                   onClick={async () => {
                     const response = await callApi(
-                      `${TransactionApi.CREATE_PAYMENT}`,
+                      `${
+                        TransactionApi.CREATE_PAYMENT
+                      }?returnUrl=${getDomain()}`,
                       "POST",
                       {
                         orderId: order?.orderId,
