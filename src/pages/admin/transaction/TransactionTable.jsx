@@ -83,7 +83,7 @@ const TransactionTable = ({ data, loading, handleOpenModal }) => {
       key: "amount",
       align: "right",
 
-      render: (amount) => `${formatPrice(amount)} `,
+      render: (amount) => `${formatPrice(Number(amount))} `,
     },
 
     {

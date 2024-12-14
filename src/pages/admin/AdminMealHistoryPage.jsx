@@ -243,9 +243,9 @@ export function AdminMealHistoryPage() {
 
   return (
     <>
-      <Card className="h-full w-full">
+      <div className="h-full w-full p-4">
         <LoadingOverlay isLoading={loading} />
-        <CardHeader floated={false} shadow={false} className="rounded-none">
+        <div>
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
               <Typography
@@ -265,7 +265,7 @@ export function AdminMealHistoryPage() {
               </Button>
             </div>
           </div>
-        </CardHeader>
+        </div>
         <CardBody className="grid grid-cols-1 xl:grid-cols-3 ">
           <div className="col-span-1 p-4">
             <div className="w-full  overflow-auto">
@@ -378,7 +378,7 @@ export function AdminMealHistoryPage() {
           totalPages={totalPages}
           onPageChange={handleCurrentPageChange}
         />
-      </Card>
+      </div>
       <ModalOrderDetailAdmin
         visible={isModalOpen}
         onClose={() => {
