@@ -293,7 +293,7 @@ export const Navbar = () => {
                               )}
                             </Typography>
                             <div className="flex justify-end">
-                              <span className="text-xs block">
+                              <span className="text-xs block text-black">
                                 {formatDateTime(notification.notifyTime)}
                               </span>
                             </div>
