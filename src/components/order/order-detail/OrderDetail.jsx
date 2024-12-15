@@ -462,7 +462,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
               </Typography>
               <InfoItem
                 label={"Số tiền hoàn lại"}
-                value={Number(order?.refundTransaction?.amount)}
+                value={formatPrice(Number(order?.refundTransaction?.amount))}
               />
               <>
                 <InfoItem

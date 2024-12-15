@@ -198,3 +198,7 @@ export const LogsApi = {
   READ_LOG: "/read-log",
   READ_LOG_BY_ID: "/read-log",
 };
+
+export const TestApi = {
+  ADD_CHECK_HACKED: "api/Test/add-check-hacked",
+};
