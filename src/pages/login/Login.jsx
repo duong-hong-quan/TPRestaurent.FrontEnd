@@ -4,7 +4,7 @@ import OtpConfirmModal from "./OtpConfirmModal";
 import loginImage from "../../assets/imgs/login.png";
 import useCallApi from "../../api/useCallApi";
 import { useLocation } from "react-router-dom";
-import { showError } from "../../util/Utility";
+import { isEmptyObject, showError } from "../../util/Utility";
 
 const LoginPage = () => {
   const location = useLocation();
@@ -14,7 +14,7 @@ const LoginPage = () => {
   const [countdown, setCountdown] = useState(60);
   const [resOtp, setResOtp] = useState(null);
   const { callApi, error, loading } = useCallApi();
-
+  const user = useSelector((state) => state.user.user || {});
   const handleLogin = async (values) => {
     const { phone } = values; // Get phone number from the form values
     const data = await callApi(
@@ -49,6 +49,12 @@ const LoginPage = () => {
     }
     return () => clearInterval(timer);
   }, [isOtpModalVisible, countdown]);
+
+  useEffect(() => {
+    if (!isEmptyObject(user)) {
+      history.push("/");
+    }
+  }, [user]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
