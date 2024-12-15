@@ -35,29 +35,17 @@ const ComboTable = ({
 
   const renderTag = (combo) => {
     let statusConfig = {};
-    if (
-      combo.quantityLeft > 0 ||
-      (combo.quantityLeft === null && combo.dailyCountdown > 0)
-    ) {
+    if (combo.isAvailable) {
       statusConfig = {
         color: "success",
         text: "Còn món",
         icon: <CheckCircleOutlined />,
-        quantityLeft: combo.quantityLeft || 0,
       };
-    } else if (combo.quantityLeft === 0 || combo.quantityLeft === null) {
+    } else {
       statusConfig = {
         color: "error",
         text: "Hết món",
         icon: <CloseCircleOutlined />,
-        quantityLeft: combo.quantityLeft || 0,
-      };
-    } else {
-      statusConfig = {
-        color: "warning",
-        text: "Ngưng bán",
-        icon: <ExclamationCircleOutlined />,
-        quantityLeft: combo.quantityLeft || 0,
       };
     }
 
@@ -69,7 +57,7 @@ const ComboTable = ({
             icon={statusConfig.icon}
             className="px-2 py-1 rounded-full text-sm font-semibold text-wrap"
           >
-            {statusConfig.text} ({statusConfig.quantityLeft})
+            {statusConfig.text}
           </Tag>
         </Tooltip>
       </div>
