@@ -27,6 +27,7 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // import styles
+import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 
 const { RangePicker } = DatePicker;
 const { Title, Text } = Typography;
@@ -346,6 +347,7 @@ const CreateComboPage = () => {
   };
   return (
     <div className="max-w-7xl mx-auto my-8  bg-white px-4 py-6  rounded-lg">
+      <LoadingOverlay isLoading={loading} />
       <Typography className="text-xl font-bold text-center mb-6 uppercase text-red-800">
         Tạo combo món ăn
       </Typography>
