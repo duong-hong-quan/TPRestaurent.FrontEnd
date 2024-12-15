@@ -19,6 +19,7 @@ import { ComboApi, DishApi } from "../../../api/endpoint";
 import {
   formatLocalDateTime,
   formatPrice,
+  numberToWords,
   showError,
 } from "../../../util/Utility";
 import CreateOptionSetModal from "../../../components/modal/CreateOptionSetModal";
@@ -44,6 +45,8 @@ const CreateComboPage = () => {
   const [listDishSizeDetail, setListDishSizeDetail] = useState([[]]);
   const [previewDishes, setPreviewDishes] = useState([[]]);
   const [valuesOptionSet, setValuesOptionSet] = useState([]);
+  const [priceText, setPriceText] = useState("");
+
   const dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
       onSuccess("ok");
@@ -93,6 +96,7 @@ const CreateComboPage = () => {
       dishComboDtos: [undefined],
     });
     mapOptionSetToForm();
+    setPriceText(numberToWords(comboData?.combo?.price));
   }, [comboData]);
   const mapOptionSetToForm = async () => {
     let selectedDishs = [...selectedDish];
@@ -357,21 +361,33 @@ const CreateComboPage = () => {
             <Input placeholder="Nhập tên combo" />
           </Form.Item>
 
-          <Form.Item
-            name="price"
-            label="Giá combo"
-            rules={[
-              { required: true },
+          <div className="flex flex-col">
+            <Form.Item
+              name="price"
+              label="Giá combo"
+              rules={[
+                { required: true },
 
-              {
-                type: "number",
-                min: 1000,
-                message: "Giá combo phải lớn hơn 1000 đồng",
-              },
-            ]}
-          >
-            <InputNumber className="w-full" />
-          </Form.Item>
+                {
+                  type: "number",
+                  min: 1000,
+                  message: "Giá combo phải lớn hơn 1000 đồng",
+                },
+              ]}
+            >
+              <InputNumber
+                onChange={(value) => setPriceText(numberToWords(value))}
+                className="w-full"
+              />
+            </Form.Item>
+            {priceText && (
+              <span className="">
+                <Text className="text-red-800 font-semibold">
+                  Giá bằng chữ: {priceText}
+                </Text>
+              </span>
+            )}
+          </div>
 
           <Form.Item
             name="tagIds"
@@ -495,7 +511,7 @@ const CreateComboPage = () => {
                     }}
                     className="bg-red-800 text-white"
                   >
-                    Tạo
+                    {comboData ? "Chỉnh sửa" : "Tạo"}
                   </Button>
                 </Card>
               ))}
@@ -505,7 +521,7 @@ const CreateComboPage = () => {
                 onClick={() => add()}
                 icon={<PlusOutlined />}
               >
-                Tạo bộ món
+                {comboData ? "Chỉnh sửa" : "Tạo"} bộ món
               </Button>
             </div>
           )}
