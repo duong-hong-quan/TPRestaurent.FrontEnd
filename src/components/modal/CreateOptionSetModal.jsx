@@ -52,15 +52,17 @@ const CreateOptionSetModal = ({
     }
   };
   useEffect(() => {
-    if (isOpen) {
+    setTimeout(() => {
       fetchDataDish();
-    }
-  }, [isOpen]);
+    }, 500);
+  }, [isOpen, initData]);
 
   useEffect(() => {
-    if (selectedType) {
-      fetchDataDish();
-    }
+    setTimeout(() => {
+      if (selectedType) {
+        fetchDataDish();
+      }
+    }, 500);
   }, [selectedType]);
 
   const handleSelectedDish = (value, indexList) => {
