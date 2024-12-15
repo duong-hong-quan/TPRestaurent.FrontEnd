@@ -27,7 +27,7 @@ import { message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/authSlice";
 import { CheckCheck, Dot } from "lucide-react";
-import { formatDateTime } from "../../util/Utility";
+import { formatDateTime, isEmptyObject } from "../../util/Utility";
 import { SignalRMethod } from "../../util/GlobalType";
 const HeaderManager = ({ userName = "Admin" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -38,14 +38,16 @@ const HeaderManager = ({ userName = "Admin" }) => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.user || {});
   const fetchNotifications = async () => {
-    const response = await callApi(
-      `${NotificationApi.GET_ALL_NOTIFICATION_BY_USER}/${user.id}`,
-      "GET"
-    );
-    if (response.isSuccess) {
-      setNotifications(response.result?.items);
-    } else {
-      showError(response.messages);
+    if (!isEmptyObject(user) && localStorage.getItem("token") != null) {
+      const response = await callApi(
+        `${NotificationApi.GET_ALL_NOTIFICATION_BY_USER}/${user.id}`,
+        "GET"
+      );
+      if (response.isSuccess) {
+        setNotifications(response.result?.items);
+      } else {
+        showError(response.messages);
+      }
     }
   };
   useEffect(() => {

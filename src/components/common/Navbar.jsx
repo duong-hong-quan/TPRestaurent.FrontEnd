@@ -40,7 +40,7 @@ export const Navbar = () => {
   const userMenuRef = useRef(null);
 
   const fetchNotifications = async () => {
-    if (user) {
+    if (!isEmptyObject(user) && localStorage.getItem("token")) {
       const response = await callApi(
         `${NotificationApi.GET_ALL_NOTIFICATION_BY_USER}/${user.id}`,
         "GET"
