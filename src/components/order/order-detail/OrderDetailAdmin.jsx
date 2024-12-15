@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { Button, Image, Input, message, Modal, Radio, Select } from "antd";
 import moment from "moment/moment";
@@ -21,7 +21,79 @@ import { DollarSign, HandCoins, PhoneCall, UndoDot } from "lucide-react";
 import LoadingOverlay from "../../loading/LoadingOverlay";
 import OrderTag from "../../tag/OrderTag";
 import { debounce } from "lodash";
+const AccountSearchSelect = ({
+  onSelectAccount,
+  placeholder = "Nhập số điện thoại",
+}) => {
+  const { callApi, loading } = useCallApi();
+  const [keyword, setKeyword] = useState("");
+  const [listAccount, setListAccount] = useState([]);
 
+  // Debounced search to prevent too many API calls
+  const debouncedSearchAccount = useCallback(
+    debounce(async (value) => {
+      if (!value || value.trim() === "") {
+        setListAccount([]);
+        return;
+      }
+
+      try {
+        const response = await callApi(
+          `${AccountApi.GET_ACCOUNT_BY_PHONENUMBER_KEYWORD}/1/1000?phoneNumber=${value}`,
+          "GET"
+        );
+
+        if (response?.isSuccess) {
+          const accounts = response?.result?.items || [];
+          setListAccount(accounts);
+
+          if (accounts.length === 0) {
+            message.info("Không tìm thấy tài khoản nào");
+          }
+        } else {
+          setListAccount([]);
+          message.error("Lỗi tìm kiếm tài khoản");
+        }
+      } catch (error) {
+        console.error("Search account error:", error);
+        setListAccount([]);
+        message.error("Đã có lỗi xảy ra");
+      }
+    }, 500),
+    [callApi]
+  );
+
+  const handleSearch = (value) => {
+    setKeyword(value);
+    debouncedSearchAccount(value);
+  };
+
+  const handleChange = (value) => {
+    onSelectAccount(value);
+  };
+
+  return (
+    <Select
+      showSearch
+      value={keyword}
+      placeholder={placeholder}
+      defaultActiveFirstOption={false}
+      showArrow={false}
+      filterOption={false}
+      onSearch={handleSearch}
+      onChange={handleChange}
+      notFoundContent={loading ? <div>Đang tìm...</div> : null}
+      loading={loading}
+      style={{ width: "100%" }}
+    >
+      {listAccount.map((account) => (
+        <Select.Option key={account.id} value={account.id}>
+          {`${account.lastName} ${account.firstName} - 0${account.phoneNumber}`}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+};
 const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
   const { order, orderDishes, orderTables } = reservationData;
   const { callApi, error, loading } = useCallApi();
@@ -29,6 +101,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
   const totalAmount = order?.totalAmount;
   const [refundType, setRefundType] = useState("cash"); // 'cash' or 'wallet'
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [keyword, setKeyword] = useState("");
   const [listAccount, setListAccount] = useState([]);
   const handlePayment = async () => {
     if (!amount) {
@@ -338,22 +411,27 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
   };
 
   const handleSearchAccount = async (value) => {
-    const response = await callApi(
-      `${AccountApi.GET_ACCOUNT_BY_PHONENUMBER_KEYWORD}/1/1000?phoneNumber=${value}`,
-      "GET"
-    );
-    if (response?.isSuccess) {
-      setListAccount(response?.result.items);
-    } else {
-      setListAccount([]);
+    if (value != "") {
+      setKeyword(value);
+
+      const response = await callApi(
+        `${AccountApi.GET_ACCOUNT_BY_PHONENUMBER_KEYWORD}/1/1000?phoneNumber=${value}`,
+        "GET"
+      );
+      if (response?.isSuccess) {
+        setListAccount(response?.result?.items);
+      } else {
+        setListAccount([]);
+      }
     }
   };
-  const debouncedHandleSearchAccount = debounce(handleSearchAccount, 800);
-
+  const handleAccountSelect = (accountId) => {
+    setSelectedAccount(accountId);
+  };
+  console.log(listAccount);
   return (
-    <Card className="w-full shadow-none border-none">
-      <LoadingOverlay isLoading={loading} />
-      <CardBody className="p-6">
+    <div className="w-full shadow-none border-none">
+      <div className="p-6">
         <Typography
           variant="h4"
           color="blue-gray"
@@ -552,7 +630,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
             )}
 
             {renderIsPayment() && (
-              <Card className="max-w-md mx-auto p-6 bg-white shadow-lg">
+              <div className="max-w-md mx-auto p-6 bg-white shadow-lg">
                 <div className="flex flex-col space-y-6">
                   {/* Amount Input Section */}
                   <div className="relative">
@@ -560,22 +638,10 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
                       <label className="flex items-center gap-2" htmlFor="">
                         <PhoneCall size={16} /> Số điện thoại
                       </label>
-                      <Select
-                        key={listAccount?.length} // Add a key prop to force re-render
-                        onChange={(value) => setSelectedAccount(value)}
-                        className="my-2 h-12 w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        showSearch
-                        onSearch={debouncedHandleSearchAccount}
-                        loading={loading}
-                        placeholder="Nhập số điện thoại"
-                      >
-                        {listAccount?.length > 0 &&
-                          listAccount.map((account) => (
-                            <Select.Option key={account.id} value={account.id}>
-                              {`${account.lastName} ${account.firstName} - 0${account.phoneNumber}`}
-                            </Select.Option>
-                          ))}
-                      </Select>
+                      <AccountSearchSelect
+                        onSelectAccount={handleAccountSelect}
+                        placeholder="Nhập số điện thoại để tìm tài khoản"
+                      />
                     </div>
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
                       <HandCoins size={16} className="text-gray-500" />
@@ -653,12 +719,12 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
                     Thanh toán bằng tiền mặt
                   </Button>
                 </div>
-              </Card>
+              </div>
             )}
           </div>
         </div>
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 };
 
