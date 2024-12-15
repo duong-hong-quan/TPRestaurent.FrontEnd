@@ -49,7 +49,7 @@ const StoreCreditHistoryItem = ({ storeCredit }) => {
             {formatPrice(Number(storeCredit?.amount))}
           </p>
           <p className="text-gray-500 text-sm">
-            {formatDateTime(storeCredit?.paidDate)}
+            {formatDateTime(storeCredit?.paidDate || storeCredit.date)}
           </p>
         </div>
       </div>
