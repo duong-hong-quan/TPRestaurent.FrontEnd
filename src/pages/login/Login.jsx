@@ -7,12 +7,13 @@ import { useLocation } from "react-router-dom";
 import { showError } from "../../util/Utility";
 
 const LoginPage = () => {
+  const location = useLocation();
+  const [form] = Form.useForm(); // Create a form instance
   const [phone, setPhone] = useState("");
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [resOtp, setResOtp] = useState(null);
   const { callApi, error, loading } = useCallApi();
-  const location = useLocation();
 
   const handleLogin = async (values) => {
     const { phone } = values; // Get phone number from the form values
@@ -33,6 +34,7 @@ const LoginPage = () => {
     const query = searchParams.get("phoneNumber");
     if (query) {
       setPhone(query);
+      form.setFieldsValue({ phone: query });
       handleLogin({ phone: query });
     }
   }, [location.search]);
@@ -66,6 +68,7 @@ const LoginPage = () => {
           <Form
             className="flex flex-col gap-4"
             onFinish={handleLogin} // Use onFinish for form submission
+            form={form}
           >
             <Form.Item
               label="Số điện thoại"

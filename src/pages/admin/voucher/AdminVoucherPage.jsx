@@ -567,6 +567,7 @@ const AdminVoucherPage = () => {
         }}
         userRankId={selectedRank}
         users={users}
+        selectedCoupon={selectedCoupon}
         assignVoucher={async () => {
           const response = await callApi(`${CouponApi.ASSIGN_COUPON}`, "POST", {
             couponProgramId: selectedCoupon,

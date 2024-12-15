@@ -41,6 +41,9 @@ const CouponSelectionModal = ({
       ]}
       width={600}
     >
+      <h3 className="font-bold text-red-800 text-xl text-center">
+        CÁC COUPON KHẢ DỤNG
+      </h3>
       <List
         dataSource={coupons}
         renderItem={(coupon) => (
