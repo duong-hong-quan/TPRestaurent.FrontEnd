@@ -9,27 +9,15 @@ import { logout } from "../redux/features/authSlice";
 
 export const ProtectedRoute = ({ children, role }) => {
   const user = useSelector((state) => state.user.user || {});
-  const mainRole = useSelector((state) => state.user.role || {});
   const { callApi, error, loading } = useCallApi();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const fetchCurrentToken = async () => {
+  const handleToken = async () => {
     const currentTokenResponse = await callApi(
       `${TokenApi.GET_USER_TOKEN_BY_IP}`,
       "POST"
     );
-    if (!currentTokenResponse.isSuccess) {
-      dispatch(logout());
-      navigate("/");
-    }
-  };
-
-  useEffect(() => {
-    if (isEmptyObject(user)) {
-      navigate("/");
-    } else {
-      fetchCurrentToken();
-
+    if (currentTokenResponse.isSuccess) {
       switch (role) {
         case "admin":
           if (user.mainRole !== "ADMIN") {
@@ -46,16 +34,19 @@ export const ProtectedRoute = ({ children, role }) => {
         default:
           navigate("/");
       }
+    } else {
+      dispatch(logout());
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    if (isEmptyObject(user)) {
+      navigate("/");
+    } else {
+      handleToken();
     }
   }, [user, role, navigate]);
-
-  if (
-    isEmptyObject(user) ||
-    (role === "admin" && user.mainRole !== "ADMIN") ||
-    (role === "kitchen" && user.mainRole !== "CHEF")
-  ) {
-    return null; // or a loading spinner, or a redirect component
-  }
 
   return children;
 };
