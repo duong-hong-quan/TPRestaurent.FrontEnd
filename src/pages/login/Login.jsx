@@ -5,6 +5,7 @@ import loginImage from "../../assets/imgs/login.png";
 import useCallApi from "../../api/useCallApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { isEmptyObject, showError } from "../../util/Utility";
+import { useSelector } from "react-redux";
 
 const LoginPage = () => {
   const location = useLocation();
