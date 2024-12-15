@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import OtpConfirmModal from "./OtpConfirmModal";
 import loginImage from "../../assets/imgs/login.png";
 import useCallApi from "../../api/useCallApi";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { isEmptyObject, showError } from "../../util/Utility";
 
 const LoginPage = () => {
@@ -15,6 +15,7 @@ const LoginPage = () => {
   const [resOtp, setResOtp] = useState(null);
   const { callApi, error, loading } = useCallApi();
   const user = useSelector((state) => state.user.user || {});
+  const navigate = useNavigate();
   const handleLogin = async (values) => {
     const { phone } = values; // Get phone number from the form values
     const data = await callApi(
@@ -52,7 +53,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (!isEmptyObject(user)) {
-      history.push("/");
+      navigate("/");
     }
   }, [user]);
 
