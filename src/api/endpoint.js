@@ -15,7 +15,7 @@ export const AccountApi = {
   LOAD_AVAILABLE_SHIPPER: "/api/account/load-available-shipper",
   GET_ACCOUNTS_BY_ROLE_NAME: "/api/account/get-accounts-by-role-name",
   CREATE_ACCOUNT_RESTAURANT_EMPLOYEE:
-    "/api/account/create-account-restaurant-employees",
+    "/api/account/create-account-for-restaurant-employees",
   BAN_USER: "/api/account/ban-user",
   GET_ACCOUNT_BY_PHONENUMBER_KEYWORD:
     "/api/account/get-account-by-phone-number-keyword",

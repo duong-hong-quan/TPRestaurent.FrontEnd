@@ -326,8 +326,8 @@ const AdminOrderOverview = () => {
   };
   return (
     <>
-      <Card className="h-full w-full">
-        <CardHeader floated={false} shadow={false} className="rounded-none">
+      <div className="p-4 h-full w-full">
+        <div floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
@@ -347,8 +347,8 @@ const AdminOrderOverview = () => {
               </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardBody>
+        </div>
+        <div>
           <div className="col-span-1 xl:col-span-2">
             <div className="xl:flex-row flex flex-col items-center justify-end">
               <div className="flex flex-col my-2">
@@ -463,13 +463,13 @@ const AdminOrderOverview = () => {
               </div>
             </div>
           </div>
-        </CardBody>
+        </div>
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handleCurrentPageChange}
         />
-      </Card>
+      </div>
       <ModalOrderDetailAdmin
         visible={open}
         onClose={() => setOpen(!open)}
