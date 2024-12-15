@@ -3,6 +3,8 @@ import { Button, Image, Modal } from "antd";
 import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
+import Cash_logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
+
 import { PaymentMethod } from "../../../util/GlobalType";
 import { formatDateTime, formatPrice, getDomain } from "../../../util/Utility";
 import { StyledTable } from "../../custom-ui/StyledTable";
@@ -79,7 +81,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
       case PaymentMethod.STORE_CREDIT:
         return (
           <div className="flex items-center">
-            <img src={Cash_Logo} className="h-6 w-6 mr-2" alt="VNPAY" />
+            <img src={Cash_logo} className="h-6 w-6 mr-2" alt="VNPAY" />
             <span className="text-yellow-800 font-semibold">
               Tài khoản Thiên Phú
             </span>
