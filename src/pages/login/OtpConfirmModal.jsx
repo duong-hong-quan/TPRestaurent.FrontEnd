@@ -42,7 +42,8 @@ const OtpConfirmModal = ({
           );
           if (tokenUser.isSuccess) {
             console.log(tokenUser);
-            if (!tokenUser.result?.deviceToken) {
+
+            if (!tokenUser.result.deviceToken) {
               const permission = await requestPermission();
               if (permission) {
                 const response = await callApi(
@@ -54,13 +55,16 @@ const OtpConfirmModal = ({
                 } else {
                   showError(response.messages);
                 }
+              } else {
+                message.success("Đăng nhập thành công");
+                navigate("/");
+                onClose();
               }
             }
+            message.success("Đăng nhập thành công");
+            navigate("/");
+            onClose();
           }
-
-          message.success("Đăng nhập thành công");
-          navigate("/");
-          onClose();
         } else {
           showError(resposne.messages);
         }
