@@ -124,7 +124,7 @@ const HeaderManager = ({ userName = "Admin" }) => {
         >
           Chào {user.firstName} {user.lastName},
           <span className="block text-sm">
-            Vai trò: {user.mainRole.toLowerCase()}
+            Vai trò: {user?.mainRole?.toLowerCase()}
           </span>
         </Typography>
 
