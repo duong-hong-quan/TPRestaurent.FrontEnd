@@ -70,28 +70,42 @@ const AccountSearchSelect = ({
 
   const handleChange = (value) => {
     onSelectAccount(value);
+    const currentAccount = listAccount.find((a) => a.id == value);
+    setKeyword(
+      ` ${currentAccount.lastName} ${currentAccount.firstName} - 0${currentAccount.phoneNumber}`
+    ); // Set keyword to display selected account
   };
 
   return (
-    <Select
-      showSearch
-      value={keyword}
-      placeholder={placeholder}
-      defaultActiveFirstOption={false}
-      showArrow={false}
-      filterOption={false}
-      onSearch={handleSearch}
-      onChange={handleChange}
-      notFoundContent={loading ? <div>Đang tìm...</div> : null}
-      loading={loading}
-      style={{ width: "100%" }}
-    >
-      {listAccount.map((account) => (
-        <Select.Option key={account.id} value={account.id}>
-          {`${account.lastName} ${account.firstName} - 0${account.phoneNumber}`}
-        </Select.Option>
-      ))}
-    </Select>
+    <div className="flex justify-between items-center">
+      <span
+        style={{
+          border: "1px solid #e8e8e8",
+        }}
+        className="mr-2 p-1 rounded-lg text-gray-800 font-medium"
+      >
+        +84
+      </span>
+      <Select
+        showSearch
+        value={keyword}
+        placeholder={placeholder}
+        defaultActiveFirstOption={false}
+        showArrow={false}
+        filterOption={false}
+        onSearch={handleSearch}
+        onChange={handleChange}
+        notFoundContent={loading ? <div>Đang tìm...</div> : null}
+        loading={loading}
+        style={{ width: "100%" }}
+      >
+        {listAccount.map((account) => (
+          <Select.Option key={account.id} value={account.id}>
+            {`${account.lastName} ${account.firstName} - 0${account.phoneNumber}`}
+          </Select.Option>
+        ))}
+      </Select>
+    </div>
   );
 };
 const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
@@ -713,6 +727,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
                   {/* Payment Button */}
                   <Button
                     onClick={handlePayment}
+                    loading={loading}
                     className="w-full h-12 bg-red-800 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
                   >
                     <DollarSign size={18} />
