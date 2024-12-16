@@ -27,7 +27,7 @@ import { message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/authSlice";
 import { CheckCheck, Dot } from "lucide-react";
-import { formatDateTime, isEmptyObject } from "../../util/Utility";
+import { formatDateTime, isEmptyObject, showError } from "../../util/Utility";
 import { SignalRMethod } from "../../util/GlobalType";
 const HeaderManager = ({ userName = "Admin" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,6 +36,10 @@ const HeaderManager = ({ userName = "Admin" }) => {
   const [notifications, setNotifications] = useState([]);
   const [connection, setConnection] = useState(null);
   const navigate = useNavigate();
+  const closeMenu = () => setIsMenuOpen(false);
+  const dispatch = useDispatch();
+  const siderbar = useSelector((state) => state.sidebar);
+
   const user = useSelector((state) => state.user.user || {});
   const fetchNotifications = async () => {
     if (!isEmptyObject(user) && localStorage.getItem("token") != null) {
@@ -91,12 +95,10 @@ const HeaderManager = ({ userName = "Admin" }) => {
     };
   }, [connection]);
   useEffect(() => {
-    fetchNotifications();
-  }, []);
-  const closeMenu = () => setIsMenuOpen(false);
-  const dispatch = useDispatch();
-  const siderbar = useSelector((state) => state.sidebar);
-
+    if (!isEmptyObject(user)) {
+      fetchNotifications();
+    }
+  }, [user]);
   const unreadCount = notifications?.filter((item) => !item.isRead).length;
 
   return (
