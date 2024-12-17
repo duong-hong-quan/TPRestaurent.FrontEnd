@@ -172,9 +172,7 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
       showError(response.messages);
     }
   };
-  useEffect(() => {
-    fetchUser();
-  }, [user]);
+
   return (
     <div className="container">
       <Typography className="text-xl text-red-900 text-center font-bold my-2">
