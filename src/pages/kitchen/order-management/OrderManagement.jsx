@@ -22,7 +22,7 @@ import { baseUrl } from "../../../api/config/axios";
 import notification_sound from "../../../assets/sound/kitchen.mp3";
 import TabMananger from "../../../components/tab/TabManager";
 import { SignalRMethod } from "../../../util/GlobalType";
-
+import sound from "../../../assets/sound/kitchen.mp3";
 const menuItems = [
   { value: -1, label: "Tất cả" },
   { value: 0, label: "Đặt trước" },
@@ -376,6 +376,7 @@ const OrderManagement = () => {
           .then(() => {
             message.success("Connected to SignalR");
             connection.on(SignalRMethod.LOAD_ORDER_SESIONS, async () => {
+              playNotificationSound();
               await fetchData();
             });
           })
@@ -436,7 +437,10 @@ const OrderManagement = () => {
       fetchData();
     }
   };
-
+  const playNotificationSound = () => {
+    const audio = new Audio(sound); // Change path to your sound file
+    audio.play();
+  };
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 bg-white p-4 rounded-lg">
       <LoadingOverlay isLoading={loading} />

@@ -27,6 +27,7 @@ import OrderDetailModal from "./OrderDetailModal";
 import { combineTimes, showError } from "../../../util/Utility";
 import { SignalRMethod } from "../../../util/GlobalType";
 import { set } from "lodash";
+import sound from "../../../assets/sound/kitchen.mp3";
 
 const { Title, Text } = Typography;
 
@@ -342,6 +343,8 @@ const OptimizeProcess = () => {
           await connection.start();
           message.success("Connected to SignalR");
           connection.on(SignalRMethod.LOAD_ORDER, async () => {
+            playNotificationSound();
+
             await fetchData();
           });
         } catch (error) {
@@ -373,7 +376,10 @@ const OptimizeProcess = () => {
       }
     };
   }, [connection]);
-
+  const playNotificationSound = () => {
+    const audio = new Audio(sound); // Change path to your sound file
+    audio.play();
+  };
   return (
     <div className="px-10 bg-white rounded-lg py-4 shadow-lg">
       <h5 className="text-center text-red-800 font-bold text-2xl">
