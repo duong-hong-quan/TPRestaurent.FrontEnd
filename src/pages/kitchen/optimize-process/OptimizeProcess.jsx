@@ -43,7 +43,6 @@ const StyledTable = styled(Table)`
     border-bottom: none;
   }
 `;
-
 const QuantityBadge = ({ label, count, color }) => (
   <div className="flex items-center space-x-1">
     <Badge
@@ -58,100 +57,7 @@ const QuantityBadge = ({ label, count, color }) => (
     </Badge>
   </div>
 );
-const DishSizeInfo = ({
-  sizeData,
-  dishData,
-  groupedDishId,
-  fetchDetail,
-  type,
-  setType,
-  setSelectedGroupedDishId,
-  selectedDishes,
-  setSelectedDishes,
-}) => {
-  const handleCheckboxChange = (e, dishId, groupedDishId) => {
-    const isChecked = e.target.checked;
-    if (isChecked) {
-      setSelectedDishes([...selectedDishes, { dishId, groupedDishId }]);
-    } else {
-      setSelectedDishes(
-        selectedDishes.filter(
-          (dish) =>
-            dish.dishId !== dishId || dish.groupedDishId !== groupedDishId
-        )
-      );
-    }
-  };
 
-  return (
-    <div
-      className={`flex w-full items-center justify-start rounded-lg p-4 my-1 ${
-        dishData.IsLate ? "bg-yellow-700 bg-opacity-40" : "bg-white"
-      }`}
-      style={{
-        border: "1px solid #ccc",
-      }}
-    >
-      <Checkbox
-        onChange={(e) =>
-          handleCheckboxChange(e, dishData?.Dish?.DishId, groupedDishId)
-        }
-        checked={selectedDishes?.some(
-          (dish) =>
-            dish.dishId === dishData?.Dish?.DishId &&
-            dish.groupedDishId === groupedDishId
-        )}
-      />
-      <Text strong className="ml-2 text-nowrap">
-        {dishData?.Dish?.Name}
-      </Text>
-      <div>
-        {sizeData.map((item, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-9 items-center gap-1 p- rounded"
-          >
-            <div className="col-span-4 mx-2 flex items-center">
-              <Image
-                src={dishData.Dish.Image}
-                alt="dish"
-                width={30}
-                height={30}
-                className="rounded-full w-full h-full"
-              />
-              <span className="text-nowrap text-sm ml-1">
-                {item.DishSize.VietnameseName}:
-              </span>
-            </div>
-
-            <Space className="flex flex-wrap  col-span-4">
-              <QuantityBadge
-                label="Chưa đọc"
-                count={item.UncheckedQuantity}
-                color="#a8181c"
-              />
-              <QuantityBadge
-                label="Đang nấu"
-                count={item.ProcessingQuantity}
-                color="#1890ff"
-              />
-            </Space>
-            <Button
-              className="col-span-1"
-              onClick={async () => {
-                setType(type);
-                setSelectedGroupedDishId(groupedDishId);
-                await fetchDetail(groupedDishId, dishData?.Dish.DishId, type);
-              }}
-            >
-              <EyeOutlined />
-            </Button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 const OptimizeProcess = () => {
   const [connection, setConnection] = useState(null);
   const audioRef = useRef(null);
@@ -162,7 +68,186 @@ const OptimizeProcess = () => {
   const [type, setType] = useState(true);
   const [isRefresh, setIsRefresh] = useState(false);
   const [timeConfig, setTimeConfig] = useState(0);
+  const [selectedDishes, setSelectedDishes] = useState([]);
+  const [selectedMutualDishes, setSelectedMutualDishes] = useState([]);
+  const [selectedSingleDishes, setSelectedSingleDishes] = useState([]);
+
+  const handleSelectAllMutual = (e) => {
+    const checked = e.target.checked;
+    if (checked) {
+      const allMutualDishes = filteredData.flatMap((record) => {
+        const dishes = JSON.parse(record.groupedDishJson).MutualOrderDishes;
+        return dishes.map((dishItem) => ({
+          dishId: dishItem?.Dish?.DishId,
+          groupedDishId: record.groupedDishCraftId,
+        }));
+      });
+      setSelectedMutualDishes(allMutualDishes);
+      setSelectedDishes([...selectedSingleDishes, ...allMutualDishes]);
+    } else {
+      setSelectedMutualDishes([]);
+      setSelectedDishes(selectedSingleDishes);
+    }
+  };
+
+  const handleSelectAllSingle = (e) => {
+    const checked = e.target.checked;
+    if (checked) {
+      const allSingleDishes = filteredSingleData.flatMap((record) => {
+        const dishes = JSON.parse(record.groupedDishJson).SingleOrderDishes;
+        return dishes.map((dishItem) => ({
+          dishId: dishItem?.Dish?.DishId,
+          groupedDishId: record.groupedDishCraftId,
+        }));
+      });
+      setSelectedSingleDishes(allSingleDishes);
+      setSelectedDishes([...selectedMutualDishes, ...allSingleDishes]);
+    } else {
+      setSelectedSingleDishes([]);
+      setSelectedDishes(selectedMutualDishes);
+    }
+  };
+
+  const DishSizeInfo = ({
+    sizeData,
+    dishData,
+    groupedDishId,
+    fetchDetail,
+    type,
+    setType,
+    setSelectedGroupedDishId,
+    selectedDishes,
+    setSelectedDishes,
+    isMutual,
+  }) => {
+    const handleCheckboxChange = (e, dishId, groupedDishId) => {
+      const isChecked = e.target.checked;
+      const newDish = { dishId, groupedDishId };
+
+      if (isMutual) {
+        const updatedMutualDishes = isChecked
+          ? [...selectedMutualDishes, newDish]
+          : selectedMutualDishes.filter(
+              (dish) =>
+                dish.dishId !== dishId || dish.groupedDishId !== groupedDishId
+            );
+        setSelectedMutualDishes(updatedMutualDishes);
+      } else {
+        const updatedSingleDishes = isChecked
+          ? [...selectedSingleDishes, newDish]
+          : selectedSingleDishes.filter(
+              (dish) =>
+                dish.dishId !== dishId || dish.groupedDishId !== groupedDishId
+            );
+        setSelectedSingleDishes(updatedSingleDishes);
+      }
+
+      // Update overall selected dishes
+      const updatedSelectedDishes = isChecked
+        ? [...selectedDishes, newDish]
+        : selectedDishes.filter(
+            (dish) =>
+              dish.dishId !== dishId || dish.groupedDishId !== groupedDishId
+          );
+      setSelectedDishes(updatedSelectedDishes);
+    };
+
+    return (
+      <div
+        className={`flex w-full items-center justify-start rounded-lg p-4 my-1 ${
+          dishData.IsLate ? "bg-yellow-700 bg-opacity-40" : "bg-white"
+        }`}
+        style={{
+          border: "1px solid #ccc",
+        }}
+      >
+        <Checkbox
+          onChange={(e) =>
+            handleCheckboxChange(e, dishData?.Dish?.DishId, groupedDishId)
+          }
+          checked={
+            isMutual
+              ? selectedMutualDishes?.some(
+                  (dish) =>
+                    dish.dishId === dishData?.Dish?.DishId &&
+                    dish.groupedDishId === groupedDishId
+                )
+              : selectedSingleDishes?.some(
+                  (dish) =>
+                    dish.dishId === dishData?.Dish?.DishId &&
+                    dish.groupedDishId === groupedDishId
+                )
+          }
+        />
+        <Text strong className="ml-2 text-nowrap">
+          {dishData?.Dish?.Name}
+        </Text>
+        <div>
+          {sizeData.map((item, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-9 items-center gap-1 p- rounded"
+            >
+              <div className="col-span-4 mx-2 flex items-center">
+                <Image
+                  src={dishData.Dish.Image}
+                  alt="dish"
+                  width={30}
+                  height={30}
+                  className="rounded-full w-full h-full"
+                />
+                <span className="text-nowrap text-sm ml-1">
+                  {item.DishSize.VietnameseName}:
+                </span>
+              </div>
+
+              <Space className="flex flex-wrap  col-span-4">
+                <QuantityBadge
+                  label="Chưa đọc"
+                  count={item.UncheckedQuantity}
+                  color="#a8181c"
+                />
+                <QuantityBadge
+                  label="Đang nấu"
+                  count={item.ProcessingQuantity}
+                  color="#1890ff"
+                />
+              </Space>
+              <Button
+                className="col-span-1"
+                onClick={async () => {
+                  setType(type);
+                  setSelectedGroupedDishId(groupedDishId);
+                  await fetchDetail(groupedDishId, dishData?.Dish.DishId, type);
+                }}
+              >
+                <EyeOutlined />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const columns = [
+    {
+      title: (
+        <Checkbox
+          onChange={handleSelectAllMutual}
+          checked={
+            selectedMutualDishes.length > 0 &&
+            selectedMutualDishes.length ===
+              filteredData.flatMap(
+                (record) => JSON.parse(record.groupedDishJson).MutualOrderDishes
+              ).length
+          }
+        />
+      ),
+      key: "selection",
+      width: 50,
+      render: () => null, // No extra rendering needed for this column
+    },
     {
       dataIndex: "id",
       key: "id",
@@ -185,7 +270,6 @@ const OptimizeProcess = () => {
       title: "MÓN ĂN",
       dataIndex: "groupedDishJson",
       key: "name",
-
       render: (_, record) => {
         const dishes = JSON.parse(record.groupedDishJson).MutualOrderDishes;
         return (
@@ -202,15 +286,32 @@ const OptimizeProcess = () => {
               setSelectedGroupedDishId={setSelectedGroupedDishId}
               selectedDishes={selectedDishes}
               setSelectedDishes={setSelectedDishes}
+              isMutual={true}
             />
           ))
         );
       },
     },
   ];
-  const [selectedDishes, setSelectedDishes] = useState([]);
 
   const columnSingle = [
+    {
+      title: (
+        <Checkbox
+          onChange={handleSelectAllSingle}
+          checked={
+            selectedSingleDishes.length > 0 &&
+            selectedSingleDishes.length ===
+              filteredSingleData.flatMap(
+                (record) => JSON.parse(record.groupedDishJson).SingleOrderDishes
+              ).length
+          }
+        />
+      ),
+      key: "selection",
+      width: 50,
+      render: () => null, // No extra rendering needed for this column
+    },
     {
       dataIndex: "id",
       key: "id",
@@ -233,7 +334,6 @@ const OptimizeProcess = () => {
       title: "MÓN ĂN",
       dataIndex: "groupedDishJson",
       key: "name",
-
       render: (_, record) => {
         const dishes = JSON.parse(record.groupedDishJson).SingleOrderDishes;
         return (
@@ -250,12 +350,14 @@ const OptimizeProcess = () => {
               setType={setType}
               selectedDishes={selectedDishes}
               setSelectedDishes={setSelectedDishes}
+              isMutual={false}
             />
           ))
         );
       },
     },
   ];
+
   const fetchData = async () => {
     const result = await callApi(`${GroupedDishCraftApi.GET_ALL}`, "GET");
     if (result.isSuccess) {
