@@ -198,6 +198,7 @@ const CartSummary = ({ handleClose }) => {
       message.success(`Đặt thành công`);
       dispatch(clearCart());
       dispatch(clearCartReservation());
+      await fetchUser();
       if (selectedMethod === 3 || selectedMethod === 2) {
         if (response.result.paymentLink) {
           window.location.href = response.result.paymentLink;
