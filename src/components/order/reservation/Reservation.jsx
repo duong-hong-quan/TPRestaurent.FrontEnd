@@ -332,7 +332,6 @@ const Reservation = () => {
   const handleStartTimeChange = (value) => {
     generateTimeSlots().then((slots) => {
       setTimeSlots(slots);
-      debugger;
       const newEndTime = moment(value, "HH:mm").add(1, "hour").format("HH:mm");
       setSelectedEndTime(newEndTime);
       form.setFieldsValue({ startTime: value });

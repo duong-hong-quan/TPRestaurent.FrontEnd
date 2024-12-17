@@ -68,7 +68,6 @@ const DailySellManagement = () => {
   };
 
   const handleInputChange = (id, field, value) => {
-    debugger;
     if (Number(value) <= 0) {
       message.error("Số lượng không được nhỏ hơn 0");
     }
