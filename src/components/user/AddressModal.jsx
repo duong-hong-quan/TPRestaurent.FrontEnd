@@ -1,4 +1,4 @@
-import { Modal, Form, Switch, AutoComplete, Table } from "antd";
+import { Modal, Form, Switch, AutoComplete, Table, message } from "antd";
 import { Button, IconButton, Typography } from "@material-tailwind/react";
 import { useSelector } from "react-redux";
 import { Edit2, Trash2, Plus, MapPin } from "lucide-react";
@@ -200,7 +200,31 @@ const AddressModal = ({
           title: "Địa chỉ chính",
           dataIndex: "addressPrimary",
           key: "addressPrimary",
-          render: (_, record) => <Switch checked={record.isCurrentUsed} />,
+          render: (_, record) => (
+            <Switch
+              checked={record.isCurrentUsed}
+              onChange={async () => {
+                const response = await callApi(
+                  `${AccountApi.UPDATE_ADDRESS}`,
+                  "PUT",
+                  {
+                    customerInfoAddressId: record.customerInfoAddressId,
+                    customerInfoAddressName: record.customerInfoAddressName,
+                    isCurrentUsed: !record.isCurrentUsed,
+                    accountId: user.id,
+                    lat: record.lat || "",
+                    lng: record.lng || "",
+                  }
+                );
+                if (response.isSuccess) {
+                  message.success("Cập nhật địa chỉ chính thành công!");
+                  await fetchData();
+                } else {
+                  showError(response.messages);
+                }
+              }}
+            />
+          ),
         },
         {
           title: "Hành động",

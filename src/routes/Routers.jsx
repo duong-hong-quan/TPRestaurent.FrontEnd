@@ -53,6 +53,7 @@ import AdminVoucherPage from "../pages/admin/voucher/AdminVoucherPage";
 import OrderViewPage from "../pages/kitchen/order-management/OrderViewPage";
 import Unauthorized from "../pages/common/exception/Unauthorized";
 import Viewlogs from "../pages/admin/view-logs/ViewLogs";
+import SignupPage from "../pages/login/SignUpPage";
 
 function Routers() {
   const routing = useRoutes([
@@ -79,6 +80,10 @@ function Routers() {
         {
           path: "login",
           element: <LoginPage />,
+        },
+        {
+          path: "signup",
+          element: <SignupPage />,
         },
         {
           path: "policy",
