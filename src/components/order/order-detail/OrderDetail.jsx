@@ -4,6 +4,7 @@ import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNPAY_logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import Cash_logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
+import Wallet_logo from "../../../assets/imgs/payment-icon/Wallet_Logo.png";
 
 import { PaymentMethod } from "../../../util/GlobalType";
 import { formatDateTime, formatPrice, getDomain } from "../../../util/Utility";
@@ -33,6 +34,13 @@ const OrderDetail = ({ reservationData, fetchData }) => {
 
   const renderPaymentMethod = () => {
     switch (order?.transaction?.paymentMethodId) {
+      case PaymentMethod.CASH:
+        return (
+          <div className="flex items-center">
+            <img src={Cash_logo} className="h-6 w-6 mr-2" alt="Momo" />
+            <span className="text-green-600 font-semibold">Tiền mặt</span>
+          </div>
+        );
       case PaymentMethod.MOMO:
         return (
           <div className="flex items-center">
@@ -45,6 +53,15 @@ const OrderDetail = ({ reservationData, fetchData }) => {
           <div className="flex items-center">
             <img src={VNPAY_logo} className="h-6 w-6 mr-2" alt="VNPAY" />
             <span className="text-blue-600 font-semibold">VNPAY</span>
+          </div>
+        );
+      case PaymentMethod.STORE_CREDIT:
+        return (
+          <div className="flex items-center">
+            <img src={Wallet_logo} className="h-6 w-6 mr-2" alt="VNPAY" />
+            <span className="text-yellow-800 font-semibold">
+              Tài khoản Thiên Phú
+            </span>
           </div>
         );
       default:
@@ -64,6 +81,13 @@ const OrderDetail = ({ reservationData, fetchData }) => {
   };
   const renderPaymentMethodRefund = () => {
     switch (order?.refundTransaction?.paymentMethodId) {
+      case PaymentMethod.CASH:
+        return (
+          <div className="flex items-center">
+            <img src={Cash_logo} className="h-6 w-6 mr-2" alt="Momo" />
+            <span className="text-green-600 font-semibold">Tiền mặt</span>
+          </div>
+        );
       case PaymentMethod.MOMO:
         return (
           <div className="flex items-center">
@@ -81,7 +105,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
       case PaymentMethod.STORE_CREDIT:
         return (
           <div className="flex items-center">
-            <img src={Cash_logo} className="h-6 w-6 mr-2" alt="VNPAY" />
+            <img src={Wallet_logo} className="h-6 w-6 mr-2" alt="VNPAY" />
             <span className="text-yellow-800 font-semibold">
               Tài khoản Thiên Phú
             </span>
@@ -337,15 +361,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                 {order?.orderTypeId != 2 && (
                   <InfoItem
                     label="Số lượng khách"
-                    value={
-                      orderTables && orderTables.length > 0
-                        ? orderTables
-                            .map(
-                              (item, index) => `Bàn ${item.table?.tableName}`
-                            )
-                            .join(", ")
-                        : "Chưa có thông tin"
-                    }
+                    value={`${order.numOfPeople} người`}
                   />
                 )}
               </>
@@ -358,33 +374,22 @@ const OrderDetail = ({ reservationData, fetchData }) => {
               <InfoItem
                 label="Loại bàn"
                 value={
-                  orderTables && orderTables.length > 0
-                    ? orderTables
-                        .map(
-                          (item, index) =>
-                            `Bàn ${item.table?.tableSizeId} người - ${item.table?.room?.name}`
-                        )
-                        .join(", ")
-                    : "Chưa có thông tin"
+                  orderTables && orderTables.length > 0 ? (
+                    <ul>
+                      {orderTables.map((item, index) => (
+                        <li>
+                          {`Bàn ${item.table.tableName} 
+                          ${item.table?.tableSizeId} người - 
+                        ${item.table?.room?.name}`}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    "Chưa có thông tin"
+                  )
                 }
               />
             )}
-            {order?.orderTypeId != 2 && (
-              <InfoItem
-                label="Bàn"
-                value={
-                  orderTables && orderTables.length > 0
-                    ? orderTables
-                        .map((item, index) => `Bàn ${item.table?.tableName}`)
-                        .join(", ")
-                    : "Chưa có thông tin"
-                }
-              />
-            )}
-            <InfoItem
-              label="Ghi chú"
-              value={order?.note || "Không có ghi chú"}
-            />
             <InfoItem
               label="Tổng giá trị đơn hàng"
               value={formatPrice(order?.totalAmount)}
@@ -435,11 +440,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                 />
               ) : (
                 <InfoItem
-                  label={
-                    order?.orderTypeId === 1
-                      ? "Đã đặt cọc lúc"
-                      : "Đã thanh toán lúc"
-                  }
+                  label={"Đã thanh toán lúc"}
                   value={
                     order?.orderTypeId === 1
                       ? moment(order?.depositDate).format("DD/MM/YYYY HH:mm")
@@ -700,7 +701,11 @@ const OrderDetail = ({ reservationData, fetchData }) => {
 const InfoItem = ({ label, value, isComponent = false }) => (
   <div className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
     <span className="text-gray-600 font-medium">{label}:</span>
-    {isComponent ? value : <span className="font-semibold">{value}</span>}
+    {isComponent ? (
+      value
+    ) : (
+      <span className="font-semibold max-w-48 text-wrap">{value}</span>
+    )}
   </div>
 );
 

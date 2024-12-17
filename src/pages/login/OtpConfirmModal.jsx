@@ -27,15 +27,15 @@ const OtpConfirmModal = ({
   const handleSubmit = async () => {
     switch (otpType) {
       case 0:
-        const resposne = await callApi(`/api/account/login`, "POST", {
+        const response = await callApi(`/api/account/login`, "POST", {
           phoneNumber: phoneNumber,
           otpCode: otp,
         });
-        if (resposne?.isSuccess) {
-          localStorage.setItem("token", resposne?.result?.token);
-          localStorage.setItem("refreshToken", resposne?.result?.refreshToken);
-          dispatch(login(resposne?.result?.account));
-          dispatch(author(resposne?.result?.mainRole));
+        if (response?.isSuccess) {
+          localStorage.setItem("token", response?.result?.token);
+          localStorage.setItem("refreshToken", response?.result?.refreshToken);
+          dispatch(login(response?.result?.account));
+          dispatch(author(response?.result?.mainRole));
           const tokenUser = await callApi(
             `${TokenApi.GET_USER_TOKEN_BY_IP}`,
             "POST"
@@ -66,7 +66,7 @@ const OtpConfirmModal = ({
             onClose();
           }
         } else {
-          showError(resposne.messages);
+          showError(response.messages);
         }
         break;
       case 1:
