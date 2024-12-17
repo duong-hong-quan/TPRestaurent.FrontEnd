@@ -13,6 +13,7 @@ import {
 import useCallApi from "../../api/useCallApi";
 import { AccountApi, TransactionApi } from "../../api/endpoint";
 import { login } from "../../redux/features/authSlice";
+import { useDispatch } from "react-redux";
 
 const CreateStoreCreditModal = ({ isOpen, onClose }) => {
   const user = useSelector((state) => state.user.user || {});
@@ -20,6 +21,7 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
   const [inputValue, setInputValue] = useState(0);
   const [numberToWord, setNumberToWord] = useState("");
   const { callApi, error, loading } = useCallApi();
+  const dispatch = useDispatch();
   const handleChangeMethod = (data) => {
     setSelectedMethod(data);
   };
