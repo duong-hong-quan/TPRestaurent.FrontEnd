@@ -277,6 +277,17 @@ const CartSummary = ({ handleClose }) => {
         </Tag>
       ));
   };
+  const fetchUser = async () => {
+    const response = await callApi(
+      `${AccountApi.GET_BY_PHONE}/${user.phoneNumber}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      dispatch(login(response.result));
+    } else {
+      showError(response.messages);
+    }
+  };
   useEffect(() => {
     const fetchMaxApplyLoyalPoint = async () => {
       const response = await callApi(
@@ -302,6 +313,7 @@ const CartSummary = ({ handleClose }) => {
     };
     fetchMaxApplyLoyalPoint();
     fetchMaxApplyCouponPercent();
+    fetchUser();
   }, []);
   return (
     <div className="container my-4 p-6 bg-white">
