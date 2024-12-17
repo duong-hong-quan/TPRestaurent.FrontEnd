@@ -40,7 +40,7 @@ const SignupPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 overflow-hidden">
-      <div className="flex flex-col md:flex-row max-w-6xl bg-white rounded-lg shadow-lg w-full relative ">
+      <div className="flex flex-col md:flex-row max-w-6xl bg-white rounded-lg shadow-lg w-full  ">
         {/* Animated Image Container */}
         <div className="w-full md:w-1/2 p-6 flex flex-col justify-center ">
           <h1 className="text-2xl font-bold text-center text-red-700 mb-4">
@@ -124,8 +124,8 @@ const SignupPage = () => {
           </Form>
         </div>
         <div
-          className="w-full md:w-1/2 p-6 absolute md:relative top-0 left-0
-       animate-fadeIn"
+          className="w-full xl:w-1/2 p-6 
+       animate-fadeIn hidden md:flex flex-col justify-center"
         >
           <img
             src="https://firebasestorage.googleapis.com/v0/b/hcqs-project.appspot.com/o/dish%2F3c771bba-0fd0-4fa5-8905-29e7a4be739d.jpg.png?alt=media&token=cad2f33d-bf71-479a-be6a-d6dec49a8c39&fbclid=IwY2xjawHJJm9leHRuA2FlbQIxMAABHSYoP-MTcwdq7faGJDo0OXHitbt57z7TdpShIzLKHgFFH0PvPlv9cYnafw_aem_cFI7Wh5oBc54r5LZ50JcWw"
