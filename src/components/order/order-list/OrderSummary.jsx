@@ -24,7 +24,7 @@ import {
   increaseComboQuantity,
   removeCombo,
 } from "../../../redux/features/cartSlice";
-import Card_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
+import Wallet_Logo from "../../../assets/imgs/payment-icon/Wallet_Logo.png";
 import MoMo_Logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
 import Cash_Logo from "../../../assets/imgs/payment-icon/Cash_Logo.png";
 
@@ -155,7 +155,7 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
       case 3:
         return <img src={MoMo_Logo} alt="" className="w-10 h-10" />;
       case 5:
-        return <img src={Cash_Logo} alt="" className="w-10 h-10" />;
+        return <img src={Wallet_Logo} alt="" className="w-10 h-10" />;
 
       default:
         return null;
