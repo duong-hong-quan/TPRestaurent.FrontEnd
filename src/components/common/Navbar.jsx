@@ -105,7 +105,6 @@ export const Navbar = () => {
     { name: "Thực đơn", path: "/search" },
     { name: "Combo", path: "/combo" },
     { name: "Đặt bàn", path: "/booking" },
-    { name: "Giới thiệu", path: "/about" },
     { name: "Chính sách", path: "/policy" },
     { name: "Tra cứu đơn hàng", path: "/order-history" },
   ];
