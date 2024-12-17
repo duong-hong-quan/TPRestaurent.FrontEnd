@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Card, CardBody, Typography, Radio } from "@material-tailwind/react";
-import Card_Logo from "../../assets/imgs/payment-icon/Cash_Logo.png";
+import Wallet_Logo from "../../assets/imgs/payment-icon/Wallet_Logo.png";
 import MoMo_Logo from "../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../assets/imgs/payment-icon/VNpay_Logo.png";
+import Cash_Logo from "../../assets/imgs/payment-icon/Cash_Logo.png";
 import { PaymentMethod } from "../../util/GlobalType";
 import { useSelector } from "react-redux";
 import { formatPrice } from "../../util/Utility";
@@ -13,6 +14,7 @@ const PaymentMethodSelector = ({ handleChange, isEnableWallet = true }) => {
   const handleMethodChange = (value) => {
     setSelectedMethod(parseInt(value));
     handleChange(parseInt(value));
+    console.log(value);
   };
   const mapLanguage = (key) => {
     switch (key) {
@@ -25,7 +27,11 @@ const PaymentMethodSelector = ({ handleChange, isEnableWallet = true }) => {
           name: "Số dư Thiên Phú",
           description: `Số dư Thiên Phú ${formatPrice(Number(user.amount))}`,
         };
-
+      case "CASH":
+        return {
+          name: "Thanh toán tiền mặt",
+          description: "Thanh toán tiền mặt",
+        };
       default:
         return "Chưa chọn phương thức";
     }
@@ -41,7 +47,11 @@ const PaymentMethodSelector = ({ handleChange, isEnableWallet = true }) => {
           Chọn phương thức thanh toán
         </Typography>
         {Object.entries(PaymentMethod)
-          .filter(([key]) => isEnableWallet || key !== "STORE_CREDIT")
+          .filter(([key]) =>
+            !isEnableWallet
+              ? key !== "STORE_CREDIT" && key !== "CASH"
+              : key !== "CASH"
+          )
 
           .map(([key, value]) => (
             <div
@@ -77,11 +87,13 @@ const PaymentMethodSelector = ({ handleChange, isEnableWallet = true }) => {
 const getMethodIcon = (method) => {
   switch (method) {
     case "STORE_CREDIT":
-      return <img src={Card_Logo} alt="" className="w-12 h-12" />;
+      return <img src={Wallet_Logo} alt="" className="w-12 h-12" />;
     case "VNPAY":
       return <img src={VNpay_Logo} alt="" className="w-12 h-12" />;
     case "MOMO":
       return <img src={MoMo_Logo} alt="" className="w-12 h-12" />;
+    case "CASH":
+      return <img src={Cash_Logo} alt="" className="w-12 h-12" />;
 
     default:
       return null;

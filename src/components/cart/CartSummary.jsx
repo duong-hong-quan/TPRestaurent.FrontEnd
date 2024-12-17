@@ -34,7 +34,7 @@ import {
   showError,
 } from "../../util/Utility";
 
-import Card_Logo from "../../assets/imgs/payment-icon/Cash_Logo.png";
+import Card_Logo from "../../assets/imgs/payment-icon/Wallet_Logo.png";
 import MoMo_Logo from "../../assets/imgs/payment-icon/MoMo_Logo.png";
 import VNpay_Logo from "../../assets/imgs/payment-icon/VNpay_Logo.png";
 import Cash_Logo from "../../assets/imgs/payment-icon/Cash_Logo.png";
@@ -123,13 +123,13 @@ const CartSummary = ({ handleClose }) => {
   const selectedPaymentMethodIcon = () => {
     switch (selectedMethod) {
       case 1:
-        return <img src={Card_Logo} alt="" className="w-10 h-10" />;
+        return <img src={Cash_Logo} alt="" className="w-10 h-10" />;
       case 2:
         return <img src={VNpay_Logo} alt="" className="w-10 h-10" />;
       case 3:
         return <img src={MoMo_Logo} alt="" className="w-10 h-10" />;
       case 5:
-        return <img src={Cash_Logo} alt="" className="w-10 h-10" />;
+        return <img src={Card_Logo} alt="" className="w-10 h-10" />;
       default:
         return null;
     }
