@@ -136,8 +136,8 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
         paymentMethod: 1,
         couponIds: [],
         loyalPointsToUse: 0,
-        cashReceived: amount,
-        changeReturned: amount - totalAmount,
+        cashReceived: Number(amount),
+        changeReturned: Number(amount) - totalAmount - order?.deposit,
         chooseCashRefund: refundType === "cash" ? true : false,
         returnUrl: `${getDomain()}/payment`,
       }

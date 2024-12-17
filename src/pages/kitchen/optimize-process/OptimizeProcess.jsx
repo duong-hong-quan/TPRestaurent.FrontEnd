@@ -71,7 +71,14 @@ const OptimizeProcess = () => {
   const [selectedDishes, setSelectedDishes] = useState([]);
   const [selectedMutualDishes, setSelectedMutualDishes] = useState([]);
   const [selectedSingleDishes, setSelectedSingleDishes] = useState([]);
-
+  const filteredSingleData = groupedDishCraft?.filter((item) => {
+    const dishes = JSON.parse(item.groupedDishJson).SingleOrderDishes;
+    return dishes.length > 0;
+  });
+  const filteredData = groupedDishCraft?.filter((item) => {
+    const dishes = JSON.parse(item.groupedDishJson).MutualOrderDishes;
+    return dishes.length > 0;
+  });
   const handleSelectAllMutual = (e) => {
     const checked = e.target.checked;
     if (checked) {
@@ -238,7 +245,7 @@ const OptimizeProcess = () => {
           checked={
             selectedMutualDishes.length > 0 &&
             selectedMutualDishes.length ===
-              filteredData.flatMap(
+              filteredData?.flatMap(
                 (record) => JSON.parse(record.groupedDishJson).MutualOrderDishes
               ).length
           }
@@ -407,15 +414,6 @@ const OptimizeProcess = () => {
     }
   };
 
-  const filteredData = groupedDishCraft.filter((item) => {
-    const dishes = JSON.parse(item.groupedDishJson).MutualOrderDishes;
-    return dishes.length > 0;
-  });
-
-  const filteredSingleData = groupedDishCraft.filter((item) => {
-    const dishes = JSON.parse(item.groupedDishJson).SingleOrderDishes;
-    return dishes.length > 0;
-  });
   const handleTriggerGroupedDish = async () => {
     await callApi(`${GroupedDishCraftApi.ADD_GROUPED_DISH}`, "POST");
     await fetchData();
