@@ -57,7 +57,7 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
   };
   useEffect(() => {
     fetchUser();
-  }, [isOpen]);
+  }, []);
   return (
     <Modal open={isOpen} onCancel={onClose} footer={null} centered>
       <div className="flex flex-col px-10">
