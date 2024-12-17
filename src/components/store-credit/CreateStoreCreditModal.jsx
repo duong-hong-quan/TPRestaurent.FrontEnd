@@ -25,7 +25,7 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
   };
   const fetchUser = async () => {
     const response = await callApi(
-      `${AccountApi.GET_BY_PHONE}/${user.phoneNumber}`,
+      `${AccountApi.GET_BY_PHONE}?phoneNumber=${user.phoneNumber}`,
       "GET"
     );
     if (response.isSuccess) {

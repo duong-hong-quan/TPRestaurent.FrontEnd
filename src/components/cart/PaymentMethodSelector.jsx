@@ -16,6 +16,7 @@ const PaymentMethodSelector = ({ handleChange, isEnableWallet = true }) => {
     handleChange(parseInt(value));
     console.log(value);
   };
+
   const mapLanguage = (key) => {
     switch (key) {
       case "VNPAY":

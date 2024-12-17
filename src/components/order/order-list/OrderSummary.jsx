@@ -9,10 +9,10 @@ import {
 import ReservationInformation from "../reservation/ReservationInformation";
 import { Button, message, Modal, Tag, Typography } from "antd";
 import PaymentMethodSelector from "../../cart/PaymentMethodSelector";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useCallApi from "../../../api/useCallApi";
 import LoadingOverlay from "../../loading/LoadingOverlay";
-import { CouponApi, OrderApi } from "../../../api/endpoint";
+import { AccountApi, CouponApi, OrderApi } from "../../../api/endpoint";
 import { useNavigate } from "react-router-dom";
 import {
   clearCart,
@@ -32,6 +32,7 @@ import VNpay_Logo from "../../../assets/imgs/payment-icon/VNpay_Logo.png";
 import CartCombosTable from "../../cart/CartCombosTable";
 import { CartSingleTable } from "../../cart/CartSingleTable";
 import CouponSelectionModal from "../../coupon/CouponSelectionModal";
+import { login } from "../../../redux/features/authSlice";
 const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
   const cartReservation = useSelector((state) => state.cartReservation);
   const cartCombos = useSelector((state) => state.cart);
@@ -160,7 +161,20 @@ const OrderSummary = ({ back, data, information, dateDeposit, deposit }) => {
         return null;
     }
   };
-
+  const fetchUser = async () => {
+    const response = await callApi(
+      `${AccountApi.GET_BY_PHONE}?phoneNumber=${user.phoneNumber}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      dispatch(login(response.result));
+    } else {
+      showError(response.messages);
+    }
+  };
+  useEffect(() => {
+    fetchUser();
+  }, [user]);
   return (
     <div className="container">
       <Typography className="text-xl text-red-900 text-center font-bold my-2">
