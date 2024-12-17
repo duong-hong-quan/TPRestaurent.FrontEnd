@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Space, Row, Col, Input, Modal, Button } from "antd";
 import { useSelector } from "react-redux";
 import { Mail, Phone, DollarSign, CreditCard } from "lucide-react";
@@ -11,7 +11,8 @@ import {
   showError,
 } from "../../util/Utility";
 import useCallApi from "../../api/useCallApi";
-import { TransactionApi } from "../../api/endpoint";
+import { AccountApi, TransactionApi } from "../../api/endpoint";
+import { login } from "../../redux/features/authSlice";
 
 const CreateStoreCreditModal = ({ isOpen, onClose }) => {
   const user = useSelector((state) => state.user.user || {});
@@ -21,6 +22,17 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
   const { callApi, error, loading } = useCallApi();
   const handleChangeMethod = (data) => {
     setSelectedMethod(data);
+  };
+  const fetchUser = async () => {
+    const response = await callApi(
+      `${AccountApi.GET_BY_PHONE}/${user.phoneNumber}`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      dispatch(login(response.result));
+    } else {
+      showError(response.messages);
+    }
   };
   const handleSubmit = async () => {
     const response = await callApi(
@@ -33,6 +45,7 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
       }
     );
     if (response.isSuccess) {
+      await fetchUser();
       if (response.result) {
         window.location.href = response.result;
       }
@@ -40,6 +53,9 @@ const CreateStoreCreditModal = ({ isOpen, onClose }) => {
       showError(response.messages);
     }
   };
+  useEffect(() => {
+    fetchUser();
+  }, [isOpen]);
   return (
     <Modal open={isOpen} onCancel={onClose} footer={null} centered>
       <div className="flex flex-col px-10">
