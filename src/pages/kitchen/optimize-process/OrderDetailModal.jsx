@@ -195,12 +195,14 @@ const OrderDetailModal = ({
                 </h2>
               </div>
 
-              <div className="w-full">
-                <Image
-                  src={selectedDish?.dish?.image}
-                  alt={selectedDish?.dish?.name}
-                  className="w-full h-52 object-cover"
-                />
+              <div className="flex justify-center">
+                <div className="w-44 h-44">
+                  <img
+                    src={selectedDish?.dish?.image}
+                    alt={selectedDish?.dish?.name}
+                    className="w-full h-full object-cover block"
+                  />
+                </div>
               </div>
 
               {/* Overall Statistics */}

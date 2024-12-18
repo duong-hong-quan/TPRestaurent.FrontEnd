@@ -195,7 +195,7 @@ const OptimizeProcess = () => {
               key={index}
               className="grid grid-cols-9 items-center gap-1 p- rounded"
             >
-              <div className="col-span-4 mx-2 flex items-center">
+              <div className="col-span-4 px-2 flex items-center">
                 <Image
                   src={dishData.Dish.Image}
                   alt="dish"
@@ -220,16 +220,25 @@ const OptimizeProcess = () => {
                   color="#1890ff"
                 />
               </Space>
-              <Button
-                className="col-span-1"
-                onClick={async () => {
-                  setType(type);
-                  setSelectedGroupedDishId(groupedDishId);
-                  await fetchDetail(groupedDishId, dishData?.Dish.DishId, type);
-                }}
-              >
-                <EyeOutlined />
-              </Button>
+              <div className=" col-span-1 pl-2">
+                <span
+                  style={{
+                    border: "1px solid #ccc",
+                  }}
+                  className="px-2 py-1 rounded-lg cursor-pointer"
+                  onClick={async () => {
+                    setType(type);
+                    setSelectedGroupedDishId(groupedDishId);
+                    await fetchDetail(
+                      groupedDishId,
+                      dishData?.Dish.DishId,
+                      type
+                    );
+                  }}
+                >
+                  <EyeOutlined size={12} />
+                </span>
+              </div>
             </div>
           ))}
         </div>
