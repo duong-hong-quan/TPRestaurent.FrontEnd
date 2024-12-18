@@ -35,11 +35,9 @@ const CartPage = () => {
 
   const handleDecreaseComboQuantity = async (comboId, selectedDishes) => {
     dispatch(decreaseComboQuantity({ comboId, selectedDishes }));
-    await syncCart();
   };
   const handleIncreaseComboQuantity = async (comboId, selectedDishes) => {
     dispatch(increaseComboQuantity({ comboId, selectedDishes }));
-    await syncCart();
   };
   const handleRemoveCombo = async (comboId, selectedDishes) => {
     dispatch(removeCombo({ comboId, selectedDishes }));
@@ -57,7 +55,7 @@ const CartPage = () => {
 
   const totalPrice = cart.total ? cart.total + (cartTotal || 0) : cartTotal;
   useEffect(() => {
-    syncCart();
+    // syncCart();
   }, []);
   if (isSummary) {
     return <CartSummary handleClose={() => setIsSummary(false)} />;
