@@ -49,7 +49,7 @@ const Reservation = () => {
   const [show, setShow] = useState(false);
   const [showModalWithoutDish, setShowModalWithoutDish] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
-
+  const [timeBeforeReservation, setTimeBeforeReservation] = useState(1);
   const handleCloseModalWithoutDish = () => {
     setShowModalWithoutDish(false);
   };
@@ -400,6 +400,19 @@ const Reservation = () => {
       setIsValid(true);
       setIsValidatePhone(true);
     } else {
+      showError(data.messages);
+    }
+  };
+
+  const fetchConfig = async () => {
+    const response = await callApi(
+      `${ConfigurationApi.GET_CONFIG_BY_NAME}/TIME_BEFORE_RESERVATION`,
+      "GET"
+    );
+    if (response.isSuccess) {
+      setTimeBeforeReservation(response.result.currentValue);
+    } else {
+      showError(response.messages);
     }
   };
 
@@ -409,6 +422,7 @@ const Reservation = () => {
       setIsValid(true);
     }
     initData();
+    fetchConfig();
   }, []);
 
   useEffect(() => {
@@ -489,7 +503,7 @@ const Reservation = () => {
             THÔNG TIN KHÁCH HÀNG
           </h2>
           <p className="text-gray-600 mb-6">
-            Vui lòng đặt bàn trước giờ dùng ít nhất 1 giờ
+            Vui lòng đặt bàn trước giờ dùng ít nhất {timeBeforeReservation} giờ
           </p>
           <Form
             layout="vertical"
