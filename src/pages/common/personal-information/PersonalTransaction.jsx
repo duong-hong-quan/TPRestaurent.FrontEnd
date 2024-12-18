@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import LoyalPointHistoryList from "../../../components/loyalpoint/LoyalPointHistoryList";
-import { Button, Tooltip } from "antd";
+import { Alert, Button, Tooltip } from "antd";
 import { Coins, Gift, HelpCircle, Wallet } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { MoneyCollectFilled } from "@ant-design/icons";
@@ -74,7 +74,11 @@ const PersonalTransaction = () => {
       <h1 className="uppercase text-red-900 font-bold text-2xl mb-6">
         TÀI KHOẢN VÀ ĐIỂM HỘI VIÊN
       </h1>
-
+      <Alert
+        message="Chú ý: Số dư Thiên Phú chỉ được nạp và không thể giao dịch quy đổi thành tiền mặt. Chỉ có thể giao dịch hệ thống. Bạn chỉ nên nạp đủ số dư cần thiết để tránh rủi ro."
+        type="info"
+        showIcon
+      />
       <div className="xl:max-w-4xl xl:mx-auto p-4">
         <div className=" flex flex-col xl:flex-row xl:gap-4 xl:justify-between ">
           <div
