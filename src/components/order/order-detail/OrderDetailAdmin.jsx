@@ -137,7 +137,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
         couponIds: [],
         loyalPointsToUse: 0,
         cashReceived: Number(amount),
-        changeReturned: Number(amount) - totalAmount - order?.deposit,
+        changeReturned: Number(amount) - totalAmount + order?.deposit,
         chooseCashRefund: refundType === "cash" ? true : false,
         returnUrl: `${getDomain()}/payment`,
       }
@@ -699,7 +699,7 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
                               : "text-red-600"
                           }`}
                         >
-                          {formatPrice(amount - totalAmount)}
+                          {formatPrice(amount - totalAmount + order?.deposit)}
                         </span>
                       </div>
                       <div className="bg-gray-50 p-4 rounded-lg">
