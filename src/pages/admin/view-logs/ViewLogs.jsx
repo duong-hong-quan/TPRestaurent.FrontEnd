@@ -67,6 +67,11 @@ const ViewLogs = () => {
     await fetchLogs();
     message.success("Truy xuất thành công");
   };
+  const deleteLogNow = async () => {
+    await callApi(`${LogsApi.DELETE_LOG}`, "POST");
+    await fetchLogs();
+    message.success("Xoá log thành công");
+  };
   useEffect(() => {
     if (activeTab == 1) {
       fetchLogs();
@@ -99,6 +104,13 @@ const ViewLogs = () => {
           loading={loading}
         >
           Truy xuất log
+        </Button>
+        <Button
+          className="bg-red-800 text-white"
+          onClick={async () => await deleteLogNow()}
+          loading={loading}
+        >
+          Xoá log
         </Button>
       </div>
 
