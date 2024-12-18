@@ -407,6 +407,7 @@ const OptimizeProcess = () => {
     );
     if (result.isSuccess) {
       setSelectedDish(null);
+      s;
       message.success("Cập nhật trạng thái thành công");
       await fetchData();
     } else {
@@ -555,6 +556,8 @@ const OptimizeProcess = () => {
                 if (response.isSuccess) {
                   message.success("Cập nhật trạng thái thành công");
                   setSelectedDishes([]);
+                  setSelectedSingleDishes([]);
+                  setSelectedMutualDishes([]);
                   await fetchData();
                 }
               },
