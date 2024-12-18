@@ -182,6 +182,7 @@ export const StatisticApi = {
 
 export const InvoiceApi = {
   GENERATE_GENERAL_INVOICE: "/invoice/generate-general-invoice",
+  GENERATE_ORDER_INVOICE: "/invoice/get-invoice-by-order-id",
 };
 
 export const RatingApi = {

@@ -13,6 +13,7 @@ import { WarningOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
 import {
   ConfigurationApi,
+  InvoiceApi,
   OrderApi,
   TransactionApi,
 } from "../../../api/endpoint";
@@ -323,7 +324,16 @@ const OrderDetail = ({ reservationData, fetchData }) => {
       onCancel() {},
     });
   };
-
+  const generateReport = async () => {
+    const response = await callApi(
+      `${InvoiceApi.GENERATE_ORDER_INVOICE}/${order.orderId}`,
+      "POST",
+      null
+    );
+    if (response?.isSuccess) {
+      window.open(response.result.pdfLink);
+    }
+  };
   return (
     <Card className="w-full shadow-none border-none max-h-[550px] overflow-auto">
       <CardBody className="p-6">
@@ -537,6 +547,12 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                 </Button>
               </div>
             )}
+            <Button
+              onClick={generateReport}
+              className=" bg-red-900 text-white mt-4"
+            >
+              Xuất hóa đơn
+            </Button>
             {order?.statusId == 2 && (
               <div
                 className="p-4 flex items-center gap-1 cursor-pointer"
