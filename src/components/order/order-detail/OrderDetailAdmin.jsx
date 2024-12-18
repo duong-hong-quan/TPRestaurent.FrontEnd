@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
+import { Typography } from "@material-tailwind/react";
 import { Button, Image, Input, message, Modal, Radio, Select } from "antd";
 import moment from "moment/moment";
 import Momo_logo from "../../../assets/imgs/payment-icon/MoMo_Logo.png";
@@ -16,10 +16,14 @@ import {
 import { StyledTable } from "../../custom-ui/StyledTable";
 import { DollarOutlined, WalletOutlined } from "@ant-design/icons";
 import useCallApi from "../../../api/useCallApi";
-import { AccountApi, ConfigurationApi, OrderApi } from "../../../api/endpoint";
+import {
+  AccountApi,
+  ConfigurationApi,
+  InvoiceApi,
+  OrderApi,
+} from "../../../api/endpoint";
 import dayjs from "dayjs";
 import { DollarSign, HandCoins, PhoneCall, UndoDot } from "lucide-react";
-import LoadingOverlay from "../../loading/LoadingOverlay";
 import OrderTag from "../../tag/OrderTag";
 import { debounce } from "lodash";
 const AccountSearchSelect = ({
@@ -111,6 +115,7 @@ const AccountSearchSelect = ({
 };
 const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
   const { order, orderDishes, orderTables } = reservationData;
+
   const { callApi, error, loading } = useCallApi();
   const [amount, setAmount] = useState("");
   const totalAmount = order?.totalAmount;
@@ -458,6 +463,16 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
     setSelectedAccount(accountId);
   };
   console.log(listAccount);
+  const generateReport = async () => {
+    const response = await callApi(
+      `${InvoiceApi.GENERATE_ORDER_INVOICE}/${order.orderId}`,
+      "POST",
+      null
+    );
+    if (response?.isSuccess) {
+      window.open(response.result.pdfLink);
+    }
+  };
   return (
     <div className="w-full shadow-none border-none">
       <div className="p-6">
@@ -646,7 +661,12 @@ const OrderDetailAdmin = ({ reservationData, fetchData, onClose }) => {
                 </div>
               </div>
             )}
-
+            <Button
+              onClick={generateReport}
+              className=" bg-red-900 text-white mt-4"
+            >
+              Xuất hóa đơn
+            </Button>
             {renderIsPayment() && (
               <div className="max-w-md mx-auto p-6 bg-white shadow-lg">
                 <div className="flex flex-col space-y-6">
