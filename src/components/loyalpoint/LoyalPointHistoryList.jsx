@@ -49,9 +49,9 @@ const LoyalPointHistoryItem = ({ transaction }) => {
           {isReceived && "+"}
           {transaction.pointChanged.toLocaleString()}
         </p>
-        <p className="text-gray-600 text-sm">
+        {/* <p className="text-gray-600 text-sm">
           Điểm tích luỹ: {balanceAfter.toLocaleString()}
-        </p>
+        </p> */}
       </div>
     </div>
   );
