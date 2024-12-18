@@ -197,6 +197,7 @@ export const ChatBotApi = {
 export const LogsApi = {
   READ_LOG: "/read-log",
   READ_LOG_BY_ID: "/read-log",
+  DELETE_LOG: "/delete-log",
 };
 
 export const TestApi = {
