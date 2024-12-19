@@ -522,7 +522,7 @@ const OrderDetail = ({ reservationData, fetchData }) => {
               </div>
             )}
 
-            {renderIsPayment() && user.id === order.accountId && (
+            {/* {renderIsPayment() && user.id === order.accountId && (
               <div className="flex justify-center my-4">
                 <Button
                   className="bg-red-900 text-white mx-auto"
@@ -539,14 +539,14 @@ const OrderDetail = ({ reservationData, fetchData }) => {
                       }
                     );
                     if (response?.isSuccess) {
-                      window.location.href = response.result;
+                      window.location.href = response.result.paymentLink;
                     }
                   }}
                 >
                   Thanh toán ngay
                 </Button>
               </div>
-            )}
+            )} */}
             <Button
               onClick={generateReport}
               className=" bg-red-900 text-white mt-4"
